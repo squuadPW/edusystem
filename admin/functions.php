@@ -311,7 +311,7 @@ function aes_scripts_admin()
         wp_enqueue_script('auto-enroll', plugins_url('edusystem') . '/admin/assets/js/auto-enroll.js', array('jquery'), $version, true);
 
         wp_localize_script('auto-enroll', 'ajax_object', [
-            'url' => admin_url('admin-ajax.php')
+            'ajax_url' => admin_url('admin-ajax.php')
         ]);
     }
 

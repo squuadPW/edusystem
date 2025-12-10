@@ -5,56 +5,14 @@
     include(plugin_dir_path(__FILE__) . 'cookie-message.php');
     ?>
 
-    <div id="dashboard-widgets" class="metabox-holder admin-add-offer">
-        <div id="postbox-container-1" style="width:100% !important;">
-            <div id="normal-sortables">
-                <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
-                    <div class="inside">
+    <h4>For code and cut <?= $code . ' - ' . $cut ?></h4>
+    <ul>
+        <?php foreach ($expected_rows as $expected) : ?>
+            <li>
+                <?= $expected->student->first_name . ' ' . $expected->student->last_name . ' - ' . $expected->subject->name ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
 
-                        <form method="post"
-                            action="<?= admin_url('admin.php?page=add_admin_form_auto_inscription_content&action=save_auto_inscription_details'); ?>">
-                            <div>
-                                <h3
-                                    style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
-                                    <b><?= __('Enrollment information', 'edusystem'); ?></b>
-                                </h3>
-
-                                <div style="margin: 18px;">
-                                    <div style="font-weight:400;" class="space-offer">
-                                        <label
-                                            for="academic_period"><?= __('School year in which students entered', 'edusystem'); ?></label><br>
-                                        <select name="academic_period" style="width: 100%">
-                                            <option value=""><?= __('Select an option', 'edusystem'); ?></option>
-                                            <?php foreach ($periods as $key => $period): ?>
-                                                <option value="<?php echo $period->code; ?>"><?php echo $period->name; ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                    <div style="font-weight:400;" class="space-offer">
-                                        <label
-                                            for="academic_period"><?= __('Period in which students entered', 'edusystem'); ?></label><br>
-                                        <select name="academic_period_cut" style="width: 100%">
-                                            <option value=""><?= __('Select an option', 'edusystem'); ?></option>
-                                            <option value="A">A</option>
-                                            <option value="B">B</option>
-                                            <option value="C">C</option>
-                                            <option value="D">D</option>
-                                            <option value="E">E</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:center;gap:5px; display: none"
-                                id="enroll-button">
-                                <button type="submit" class="button button-primary"
-                                    onclick="return confirm('<?= __('Are you sure you want to enroll students?', 'edusystem'); ?>')"><?= __('Enroll', 'edusystem'); ?></button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <button id="enroll-all-button">Enroll All</button>
 </div>

@@ -31,6 +31,9 @@ function truncate_text($text, $max_length = 100) {
                 href="<?php echo admin_url('/admin.php?page=add_admin_form_admission_content') ?>"><?= __('Back') ?></a>
         <?php endif; ?>
     </div>
+    <?php 
+        include(plugin_dir_path(__FILE__).'cookie-message.php');
+    ?>
     <div class="action-student-admission">
         <?php
         include(plugin_dir_path(__FILE__) . 'connections-student.php');

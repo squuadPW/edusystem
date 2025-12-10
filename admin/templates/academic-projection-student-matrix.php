@@ -84,9 +84,9 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                 $is_group_approved = false;
                                                 if ($is_multi_entry) {
                                                     $statuses = (array)($item['status'] ?? []);
-                                                    $is_group_approved = in_array('aprobada', $statuses, true);
+                                                    $is_group_approved = in_array('aprobada', $statuses, true) || in_array('en curso', $statuses, true);
                                                 } else {
-                                                    $is_group_approved = (isset($item['status']) && $item['status'] === 'aprobada');
+                                                    $is_group_approved = (isset($item['status']) && ($item['status'] === 'aprobada' || $item['status'] === 'en curso'));
                                                 }
 
                                                 // Si el grupo está completado o aprobado, se deshabilitan los selects

@@ -232,6 +232,7 @@ function load_automatically_enrollment($student)
             ]);
 
             // Update student's projection so the subject appears as this cut
+            update_expected_matrix_after_enrollment($student->id, $subject->id, $code, $cut);
             $proj_item = update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
             if ($proj_item) {
                 edusystem_get_log('Enrolled in subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user->ID);
@@ -730,6 +731,100 @@ function update_projection_after_enrollment($student_id, $subject_id, $code_peri
     }
 
     return false;
+}
+
+/**
+ * Update `student_expected_matrix` row for a student/subject/period based on enrollments.
+ * - if there is an inscription with status_id = 1 => 'en curso'
+ * - else if there is an inscription with status_id = 3 => 'aprobada'
+ * - otherwise => 'pendiente'
+ *
+ * The function updates an existing row matching student_id, subject_id, academic_period and academic_period_cut,
+ * or inserts a minimal row if none exists.
+ *
+ * @param int $student_id
+ * @param int|string $subject_id
+ * @param string $code_period
+ * @param string|int $cut_period
+ * @return bool|array Returns the updated/inserted row (array) on success, or false on failure.
+ */
+function update_expected_matrix_after_enrollment($student_id, $subject_id, $code_period, $cut_period)
+{
+    global $wpdb;
+    $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+    if (empty($student_id) || empty($subject_id)) {
+        return false;
+    }
+
+    // Fetch inscriptions that exactly match student, subject and period/cut
+    $inscriptions = $wpdb->get_results($wpdb->prepare(
+        "SELECT status_id FROM {$table_student_period_inscriptions} WHERE student_id = %d AND subject_id = %d AND code_period = %s AND cut_period = %s",
+        $student_id,
+        $subject_id,
+        $code_period,
+        $cut_period
+    ));
+
+    $status = 'pendiente';
+    if (!empty($inscriptions)) {
+        $has_in_progress = false;
+        $has_approved = false;
+        foreach ($inscriptions as $ins) {
+            $s = (int) $ins->status_id;
+            if ($s === 1) {
+                $has_in_progress = true;
+                break; // in progress wins
+            }
+            if ($s === 3) {
+                $has_approved = true;
+            }
+        }
+
+        if ($has_in_progress) {
+            $status = 'en curso';
+        } elseif ($has_approved) {
+            $status = 'aprobada';
+        }
+    }
+
+    // Update existing expected row if present
+    $existing = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$table_student_expected_matrix} WHERE student_id = %d AND subject_id = %d AND academic_period = %s AND academic_period_cut = %s",
+        $student_id,
+        $subject_id,
+        $code_period,
+        $cut_period
+    ));
+
+    if ($existing) {
+        $updated = $wpdb->update($table_student_expected_matrix, ['status' => $status], ['id' => $existing->id]);
+        if ($updated === false) {
+            return false;
+        }
+        $existing->status = $status;
+        return (array) $existing;
+    }
+
+    // Insert minimal expected row when missing
+    $inserted = $wpdb->insert($table_student_expected_matrix, [
+        'student_id' => $student_id,
+        'term_index' => null,
+        'term_position' => null,
+        'subject_id' => $subject_id,
+        'academic_period' => $code_period,
+        'academic_period_cut' => $cut_period,
+        'status' => $status
+    ]);
+
+    if ($inserted === false) {
+        return false;
+    }
+
+    $new_id = $wpdb->insert_id;
+    $new_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_student_expected_matrix} WHERE id = %d", $new_id));
+    return $new_row ? (array) $new_row : false;
 }
 
 function send_welcome_subjects($student_id, $force = false)

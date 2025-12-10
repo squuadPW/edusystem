@@ -2,46 +2,45 @@
 
 function add_admin_form_auto_inscription_content()
 {
-    if ($_GET['action'] == 'save_auto_inscription_details') {
-        global $wpdb;
-        $table_students = $wpdb->prefix . 'students';
-        $academic_period = $_POST['academic_period'];
-        $cut = $_POST['academic_period_cut'];
-
-        $students_enrolled = '';
-        $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE academic_period = '{$academic_period}' AND initial_cut = '$cut'");
-        $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
-        foreach ($students as $key => $student) {
-            automatically_enrollment($student->id);
-            $students_enrolled .= $student->name . ' ' . $student->middle_name . ' ' . $student->last_name . ' ' . $student->middle_last_name . PHP_EOL;
-        }
-
-        setcookie('message', __('Students affected.', 'edusystem') . PHP_EOL . $students_enrolled, time() + 10, '/');
-        wp_redirect(admin_url('admin.php?page=add_admin_form_auto_inscription_content'));
-        exit;
-    }
-
     global $wpdb;
-    $table_academic_periods = $wpdb->prefix . 'academic_periods';
-    $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+    $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
+    $load = load_current_cut_enrollment();
+    $code = $load['code'];
+    $cut = $load['cut'];
+
+    $expected_rows = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM {$table_student_expected_matrix} WHERE academic_period = %s AND academic_period_cut = %s AND status = %s ORDER BY term_index ASC, term_position ASC",
+        $code,
+        $cut,
+        'pendiente'
+    ));
+    foreach ($expected_rows as $key => $row) {
+        $expected_rows[$key]->student = get_student_detail($row->student_id);
+        $expected_rows[$key]->subject = get_subject_details($row->subject_id);
+    }
     include(plugin_dir_path(__FILE__) . 'templates/auto-inscription-detail.php');
 }
 
-function load_auto_enroll_students_callback()
+function auto_enroll_students_bulk_callback()
 {
     global $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-    $academic_period = $_POST['academic_period'];
-    $cut = $_POST['academic_period_cut'];
+    $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
+    $load = load_current_cut_enrollment();
+    $code = $load['code'];
+    $cut = $load['cut'];
 
-    $cut_student_ids = $wpdb->get_col("SELECT id FROM {$table_students} WHERE academic_period = '{$academic_period}' AND initial_cut = '$cut'");
-    $students = $wpdb->get_results("SELECT * FROM {$table_students} WHERE id IN (" . implode(',', $cut_student_ids) . ")");
-    foreach ($students as $key => $student) {
-        $student->next_enrollment = next_enrollment($student->id);
+    $expected_rows = $wpdb->get_results($wpdb->prepare(
+        "SELECT * FROM {$table_student_expected_matrix} WHERE academic_period = %s AND academic_period_cut = %s AND status = %s ORDER BY term_index ASC, term_position ASC",
+        $code,
+        $cut,
+        'pendiente'
+    ));
+    foreach ($expected_rows as $key => $row) {
+        automatically_enrollment($row->student_id);
     }
-    wp_send_json($students);
+    wp_send_json(true);
     die();
 }
 
-add_action('wp_ajax_nopriv_load_auto_enroll_students', 'load_auto_enroll_students_callback');
-add_action('wp_ajax_load_auto_enroll_students', 'load_auto_enroll_students_callback');
+add_action('wp_ajax_nopriv_auto_enroll_students_bulk', 'auto_enroll_students_bulk_callback');
+add_action('wp_ajax_auto_enroll_students_bulk', 'auto_enroll_students_bulk_callback');

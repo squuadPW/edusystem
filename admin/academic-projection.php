@@ -397,6 +397,7 @@ function add_admin_form_academic_projection_content()
                                 'calification' => $calification_value,
                                 'type' => $subject->type
                             ]);
+                            update_expected_matrix_after_enrollment($projection->student_id, $projection_obj[$key]->subject_id, $period, $cut);
                         }
                     } else {
                         $wpdb->update($table_student_period_inscriptions, [
@@ -409,6 +410,7 @@ function add_admin_form_academic_projection_content()
                             'calification' => $calification_value,
                             'type' => $subject->type
                         ], ['id' => $exist->id]);
+                        update_expected_matrix_after_enrollment($projection->student_id, $projection_obj[$key]->subject_id, $period, $cut);
                     }
 
                     if ($is_this_cut) {
@@ -479,6 +481,7 @@ function add_admin_form_academic_projection_content()
             }
 
             $wpdb->delete($table_student_period_inscriptions, ['id' => $inscription_id]);
+            update_expected_matrix_after_enrollment($enrollment->student_id, $enrollment->subject_id, $enrollment->code_period, $enrollment->cut_period);
 
             setcookie('message', __('Projection adjusted successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
