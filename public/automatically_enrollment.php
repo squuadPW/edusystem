@@ -8,162 +8,6 @@ function automatically_enrollment($student_id)
     load_automatically_enrollment($student);
 }
 
-
-function next_enrollment($student_id)
-{
-    $next = 'Regular';
-    global $wpdb;
-    $table_students = $wpdb->prefix . 'students';
-    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
-    $expected_periods = load_expected_periods($student->expected_graduation_date);
-
-    $expected_projection = load_expected_projection($student->initial_cut, $student->grade_id, $expected_periods);
-    $next = load_next_enrollment($expected_projection, $student);
-    return $next;
-}
-
-function load_expected_periods($expected_graduation_date)
-{
-
-    return [];
-}
-
-function load_expected_projection($initial_cut, $grade, $expected_periods)
-{
-    global $wpdb;
-    $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
-
-    $max_expected = 0;
-    $expected_matrix = [];
-    switch ($grade) {
-        case 1:
-            $row = $wpdb->get_row("SELECT * FROM {$table_expected_matrix} WHERE grade_id = {$grade} AND initial_cut = '{$initial_cut}'");
-            $max_expected = $row->max_expected;
-            $expected_matrix = explode(',', $row->expected_sequence);
-            break;
-
-        default:
-            $row = $wpdb->get_row("SELECT * FROM {$table_expected_matrix} WHERE grade_id = {$grade}");
-            $max_expected = $row->max_expected;
-            $expected_matrix = explode(',', $row->expected_sequence);
-            break;
-    }
-
-    return [
-        'expected_matrix' => $expected_matrix,
-        'max_expected' => $max_expected,
-        'grade_id' => $grade
-    ];
-}
-
-function load_next_enrollment($expected_projection, $student)
-{
-    if ($student->status_id == 0 || $student->status_id > 3) {
-        return 'Inscription not found';
-    }
-
-    // proyeccion
-    $projection = get_projection_by_student($student->id);
-    if (!$projection) {
-        return 'Inscription not found';
-    }
-
-    // matrices
-    $load = load_current_cut_enrollment();
-    $matrix_elective = load_available_electives($student, $load['code'], cut: $load['cut']);
-    $matrix_regular = only_pensum_regular($student->program_id);
-
-    // contadores
-    $last_inscriptions_electives_count = load_inscriptions_electives($student);
-    $real_electives_inscriptions_count = load_inscriptions_electives_valid($student);
-    $student_enrolled = 0;
-    $count_expected_subject = 0;
-    $count_expected_subject_elective = 0;
-
-    // valores
-    $code = $load['code'];
-    $cut = $load['cut'];
-    $force_skip = false;
-    $next_enrollment = 'Inscription not found';
-
-    foreach ($expected_projection['expected_matrix'] as $key => $expected) {
-        if ($student_enrolled >= (int)$expected_projection['max_expected']) {
-            break;
-        }
-
-        if ($expected_projection['grade_id'] > 2 && (($key + 1) > 6 || ($key + 1) == 1)) {
-            $expected_projection['max_expected'] = 1;
-        } else {
-            if ($expected_projection['grade_id'] > 2) {
-                $expected_projection['max_expected'] = 2;
-            }
-        }
-
-        if ($expected == 'R') {
-            $expected_subject = $matrix_regular[$count_expected_subject];
-            $subject = get_subject_details($expected_subject->subject_id);
-
-            $available_inscription_subject = available_inscription_subject($student->id, $subject->id);
-            if (!$available_inscription_subject) {
-                $count_expected_subject++;
-                continue;
-            }
-
-            $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
-            if (!$offer_available_to_enroll) {
-                $count_expected_subject++;
-                $force_skip = true;
-                continue;
-            }
-
-            $next_enrollment = 'Regular';
-            $force_skip = false;
-            $count_expected_subject++;
-            $student_enrolled++;
-
-            if ($count_expected_subject >= 4 && $real_electives_inscriptions_count < 2 && ($key + 1) >= (count($expected_projection['expected_matrix']) - 1)) {
-                $next_enrollment .= ' and program elective';
-            }
-        } else {
-            if ($force_skip) {
-                $count_expected_subject_elective++;
-                $last_inscriptions_electives_count++;
-                continue;
-            }
-
-            if (count($matrix_elective) == 0) {
-                continue;
-            }
-
-            if ($last_inscriptions_electives_count > $count_expected_subject_elective) {
-                $count_expected_subject_elective++;
-                continue;
-            }
-
-            if ($next_enrollment == 'Regular') {
-                $next_enrollment = 'Regular and ';
-            } else {
-                $next_enrollment = '';
-            }
-
-            if ($expected == 'EA' && !get_option('use_elective_aditional')) {
-                $next_enrollment .= 'Additional elective ' . (get_option('use_elective_aditional') ? '(Available during this period)' : '(Not available during this period)');
-                break;
-            }
-
-            $next_enrollment .= 'Program elective';
-            $count_expected_subject_elective++;
-            $student_enrolled++;
-        }
-
-        if ((($key + 1) == count($expected_projection['expected_matrix']) && $student_enrolled == 0) && count($matrix_elective) > 0) {
-            $next_enrollment .= ' and program elective';
-        }
-    }
-
-    return $next_enrollment;
-}
-
 function load_automatically_enrollment($student)
 {
     if ($student->status_id == 0 || $student->status_id > 3) {
@@ -254,40 +98,6 @@ function load_automatically_enrollment($student)
     }
 
     update_max_upload_at($student->id);
-}
-
-function load_available_electives($student, $code, $cut)
-{
-    global $wpdb;
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-
-    $conditions = array();
-    $params = array();
-
-    $electives_ids = $wpdb->get_col("SELECT subject_id FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND status_id != 4 AND code_subject IS NOT NULL AND code_subject <> '' AND subject_id IS NOT NULL AND subject_id <> ''");
-    if ($electives_ids) {
-        $conditions[] = "id NOT IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
-    }
-    $conditions[] = "type = 'elective'";
-    $params = array_merge($params, $electives_ids);
-
-    $query = "SELECT * FROM {$table_school_subjects}";
-
-    if (!empty($conditions)) {
-        $query .= " WHERE " . implode(" AND ", $conditions);
-    }
-
-    $electives = $wpdb->get_results($wpdb->prepare($query, $params));
-    $available_electives = [];
-    foreach ($electives as $key => $elective) {
-        $offer = get_offer_filtered($elective->id, $code, $cut);
-        if ($offer) {
-            array_push($available_electives, $elective);
-        }
-    }
-
-    return $available_electives;
 }
 
 function load_inscriptions_electives($student)
@@ -640,18 +450,6 @@ function generate_projection_student($student_id, $force = false)
     return false;
 }
 
-/**
- * Update student's academic projection after an enrollment is created.
- * Ensures the projection entry for the subject is marked for this cut
- * so downstream processes (welcome emails, UI) reflect the new enrollment.
- *
- * @param int $student_id
- * @param int|string $subject_id
- * @param string $code_period
- * @param string|int $cut_period
- * @param int $status_id Enrollment status (1 = current/inscribed, 3 = completed)
- * @return bool
- */
 function update_projection_after_enrollment($student_id, $subject_id, $code_period, $cut_period, $status_id = 1)
 {
     global $wpdb;
@@ -733,21 +531,6 @@ function update_projection_after_enrollment($student_id, $subject_id, $code_peri
     return false;
 }
 
-/**
- * Update `student_expected_matrix` row for a student/subject/period based on enrollments.
- * - if there is an inscription with status_id = 1 => 'en curso'
- * - else if there is an inscription with status_id = 3 => 'aprobada'
- * - otherwise => 'pendiente'
- *
- * The function updates an existing row matching student_id, subject_id, academic_period and academic_period_cut,
- * or inserts a minimal row if none exists.
- *
- * @param int $student_id
- * @param int|string $subject_id
- * @param string $code_period
- * @param string|int $cut_period
- * @return bool|array Returns the updated/inserted row (array) on success, or false on failure.
- */
 function update_expected_matrix_after_enrollment($student_id, $subject_id, $code_period, $cut_period)
 {
     global $wpdb;
@@ -1154,24 +937,6 @@ function template_not_enrolled($student)
     return $text;
 }
 
-function fix_projections($student_id)
-{
-    global $wpdb;
-    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
-    $projection_obj = json_decode($projection->projection);
-    foreach ($projection_obj as $key => $value) {
-        $projection_obj[$key]->welcome_email = $projection_obj[$key]->welcome_email ? true : ($projection_obj[$key]->is_completed && !$projection_obj[$key]->this_cut ? true : false);
-    }
-
-    $wpdb->update($table_student_academic_projection, [
-        'projection' => json_encode($projection_obj) // Ajusta el valor de 'projection' según sea necesario
-    ], ['id' => $projection->id]);
-}
-
-/**
- * Construye una matriz detallada de términos académicos
- */
 function build_detailed_matrix($terms_config, $terms_available, $matrix_regular, $student_id)
 {
     global $wpdb;
@@ -1294,11 +1059,6 @@ function get_subject_period($student_id, $subject_id)
     return '';
 }
 
-/**
- * Persiste la matriz detallada en la tabla `student_expected_matrix`.
- * Inserta una fila por materia proyectada. Para términos con múltiples materias (RR)
- * insertará varias filas con el mismo term_index.
- */
 function persist_expected_matrix($student_id, $detailed_matrix)
 {
     global $wpdb;
@@ -1405,9 +1165,6 @@ function persist_expected_matrix($student_id, $detailed_matrix)
     return $inserted;
 }
 
-/**
- * Borra los registros de expected matrix de un estudiante (útil antes de regenerar).
- */
 function clear_expected_matrix_for_student($student_id)
 {
     global $wpdb;
@@ -1415,10 +1172,6 @@ function clear_expected_matrix_for_student($student_id)
     return $wpdb->delete($table, ['student_id' => $student_id]);
 }
 
-/**
- * Reconstruye una estructura de matriz a partir de `student_expected_matrix`.
- * Retorna un array agrupado por término (índice 0..N-1) similar a `build_detailed_matrix`.
- */
 function get_expected_matrix_by_student($student_id)
 {
     global $wpdb;

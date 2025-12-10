@@ -222,8 +222,7 @@ function add_admin_form_academic_projection_content()
             setcookie('message', __('Successfully generated admin for the student.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
             exit;
-        }
-        if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
+        } else if (isset($_GET['action']) && $_GET['action'] == 'generate_enrollments_moodle') {
             generate_enroll_student();
             setcookie('message', __('Students successfully enrolled in moodle.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
@@ -270,15 +269,6 @@ function add_admin_form_academic_projection_content()
 
             setcookie('message', __('Mails sent.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
-            exit;
-        } else if (isset($_GET['action']) && $_GET['action'] == 'fix_projections') {
-            global $wpdb;
-            $table_students = $wpdb->prefix . 'students';
-            $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
-            foreach ($students as $key => $student) {
-                fix_projections($student->id);
-            }
-            wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'clear_electives') {
             clear_students_electives();
