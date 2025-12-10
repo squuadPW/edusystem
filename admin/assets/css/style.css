@@ -2223,11 +2223,17 @@ tr.child-order-row .view_details {
   width: 70%;
   margin: auto;
 }
+@media (max-width: 768px) {
+  #document_view #dashboard-widgets {
+    width: 100%;
+  }
+}
 #document_view #form_document {
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
+  /* Oculta las etiquetas visuales de los seleccionados en la barra */
 }
 #document_view #form_document .title {
   margin-top: 20px;
@@ -2244,19 +2250,13 @@ tr.child-order-row .view_details {
   font-weight: 600;
   color: #333;
 }
-#document_view #form_document input[type=text],
-#document_view #form_document select {
+#document_view #form_document input[type=text] {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
   transition: border-color 0.2s ease;
-}
-#document_view #form_document input[type=text]:focus,
-#document_view #form_document select:focus {
-  border-color: #0073aa;
-  outline: none;
 }
 #document_view #form_document input[type=checkbox] {
   margin-right: 8px;
@@ -2266,44 +2266,20 @@ tr.child-order-row .view_details {
 #document_view #form_document button.button-primary {
   align-self: flex-end;
 }
-#document_view #form_document #select_scope {
-  width: 100%;
-  min-height: 200px;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
-  background: #fdfdfd;
-  color: #333;
-  outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+#document_view #form_document #select2-select_scope-container .select2-selection__choice {
+  display: none !important;
 }
-#document_view #form_document #select_scope:focus {
-  border-color: #0073aa;
-  box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.2);
+#document_view #form_document #header_selected_list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+  margin-top: 10px;
 }
-#document_view #form_document #select_scope option {
-  padding: 8px;
-  border-radius: 6px;
-  margin: 2px 0;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-#document_view #form_document #select_scope option:hover {
-  background: #f1faff;
-  color: #0073aa;
-}
-#document_view #form_document #select_scope option:checked {
-  background: #0073aa;
-  color: #fff;
+#document_view #form_document #header_selected_list span {
   font-weight: 600;
-}
-#document_view #form_document #select_scope optgroup {
-  font-weight: bold;
-  color: #444;
-  padding: 4px 0;
-  margin-top: 6px;
-  border-top: 1px solid #eee;
+  font-size: 15px;
+  width: 30%;
 }
 #document_view #form_document #selected_list {
   display: flex;
@@ -2335,16 +2311,19 @@ tr.child-order-row .view_details {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
 }
 #document_view #form_document #selected_list .selected-item .item-name {
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 2px;
   font-weight: 600;
-  font-size: 15px;
-  color: #2c3e50;
+  flex: 0.7;
 }
 #document_view #form_document #selected_list .selected-item .remove-btn {
   position: absolute;
   top: 50%;
-  right: -12px;
+  right: 10px;
   transform: translateY(-50%) scale(0.8);
   background: #ff4d4d;
   border: none;
@@ -2367,18 +2346,16 @@ tr.child-order-row .view_details {
 }
 #select2-select_scope-results [role=group] {
   position: relative;
-  /* li{
-          margin-bottom: 0px;
-      } */
-  /* .select2-results__group {
-          display: none;
-      } */
 }
-#select2-select_scope-results [role=group] li:first-of-type {
-  position: absolute;
-  top: 0px;
-  color: transparent;
-  background: rgba(202, 202, 202, 0.2392156863);
-  width: 80%;
-  border-radius: 0px 15px 15px 0px;
+#select2-select_scope-results [role=group] .select2-results__group {
+  display: none !important;
+}
+#select2-select_scope-results [role=group] li:has(.program) {
+  font-weight: 600;
+}
+#select2-select_scope-results [role=group] li:has(.career) {
+  padding-left: 2em;
+}
+#select2-select_scope-results [role=group] li:has(.mention) {
+  padding-left: 3em;
 }/*# sourceMappingURL=style.css.map */
