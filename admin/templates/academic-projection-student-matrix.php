@@ -88,7 +88,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                 } else {
                                                     $is_group_approved = (isset($item['status']) && ($item['status'] === 'aprobada' || $item['status'] === 'en curso'));
                                                 }
-\
+
                                                 // Si el grupo está completado o aprobado, se deshabilitan los selects
                                                 $is_group_disabled = $is_group_completed || $is_group_approved;
                                                 ?>
