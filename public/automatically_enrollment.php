@@ -83,12 +83,10 @@ function automatically_enrollment($student_id)
             ]);
 
             // Update student's projection so the subject appears as this cut
+            update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
             update_expected_matrix_after_enrollment($student->id, $subject->id, $code, $cut);
-            $proj_item = update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
-            if ($proj_item) {
-                edusystem_get_log('Enrolled in subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
-                edusystem_get_log('Projection updated for subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
-            }
+            edusystem_get_log('Enrolled in subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
+            edusystem_get_log('Projection updated for subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
 
             // mandamos a moodle
             $offer = get_offer_filtered($subject->id, $code, $cut, $section);
