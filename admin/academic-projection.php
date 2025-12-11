@@ -967,35 +967,30 @@ function get_moodle_notes($subject_id, $academic_period, $cut)
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
 
     try {
-        // Get last cut information
-        // $load = load_last_cut();
-        // $academic_period = $load['code'];
-        // $cut = $load['cut'];
-
         if (empty($cut)) {
             return;
         }
 
-        // Get all relevant student IDs in one query
         $cut_student_ids = $wpdb->get_col($wpdb->prepare(
             "SELECT DISTINCT student_id 
             FROM {$table_student_period_inscriptions} 
             WHERE code_period = %s 
             AND cut_period = %s 
-            AND code_subject IS NOT NULL 
-            AND code_subject <> ''",
+            AND subject_id = %d",
             $academic_period,
-            $cut
+            $cut,
+            $subject_id
         ));
 
         if (empty($cut_student_ids)) {
             return;
         }
 
-        // Get all students with moodle IDs in one query
+        $placeholders = implode(',', array_fill(0, count($cut_student_ids), '%d'));
+
         $students = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM {$table_students} 
-            WHERE id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")
+            "SELECT id, moodle_student_id FROM {$table_students} 
+            WHERE id IN ($placeholders)
             AND moodle_student_id IS NOT NULL",
             $cut_student_ids
         ));
@@ -1004,27 +999,25 @@ function get_moodle_notes($subject_id, $academic_period, $cut)
             return;
         }
 
-        // Get all projections for these students in one query
         $projections = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM {$table_student_academic_projection} 
-            WHERE student_id IN (" . implode(',', array_fill(0, count($cut_student_ids), '%d')) . ")",
+            "SELECT id, student_id, projection FROM {$table_student_academic_projection} 
+            WHERE student_id IN ($placeholders)",
             $cut_student_ids
         ));
 
-        // Create a lookup array for projections
-        $projections_lookup = array();
+        $projections_lookup = [];
         foreach ($projections as $projection) {
             $projections_lookup[$projection->student_id] = $projection;
         }
 
-        // Process each student
+        $wpdb->query('START TRANSACTION');
+
         foreach ($students as $student) {
             if (empty($student->moodle_student_id)) {
                 continue;
             }
 
-            // Get student assignments from Moodle
-            $assignments = student_assignments_moodle_only_grades($student->id);
+            $assignments = student_assignments_moodle_only_grades_optimized($student->id);
             if (empty($assignments['grades'])) {
                 continue;
             }
@@ -1037,10 +1030,10 @@ function get_moodle_notes($subject_id, $academic_period, $cut)
             $projection_obj = json_decode($projection_student->projection);
             $updates_needed = false;
 
-            // Process each course assignment
             foreach ($assignments['grades'] as $grade) {
                 $course_id = (int) $grade['course_id'];
-                $offer = get_offer_by_moodle($course_id);
+                
+                $offer = get_offer_by_moodle_optimized($course_id);
                 if (!$offer) {
                     continue;
                 }
@@ -1048,16 +1041,15 @@ function get_moodle_notes($subject_id, $academic_period, $cut)
                 foreach ($grade['grades'] as $grade_item) {
                     $grade_items = $grade_item['gradeitems'];
 
-                    // Filter grade items without cmid
                     $filtered_grade_items = array_filter($grade_items, function ($item) {
                         return !isset($item['cmid']);
                     });
-                    $filtered_grade_items = array_values($filtered_grade_items);
-
+                    
                     if (empty($filtered_grade_items)) {
                         continue;
                     }
-
+                    
+                    $filtered_grade_items = array_values($filtered_grade_items);
                     $grade_value = (float) $filtered_grade_items[0]['gradeformatted'];
                     $total_grade = $grade_value > 100 ? 100 : $grade_value;
 
@@ -1068,7 +1060,6 @@ function get_moodle_notes($subject_id, $academic_period, $cut)
 
                     $status_id = $total_grade >= $subject->min_pass ? 3 : 4;
 
-                    // Update projection object
                     foreach ($projection_obj as $prj) {
                         if ($prj->subject_id == $subject->id) {
                             $prj->calification = $total_grade;
@@ -1088,7 +1079,6 @@ function get_moodle_notes($subject_id, $academic_period, $cut)
                                 $prj->welcome_email = true;
                             }
 
-                            // Update inscription
                             $wpdb->query($wpdb->prepare(
                                 "UPDATE {$table_student_period_inscriptions} 
                                 SET status_id = %d, 
@@ -1113,7 +1103,6 @@ function get_moodle_notes($subject_id, $academic_period, $cut)
                 }
             }
 
-            // Update projection if changes were made
             if ($updates_needed) {
                 $wpdb->update(
                     $table_student_academic_projection,
@@ -1122,9 +1111,141 @@ function get_moodle_notes($subject_id, $academic_period, $cut)
                 );
             }
         }
+        
+        $wpdb->query('COMMIT');
+
     } catch (Exception $e) {
-        // Log error or handle it appropriately
+        $wpdb->query('ROLLBACK');
     }
+}
+
+function student_assignments_moodle_only_grades_optimized($student_id) {
+    try {
+        global $wpdb;
+        static $moodle_config = null;
+
+        if ($moodle_config === null) {
+            $moodle_config = [
+                'url' => get_option('moodle_url'),
+                'token' => get_option('moodle_token')
+            ];
+        }
+
+        if (empty($moodle_config['url']) || empty($moodle_config['token'])) {
+            return ['grades' => []];
+        }
+
+        $table_students = $wpdb->prefix.'students';
+        $data_student = $wpdb->get_row($wpdb->prepare("SELECT moodle_student_id FROM {$table_students} WHERE id=%d", $student_id));
+        
+        if (empty($data_student) || empty($data_student->moodle_student_id)) {
+            return ['grades' => []];
+        }
+
+        $courses = is_enrolled_in_courses_optimized($student_id);
+        
+        if (empty($courses)) {
+            return ['grades' => []];
+        }
+
+        $grades = [];
+        $moodle_student_id = $data_student->moodle_student_id;
+
+        foreach ($courses as $course) {
+            if ($course['visible']) {
+                $grades_course = course_grade((int)$course['id']);
+                
+                if (isset($grades_course['usergrades'])) {
+                    $user_grades = $grades_course['usergrades'];
+                    $filtered_grades = [];
+                    
+                    foreach ($user_grades as $entry) {
+                        if ($entry['userid'] == $moodle_student_id) {
+                            $filtered_grades[] = $entry;
+                        }
+                    }
+    
+                    if (!empty($filtered_grades)) {
+                         $grades[] = ['course_id' => (int)$course['id'], 'grades' => $filtered_grades];
+                    }
+                }
+            }
+        }
+
+        return ['grades' => $grades];
+
+    } catch (\Throwable $th) {
+        return ['grades' => []];
+    }
+}
+
+function is_enrolled_in_courses_optimized($student_id) {
+    try {
+        global $wpdb;
+        static $moodle_config = null;
+
+        if ($moodle_config === null) {
+            $moodle_config = [
+                'url' => get_option('moodle_url'),
+                'token' => get_option('moodle_token')
+            ];
+        }
+
+        if (empty($moodle_config['url']) || empty($moodle_config['token'])) {
+             return [];
+        }
+
+        $table_students = $wpdb->prefix.'students';
+        $data_student = $wpdb->get_row($wpdb->prepare("SELECT moodle_student_id FROM {$table_students} WHERE id=%d", $student_id));
+    
+        if (!empty($data_student) && $data_student->moodle_student_id) {
+            $MoodleRest = new MoodleRest($moodle_config['url'].'webservice/rest/server.php', $moodle_config['token']);
+
+            $enrolments = [
+                'userid' => $data_student->moodle_student_id,
+            ];
+
+            $enrolled_courses = $MoodleRest->request('core_enrol_get_users_courses', $enrolments);
+
+            return empty($enrolled_courses) ? [] : $enrolled_courses;
+        }
+    
+        return [];
+    } catch (\Throwable $th) {
+        return [];
+    }
+}
+
+function get_offer_by_moodle_optimized($moodle_course_id)
+{
+    global $wpdb;
+    static $cache = [];
+
+    if (isset($cache[$moodle_course_id])) {
+        return $cache[$moodle_course_id];
+    }
+
+    $table_academic_offers = $wpdb->prefix . 'academic_offers';
+    $offer = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_academic_offers} WHERE moodle_course_id=%d ORDER BY id DESC LIMIT 1", $moodle_course_id));
+    
+    $cache[$moodle_course_id] = $offer;
+    return $offer;
+}
+
+function get_subject_details($subject_id)
+{
+    global $wpdb;
+    static $cache = [];
+
+    if (isset($cache[$subject_id])) {
+        return $cache[$subject_id];
+    }
+
+    $table = $wpdb->prefix . 'school_subjects';
+    $subject = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id=%d", $subject_id));
+    
+    $cache[$subject_id] = $subject;
+    return $subject;
 }
 
 function get_literal_note($calification)
