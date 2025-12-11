@@ -48,26 +48,26 @@ function automatically_enrollment($student_id)
             // Verificar si el estudiante puede inscribirse en la materia
             $available_inscription_subject = available_inscription_subject($student->id, $subject->id);
             if ($available_inscription_subject !== true) {
-                
+
                 $log_message = '';
-                
+
                 switch ($available_inscription_subject) {
                     case 'active_or_approved':
                         // Corresponde a status_id 1 (Activo) o 3 (Aprobado)
                         $log_message = 'The student ' . $full_name_student . ' already has an active or approved enrollment for the subject ' . $subject->name . ' (' . $subject->id . ')';
                         break;
-                        
+
                     case 'max_retries_reached':
                         // Corresponde a status_id 4 (Fallido) con 2 o más registros
                         $log_message = 'The student ' . $full_name_student . ' has already failed the subject ' . $subject->name . ' (' . $subject->id . ') the maximum number of allowed times.';
                         break;
-                        
+
                     default:
                         // Cualquier otro caso de error no previsto
                         $log_message = 'The student ' . $full_name_student . ' cannot enroll in the subject ' . $subject->name . ' (' . $subject->id . ') due to an unknown status restriction: ' . $available_inscription_subject;
                         break;
                 }
-                
+
                 edusystem_get_log($log_message, 'Automatically enrollment', $user_id);
                 continue;
             }

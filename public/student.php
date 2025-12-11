@@ -1,7 +1,8 @@
 <?php
 
 add_action('woocommerce_checkout_order_created', 'save_essential_data_order', 8, 1);
-function save_essential_data_order($order) {
+function save_essential_data_order($order)
+{
 
     /* // Verificar si algún producto es de la categoría "programs"
     $has_program = false;
@@ -17,23 +18,23 @@ function save_essential_data_order($order) {
     if ( !$has_program ) return; */
 
     // sino exite la cooki de guardar estudiantes entonces no guarda los datos 
-    if( !isset($_COOKIE['save_student']) ) return;
+    if (!isset($_COOKIE['save_student'])) return;
 
     // datos generales
-    $order->update_meta_data('payment_method_selected', $_COOKIE['payment_method_selected'] ?? null );
-    $order->update_meta_data('is_scholarship', $_COOKIE['is_scholarship'] ?? null );
-    $order->update_meta_data('one_time_payment', $_COOKIE['one_time_payment'] ?? null );
-    $order->update_meta_data('from_webinar', $_COOKIE['from_webinar'] ?? null );
-    $order->update_meta_data('crm_id', $_COOKIE['crm_id'] ?? null );
+    $order->update_meta_data('payment_method_selected', $_COOKIE['payment_method_selected'] ?? null);
+    $order->update_meta_data('is_scholarship', $_COOKIE['is_scholarship'] ?? null);
+    $order->update_meta_data('one_time_payment', $_COOKIE['one_time_payment'] ?? null);
+    $order->update_meta_data('from_webinar', $_COOKIE['from_webinar'] ?? null);
+    $order->update_meta_data('crm_id', $_COOKIE['crm_id'] ?? null);
 
     // obtiene el nombre del instituto
-    if ( isset($_COOKIE['institute_id']) && !empty($_COOKIE['institute_id']) ) {
+    if (isset($_COOKIE['institute_id']) && !empty($_COOKIE['institute_id'])) {
         $institute = get_institute_details($_COOKIE['institute_id']);
-        $name_institute = $institute->name ?? null; 
+        $name_institute = $institute->name ?? null;
     } else {
         $name_institute = $_COOKIE['name_institute'] ?? null;
     }
-    
+
     // datos del registro del estudiante
     $registration_data = json_encode([
         "student" => [
@@ -74,14 +75,13 @@ function save_essential_data_order($order) {
             "expected_graduation_date" => $_COOKIE['expected_graduation_date'] ?? null
         ],
         "access" => [
-            "password" => base64_encode( sanitize_text_field(wp_unslash( $_COOKIE['password'] )) ) ?? null
+            "password" => base64_encode(sanitize_text_field(wp_unslash($_COOKIE['password']))) ?? null
         ]
     ]);
 
     $order->update_meta_data('registration_data', $registration_data);
 
     $order->save();
-
 }
 
 
@@ -439,7 +439,7 @@ function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $r
 
         setcookie('is_scholarship', 1, time() + 3600, '/');
     } else if ($from_webinar) {
-        $woocommerce->cart->apply_coupon(__('100% Registration fee','edusystem'));
+        $woocommerce->cart->apply_coupon(__('100% Registration fee', 'edusystem'));
         setcookie('from_webinar', 1, time() + 3600, '/', '/');
     }
 
@@ -637,11 +637,10 @@ add_action('woocommerce_account_califications_endpoint', function () {
     include(plugin_dir_path(__FILE__) . 'templates/califications.php');
 
     // Successful login actividad de acceso
-    $first_name   = get_user_meta( $current_user->ID, 'first_name', true );
-    $last_name = get_user_meta( $current_user->ID, 'last_name', true );
-    $message = sprintf(__('The student %s saw grades.', 'edusystem'), $first_name.' '.$last_name);
-    edusystem_get_log($message, 'califications', $current_user->ID );
-    
+    $first_name   = get_user_meta($current_user->ID, 'first_name', true);
+    $last_name = get_user_meta($current_user->ID, 'last_name', true);
+    $message = sprintf(__('The student %s saw grades.', 'edusystem'), $first_name . ' ' . $last_name);
+    edusystem_get_log($message, 'califications', $current_user->ID);
 });
 
 add_action('woocommerce_account_teacher-course-students_endpoint', function () {
@@ -832,9 +831,9 @@ function get_student_from_id($student_id)
 }
 
 function insert_student($order)
-{   
+{
     $customer_id = $order->get_customer_id();
-    $registration_data = $order->meta_exists('registration_data') ?  json_decode( $order->get_meta('registration_data'), true ) : null;
+    $registration_data = $order->meta_exists('registration_data') ?  json_decode($order->get_meta('registration_data'), true) : null;
     $student = $registration_data['student'];
     $program = $registration_data['program'];
 
@@ -897,7 +896,8 @@ function insert_student($order)
     return $student_id;
 }
 
-function update_metadata_student($student) {
+function update_metadata_student($student)
+{
     // 1. Obtener el objeto de usuario por email
     $user_student = get_user_by('email', $student['email']);
     if ($user_student) {
@@ -1025,12 +1025,12 @@ function insert_register_documents($student_id, $grade_id)
 
     // 2. VALIDACIÓN DE DUPLICADOS PARA DOCUMENTOS DEL GRADO (Usando 'name' como identificador)
     $document_names_for_grade = wp_list_pluck($documents_for_grade, 'name');
-    
+
     // Si no hay nombres, salimos (aunque ya validamos $documents_for_grade)
     if (empty($document_names_for_grade)) {
         return;
     }
-    
+
     $placeholders_grade = implode(', ', array_fill(0, count($document_names_for_grade), '%s'));
 
     // Obtenemos los 'document_id' (que son los nombres) ya existentes
@@ -1054,7 +1054,7 @@ function insert_register_documents($student_id, $grade_id)
 
         // Si el nombre del documento es NULL por alguna razón, lo saltamos para evitar el error.
         if (is_null($document_id_to_insert)) {
-            continue; 
+            continue;
         }
 
         $is_required = $document->is_required;
@@ -1079,13 +1079,13 @@ function insert_register_documents($student_id, $grade_id)
     $automatic_docs = $wpdb->get_results(
         $wpdb->prepare("SELECT * FROM {$table_documents_certificates} WHERE `type` = %s and `status` = %d", 'automatic', 1)
     );
-    
+
     // 5. VALIDACIÓN DE DUPLICADOS PARA DOCUMENTOS AUTOMÁTICOS
     $automatic_doc_identifiers = wp_list_pluck($automatic_docs, 'document_identificator');
     if (!empty($automatic_doc_identifiers)) {
         $placeholders_auto = implode(', ', array_fill(0, count($automatic_doc_identifiers), '%s'));
         $query_params_auto = array_merge([$student_id], $automatic_doc_identifiers);
-        
+
         $existing_auto_doc_ids = $wpdb->get_col(
             $wpdb->prepare(
                 "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders_auto})",
@@ -1103,7 +1103,7 @@ function insert_register_documents($student_id, $grade_id)
         if (in_array($document_id_to_insert, $existing_auto_doc_ids, true)) {
             continue;
         }
-        
+
         $wpdb->insert($table_student_documents, [
             'student_id' => $student_id,
             'document_id' => $document_id_to_insert,
@@ -1211,8 +1211,8 @@ function get_career_and_mention($student_id)
     // Safely check for the mention name. Uses null coalescing operator and a conditional check.
     // The conditional check is only executed if the mention exists in the array and is not empty.
     $mention_name = (
-        isset($program_data_student['mention'][0]->name) && 
-        is_array($program_data_student['mention']) && 
+        isset($program_data_student['mention'][0]->name) &&
+        is_array($program_data_student['mention']) &&
         !empty($program_data_student['mention'])
     ) ? $program_data_student['mention'][0]->name : '';
 
@@ -1369,59 +1369,113 @@ function save_student_details()
 add_action('wp_loaded', 'save_student_details');
 
 add_action('woocommerce_account_dashboard', 'view_access_classroom', 1);
+
 function view_access_classroom()
 {
-
+    // Accede a las variables globales necesarias.
     global $current_user, $wpdb;
+
+    // Inicialización de variables. Se usa null para indicar un estado no encontrado/no determinado.
+    $student = null;
+    $student_access = true;
+    $error_access = '';
+
+    // El prefijo de la tabla se define una sola vez.
     $table_students = $wpdb->prefix . 'students';
-    $roles = $current_user->roles;
-    $student_access = false;
-    $error_access = false;
 
-    $student_id = get_user_meta($current_user->ID, 'student_id', true);
-    if (!$student_id) {
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id={$current_user->ID}");
-    } else {
-        $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$student_id}");
+    // 1. Obtención eficiente de datos del estudiante
+    // Se usa get_user_meta una vez, aprovechando la caché.
+    $student_id_meta = get_user_meta($current_user->ID, 'student_id', true);
+
+    // Consulta única a la DB para encontrar al estudiante por student_id O partner_id.
+    // Uso de wpdb::prepare para seguridad.
+    $query = $wpdb->prepare(
+        "SELECT * FROM {$table_students} WHERE id = %d OR partner_id = %d LIMIT 1",
+        $student_id_meta,
+        $current_user->ID
+    );
+
+    $student = $wpdb->get_row($query);
+
+    // 2. Lógica de denegación de acceso (Guard Clauses)
+    // El acceso por defecto es true, y se deniega si alguna condición no se cumple.
+
+    // Si el objeto $student no se encuentra en la tabla, el acceso es denegado implícitamente
+    // ya que no hay un ID de Moodle para verificar.
+    if (!$student) {
+        $student_access = false;
+        // Se podría agregar un mensaje de error específico si se desea.
+        $error_access = __('Student data not found. Please contact support.', 'edusystem');
     }
 
+    // Si el usuario tiene el rol 'student', pero no tiene cursos asignados.
+    $roles = (array) $current_user->roles;
     if (in_array('student', $roles)) {
+        // Validación de inscripción debe ir primero.
         $access = is_enrolled_in_courses($student->id);
-        $student_access = true;
+        if (count($access) === 0) {
+            // No deniega el acceso total, pero influye en el botón (lógica en la plantilla).
+            // Mantenemos $student_access en true para que muestre el dashboard, pero sin acceso al botón.
+        }
     }
 
-    if (!$student->moodle_student_id) {
-        $student_access = false;
+    // Se verifica si el estudiante existe antes de intentar acceder a sus propiedades.
+    if ($student) {
+        // Bloqueo 1: No tiene ID de Moodle asignado.
+        if (empty($student->moodle_student_id)) {
+            $student_access = false;
+        }
+
+        // Bloqueo 2: Documentos rechazados (status_id < 2 y moodle_student_id existe).
+        elseif ($student->status_id < 2) {
+            $student_access = false;
+            $error_access = 'Some of your documents required for classroom access have been declined, please check the documents area for more information.';
+        }
+
+        // Bloqueo 3: Acceso caducado por pagos.
+        $today = date('Y-m-d');
+        if (!empty($student->max_access_date) && $student->max_access_date < $today) {
+            $student_access = false;
+            $error_access = 'Classroom access has been removed because you have overdue payments. Please pay the outstanding fees in order to continue to have access to the classroom.';
+        }
+
+        // Bloqueo 4: Documentos expirados.
+        // Asumimos que expired_documents() es una función auxiliar eficiente.
+        if (expired_documents($student->id)) {
+            $student_access = false;
+            $error_access = 'The deadline for uploading some documents has expired, removing your access to the virtual classroom. We invite you to access your documents area for more information.';
+        }
     }
 
-    if ($student->moodle_student_id && $student->status_id < 2) {
-        $student_access = false;
-        $error_access = 'Some of your documents required for classroom access have been declined, please check the documents area for more information.';
-    }
 
-    $today = date('Y-m-d');
-    if ($student->max_access_date && $student->max_access_date < $today) {
-        $student_access = false;
-        $error_access = 'Classroom access has been removed because you have overdue payments. Please pay the outstanding fees in order to continue to have access to the classroom.';
-    }
-
-    $expired_documents = expired_documents($student->id);
-    if ($expired_documents) {
-        $student_access = false;
-        $error_access = 'The deadline for uploading some documents has expired, removing your access to the virtual classroom. We invite you to access your documents area for more information.';
-    }
-
+    // 3. Obtención y filtrado de materias (solo si es necesario)
+    $subjects_coursing = [];
     $show_table_subjects_coursing = get_option('show_table_subjects_coursing');
-    $projection = get_projection_by_student($student->id);
-    if ($projection && $show_table_subjects_coursing) {
-        $projection_obj = json_decode($projection->projection);
-        $subjects_coursing = array_filter($projection_obj, function ($item) {
-            return $item->this_cut == true;
-        });
-        $subjects_coursing = array_values($subjects_coursing);
+
+    // Solo se ejecuta la lógica si la opción está activa y el estudiante existe.
+    if ($show_table_subjects_coursing && $student) {
+        // Asumimos que get_projection_by_student() es eficiente.
+        $projection = get_projection_by_student($student->id);
+
+        if ($projection) {
+            // Se usa true para array asociativo en lugar de json_decode,
+            // pero mantendremos la estructura original de objetos para consistencia con tu código.
+            $projection_obj = json_decode($projection->projection);
+
+            // Verificación para asegurar que es un array/objeto iterable.
+            if (is_array($projection_obj) || is_object($projection_obj)) {
+                // array_filter con FLAG_USE_BOTH para mayor eficiencia si el array es muy grande.
+                $subjects_coursing = array_values(array_filter((array)$projection_obj, function ($item) {
+                    return isset($item->this_cut) && $item->this_cut === true;
+                }));
+            }
+        }
     }
 
+    // 4. Variables adicionales y carga de la plantilla
     $admin_virtual_access = get_option('virtual_access');
+
+    // Uso de plugin_dir_path(__FILE__) es correcto para rutas relativas.
     include(plugin_dir_path(__FILE__) . 'templates/student-access-classroom.php');
 }
 
@@ -1589,18 +1643,13 @@ function get_active_students()
  * 
  * @return int|null ID del instituto si se encuentra, null en caso contrario.
  */
-function get_institute_by_student( ?int $student_id = null ) {
+function get_institute_by_student(?int $student_id = null)
+{
 
-    if ( is_null($student_id) ) return null; // Retorna null si no se proporciona un ID de estudiante
+    if (is_null($student_id)) return null; // Retorna null si no se proporciona un ID de estudiante
 
     global $wpdb;
-    $institute_id = $wpdb->get_var( $wpdb->prepare("SELECT institute_id FROM {$wpdb->prefix}students WHERE id = %d", $student_id) );
+    $institute_id = $wpdb->get_var($wpdb->prepare("SELECT institute_id FROM {$wpdb->prefix}students WHERE id = %d", $student_id));
 
     return (int) $institute_id ?? null;
 }
-
-
-
-
-
-

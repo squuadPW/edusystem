@@ -464,3 +464,16 @@ function load_next_section($subject_id, $code, $cut, $offer_id, $new_section) {
     $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
     return count($all_offers) + 1;
 }
+
+function get_offers_availables_by_code($code, $cut)
+{
+    global $wpdb;
+    $table_academic_offers = $wpdb->prefix . 'academic_offers';
+    $subjects = [];
+    $offers = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE code_period='{$code}' AND cut_period='{$cut}' AND grades_downloaded = 0 ORDER BY section ASC");
+    foreach ($offers as $key => $offer) {
+        $subjects[] = get_subject_details($offer->subject_id);
+    }
+
+    return $subjects;
+}
