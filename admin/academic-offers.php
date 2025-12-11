@@ -416,21 +416,38 @@ function available_inscription_subject($student_id, $subject_id)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $available = true;
-    $inscriptions = $wpdb->get_results(
+
+    $count_status_1_or_3 = $wpdb->get_var(
         $wpdb->prepare(
-            "SELECT * FROM {$table_student_period_inscriptions} 
+            "SELECT COUNT(*) FROM {$table_student_period_inscriptions} 
             WHERE student_id = %d 
             AND subject_id = %d 
-            AND (status_id = 3 OR status_id = 1)",
+            AND (status_id = 1 OR status_id = 3)",
             $student_id,
             $subject_id
         )
     );
-    if (count($inscriptions) > 0) {
-        $available = false;
+
+    if ($count_status_1_or_3 > 0) {
+        return 'active_or_approved';
     }
-    return $available;
+
+    $count_status_4 = $wpdb->get_var(
+        $wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table_student_period_inscriptions} 
+            WHERE student_id = %d 
+            AND subject_id = %d 
+            AND status_id = 4",
+            $student_id,
+            $subject_id
+        )
+    );
+
+    if ($count_status_4 >= 2) {
+        return 'max_retries_reached';
+    }
+
+    return true;
 }
 
 function load_next_section($subject_id, $code, $cut, $offer_id, $new_section) {
