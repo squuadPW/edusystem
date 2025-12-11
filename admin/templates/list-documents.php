@@ -3,47 +3,41 @@
         <div style="text-align:start;">
                 <h1 class="wp-heading-line"><?= __('Required Documents','edusystem'); ?></h1>
         </div>
+
+        <?php
+            include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+        ?>
+
         <div style="text-align:end;">
-            <button class="button button-primary" disabled><?= __('Add Document','edusystem'); ?></button>
+            <a href="<?= admin_url('admin.php?page=admission-documents&action=edit')?>" class="button button-primary" ><?= __('Add Document','edusystem'); ?></a>
         </div>
         <div>
             <table id="table-products" class="wp-list-table widefat fixed posts" style="margin-top:20px;">
                 <thead>
                     <tr>
                         <th scope="col" class="manage-column column-primary column-title"><?= __('Document','edusystem') ?></th>
-                        <th scope="col" class="manage-column column-title-translate"><?= __('Required for access to the virtual classroom','edusystem') ?></th>
+                        <th scope="col" class="manage-column column-title-translate"><?= __('Type file','edusystem') ?></th>
                         <th scope="col" class="manage-column column-title-translate"><?= __('Actions','edusystem') ?></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if(isset($grades) && !empty($grades)): ?>
-                        <?php foreach($grades as $grade): ?>
-                            <tr>
-                                <td style="text-align:center;background-color: #f6f7f7;" colspan="3"><b><?=  $grade->name; ?></b></td>
-                            </tr>
-                            <?php foreach($documents as $document): ?>
-                                <?php if($document->grade_id == $grade->id): ?>
-                                    <tr>
-                                        <td class="column-primary">
-                                            <?=  get_name_document($document->name); ?>
-                                            <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
-                                        </td>
-                                        <td data-colname="<?= __('Required for access to the virtual classroom','edusystem'); ?>">
-                                            <?php if($document->is_required): ?>
-                                                <span class="color-success"><?= __('Yes','edusystem'); ?></span>
-                                            <?php else: ?>
-                                                <span class="color-danger"><?= __('No','edusystem'); ?></span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td data-colname="<?= __('Actions','edusystem'); ?>">
-                                            <a href="<?= admin_url('admin.php?page=admission-documents&action=edit&document_id='.$document->id); ?>" class="button button-outline-primary"><?= __('Edit','edusystem'); ?></a>
-                                            <button class="button button-danger" disabled><?= __('Delete','edusystem'); ?></button>
-                                        </td>
-                                    </tr>
-                                <?php endif; ?>
-                            <?php  endforeach;?>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
+                    <?php foreach($documents as $document): ?>
+                        <tr>
+                            <td class="column-primary">
+                                <?=  get_name_document($document->name); ?>
+                                <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+                            </td>
+
+                            <td data-colname="<?= __('Required for access to the virtual classroom','edusystem'); ?>">
+                                <span><?= $document->type_file; ?></span>
+                            </td>
+
+                            <td data-colname="<?= __('Actions','edusystem'); ?>">
+                                <a href="<?= admin_url('admin.php?page=admission-documents&action=edit&document_id='.$document->id); ?>" class="button button-outline-primary"><?= __('Edit','edusystem'); ?></a>
+                                <button class="button button-danger" onclick="open_delete_modal( <?= $document->id ?>, '<?= $document->name ?>')" ><?= __('Delete','edusystem'); ?></button>
+                            </td>
+                        </tr>
+                    <?php  endforeach;?>
                 </tbody>
             </table>   
         </div>

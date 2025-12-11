@@ -33,7 +33,11 @@ foreach ($student_payments as $student_id => $payments) {
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-quota" data-title="Cuote">
                         #<?= $payment->cuote ?></td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" data-title="Date">
-                        <?= date('F d, Y', strtotime($payment->date_next_payment)) ?></td>
+                        <?php 
+                            $date = $payment->date_next_payment ? $payment->date_next_payment : $payment->created_at;
+                            echo date('F d, Y', strtotime($date));
+                        ?>
+                    </td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total" data-title="Total">
                         <?= wc_price($payment->amount, [ 'currency' => $payment->currency ]) ?></td>
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-action" data-title="Action" style="text-align: end">

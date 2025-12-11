@@ -2,6 +2,40 @@
     
     <h2 style="margin-bottom:15px;"><?= __('Document','edusystem'); ?></h2>
 
+    <?php
+        include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+        
+        $document_id   = $document->id ?? 0;
+        $document_name = $document->name ?? ''; ;
+        $is_required   = $document->is_required == 1 ? 'checked' : '';
+        $type_file     = $document->type_file ?? '';
+        $id_requisito  = $document->id_requisito ?? '';
+        $academic_department = !empty($document->academic_department) 
+                                    ? json_decode($document->academic_department, true) 
+                                    : [];
+
+        $form_data = [];
+        if ( isset($_COOKIE['form_data']) ) {
+            $form_data = json_decode(stripslashes($_COOKIE['form_data']), true);
+
+            $document_id   = $form_data['document_id']  ?? $document_id;
+            $document_name = $form_data['name']         ?? $document_name;
+            $is_required   = $form_data['is_required']  ?? $is_required;
+            $type_file     = $form_data['type_file']    ?? $type_file;
+            $id_requisito  = $form_data['id_requisito'] ?? $id_requisito;
+            
+            if( isset( $form_data['academic_scope'] ) ){
+                $academic_department = [];
+                foreach( $form_data['academic_scope'] AS $scope ){
+                    $academic_department[$scope] = [
+                        'required' => in_array( $scope, $form_data['scope_required'] )
+                    ];
+                }
+            }
+            
+        }
+    ?>
+
     <div style="diplay:flex;width:100%;">
         <a class="button button-outline-primary" href="<?= admin_url('admin.php?page=admission-documents'); ?>"><?= __('Back') ?></a>
     </div>
@@ -13,7 +47,7 @@
                     <div class="inside">
                         <form method="post" id="form_document" action="<?= admin_url('admin.php?page=admission-documents&action=update_document'); ?>">
                             
-                            <input type="hidden" name="document_id" value="<?= $document->id ?? 0 ?>">
+                            <input type="hidden" name="document_id" value="<?= $document_id ?>">
 
                             <h3 class="title" >
                                 <b><?= __('Document Information', 'edusystem'); ?></b>
@@ -23,17 +57,43 @@
                                 <label for="input_id">
                                     <b><?= __('Name','edusystem'); ?></b>
 
-                                    <input type="text" name="name" value="<?= $document->name ?? ''; ?>" style="width:100%">
+                                    <input type="text" name="name" value="<?= $document_name ?>">
 
                                 </label>
                                 
                             </div>
                             
                             <div>
-                                <label for="checkbox_id">
-                                    <input name="is_required" type="checkbox" <?= ($document->is_required == 1) ? 'checked' : ''; ?> >
+                                <label for="is_required">
+                                    <input name="is_required" type="checkbox" <?= $is_required ?> >
                                     
                                     <b><?= __('Required to access the virtual classroom in all areas','edusystem'); ?></b>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label for="type_file">
+                                    <b><?= __('Accepted File Types','edusystem'); ?></b>
+                                    <input 
+                                        type="text" 
+                                        name="type_file" 
+                                        value="<?= esc_attr($type_file); ?>" 
+                                        placeholder = <?= __('Ej: .pdf, .docx, .jpg, .png','edusystem') ?>
+                                        accept=".pdf,.doc,.docx,.xl,.xls,.jpg,.jpge,.png,.web"
+                                    >
+                                </label>
+                                <p class="description">
+                                    <?= __('Allowed formats: .pdf, .doc, .docx, .xl, .xls, .jpg, .jpge, .png, .web','edusystem'); ?>
+                                </p>
+                            </div>
+
+                            <div>
+                                <label for="id_requisito">
+                                    <b><?= __('Code admin','edusystem'); ?></b>
+                                    <input type="text" 
+                                        name="id_requisito" 
+                                        value="<?= esc_attr($id_requisito); ?>"
+                                    >
                                 </label>
                             </div>
 
@@ -42,46 +102,108 @@
                                     <b><?= __('Scope of application','edusystem') ?></b>
                                 </h3>
 
-                                <?php
-                                    global $wpdb;
-                                    $payment_plans = $wpdb->get_results(
-                                        $wpdb->prepare(
-                                            "SELECT identificator, `name`, `description`, subprogram 
-                                            FROM {$wpdb->prefix}programs "
-                                        )
-                                    );
-                                ?>
+                                <br/>
 
-                                <select id="select_scope" multiple >
-                                    <?php if( $payment_plans ): ?>
-                                        <?php foreach ($payment_plans as $payment_plan): ?>
+                                <label for="type_file">
+                                    <b><?= __('Scope','edusystem'); ?></b>
 
-                                            <optgroup label="<?= esc_attr($payment_plan->name) ?>">
+                                    <?php
+                                        global $wpdb;
+                                        $programs = $wpdb->get_results(
+                                            "SELECT identificator, name FROM {$wpdb->prefix}student_program"
+                                        );
+                                    ?>
 
-                                                <option value="<?= esc_attr($payment_plan->identificator)?>" <?= selected( in_array( $payment_plan->identificator, json_decode($fee['programs'], true) ?? [] ) ); ?>>
-                                                    <?= esc_html($payment_plan->name) ?> (<?= esc_html($payment_plan->description)?>)
-                                                </option>
+                                    <select id="select_scope" multiple >
+                                        <?php if ( $programs ): ?>
+                                            <?php foreach ( $programs as $program ): ?>
+                                                
+                                                <optgroup >
+                                                    
+                                                    <option 
+                                                        value="<?= esc_attr($program->identificator) ?>"
+                                                        class="program"
+                                                        data-type="program"
+                                                        <?= selected( array_key_exists($program->identificator, $academic_department) ); ?>
 
-                                                <?php $payment_subplans = json_decode($payment_plan->subprogram, true); ?>
-                                                <?php if($payment_subplans): ?>
-                                                    <?php foreach ($payment_subplans as $payment_subplan_id => $payment_subplan): ?>
-                                                        <option value="<?= esc_attr($payment_plan->identificator . '_' . $payment_subplan_id) ?>" <?= selected(in_array($payment_plan->identificator . '_' . $payment_subplan_id, json_decode($fee['programs'], true) ?? [])); ?>>
-                                                            <?= esc_html($payment_subplan['name']) ?>
-                                                        </option>
-                                                    <?php endforeach; ?>
-                                                <?php endif; ?>
-                                            </optgroup>
+                                                        data-required="<?= isset($academic_department[$program->identificator]) 
+                                                            ? ($academic_department[$program->identificator]['required'] ? 'true' : 'false') 
+                                                            : 'false'; ?>"
+                                                    >
+                                                        <?= esc_html($program->name) ?>
+                                                    </option>
 
-                                        <?php endforeach ?>
-                                    <?php endif; ?>
-                                </select>
-  
-                                <div id="selected_list_header" style="display:flex;justify-content:space-between;margin-top:15px;font-weight:bold;">
-                                    <span><?= __('Name','edusystem') ?></span>
-                                    <span><?= __('Is it required?','edusystem') ?></span>
+                                                    <?php
+                                                        // Carreras del programa
+                                                        $careers = $wpdb->get_results($wpdb->prepare(
+                                                            "SELECT identificator, name 
+                                                            FROM {$wpdb->prefix}careers_by_program
+                                                            WHERE program_identificator = %s",
+                                                            $program->identificator
+                                                        ));
+                                                    ?>
+
+                                                    <?php if ($careers): ?>
+                                                        <?php foreach ($careers as $career): ?>
+                                                                
+                                                            <option 
+                                                                value="<?= esc_attr($career->identificator) ?>"
+                                                                class="career"
+                                                                data-type="career"
+                                                                <?= selected( array_key_exists($career->identificator, $academic_department) ); ?>
+
+                                                                data-required="<?= isset($academic_department[$career->identificator]) 
+                                                                            ? ($academic_department[$career->identificator]['required'] ? 'true' : 'false') 
+                                                                            : 'false'; ?>"
+                                                            >
+                                                                <?= esc_html($career->name) ?>
+                                                            </option>
+
+                                                            <?php
+                                                                // Menciones de la carrera
+                                                                $mentions = $wpdb->get_results($wpdb->prepare(
+                                                                    "SELECT identificator, name 
+                                                                    FROM {$wpdb->prefix}mentions_by_career
+                                                                    WHERE career_identificator = %s",
+                                                                    $career->identificator
+                                                                ));
+                                                            ?>
+
+                                                            <?php if ($mentions): ?>
+                                                                <?php foreach ($mentions as $mention): ?>
+                                                                    <option 
+                                                                        value="<?= esc_attr($mention->identificator) ?>"
+                                                                        class="mention"
+                                                                        data-type="mention"
+                                                                        <?= selected( array_key_exists($mention->identificator, $academic_department) ); ?>
+                                                                        
+                                                                        data-required="<?= isset($academic_department[$mention->identificator]) 
+                                                                            ? ($academic_department[$mention->identificator]['required'] ? 'true' : 'false') 
+                                                                            : 'false'; ?>"
+                                                                    >
+                                                                        <?= esc_html($mention->name) ?>
+                                                                    </option>
+                                                                <?php endforeach; ?>
+                                                            <?php endif; ?>
+                                                        
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+
+                                                </optgroup>
+
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                </label>
+                                
+                                <div id="header_selected_list" >
+                                    <span><?= __('Scope','edusystem') ?></span>
+                                    <span><?= __('Required','edusystem') ?></span>
                                 </div>
 
-                                <div id="selected_list"></div>
+                                <div id="selected_list">
+
+                                </div>
                                 
                             </div>
 
@@ -95,3 +217,8 @@
         </div>
     </div>
 </div>
+
+
+
+
+
