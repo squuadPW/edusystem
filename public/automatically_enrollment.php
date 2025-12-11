@@ -287,7 +287,7 @@ function generate_projection_student($student_id, $force = false)
             $periods_count = $wpdb->get_var($wpdb->prepare(
                 "SELECT COUNT(*) 
                  FROM {$table_academic_periods_cut} 
-                 WHERE start_date >= %s AND end_date <= %s",
+                 WHERE start_date >= %s AND max_date <= %s",
                 $registration_date->format('Y-m-d'),
                 $graduation_date->format('Y-m-d')
             ));
@@ -323,7 +323,7 @@ function generate_projection_student($student_id, $force = false)
     $inscriptions = get_inscriptions_by_student($student_id);
     $inscriptions_by_code = [];
     $elective_inscriptions = [];
-    
+
     // Se procesan todas las inscripciones del estudiante y se elige la de mayor precedencia (3=Aprobada, luego 1=Activa, luego 4=Reprobada) para cada 'code_subject'.
     if (!empty($inscriptions)) {
         foreach ($inscriptions as $inscription) {
@@ -336,41 +336,40 @@ function generate_projection_student($student_id, $force = false)
             } else {
                 $code = $inscription->code_subject;
                 $current_status = (int) $inscription->status_id;
-                
+
                 if (isset($inscriptions_by_code[$code])) {
                     $existing_status = (int) $inscriptions_by_code[$code]->status_id;
-                    
+
                     // Priorizar estado Aprobado (3) sobre cualquier otro.
                     if ($existing_status === 3) {
                         continue; // Ya tenemos el mejor estado posible.
                     }
-                    
+
                     // Si el nuevo estado es Aprobado (3), sobrescribir inmediatamente.
                     if ($current_status === 3) {
                         $inscriptions_by_code[$code] = $inscription;
                         continue;
                     }
-                    
+
                     // Si el estado existente es Activo (1) y el nuevo es Reprobado (4), mantener Activo (1).
                     if ($existing_status === 1 && $current_status === 4) {
                         continue;
                     }
-                    
+
                     // Si el nuevo estado es Activo (1) y el existente es Reprobado (4) o To begin (0), sobrescribir con Activo (1).
                     if ($current_status === 1 && ($existing_status === 4 || $existing_status === 0)) {
                         $inscriptions_by_code[$code] = $inscription;
                         continue;
                     }
-                    
+
                     // Si ambos son Reprobado (4), To begin (0), o si el nuevo estado es mejor que el existente, tomar el nuevo.
                     if ($current_status > $existing_status && $current_status !== 2) {
-                         $inscriptions_by_code[$code] = $inscription;
+                        $inscriptions_by_code[$code] = $inscription;
                     }
-                    
                 } else {
                     // Si no existe entrada, simplemente agregar, siempre que no sea Unsubscribed (2)
                     if ($current_status !== 2) {
-                         $inscriptions_by_code[$code] = $inscription;
+                        $inscriptions_by_code[$code] = $inscription;
                     }
                 }
             }
@@ -389,10 +388,10 @@ function generate_projection_student($student_id, $force = false)
 
         $inscription = $inscriptions_by_code[$subject_details->code_subject] ?? null;
         $status_id = $inscription ? (int) $inscription->status_id : null;
-        
+
         // Determinar si la materia está 'completada' (solo si está APROBADA = 3)
         $is_completed = ($status_id === 3);
-        
+
         // Determinar si es 'this_cut' (solo si está ACTIVA = 1)
         $is_this_cut = ($status_id === 1);
 
@@ -465,9 +464,9 @@ function generate_projection_student($student_id, $force = false)
                 clear_expected_matrix_for_student($student_id);
                 persist_expected_matrix($student_id, $detailed_matrix);
             }
-            
+
             // Sincronizar el estado de la matriz de expectativa después de persistir la matriz detallada.
-            
+
             // 1. Inscripciones regulares (ya con precedencia aplicada)
             foreach ($inscriptions_by_code as $inscription) {
                 // Actualizar solo si el estado es relevante para la matriz (Activa, Aprobada, Reprobada)
@@ -484,7 +483,7 @@ function generate_projection_student($student_id, $force = false)
             // 2. Inscripciones electivas (solo si son Aprobadas, ya que son el único estado que se incluye)
             foreach ($elective_inscriptions as $inscription) {
                 if ((int) $inscription->status_id === 3) {
-                     update_expected_matrix_after_enrollment(
+                    update_expected_matrix_after_enrollment(
                         $student_id,
                         (int) $inscription->subject_id,
                         $inscription->code_period,
@@ -518,19 +517,19 @@ function generate_projection_student($student_id, $force = false)
         // If we have a detailed matrix, persist it into `student_expected_matrix`.
         if (!empty($detailed_matrix)) {
             // If this operation was forced, clear previous expected matrix rows for the student to avoid duplicates.
-            if ($force === true) { 
+            if ($force === true) {
                 clear_expected_matrix_for_student($student_id);
             }
             persist_expected_matrix($student_id, $detailed_matrix);
         }
-        
+
         // Sincronizar el estado de la matriz de expectativa después de persistir la matriz detallada.
-        
+
         // 1. Inscripciones regulares (ya con precedencia aplicada)
         foreach ($inscriptions_by_code as $inscription) {
             // Actualizar solo si el estado es relevante para la matriz (Activa, Aprobada, Reprobada)
             if (in_array((int) $inscription->status_id, [1, 3, 4])) {
-                 update_expected_matrix_after_enrollment(
+                update_expected_matrix_after_enrollment(
                     $student_id,
                     (int) $inscription->subject_id,
                     $inscription->code_period,
@@ -538,11 +537,11 @@ function generate_projection_student($student_id, $force = false)
                 );
             }
         }
-        
+
         // 2. Inscripciones electivas (solo si son Aprobadas)
         foreach ($elective_inscriptions as $inscription) {
             if ((int) $inscription->status_id === 3) {
-                 update_expected_matrix_after_enrollment(
+                update_expected_matrix_after_enrollment(
                     $student_id,
                     (int) $inscription->subject_id,
                     $inscription->code_period,
