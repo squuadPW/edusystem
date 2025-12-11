@@ -57,7 +57,7 @@ function automatically_enrollment($student_id)
             $available_inscription_subject = available_inscription_subject($student->id, $subject->id);
             if (!$available_inscription_subject) {
                 // Ya la esta viendo
-                edusystem_get_log('The student ' . $full_name_student . ' already has an active or approved enrollment for the subject ' . $subject->name, 'Automatically enrollment', $user_id);
+                edusystem_get_log('The student ' . $full_name_student . ' already has an active or approved enrollment for the subject ' . $subject->name. ' (' . $subject->id . ')', 'Automatically enrollment', $user_id);
                 continue;
             }
 
@@ -65,7 +65,7 @@ function automatically_enrollment($student_id)
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
             if (!$offer_available_to_enroll) {
                 // Si no hay oferta, no inscribimos esta materia
-                edusystem_get_log('No offer available for subject ' . $subject->name . ' for student ' . $full_name_student . ' in the period ' . $code . ' - ' . $cut, 'Automatically enrollment', $user_id);
+                edusystem_get_log('No offer available for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student ' . $full_name_student . ' in the period ' . $code . ' - ' . $cut, 'Automatically enrollment', $user_id);
                 continue;
             }
 
@@ -85,8 +85,8 @@ function automatically_enrollment($student_id)
             // Update student's projection so the subject appears as this cut
             update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
             update_expected_matrix_after_enrollment($student->id, $subject->id, $code, $cut);
-            edusystem_get_log('Enrolled in subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
-            edusystem_get_log('Projection updated for subject ' . $subject->name . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
+            edusystem_get_log('Enrolled in subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
+            edusystem_get_log('Projection updated for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
 
             // mandamos a moodle
             $offer = get_offer_filtered($subject->id, $code, $cut, $section);

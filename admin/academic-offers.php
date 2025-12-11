@@ -376,7 +376,7 @@ function load_section_available($subject_id, $code, $cut)
     $all_offers = get_offer_filtered_all($subject_id, $code, $cut);
     if (count($all_offers) > 1) {
         foreach ($all_offers as $key => $offer) {
-            $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE subject_id = {$subject_id} AND status_id = 1");
+            $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period='{$code}' AND cut_period='{$cut}' AND subject_id = {$subject_id} AND status_id = 1");
             if (count($active_inscriptions) >= (int) $offer->max_students) {
                 continue;
             } else {
@@ -400,7 +400,7 @@ function offer_available_to_enroll($subject_id, $code, $cut)
     }
 
     foreach ($all_offers as $key => $offer) {
-        $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE section = {$offer->section} AND subject_id = {$subject_id} AND status_id = 1");
+        $active_inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period='{$code}' AND cut_period='{$cut}' AND section = {$offer->section} AND subject_id = {$subject_id} AND status_id = 1");
         if (count($active_inscriptions) < (int) $offer->max_students) {
             $available = true;
             break;
