@@ -13,19 +13,6 @@ function show_admission_documents()
             $document_id = isset($_POST['document_id']) ? intval($_POST['document_id']) : 0;
             $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
 
-            $academic_scope = isset($_POST['academic_scope']) && is_array($_POST['academic_scope'])
-                ? array_map('sanitize_text_field', $_POST['academic_scope'])
-                : [];
-
-            echo "<pre>"; 
-            var_dump($_POST['academic_scope']);
-            echo "</pre>";
-            exit;
-
-            $scope_required = isset($_POST['scope_required']) && is_array($_POST['scope_required'])
-                ? array_map('sanitize_text_field', $_POST['scope_required'])
-                : [];
-
             $type_file = isset($_POST['type_file']) ? sanitize_text_field($_POST['type_file']) : '';
             $type_file_array = array_filter(array_map('trim', explode(',', $type_file)));
 
@@ -44,8 +31,10 @@ function show_admission_documents()
                 }
             }
 
-            $id_requisito = sanitize_text_field($_POST['id_requisito']) ?? '';;
+            $id_requisito = sanitize_text_field($_POST['id_requisito']) ?? '';
 
+            $academic_scope = $_POST['academic_scope'] ?? [];
+            $academic_department = json_encode($academic_scope, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
             if (isset($_POST['is_required']) && !empty($_POST['is_required'])) {
                 $is_required = 1;
@@ -53,21 +42,11 @@ function show_admission_documents()
                 $is_required = 0;
             }
 
-            // guarda el array de los programas del documento
-            $academic_department = [];
-            foreach ($academic_scope as $scope) {
-                $academic_department[$scope] = [
-                    'required' => in_array($scope, $scope_required)
-                ];
-            }
-            // Convertir a JSON (aunque esté vacío)
-            $academic_department_json = json_encode($academic_department, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-
             if( $document_id ){
                 $update = $wpdb->update($table_documents, [
                     'name' => $name, 
                     'is_required' => $is_required, 
-                    'academic_department' => $academic_department_json,
+                    'academic_department' => $academic_department,
                     'type_file' => $type_file,
                     'id_requisito' => $id_requisito,
                     'updated_at' => date('Y-m-d H:i:s')
@@ -90,7 +69,7 @@ function show_admission_documents()
                     [
                         'name'                => $name,
                         'is_required'         => $is_required,
-                        'academic_department' => $academic_department_json,
+                        'academic_department' => $academic_department,
                         'type_file'           => $type_file,
                         'id_requisito'        => $id_requisito,
                         'updated_at'          => date('Y-m-d H:i:s')

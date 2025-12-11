@@ -23,16 +23,8 @@
             $is_required   = $form_data['is_required']  ?? $is_required;
             $type_file     = $form_data['type_file']    ?? $type_file;
             $id_requisito  = $form_data['id_requisito'] ?? $id_requisito;
-            
-            if( isset( $form_data['academic_scope'] ) ){
-                $academic_department = [];
-                foreach( $form_data['academic_scope'] AS $scope ){
-                    $academic_department[$scope] = [
-                        'required' => in_array( $scope, $form_data['scope_required'] )
-                    ];
-                }
-            }
-            
+
+            $academic_department = $form_data['academic_scope'] ?? $academic_department;  
         }
     ?>
 
@@ -119,16 +111,16 @@
                                             <?php foreach ( $programs as $program ): ?>
                                                 
                                                 <optgroup >
-                                                    
+
+                                                    <?php
+                                                        $program_info = scope_info($program->identificator, $academic_department);
+                                                    ?>
+
                                                     <option 
                                                         value="<?= esc_attr($program->identificator) ?>"
                                                         class="program"
-                                                        data-type="program"
-                                                        <?= selected( array_key_exists($program->identificator, $academic_department) ); ?>
-
-                                                        data-required="<?= isset($academic_department[$program->identificator]) 
-                                                            ? ($academic_department[$program->identificator]['required'] ? 'true' : 'false') 
-                                                            : 'false'; ?>"
+                                                        <?= $program_info ? 'selected' : '' ?>
+                                                        data-required="<?= $program_info && !empty($program_info['required']) ? 'true' : 'false'; ?>"
                                                     >
                                                         <?= esc_html($program->name) ?>
                                                     </option>
@@ -145,16 +137,17 @@
 
                                                     <?php if ($careers): ?>
                                                         <?php foreach ($careers as $career): ?>
-                                                                
+                                                            
+                                                            <?php
+                                                                $career_info = scope_info($career->identificator, $academic_department);
+                                                            ?>
+
                                                             <option 
                                                                 value="<?= esc_attr($career->identificator) ?>"
                                                                 class="career"
                                                                 data-type="career"
-                                                                <?= selected( array_key_exists($career->identificator, $academic_department) ); ?>
-
-                                                                data-required="<?= isset($academic_department[$career->identificator]) 
-                                                                            ? ($academic_department[$career->identificator]['required'] ? 'true' : 'false') 
-                                                                            : 'false'; ?>"
+                                                                <?= $career_info ? 'selected' : '' ?>
+                                                                data-required="<?= $career_info && !empty($career_info['required']) ? 'true' : 'false'; ?>"
                                                             >
                                                                 <?= esc_html($career->name) ?>
                                                             </option>
@@ -171,15 +164,16 @@
 
                                                             <?php if ($mentions): ?>
                                                                 <?php foreach ($mentions as $mention): ?>
+
+                                                                    <?php
+                                                                        $mention_info = scope_info($mention->identificator, $academic_department);
+                                                                    ?>
+
                                                                     <option 
                                                                         value="<?= esc_attr($mention->identificator) ?>"
                                                                         class="mention"
-                                                                        data-type="mention"
-                                                                        <?= selected( array_key_exists($mention->identificator, $academic_department) ); ?>
-                                                                        
-                                                                        data-required="<?= isset($academic_department[$mention->identificator]) 
-                                                                            ? ($academic_department[$mention->identificator]['required'] ? 'true' : 'false') 
-                                                                            : 'false'; ?>"
+                                                                        <?= $mention_info ? 'selected' : '' ?>
+                                                                        data-required="<?= $mention_info && !empty($mention_info['required']) ? 'true' : 'false'; ?>"
                                                                     >
                                                                         <?= esc_html($mention->name) ?>
                                                                     </option>
@@ -218,6 +212,18 @@
     </div>
 </div>
 
+<?php
+
+    function scope_info($id, $academic_department) {
+        foreach ($academic_department as $items) {
+            if (isset($items[$id])) {
+                return $items[$id]; // devuelve todo el array (identificator, required, etc.)
+            }
+        }
+        return null;
+    }
+
+?>
 
 
 
