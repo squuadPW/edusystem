@@ -2465,8 +2465,6 @@ tr.child-order-row {
     }
 }            
 
-
-
 #document_view {
 
     #dashboard-widgets {
@@ -2514,7 +2512,7 @@ tr.child-order-row {
         }
 
         /* Oculta las etiquetas visuales de los seleccionados en la barra */
-        #select2-select_scope-container .select2-selection__choice {
+        #select2-select_scope-container .select2-selection__choice { 
             display: none !important;
         }
 
@@ -2598,8 +2596,8 @@ tr.child-order-row {
 
 #select2-select_scope-results {
 
-    li:has(+ [role="group"]) {
-      margin-bottom: 0px;
+    li:has(+ [role="group"]) { 
+        margin-bottom: 0px; 
     }
 
     [role="group"] {
@@ -2620,7 +2618,7 @@ tr.child-order-row {
         li:has( .mention ) {
             padding-left: 3em;
         }
-    }
+    } 
 }
 
 
