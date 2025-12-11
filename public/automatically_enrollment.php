@@ -25,7 +25,7 @@ function automatically_enrollment($student_id)
     // Se asegura de que $user sea un objeto para evitar errores si no se encuentra
     $user = get_user_by('email', $student->email);
     // Usar el ID de usuario si existe, de lo contrario usar 0 o un valor predeterminado
-    $user_id = $user ? $user->ID : 0; 
+    $user_id = $user ? $user->ID : 0;
 
     $load = load_current_cut_enrollment();
     $code = $load['code'];
@@ -323,16 +323,56 @@ function generate_projection_student($student_id, $force = false)
     $inscriptions = get_inscriptions_by_student($student_id);
     $inscriptions_by_code = [];
     $elective_inscriptions = [];
-
-    // Crear índice de inscripciones por código para búsqueda más rápida
+    
+    // Se procesan todas las inscripciones del estudiante y se elige la de mayor precedencia (3=Aprobada, luego 1=Activa, luego 4=Reprobada) para cada 'code_subject'.
     if (!empty($inscriptions)) {
         foreach ($inscriptions as $inscription) {
+            // Obtener los detalles de la materia
             $subject = $inscription->subject_id && $inscription->subject_id != '' ? get_subject_details($inscription->subject_id) : get_subject_details_code($inscription->code_subject);
 
-            if ($subject->type === 'elective') {
+            if ($subject && $subject->type === 'elective') {
+                // Las electivas se mantienen separadas para el procesamiento posterior de solo las completadas.
                 $elective_inscriptions[] = $inscription;
             } else {
-                $inscriptions_by_code[$inscription->code_subject] = $inscription;
+                $code = $inscription->code_subject;
+                $current_status = (int) $inscription->status_id;
+                
+                if (isset($inscriptions_by_code[$code])) {
+                    $existing_status = (int) $inscriptions_by_code[$code]->status_id;
+                    
+                    // Priorizar estado Aprobado (3) sobre cualquier otro.
+                    if ($existing_status === 3) {
+                        continue; // Ya tenemos el mejor estado posible.
+                    }
+                    
+                    // Si el nuevo estado es Aprobado (3), sobrescribir inmediatamente.
+                    if ($current_status === 3) {
+                        $inscriptions_by_code[$code] = $inscription;
+                        continue;
+                    }
+                    
+                    // Si el estado existente es Activo (1) y el nuevo es Reprobado (4), mantener Activo (1).
+                    if ($existing_status === 1 && $current_status === 4) {
+                        continue;
+                    }
+                    
+                    // Si el nuevo estado es Activo (1) y el existente es Reprobado (4) o To begin (0), sobrescribir con Activo (1).
+                    if ($current_status === 1 && ($existing_status === 4 || $existing_status === 0)) {
+                        $inscriptions_by_code[$code] = $inscription;
+                        continue;
+                    }
+                    
+                    // Si ambos son Reprobado (4), To begin (0), o si el nuevo estado es mejor que el existente, tomar el nuevo.
+                    if ($current_status > $existing_status && $current_status !== 2) {
+                         $inscriptions_by_code[$code] = $inscription;
+                    }
+                    
+                } else {
+                    // Si no existe entrada, simplemente agregar, siempre que no sea Unsubscribed (2)
+                    if ($current_status !== 2) {
+                         $inscriptions_by_code[$code] = $inscription;
+                    }
+                }
             }
         }
     }
@@ -348,27 +388,35 @@ function generate_projection_student($student_id, $force = false)
         }
 
         $inscription = $inscriptions_by_code[$subject_details->code_subject] ?? null;
-        $status_id = $inscription ? $inscription->status_id : null;
+        $status_id = $inscription ? (int) $inscription->status_id : null;
+        
+        // Determinar si la materia está 'completada' (solo si está APROBADA = 3)
+        $is_completed = ($status_id === 3);
+        
+        // Determinar si es 'this_cut' (solo si está ACTIVA = 1)
+        $is_this_cut = ($status_id === 1);
 
         $projection[] = [
             'hc' => isset($m->hc) ? $m->hc : (isset($subject_details->hc) ? $subject_details->hc : ''),
-            'cut' => ($status_id == 3 || $status_id == 1) ? $inscription->cut_period : "",
+            // La información de corte solo se llena si está Aprobada (3) o Activa (1).
+            'cut' => $is_completed || $is_this_cut ? $inscription->cut_period : "",
             'type' => isset($m->type) ? strtolower($m->type) : strtolower($subject_details->type),
             'subject' => $subject_details->name,
-            'this_cut' => ($status_id == 1),
+            'this_cut' => $is_this_cut, // Solo Activa
             'subject_id' => (string) $subject_details->id,
-            'code_period' => ($status_id == 3 || $status_id == 1) ? $inscription->code_period : "",
-            'calification' => ($status_id == 3) ? $inscription->calification : "",
+            'code_period' => $is_completed || $is_this_cut ? $inscription->code_period : "",
+            // La calificación solo se llena si está Aprobada (3).
+            'calification' => $is_completed ? $inscription->calification : "",
             'code_subject' => $subject_details->code_subject,
-            'is_completed' => ($status_id == 3 || $status_id == 1),
-            'welcome_email' => ($status_id == 3 || $status_id == 1)
+            'is_completed' => $is_completed, // Solo Aprobada
+            'welcome_email' => $is_completed || $is_this_cut // True si está Approved/Active
         ];
     }
 
     // Agregar materias electivas a la proyección
     foreach ($elective_inscriptions as $inscription) {
-        // Solo agregar materias electivas completadas
-        if ($inscription->status_id != 3) {
+        // Solo agregar materias electivas completadas (Aprobadas = 3)
+        if ((int) $inscription->status_id !== 3) {
             continue;
         }
 
@@ -417,6 +465,33 @@ function generate_projection_student($student_id, $force = false)
                 clear_expected_matrix_for_student($student_id);
                 persist_expected_matrix($student_id, $detailed_matrix);
             }
+            
+            // Sincronizar el estado de la matriz de expectativa después de persistir la matriz detallada.
+            
+            // 1. Inscripciones regulares (ya con precedencia aplicada)
+            foreach ($inscriptions_by_code as $inscription) {
+                // Actualizar solo si el estado es relevante para la matriz (Activa, Aprobada, Reprobada)
+                if (in_array((int) $inscription->status_id, [1, 3, 4])) {
+                    update_expected_matrix_after_enrollment(
+                        $student_id,
+                        (int) $inscription->subject_id,
+                        $inscription->code_period,
+                        $inscription->cut_period
+                    );
+                }
+            }
+
+            // 2. Inscripciones electivas (solo si son Aprobadas, ya que son el único estado que se incluye)
+            foreach ($elective_inscriptions as $inscription) {
+                if ((int) $inscription->status_id === 3) {
+                     update_expected_matrix_after_enrollment(
+                        $student_id,
+                        (int) $inscription->subject_id,
+                        $inscription->code_period,
+                        $inscription->cut_period
+                    );
+                }
+            }
 
             $wpdb->query('COMMIT');
             return true;
@@ -443,11 +518,40 @@ function generate_projection_student($student_id, $force = false)
         // If we have a detailed matrix, persist it into `student_expected_matrix`.
         if (!empty($detailed_matrix)) {
             // If this operation was forced, clear previous expected matrix rows for the student to avoid duplicates.
-            if (!empty($force)) {
+            if ($force === true) { 
                 clear_expected_matrix_for_student($student_id);
             }
             persist_expected_matrix($student_id, $detailed_matrix);
         }
+        
+        // **INICIO: SINCRONIZACIÓN DE MATRIZ DE EXPECTATIVA (NO FORZADA)**
+        // Sincronizar el estado de la matriz de expectativa después de persistir la matriz detallada.
+        
+        // 1. Inscripciones regulares (ya con precedencia aplicada)
+        foreach ($inscriptions_by_code as $inscription) {
+            // Actualizar solo si el estado es relevante para la matriz (Activa, Aprobada, Reprobada)
+            if (in_array((int) $inscription->status_id, [1, 3, 4])) {
+                 update_expected_matrix_after_enrollment(
+                    $student_id,
+                    (int) $inscription->subject_id,
+                    $inscription->code_period,
+                    $inscription->cut_period
+                );
+            }
+        }
+        
+        // 2. Inscripciones electivas (solo si son Aprobadas)
+        foreach ($elective_inscriptions as $inscription) {
+            if ((int) $inscription->status_id === 3) {
+                 update_expected_matrix_after_enrollment(
+                    $student_id,
+                    (int) $inscription->subject_id,
+                    $inscription->code_period,
+                    $inscription->cut_period
+                );
+            }
+        }
+        // **FIN: SINCRONIZACIÓN DE MATRIZ DE EXPECTATIVA (NO FORZADA)**
 
         return true;
     }
@@ -595,24 +699,25 @@ function update_expected_matrix_after_enrollment($student_id, $subject_id, $code
         return (array) $existing;
     }
 
-    // Insert minimal expected row when missing
-    $inserted = $wpdb->insert($table_student_expected_matrix, [
-        'student_id' => $student_id,
-        'term_index' => null,
-        'term_position' => null,
-        'subject_id' => $subject_id,
-        'academic_period' => $code_period,
-        'academic_period_cut' => $cut_period,
-        'status' => $status
-    ]);
+    // // Insert minimal expected row when missing
+    // $inserted = $wpdb->insert($table_student_expected_matrix, [
+    //     'student_id' => $student_id,
+    //     'term_index' => null,
+    //     'term_position' => null,
+    //     'subject_id' => $subject_id,
+    //     'academic_period' => $code_period,
+    //     'academic_period_cut' => $cut_period,
+    //     'status' => $status
+    // ]);
 
-    if ($inserted === false) {
-        return false;
-    }
+    // if ($inserted === false) {
+    //     return false;
+    // }
 
-    $new_id = $wpdb->insert_id;
-    $new_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_student_expected_matrix} WHERE id = %d", $new_id));
-    return $new_row ? (array) $new_row : false;
+    // $new_id = $wpdb->insert_id;
+    // $new_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_student_expected_matrix} WHERE id = %d", $new_id));
+    // return $new_row ? (array) $new_row : false;
+    return false;
 }
 
 function send_welcome_subjects($student_id, $force = false)

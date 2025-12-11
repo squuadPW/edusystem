@@ -12,7 +12,7 @@ function add_admin_form_academic_projection_content()
             $projection_id = $_GET['projection_id'];
             $projection = get_projection_details($projection_id);
             $student = get_student_detail($projection->student_id);
-            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND code_subject IS NOT NULL AND code_subject <> ''");
+            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND code_subject IS NOT NULL AND code_subject <> '' ORDER BY code_period ASC, cut_period ASC");
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
             $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
             $load = load_current_cut_enrollment();
