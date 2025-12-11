@@ -542,6 +542,7 @@ function create_tables()
     dbDelta(
         "CREATE TABLE " . $table_academic_offers . " (
         id INT(11) NOT NULL AUTO_INCREMENT,
+        grades_downloaded tinyint(1) DEFAULT 0,
         section INT(11) NULL,
         subject_id INT(11) NOT NULL,
         type TEXT NOT NULL,

@@ -38,9 +38,9 @@
 				<?php } ?>
 
 				<a style="margin-left: 10px"
-					href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=get_moodle_notes'); ?>"
+					href="javascript:void(0);"
 					class="button button-outline-primary"
-					onclick="return confirm('Are you sure you want to update the notes from Moodle?');"><?= __('Download moodle notes', 'edusystem'); ?></a>
+					id="openModalDownloadMoodleNotes"><?= __('Download moodle notes', 'edusystem'); ?></a>
 				<?php
 				$text_students = '';
 
@@ -85,6 +85,9 @@
 	</div>
 </div>
 
+<?php
+	include(plugin_dir_path(__FILE__) . 'modal-download-moodle-notes.php');
+?>
 
 <script src="https://unpkg.com/@popperjs/core@2"></script>
 <script src="https://unpkg.com/tippy.js@6"></script>

@@ -284,7 +284,11 @@ function add_admin_form_academic_projection_content()
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'get_moodle_notes') {
-            get_moodle_notes();
+            $subject_id = $_POST['subject_id'];
+            $code = $_POST['code_current_cut'];
+            $cut = $_POST['cut_current_cut'];
+
+            get_moodle_notes($subject_id, $code, $cut);
             setcookie('message', __('Successfully updated notes for the students.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
             exit;
@@ -543,6 +547,8 @@ function add_admin_form_academic_projection_content()
             $pending_emails_students = $pending_emails['students'];
             $list_academic_projection = new TT_academic_projection_all_List_Table;
             $list_academic_projection->prepare_items();
+
+            $available_offers = get_offers_availables_by_code($code_current_cut, $cut_current_cut);
 
             include(plugin_dir_path(__FILE__) . 'templates/list-academic-projection.php');
         }
@@ -953,7 +959,7 @@ function generate_enroll_public_course()
     enroll_student_public_course($enrollments);
 }
 
-function get_moodle_notes()
+function get_moodle_notes($subject_id, $academic_period, $cut)
 {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
@@ -962,9 +968,9 @@ function get_moodle_notes()
 
     try {
         // Get last cut information
-        $load = load_last_cut();
-        $academic_period = $load['code'];
-        $cut = $load['cut'];
+        // $load = load_last_cut();
+        // $academic_period = $load['code'];
+        // $cut = $load['cut'];
 
         if (empty($cut)) {
             return;
