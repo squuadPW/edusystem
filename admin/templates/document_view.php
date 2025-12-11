@@ -23,7 +23,7 @@
                                 <label for="input_id">
                                     <b><?= __('Name','edusystem'); ?></b>
 
-                                    <input type="text" name="name" value="<?= $document->name ?? ''; ?>" style="width:100%">
+                                    <input type="text" name="name" value="<?= $document->name ?? ''; ?>">
 
                                 </label>
                                 
@@ -44,17 +44,18 @@
                                         type="text" 
                                         name="type_file" 
                                         value="<?= esc_attr($document->type_file ?? ''); ?>" 
-                                        accept=".pdf,.docx,.jpg,.png"
+                                        placeholder = <?= __('Ej: .pdf, .docx, .jpg, .png','edusystem') ?>
+                                        accept=".pdf,.doc,.docx,.xl,.xls,.jpg,.jpge,.png,.web"
                                     >
                                 </label>
                                 <p class="description">
-                                    <?= __('Allowed formats: .pdf, .docx, .jpg, .png','edusystem'); ?>
+                                    <?= __('Allowed formats: .pdf, .doc, .docx, .xl, .xls, .jpg, .jpge, .png, .web','edusystem'); ?>
                                 </p>
                             </div>
 
                             <div>
                                 <label for="id_requisito">
-                                    <b><?= __('Moodle Requirement','edusystem'); ?></b>
+                                    <b><?= __('Code admin','edusystem'); ?></b>
                                     <input type="text" 
                                         name="id_requisito" 
                                         value="<?= esc_attr($document->id_requisito ?? ''); ?>"

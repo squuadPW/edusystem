@@ -25,7 +25,7 @@ function show_admission_documents()
             $type_file_array = array_filter(array_map('trim', explode(',', $type_file)));
 
             // Lista de extensiones permitidas (igual que en el input accept)
-            $allowed_extensions = ['pdf','docx','jpg','png'];
+            $allowed_extensions = ['pdf','doc','docx','xl','xls','jpg','jpeg','png','web'];
             foreach ($type_file_array as $ext) {
                 $ext_clean = strtolower(ltrim($ext, '.'));
                 if (!in_array($ext_clean, $allowed_extensions, true)) {
@@ -33,7 +33,7 @@ function show_admission_documents()
                     /* 
                     * HAY QUE PONER UNA NOTIFICACION DE ERROR
                     */
-                    wp_die(__('Invalid file type. Allowed formats: .pdf, .docx, .jpg, .png','edusystem'));
+                    wp_die(__('Invalid file type. Allowed formats: .pdf, .doc, .docx, .xl, .xls, .jpg, .jpge, .png, .web','edusystem'));
                 }
             }
 

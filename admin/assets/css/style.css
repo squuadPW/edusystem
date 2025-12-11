@@ -2246,17 +2246,8 @@ tr.child-order-row .view_details {
   flex-direction: column;
   gap: 8px;
 }
-#document_view #form_document > div label {
-  font-weight: 600;
-  color: #333;
-}
 #document_view #form_document input[type=text] {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.2s ease;
 }
 #document_view #form_document input[type=checkbox] {
   margin-right: 8px;
@@ -2280,11 +2271,12 @@ tr.child-order-row .view_details {
   font-weight: 600;
   font-size: 15px;
   width: 30%;
+  margin-bottom: 5px;
 }
 #document_view #form_document #selected_list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   margin-top: 10px;
 }
 #document_view #form_document #selected_list .selected-item {
@@ -2294,8 +2286,8 @@ tr.child-order-row .view_details {
   align-items: center;
   background: #fff;
   border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 12px 16px;
+  border-radius: 4px;
+  padding: 5px 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -2305,7 +2297,6 @@ tr.child-order-row .view_details {
 }
 #document_view #form_document #selected_list .selected-item:hover .remove-btn {
   opacity: 1;
-  transform: translateY(-50%) scale(1);
 }
 #document_view #form_document #selected_list .selected-item .item-left {
   display: flex;
@@ -2325,20 +2316,14 @@ tr.child-order-row .view_details {
   top: 50%;
   right: 10px;
   transform: translateY(-50%) scale(0.8);
-  background: #ff4d4d;
+  background: transparent;
   border: none;
-  color: #fff;
-  font-size: 16px;
-  padding: 6px 10px;
-  border-radius: 50%;
+  color: #e60000;
+  font-size: 20px;
+  padding: 0px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   opacity: 0;
   transition: all 0.3s ease;
-}
-#document_view #form_document #selected_list .selected-item .remove-btn:hover {
-  background: #e60000;
-  transform: translateY(-50%) scale(1.1);
 }
 
 #select2-select_scope-results li:has(+ [role=group]) {
