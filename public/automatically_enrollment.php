@@ -524,7 +524,6 @@ function generate_projection_student($student_id, $force = false)
             persist_expected_matrix($student_id, $detailed_matrix);
         }
         
-        // **INICIO: SINCRONIZACIÓN DE MATRIZ DE EXPECTATIVA (NO FORZADA)**
         // Sincronizar el estado de la matriz de expectativa después de persistir la matriz detallada.
         
         // 1. Inscripciones regulares (ya con precedencia aplicada)
@@ -551,7 +550,6 @@ function generate_projection_student($student_id, $force = false)
                 );
             }
         }
-        // **FIN: SINCRONIZACIÓN DE MATRIZ DE EXPECTATIVA (NO FORZADA)**
 
         return true;
     }
