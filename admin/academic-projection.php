@@ -1053,7 +1053,7 @@ function get_moodle_notes($subject_id, $academic_period, $cut)
                     $grade_value = (float) $filtered_grade_items[0]['gradeformatted'];
                     $total_grade = $grade_value > 100 ? 100 : $grade_value;
 
-                    $subject = get_subject_details($offer->subject_id);
+                    $subject = get_subject_details_optimized($offer->subject_id);
                     if (!$subject) {
                         continue;
                     }
@@ -1232,7 +1232,7 @@ function get_offer_by_moodle_optimized($moodle_course_id)
     return $offer;
 }
 
-function get_subject_details($subject_id)
+function get_subject_details_optimized($subject_id)
 {
     global $wpdb;
     static $cache = [];
