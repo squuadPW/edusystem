@@ -983,17 +983,18 @@ function create_tables()
     if ($wpdb->get_var("SHOW TABLES LIKE '{$table_documents}'") != $table_documents) {
         dbDelta(
         "CREATE TABLE " . $table_documents . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        name TEXT NOT NULL,
-        type_file TEXT NOT NULL,
-        grade_id INT(11) NOT NULL,
-        program_identificator TEXT NULL,
-        is_required INT(11) NOT NULL,
-        is_visible BOOLEAN NOT NULL DEFAULT 1,
-        id_requisito TEXT NOT NULL,
-        updated_at DATETIME NULL,
-        created_at DATETIME NOT NULL,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            name TEXT NOT NULL,
+            type_file TEXT NOT NULL,
+            academic_scope JSON NULL,
+            grade_id INT(11) NOT NULL,
+            program_identificator TEXT NULL,
+            is_required INT(11) NOT NULL,
+            is_visible BOOLEAN NOT NULL DEFAULT 1,
+            id_requisito TEXT NOT NULL,
+            updated_at DATETIME NULL,
+            created_at DATETIME NOT NULL,
+            PRIMARY KEY (id))$charset_collate;"
         );
 
         $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
@@ -1080,17 +1081,17 @@ function create_tables()
         // Si la tabla ya existe, aún puedes llamar a dbDelta para actualizar su estructura
         dbDelta(
         "CREATE TABLE " . $table_documents . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        name TEXT NOT NULL,
-        type_file TEXT NOT NULL,
-        academic_department JSON NULL,
-        grade_id INT(11) NOT NULL,
-        is_required INT(11) NOT NULL,
-        is_visible BOOLEAN NOT NULL DEFAULT 1,
-        id_requisito TEXT NOT NULL,
-        updated_at DATETIME NULL,
-        created_at DATETIME NOT NULL,
-        PRIMARY KEY (id))$charset_collate;"
+            id INT(11) NOT NULL AUTO_INCREMENT,
+            name TEXT NOT NULL,
+            type_file TEXT NOT NULL,
+            academic_scope JSON NULL,
+            grade_id INT(11) NOT NULL,
+            is_required INT(11) NOT NULL,
+            is_visible BOOLEAN NOT NULL DEFAULT 1,
+            id_requisito TEXT NOT NULL,
+            updated_at DATETIME NULL,
+            created_at DATETIME NOT NULL,
+            PRIMARY KEY (id))$charset_collate;"
         );
     }
 

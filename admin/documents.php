@@ -10,8 +10,35 @@ function show_admission_documents()
             global $wpdb;
             $table_documents = $wpdb->prefix . 'documents';
 
-            $document_id = $_POST['document_id'];
-            $name = $_POST['name'];
+            $document_id = isset($_POST['document_id']) ? intval($_POST['document_id']) : 0;
+            $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
+
+            $academic_scope = isset($_POST['academic_scope']) && is_array($_POST['academic_scope'])
+                ? array_map('sanitize_text_field', $_POST['academic_scope'])
+                : [];
+
+            $scope_required = isset($_POST['scope_required']) && is_array($_POST['scope_required'])
+                ? array_map('sanitize_text_field', $_POST['scope_required'])
+                : [];
+
+            $type_file = isset($_POST['type_file']) ? sanitize_text_field($_POST['type_file']) : '';
+            $type_file_array = array_filter(array_map('trim', explode(',', $type_file)));
+
+            // Lista de extensiones permitidas (igual que en el input accept)
+            $allowed_extensions = ['pdf','docx','jpg','png'];
+            foreach ($type_file_array as $ext) {
+                $ext_clean = strtolower(ltrim($ext, '.'));
+                if (!in_array($ext_clean, $allowed_extensions, true)) {
+
+                    /* 
+                    * HAY QUE PONER UNA NOTIFICACION DE ERROR
+                    */
+                    wp_die(__('Invalid file type. Allowed formats: .pdf, .docx, .jpg, .png','edusystem'));
+                }
+            }
+
+            $id_requisito = sanitize_text_field($_POST['id_requisito']) ?? '';;
+
 
             if (isset($_POST['is_required']) && !empty($_POST['is_required'])) {
                 $is_required = 1;
@@ -19,7 +46,24 @@ function show_admission_documents()
                 $is_required = 0;
             }
 
-            $wpdb->update($table_documents, ['name' => $name, 'is_required' => $is_required, 'updated_at' => date('Y-m-d H:i:s')], ['id' => $document_id]);
+            // guarda el array de los programas del documento
+            $academic_department = [];
+            foreach ($academic_scope as $scope) {
+                $academic_department[$scope] = [
+                    'required' => in_array($scope, $scope_required)
+                ];
+            }
+            // Convertir a JSON (aunque esté vacío)
+            $academic_department_json = json_encode($academic_department, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+
+            $wpdb->update($table_documents, [
+                'name' => $name, 
+                'is_required' => $is_required, 
+                'academic_department' => $academic_department_json,
+                'type_file' => $type_file,
+                'id_requisito' => $id_requisito,
+                'updated_at' => date('Y-m-d H:i:s')
+            ], ['id' => $document_id]);
 
             wp_redirect(admin_url('admin.php?page=admission-documents'));
             exit;

@@ -1,18 +1,29 @@
 document.addEventListener('DOMContentLoaded', ()=>{
-
     
-    const selectedList = document.getElementById('selected_list');
     jQuery('#select_scope').select2({
         placeholder: "Select a program",
         width: '100%',
         templateResult: function(option) {
-            return ( jQuery('#select_scope').val().includes(option.id) ) ? null : option.text;
+
+            // Si tiene clase en el <option>, la copiamos
+            const $span = jQuery('<span></span>')
+                .text(option.text);
+
+            if (option.element && option.element.className) {
+                $span.addClass(option.element.className);
+            }
+
+            return $span;
         }
+
     }).on('change', function (e) {
 
+        const selectedList = document.getElementById('selected_list');
+        const select_scope = this;
+        
         selectedList.innerHTML = '';
 
-        [...selectScope.selectedOptions].forEach(option => {
+        [...select_scope.selectedOptions].forEach(option => {
             const item = document.createElement('div');
             item.className = 'selected-item';
 
@@ -26,8 +37,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
-            checkbox.name = `required_${option.value}`;
-            checkbox.title = "Marcar si es requerido";
+            checkbox.name = 'scope_required[]';
+            checkbox.value = option.value;
+
+            // Marcar automáticamente si el <option> tiene data-required="true"
+            if (option.getAttribute('data-required') === 'true') checkbox.checked = true;
 
             left.appendChild(name);
             left.appendChild(checkbox);
@@ -39,6 +53,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
             removeBtn.onclick = () => {
                 option.selected = false;
                 item.remove();
+                
+                // Refresca select2 para que desaparezca visualmente
+                jQuery('#select_scope').trigger('change');
             };
 
             item.appendChild(left);
@@ -47,4 +64,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             selectedList.appendChild(item);
         });
     });
+
+    jQuery('#select_scope').trigger('change');
+
 });
