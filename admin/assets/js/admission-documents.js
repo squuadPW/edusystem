@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
             const data_type = option.getAttribute('data-type');
             const hidden = document.createElement('input');
             hidden.type = 'hidden';
-            hidden.name = `academic_scope[${data_type}][${option.value}][name]`;
+            hidden.name = `academic_scope[${data_type}][${option.value}][identificator]`;
             hidden.value = option.value; 
             left.appendChild(hidden);
 
