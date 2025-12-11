@@ -17,6 +17,11 @@ function show_admission_documents()
                 ? array_map('sanitize_text_field', $_POST['academic_scope'])
                 : [];
 
+            echo "<pre>"; 
+            var_dump($_POST['academic_scope']);
+            echo "</pre>";
+            exit;
+
             $scope_required = isset($_POST['scope_required']) && is_array($_POST['scope_required'])
                 ? array_map('sanitize_text_field', $_POST['scope_required'])
                 : [];
@@ -25,15 +30,17 @@ function show_admission_documents()
             $type_file_array = array_filter(array_map('trim', explode(',', $type_file)));
 
             // Lista de extensiones permitidas (igual que en el input accept)
-            $allowed_extensions = ['pdf','docx','jpg','png'];
+            $allowed_extensions = ['pdf','doc','docx','xl','xls','jpg','jpeg','png','web'];
             foreach ($type_file_array as $ext) {
                 $ext_clean = strtolower(ltrim($ext, '.'));
                 if (!in_array($ext_clean, $allowed_extensions, true)) {
 
-                    /* 
-                    * HAY QUE PONER UNA NOTIFICACION DE ERROR
-                    */
-                    wp_die(__('Invalid file type. Allowed formats: .pdf, .docx, .jpg, .png','edusystem'));
+                    // Guardar los datos del formulario en la cookie
+                    setcookie('form_data', json_encode($_POST), time() + 10, '/');
+
+                    setcookie('message-error', __('Invalid file type. Allowed formats: .pdf, .doc, .docx, .xl, .xls, .jpg, .jpge, .png, .web', 'edusystem'), time() + 10, '/');
+                    wp_redirect( wp_get_referer());
+                    exit;
                 }
             }
 
@@ -56,14 +63,80 @@ function show_admission_documents()
             // Convertir a JSON (aunque esté vacío)
             $academic_department_json = json_encode($academic_department, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
-            $wpdb->update($table_documents, [
-                'name' => $name, 
-                'is_required' => $is_required, 
-                'academic_department' => $academic_department_json,
-                'type_file' => $type_file,
-                'id_requisito' => $id_requisito,
-                'updated_at' => date('Y-m-d H:i:s')
-            ], ['id' => $document_id]);
+            if( $document_id ){
+                $update = $wpdb->update($table_documents, [
+                    'name' => $name, 
+                    'is_required' => $is_required, 
+                    'academic_department' => $academic_department_json,
+                    'type_file' => $type_file,
+                    'id_requisito' => $id_requisito,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ], ['id' => $document_id]);
+
+                if( $update ){
+                    setcookie('message', __('The document has been updated correctly.', 'edusystem'), time() + 10, '/');
+                    wp_redirect(admin_url('admin.php?page=admission-documents&action=edit&document_id='.$document_id));
+                } else {
+                    // Guardar los datos del formulario en la cookie
+                    setcookie('form_data', json_encode($_POST), time() + 10, '/');
+
+                    setcookie('message-error', __('There were problems updating the document.'), time() + 10, '/');
+                    wp_redirect( wp_get_referer());
+                }
+
+            } else {
+                $insert = $wpdb->insert(
+                    $table_documents,
+                    [
+                        'name'                => $name,
+                        'is_required'         => $is_required,
+                        'academic_department' => $academic_department_json,
+                        'type_file'           => $type_file,
+                        'id_requisito'        => $id_requisito,
+                        'updated_at'          => date('Y-m-d H:i:s')
+                    ]
+                );
+
+                if( $insert ){
+                    $document_id = $wpdb->insert_id;
+                    setcookie('message', __('The document has been created successfully.', 'edusystem'), time() + 10, '/');
+                    wp_redirect(admin_url('admin.php?page=admission-documents&action=edit&document_id='.$document_id));
+                
+                } else {
+
+                    // Guardar los datos del formulario en la cookie
+                    setcookie('form_data', json_encode($_POST), time() + 10, '/');
+
+                    setcookie('message-error', __('There were problems creating the document.'), time() + 10, '/');
+                    wp_redirect( wp_get_referer());
+                }
+
+            }
+
+            exit;
+
+        } else if( $_GET['action'] == 'delete' ){
+
+            global $wpdb;
+            $removed = false;
+            $table_documents = $wpdb->prefix . 'documents';
+
+            $document_id = isset($_POST['document_id']) ? intval($_POST['document_id']) : 0;
+            if( $document_id ) {
+
+                $removed = $wpdb->delete(
+                    $table_documents,          
+                    [ 'id' => $document_id ],  
+                    [ '%d' ]                   
+                );
+                
+            } 
+            
+            if ( $removed ) {
+                setcookie('message', __('The document has been successfully deleted.', 'edusystem'), time() + 10, '/');
+            } else {
+                setcookie('message-error', __('There was a problem trying to delete the document.', 'edusystem'), time() + 10, '/');
+            }
 
             wp_redirect(admin_url('admin.php?page=admission-documents'));
             exit;
@@ -79,6 +152,7 @@ function show_admission_documents()
         $grades = get_grades();
         $documents = get_list_grades_documents();
         include(plugin_dir_path(__FILE__) . 'templates/list-documents.php');
+        include(plugin_dir_path(__FILE__) . 'templates/modal-delete-document.php');
     }
 }
 
