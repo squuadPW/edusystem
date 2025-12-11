@@ -83,7 +83,7 @@ function add_admin_form_academic_projection_content()
             $academic_period = $_GET['academic_period'];
             $academic_period_cut = $_GET['academic_period_cut'];
             $subject_id = $_GET['subject_id'];
-            $section = $_GET['section'];
+            $section = $_GET['section'] ?? 1;
             $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$subject_id}");
             $teacher = null;
             $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE code_period = '{$academic_period}' AND cut_period = '{$academic_period_cut}' AND (subject_id = {$subject_id} OR code_subject = '{$subject->code_subject}') AND section = {$section}");
