@@ -49,6 +49,7 @@ function show_admission_documents()
                     'academic_department' => $academic_department,
                     'type_file' => $type_file,
                     'id_requisito' => $id_requisito,
+                    'is_visible' => 1,
                     'updated_at' => date('Y-m-d H:i:s')
                 ], ['id' => $document_id]);
 
@@ -72,6 +73,7 @@ function show_admission_documents()
                         'academic_department' => $academic_department,
                         'type_file'           => $type_file,
                         'id_requisito'        => $id_requisito,
+                        'is_visible' => 1,
                         'updated_at'          => date('Y-m-d H:i:s')
                     ]
                 );
