@@ -850,6 +850,62 @@ function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_pe
     return $inscriptions;
 }
 
+function get_inscriptions_by_student_automatically_enrollment($subject_id, $code_subject, $status, $student_id = null, $code_period = null, $cut_period = null)
+{
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+
+    // Determinar los status_id según el valor de $status
+    $status_ids = [];
+    if ($status === 'current') {
+        $status_ids[] = 1;
+    } elseif ($status === 'history') {
+        $status_ids[] = 2;
+        $status_ids[] = 3;
+        $status_ids[] = 4;
+    } else {
+        return false;
+    }
+
+    // Convertir el array de IDs a una cadena para la cláusula IN de SQL
+    $status_ids_in_clause = implode(',', array_map('intval', $status_ids));
+
+    // Iniciar la consulta base y el array de argumentos con los parámetros requeridos
+    $query = "SELECT * FROM {$table_student_period_inscriptions} 
+              WHERE (subject_id = %d OR code_subject = %s) 
+                AND status_id IN ({$status_ids_in_clause})";
+
+    $args = [
+        $subject_id,
+        $code_subject
+    ];
+
+    // Verificar si $code_period está presente y añadir la condición y el argumento
+    if ($code_period !== null) {
+        $query .= " AND code_period = %s";
+        $args[] = $code_period;
+    }
+
+    // Verificar si $cut_period está presente y añadir la condición y el argumento
+    if ($cut_period !== null) {
+        $query .= " AND cut_period = %s";
+        $args[] = $cut_period;
+    }
+
+    // Verificar si $student_id está presente y añadir la condición y el argumento
+    if ($student_id !== null) {
+        $query .= " AND student_id = %d";
+        $args[] = $student_id;
+    }
+
+    // Usar $wpdb->prepare() con el query y los argumentos
+    $prepared_query = $wpdb->prepare($query, ...$args);
+    // Obtener los resultados
+    $inscriptions = $wpdb->get_results($prepared_query);
+    
+    return $inscriptions;
+}
+
 function generate_enroll_student()
 {
     try {

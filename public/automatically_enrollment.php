@@ -1066,11 +1066,12 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
     $detailed_matrix = [];
     $subject_index = 0;
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
-
+    $student = get_student_detail($student_id);
+    $created_at = new DateTime($student->created_at);
     // Obtener períodos futuros
     $future_periods = $wpdb->get_results(
         "SELECT DISTINCT code, cut FROM {$table_academic_periods_cut} 
-         WHERE start_date >= CURDATE() ORDER BY start_date ASC LIMIT 20"
+         WHERE start_date >= '" . $created_at->format('Y-m-d') . "' ORDER BY start_date ASC LIMIT 20"
     );
 
     // Obtener inscripciones del estudiante
@@ -1238,12 +1239,12 @@ function persist_expected_matrix($student_id, $detailed_matrix)
         $status_text = 'pendiente';
 
         // First check if there is a current inscription (in course)
-        $current_ins = get_inscriptions_by_subject_period($entry['subject_id'], '', $entry['academic_period'], $entry['academic_period_cut'], 'current');
+        $current_ins = get_inscriptions_by_student_automatically_enrollment($entry['subject_id'], null, 'current', $student_id, $entry['academic_period'], $entry['academic_period_cut']);
         if ($current_ins && is_array($current_ins) && count($current_ins) > 0) {
             $status_text = 'en curso';
         } else {
             // Check historical inscriptions (approved/reproved)
-            $history_ins = get_inscriptions_by_subject_period($entry['subject_id'], '', $entry['academic_period'], $entry['academic_period_cut'], 'history');
+            $history_ins = get_inscriptions_by_student_automatically_enrollment($entry['subject_id'], null, 'history', $student_id);
             if ($history_ins && is_array($history_ins) && count($history_ins) > 0) {
                 // If any history record is status_id == 3 -> aprobada, elseif any == 4 -> reprobada
                 $found_approved = false;
