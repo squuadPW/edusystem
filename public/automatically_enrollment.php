@@ -1066,11 +1066,12 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
     $detailed_matrix = [];
     $subject_index = 0;
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
-
+    $student = get_student_detail($student_id);
+    $created_at = new DateTime($student->created_at);
     // Obtener períodos futuros
     $future_periods = $wpdb->get_results(
         "SELECT DISTINCT code, cut FROM {$table_academic_periods_cut} 
-         WHERE start_date >= CURDATE() ORDER BY start_date ASC LIMIT 20"
+         WHERE start_date >= '" . $created_at->format('Y-m-d') . "' ORDER BY start_date ASC LIMIT 20"
     );
 
     // Obtener inscripciones del estudiante
@@ -1088,6 +1089,12 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
         }
     }
 
+    error_log('Completed subjects: ' . implode(', ', $completed_subjects));
+    error_log('Enrolled subjects: ' . implode(', ', $enrolled_subjects));
+    error_log('Future periods: ' . print_r($future_periods, true));
+    error_log('Terms config: ' . print_r($terms_config, true));
+    error_log('Terms available: ' . $terms_available);
+    error_log('Matrix regular count: ' . count($matrix_regular));
     $period_index = 0;
     for ($i = 0; $i < $terms_available; $i++) {
         $term_number = $i + 1;
