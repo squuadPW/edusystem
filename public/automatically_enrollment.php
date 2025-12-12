@@ -1089,12 +1089,6 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
         }
     }
 
-    error_log('Completed subjects: ' . implode(', ', $completed_subjects));
-    error_log('Enrolled subjects: ' . implode(', ', $enrolled_subjects));
-    error_log('Future periods: ' . print_r($future_periods, true));
-    error_log('Terms config: ' . print_r($terms_config, true));
-    error_log('Terms available: ' . $terms_available);
-    error_log('Matrix regular count: ' . count($matrix_regular));
     $period_index = 0;
     for ($i = 0; $i < $terms_available; $i++) {
         $term_number = $i + 1;
@@ -1245,12 +1239,12 @@ function persist_expected_matrix($student_id, $detailed_matrix)
         $status_text = 'pendiente';
 
         // First check if there is a current inscription (in course)
-        $current_ins = get_inscriptions_by_subject_period($entry['subject_id'], '', $entry['academic_period'], $entry['academic_period_cut'], 'current');
+        $current_ins = get_inscriptions_by_student_automatically_enrollment($entry['subject_id'], null, 'current', $student_id, $entry['academic_period'], $entry['academic_period_cut']);
         if ($current_ins && is_array($current_ins) && count($current_ins) > 0) {
             $status_text = 'en curso';
         } else {
             // Check historical inscriptions (approved/reproved)
-            $history_ins = get_inscriptions_by_subject_period($entry['subject_id'], '', $entry['academic_period'], $entry['academic_period_cut'], 'history');
+            $history_ins = get_inscriptions_by_student_automatically_enrollment($entry['subject_id'], null, 'history', $student_id);
             if ($history_ins && is_array($history_ins) && count($history_ins) > 0) {
                 // If any history record is status_id == 3 -> aprobada, elseif any == 4 -> reprobada
                 $found_approved = false;
