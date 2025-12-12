@@ -73,11 +73,6 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                 </thead>
                 <tbody>
                     <?php $documents = get_documents($student->id); ?>
-                    <?php 
-                        echo "<pre>"; 
-                        var_dump( $document );
-                        echo "</pre>";
-                    ?>
                     <?php foreach ($documents as $document): ?>
                         <?php if ($document->is_visible) { ?>
                             <?php $name = get_name_document($document->document_id); ?>
