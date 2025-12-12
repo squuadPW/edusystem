@@ -7,7 +7,8 @@ $countries = get_countries();
 $institutes = get_list_institutes_active();
 $grades = get_grades();
 $url = wp_get_attachment_url($student->profile_picture);
-function truncate_text($text, $max_length = 100) {
+function truncate_text($text, $max_length = 100)
+{
     if (strlen($text) > $max_length) {
         return substr($text, 0, $max_length) . '...';
     }
@@ -31,8 +32,8 @@ function truncate_text($text, $max_length = 100) {
                 href="<?php echo admin_url('/admin.php?page=add_admin_form_admission_content') ?>"><?= __('Back') ?></a>
         <?php endif; ?>
     </div>
-    <?php 
-        include(plugin_dir_path(__FILE__).'cookie-message.php');
+    <?php
+    include(plugin_dir_path(__FILE__) . 'cookie-message.php');
     ?>
     <div class="action-student-admission">
         <?php
@@ -54,10 +55,10 @@ function truncate_text($text, $max_length = 100) {
         <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"
             class="button button-primary"><?= __('Export Excel', 'edusystem'); ?></button>
         <!-- <?php
-        global $current_user;
-        $roles = $current_user->roles;
-        if (in_array('administrator', $roles)) {
-            ?>
+                global $current_user;
+                $roles = $current_user->roles;
+                if (in_array('administrator', $roles)) {
+                ?>
             <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>" target="_blank">
                 <button class="button button-success" style="margin-left: 10px"><?= __('View user', 'edusystem'); ?></button>
             </a>
@@ -168,7 +169,7 @@ function truncate_text($text, $max_length = 100) {
                                                 <select name="grade" autocomplete="off" required style="width: 100%" <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                                     <?php foreach ($grades as $grade): ?>
                                                         <option value="<?= $grade->id; ?>" <?php echo $student->grade_id == $grade->id ? 'selected' : '' ?>>
-                                                            <?= $grade->name; ?>     <?= $grade->description; ?>
+                                                            <?= $grade->name; ?> <?= $grade->description; ?>
                                                         </option>
                                                     <?php endforeach; ?>
                                                 </select>
@@ -251,7 +252,7 @@ function truncate_text($text, $max_length = 100) {
                                 global $current_user;
                                 $roles = $current_user->roles;
                                 if (in_array('administrator', $roles)) {
-                                    ?>
+                                ?>
                                     <p style="text-align: center">
                                         <a href="<?php echo admin_url('user-edit.php?user_id=') . $user_student->ID ?>"
                                             target="_blank">
@@ -271,7 +272,7 @@ function truncate_text($text, $max_length = 100) {
                                     ), $base_url);
                                     $nonce_action = 'switch_to_user_' . $user_student->ID;
                                     $nonce_url = wp_nonce_url($base_url, $nonce_action);
-                                    ?>
+                                ?>
                                     <p style="text-align: center">
                                         <a href="<?php echo $nonce_url; ?>" target="_blank">
                                             <button type="button" class="button button-primary"
@@ -425,7 +426,7 @@ function truncate_text($text, $max_length = 100) {
                                     global $current_user;
                                     $roles = $current_user->roles;
                                     if (in_array('administrator', $roles)) {
-                                        ?>
+                                    ?>
                                         <p style="text-align: center">
                                             <a href="<?php echo admin_url('user-edit.php?user_id=') . $partner->ID ?>"
                                                 target="_blank">
@@ -445,7 +446,7 @@ function truncate_text($text, $max_length = 100) {
                                         ), $base_url);
                                         $nonce_action = 'switch_to_user_' . $partner->ID;
                                         $nonce_url = wp_nonce_url($base_url, $nonce_action);
-                                        ?>
+                                    ?>
                                         <p style="text-align: center">
                                             <a href="<?php echo $nonce_url; ?>" target="_blank">
                                                 <button type="button" class="button button-primary"
@@ -789,7 +790,7 @@ function truncate_text($text, $max_length = 100) {
 
                             // If we reach here, we have something to display
                             $has_valid_data = true;
-                            ?>
+                    ?>
                             <div class="detail-item">
                                 <div class="item-name"><?php echo esc_html($item_name); ?></div>
                                 <p class="item-description"><?php echo esc_html($truncated_description); ?></p>
@@ -953,8 +954,8 @@ function truncate_text($text, $max_length = 100) {
                         <option value="" selected>Assigns an user</option>
                         <?php foreach ($users_signatures_certificates as $user) {
                             $user_loaded = get_user_by('id', $user->user_id);
-                            ?>
-                            <option value="<?= $user->id ?>"><?= $user_loaded->first_name ?>         <?= $user_loaded->last_name ?>
+                        ?>
+                            <option value="<?= $user->id ?>"><?= $user_loaded->first_name ?> <?= $user_loaded->last_name ?>
                                 (<?= $user->charge ?>)</option>
                         <?php } ?>
                     </select>
@@ -976,6 +977,26 @@ function truncate_text($text, $max_length = 100) {
                 onclick="return confirm('<?= __('Are you sure you want to expel the student?', 'edusystem') ?>');"><?= sprintf(__('Withdraw student from %s', 'edusystem'), get_bloginfo('name')); ?></a>
         </div>
     <?php } ?>
+    <div style="text-align: center;">
+        <p>
+            <?php
+            // Obtener el timestamp en formato Unix para wp_date, si $student->created_at es una cadena de fecha/hora.
+            $timestamp = strtotime($student->created_at);
+
+            // Formatear la fecha/hora en el formato deseado
+            $formatted_date = wp_date('m/d/Y H:i:s', $timestamp);
+
+            // Usar sprintf para incrustar la fecha formateada en la cadena traducible
+            $translated_text = sprintf(
+                /* translators: %s: The creation date and time of the student (e.g., 12/31/2025 14:30:00) */
+                __('Student created at %s', 'edusystem'),
+                $formatted_date
+            );
+
+            echo $translated_text;
+            ?>
+        </p>
+    </div>
 <?php } ?>
 
 <script>
@@ -998,32 +1019,32 @@ function truncate_text($text, $max_length = 100) {
     const mesAnio = document.getElementById('expected_graduation_date');
     if (mesAnio) {
         mesAnio.addEventListener('input', function(e) {
-        let valor = e.target.value;
+            let valor = e.target.value;
 
-        // Eliminar cualquier caracter que no sea un número
-        valor = valor.replace(/\D/g, '');
+            // Eliminar cualquier caracter que no sea un número
+            valor = valor.replace(/\D/g, '');
 
-        // Limitar la longitud a 6 dígitos (2 para mes, 4 para año)
-        if (valor.length > 6) {
-            valor = valor.slice(0, 6);
-        }
-
-        // Formatear: agregar la barra después de los 2 primeros dígitos
-        if (valor.length > 2) {
-            let mes = valor.slice(0, 2);
-            let anio = valor.slice(2, 6);
-
-            // Validar que el mes no sea mayor a 12
-            if (parseInt(mes) > 12) {
-                // Si es mayor a 12, lo establecemos como 12
-                mes = '12';
+            // Limitar la longitud a 6 dígitos (2 para mes, 4 para año)
+            if (valor.length > 6) {
+                valor = valor.slice(0, 6);
             }
 
-            valor = mes + '/' + anio;
-        }
+            // Formatear: agregar la barra después de los 2 primeros dígitos
+            if (valor.length > 2) {
+                let mes = valor.slice(0, 2);
+                let anio = valor.slice(2, 6);
 
-        // Actualizar el valor del input
-        e.target.value = valor;
+                // Validar que el mes no sea mayor a 12
+                if (parseInt(mes) > 12) {
+                    // Si es mayor a 12, lo establecemos como 12
+                    mes = '12';
+                }
+
+                valor = mes + '/' + anio;
+            }
+
+            // Actualizar el valor del input
+            e.target.value = valor;
         });
     }
 </script>
