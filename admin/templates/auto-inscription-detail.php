@@ -132,11 +132,48 @@
         #enroll-all-button[disabled],
         #enroll-all-button.is-loading {
             pointer-events: none;
-            /* Asegura que no se pueda hacer clic */
             opacity: 0.6;
-            /* Vuelve el botón semitransparente */
             cursor: default;
-            /* Cambia el cursor a normal */
+        }
+
+        .es-tabs {
+            display: flex;
+            margin-top: 18px;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 2px;
+        }
+
+        .es-tab-button {
+            padding: 10px 16px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease-in-out;
+            margin-right: 1px;
+        }
+
+        .es-tab-button:hover {
+            color: #111;
+        }
+
+        .es-tab-button.active {
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .es-tab-content {
+            padding-top: 20px;
+            display: none;
+        }
+
+        .es-tab-content.active {
+            display: block;
         }
     </style>
 
@@ -150,35 +187,55 @@
             </div>
 
             <div class="es-actions">
-                <div class="es-count"><?= intval(count($expected_rows)) . ' ' . __('found', 'edusystem'); ?></div>
-                <input id="es-search" class="es-search" placeholder="<?= esc_html__('Search student or subject...', 'edusystem'); ?>" />
+                <div class="es-count"><?= intval($total_unique_students) . ' ' . __('students found', 'edusystem'); ?></div>
+                <input id="es-search" class="es-search" placeholder="<?= esc_html__('Search student...', 'edusystem'); ?>" />
                 <button id="enroll-all-button" class="es-btn"><?= esc_html__('Enroll All', 'edusystem'); ?></button>
             </div>
         </div>
 
-        <div id="es-list" class="es-list">
-            <?php if (empty($expected_rows)) : ?>
-                <div class="es-empty"><?= esc_html__('No students found for auto-enrollment.', 'edusystem'); ?></div>
-            <?php else : ?>
-                <?php foreach ($expected_rows as $expected) :
-                    // $expected ahora es un objeto que contiene student_name, initials, subject_list y status
-                    // student_names_lastnames_helper y get_subject_details ya no son necesarios aquí
-                ?>
-                    <div class="es-item" data-search="<?= esc_attr($expected->student_name . ' ' . $expected->subject_list); ?>">
-                        <div class="left">
-                            <div class="es-avatar"><?= esc_html($expected->initials); ?></div>
-                            <div class="es-meta">
-                                <div class="es-name"><?= esc_html($expected->student_name); ?></div>
-                                <div class="es-subject"><?= esc_html($expected->subject_list); ?></div>
-                            </div>
-                        </div>
-                        <div class="right">
-                            <!-- <span class="es-sub"><?= esc_html($expected->status); ?></span> -->
-                            <span class="es-sub"><a target="_blank" class="button button-primary" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=student_matrix&student_id=') . $expected->student_id ?>"><?= __('Matrix', 'edusystem') ?></a></span>
+        <?php if ($total_unique_students === 0) : ?>
+            <div class="es-empty"><?= esc_html__('No students found for auto-enrollment.', 'edusystem'); ?></div>
+        <?php else : ?>
+            <div id="es-tabs" class="es-tabs">
+                <?php $tab_index = 0; ?>
+                <?php foreach ($expected_rows as $subject_data) : ?>
+                    <button
+                        class="es-tab-button <?= $tab_index === 0 ? 'active' : '' ?>"
+                        data-target="tab-<?= $tab_index ?>">
+                        <?= esc_html($subject_data['subject_name']); ?> (<?= count($subject_data['students']); ?>)
+                    </button>
+                    <?php $tab_index++; ?>
+                <?php endforeach; ?>
+            </div>
+
+            <div id="es-list-container">
+                <?php $tab_index = 0; ?>
+                <?php foreach ($expected_rows as $subject_data) : ?>
+                    <div id="tab-<?= $tab_index ?>" class="es-tab-content <?= $tab_index === 0 ? 'active' : '' ?>">
+                        <div class="es-list">
+                            <?php foreach ($subject_data['students'] as $student) : ?>
+                                <div class="es-item" data-search="<?= esc_attr($student->student_name); ?>" data-student-id="<?= esc_attr($student->student_id); ?>">
+                                    <div class="left">
+                                        <div class="es-avatar"><?= esc_html($student->initials); ?></div>
+                                        <div class="es-meta">
+                                            <div class="es-name"><?= esc_html($student->student_name); ?></div>
+                                            <div class="es-subject"><?= sprintf(esc_html__('Subject: %s', 'edusystem'), esc_html($subject_data['subject_name'])); ?></div>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <span class="es-sub">
+                                            <a target="_blank" class="button button-primary" href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=student_matrix&student_id=') . $student->student_id ?>">
+                                                <?= __('Matrix', 'edusystem') ?>
+                                            </a>
+                                        </span>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                     </div>
+                    <?php $tab_index++; ?>
                 <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
+            </div>
+        <?php endif; ?>
     </div>
 </div>

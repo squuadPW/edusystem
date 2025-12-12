@@ -8,7 +8,6 @@ function add_admin_form_auto_inscription_content()
     $code = $load['code'];
     $cut = $load['cut'];
 
-    // 1. Obtener todas las filas pendientes
     $raw_expected_rows = $wpdb->get_results($wpdb->prepare(
         "SELECT * FROM {$table_student_expected_matrix} WHERE academic_period = %s AND academic_period_cut = %s AND status = %s ORDER BY term_index ASC, term_position ASC",
         $code,
@@ -17,43 +16,49 @@ function add_admin_form_auto_inscription_content()
     ));
 
     $grouped_expected_rows = [];
+    $student_details_cache = [];
+    $subject_details_cache = [];
+    $unique_student_ids = [];
 
-    // 2. Agrupar las materias por estudiante
     foreach ($raw_expected_rows as $row) {
         $student_id = $row->student_id;
+        $subject_id = $row->subject_id;
+        
+        $unique_student_ids[$student_id] = true;
 
-        // Cargar detalles del estudiante y materia solo si es necesario
-        if (!isset($grouped_expected_rows[$student_id])) {
+        if (!isset($student_details_cache[$student_id])) {
             $student_detail = get_student_detail($student_id);
+            $student_name = student_names_lastnames_helper($student_id); 
             $initials = mb_strtoupper(substr($student_detail->last_name, 0, 1) . substr($student_detail->name, 0, 1));
-
-            // Inicializar la entrada para el estudiante
-            $grouped_expected_rows[$student_id] = [
+            
+            $student_details_cache[$student_id] = [
                 'student_id' => $student_id,
-                'student_name' => student_names_lastnames_helper($student_id), // Usar la función helper existente
+                'student_name' => $student_name,
                 'initials' => $initials,
-                'subjects' => [], // Aquí guardaremos los nombres de las materias
                 'status' => esc_html__('Waiting', 'edusystem'),
             ];
         }
 
-        $subject_detail = get_subject_details($row->subject_id);
+        if (!isset($subject_details_cache[$subject_id])) {
+            $subject_detail = get_subject_details($subject_id);
+            $subject_details_cache[$subject_id] = $subject_detail->name;
+        }
 
-        // 3. Agregar el nombre de la materia a la lista del estudiante
-        $grouped_expected_rows[$student_id]['subjects'][] = $subject_detail->name;
+        $subject_name = $subject_details_cache[$subject_id];
+
+        if (!isset($grouped_expected_rows[$subject_name])) {
+            $grouped_expected_rows[$subject_name] = [
+                'subject_name' => $subject_name,
+                'students' => [],
+            ];
+        }
+
+        $grouped_expected_rows[$subject_name]['students'][] = (object)$student_details_cache[$student_id];
     }
 
-    // 4. Convertir la lista de materias en un string separado por comas
-    // Usamos array_values para reindexar el array si fuera necesario, aunque las claves son los IDs.
-    // También convierte el array asociativo a un array de arrays para el template.
-    $expected_rows = array_map(function ($row) {
-        $row['subject_list'] = implode(', ', $row['subjects']);
-        unset($row['subjects']); // Eliminamos el array original de materias
-        return (object)$row; // Convertir a objeto para mantener la coherencia con el template original
-    }, array_values($grouped_expected_rows));
+    $total_unique_students = count($unique_student_ids);
 
-    // El array $expected_rows ahora solo contiene una entrada por estudiante,
-    // y cada entrada tiene 'subject_list' con las materias separadas por coma.
+    $expected_rows = array_values($grouped_expected_rows);
 
     include(plugin_dir_path(__FILE__) . 'templates/auto-inscription-detail.php');
 }
