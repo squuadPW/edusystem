@@ -850,7 +850,7 @@ function get_inscriptions_by_subject_period($subject_id, $code_subject, $code_pe
     return $inscriptions;
 }
 
-function get_inscriptions_by_student_automatically_enrollment($subject_id, $code_subject, $status, $student_id = null, $code_period = null, $cut_period = null)
+function get_inscriptions_by_student_automatically_enrollment($subject_id, $status, $student_id = null, $code_subject = null, $code_period = null, $cut_period = null)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';

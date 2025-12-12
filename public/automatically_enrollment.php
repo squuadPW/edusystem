@@ -1185,6 +1185,10 @@ function persist_expected_matrix($student_id, $detailed_matrix)
     if (empty($detailed_matrix) || empty($student_id)) {
         return 0;
     }
+
+    // Eliminamos registros existentes para este student_id antes de insertar los nuevos
+    $wpdb->delete($table, ['student_id' => $student_id]);
+
     // Primero aplanamos la matriz detallada para obtener la posición real
     $flat = [];
     foreach ($detailed_matrix as $idx => $term_entry) {
@@ -1229,7 +1233,7 @@ function persist_expected_matrix($student_id, $detailed_matrix)
     // term_index = secuencia incremental por registro insertado (1..N) para mantener el orden de inserción.
     $inserted = 0;
     $seq = 1;
-    foreach ($flat as $pos => $entry) {
+    foreach ($flat as $pos => &$entry) {
         // Omitir registros sin subject_id (subject_id === null)
         if ($entry['subject_id'] === null) {
             continue;
@@ -1239,29 +1243,35 @@ function persist_expected_matrix($student_id, $detailed_matrix)
         $status_text = 'pendiente';
 
         // First check if there is a current inscription (in course)
-        $current_ins = get_inscriptions_by_student_automatically_enrollment($entry['subject_id'], null, 'current', $student_id, $entry['academic_period'], $entry['academic_period_cut']);
+        $current_ins = get_inscriptions_by_student_automatically_enrollment($entry['subject_id'], 'current', $student_id);
         if ($current_ins && is_array($current_ins) && count($current_ins) > 0) {
             $status_text = 'en curso';
+            $entry['academic_period'] = $current_ins[0]->code_period;
+            $entry['academic_period_cut'] = $current_ins[0]->cut_period;
         } else {
             // Check historical inscriptions (approved/reproved)
-            $history_ins = get_inscriptions_by_student_automatically_enrollment($entry['subject_id'], null, 'history', $student_id);
+            $history_ins = get_inscriptions_by_student_automatically_enrollment($entry['subject_id'], 'history', $student_id);
             if ($history_ins && is_array($history_ins) && count($history_ins) > 0) {
-                // If any history record is status_id == 3 -> aprobada, elseif any == 4 -> reprobada
                 $found_approved = false;
                 $found_failed = false;
                 foreach ($history_ins as $h) {
                     if (isset($h->status_id)) {
-                        if (intval($h->status_id) === 3) {
+                        if (intval($h->status_id) === 3) { // Aprobada
                             $found_approved = true;
-                        } elseif (intval($h->status_id) === 4) {
+                            $status_text = 'aprobada';
+                            // Modificamos el academic_period y el academic_period_cut del entry con el del history_ins.
+                            $entry['academic_period'] = $h->code_period;
+                            $entry['academic_period_cut'] = $h->cut_period;
+                            // Si encuentra 1 inscripcion aprobada, automaticamente se sale y ya esta.
+                            break;
+                        } elseif (intval($h->status_id) === 4) { // Reprobada
                             $found_failed = true;
                         }
                     }
                 }
 
-                if ($found_approved) {
-                    $status_text = 'aprobada';
-                } elseif ($found_failed) {
+                // Si no se encontró ninguna aprobada, se verifica si hay reprobada (para establecer el estado)
+                if (!$found_approved && $found_failed) {
                     $status_text = 'reprobada';
                 }
             }
