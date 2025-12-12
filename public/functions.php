@@ -636,7 +636,7 @@ add_filter('default_checkout_billing_state', 'change_default_checkout_state');
 //         isset($_COOKIE['number_partner']) && !empty($_COOKIE['number_partner'])
 //     ) {
 //         $student_id = insert_student($customer_id);
-//         insert_register_documents($student_id, $_COOKIE['initial_grade']);
+//         insert_register_documents( $student_id );
 
 //         if (!$order->meta_exists('student_id')) {
 //             $order->update_meta_data('student_id', $student_id);

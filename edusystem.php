@@ -840,6 +840,8 @@ function create_tables()
         id INT(11) NOT NULL AUTO_INCREMENT,
         student_id INT(11) NOT NULL,
         document_id TEXT NOT NULL,
+        type_file TEXT NOT NULL,
+        id_requisito TEXT NOT NULL,
         attachment_id BIGINT NOT NULL,
         approved_by INT(11) NULL,
         status INT(11) NOT NULL,

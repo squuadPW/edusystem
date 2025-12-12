@@ -115,7 +115,7 @@ function add_admin_form_scholarships_content()
                 update_user_meta($user_partner_id, 'billing_country', $pre_student_row->country);
                 update_user_meta($user_partner_id, 'billing_city', $pre_student_row->city);
 
-                insert_register_documents($student_id, $pre_student_row->grade_id);
+                insert_register_documents( $student_id );
                 // GENERAMOS USUARIO PARA EL ESTUDIANTE
 
                 // CREAMOS REGISTRO EN TABLA STUDENT_PAYMENTS
