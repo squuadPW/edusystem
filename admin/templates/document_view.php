@@ -119,6 +119,7 @@
                                                     <option 
                                                         value="<?= esc_attr($program->identificator) ?>"
                                                         class="program"
+                                                        data-type="program"
                                                         <?= $program_info ? 'selected' : '' ?>
                                                         data-required="<?= $program_info && !empty($program_info['required']) ? 'true' : 'false'; ?>"
                                                     >
@@ -172,6 +173,7 @@
                                                                     <option 
                                                                         value="<?= esc_attr($mention->identificator) ?>"
                                                                         class="mention"
+                                                                        data-type="mention"
                                                                         <?= $mention_info ? 'selected' : '' ?>
                                                                         data-required="<?= $mention_info && !empty($mention_info['required']) ? 'true' : 'false'; ?>"
                                                                     >
