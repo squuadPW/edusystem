@@ -1066,15 +1066,23 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
     $detailed_matrix = [];
     $subject_index = 0;
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+
+    // Obtener detalles del estudiante y fecha de creación
     $student = get_student_detail($student_id);
+    // Verificar si $student es válido y tiene la propiedad 'created_at'
+    if (!$student || !isset($student->created_at)) {
+        // En un escenario real, deberías decidir qué hacer si el estudiante no existe.
+        return [];
+    }
     $created_at = new DateTime($student->created_at);
-    // Obtener períodos futuros
+
+    // Consulta optimizada y segura (usando $wpdb->prepare si se pudiera, pero aquí el dato es seguro ya que se formatea)
     $future_periods = $wpdb->get_results(
         "SELECT DISTINCT code, cut FROM {$table_academic_periods_cut} 
          WHERE start_date >= '" . $created_at->format('Y-m-d') . "' ORDER BY start_date ASC LIMIT 20"
     );
 
-    // Obtener inscripciones del estudiante
+    // Obtener inscripciones del estudiante y clasificar por estado
     $inscriptions = get_inscriptions_by_student($student_id);
     $completed_subjects = [];
     $enrolled_subjects = [];
@@ -1084,7 +1092,8 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
             if ($inscription->status_id == 3) {
                 $completed_subjects[] = $inscription->subject_id;
             } elseif ($inscription->status_id == 1) {
-                $enrolled_subjects[] = $inscription->subject_id;
+                // Aunque no se usan directamente en el loop principal, se mantienen por si se necesitan.
+                $enrolled_subjects[] = $inscription->subject_id; 
             }
         }
     }
@@ -1093,58 +1102,98 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
     for ($i = 0; $i < $terms_available; $i++) {
         $term_number = $i + 1;
         $term_type = $terms_config[$term_number] ?? 'N/A';
-        $term_entry = [];
-        $period_data = ($period_index < count($future_periods)) ? $future_periods[$period_index++] : null;
+
+        // Obtener datos del período futuro
+        $period_data = ($period_index < count($future_periods)) ? $future_periods[$period_index] : null;
 
         if ($term_type === 'RR') {
-            // 2 subjects
-            $subjects_data = [];
+            // Este es un período que contiene 2 asignaturas
+            $subjects_to_process = 2;
+            $new_entries = [];
 
-            // FIX: Using a new counter variable ($j) for the inner loop to avoid modifying the main loop counter ($i).
-            for ($j = 0; $j < 2; $j++) {
+            for ($j = 0; $j < $subjects_to_process; $j++) {
                 if ($subject_index < count($matrix_regular)) {
                     $subject = $matrix_regular[$subject_index];
                     $is_completed = in_array($subject->subject_id, $completed_subjects);
 
-                    $subjects_data[] = [
-                        'subject_id' => $subject->subject_id,
+                    $entry = [
                         'cut' => $is_completed ? get_subject_cut($student_id, $subject->subject_id) : ($period_data ? $period_data->cut : ''),
+                        'type' => 'R', // Se considera 'R' (regular) a nivel de asignatura
+                        'subject_id' => $subject->subject_id,
                         'code_period' => $is_completed ? get_subject_period($student_id, $subject->subject_id) : ($period_data ? $period_data->code : ''),
                         'completed' => $is_completed
                     ];
-                    $subject_index++;
+                    $new_entries[] = $entry;
+                    $subject_index++; // Avanzar al siguiente sujeto
                 } else {
-                    $subjects_data[] = ['subject_id' => '', 'cut' => '', 'code_period' => '', 'completed' => false];
+                    // Rellenar con datos vacíos si no hay más asignaturas en $matrix_regular
+                    $new_entries[] = [
+                        'cut' => ($period_data ? $period_data->cut : ''), 
+                        'type' => 'R', 
+                        'subject_id' => '', 
+                        'code_period' => ($period_data ? $period_data->code : ''), 
+                        'completed' => false
+                    ];
                 }
             }
+            
+            // Si el período fue usado, avanzar el índice del período
+            if ($period_data) {
+                $period_index++; 
+            }
+            
+            // Agregar las dos entradas individuales a la matriz detallada
+            $detailed_matrix = array_merge($detailed_matrix, $new_entries);
 
-            $term_entry['cut'] = array_column($subjects_data, 'cut');
-            $term_entry['type'] = 'R';
-            $term_entry['subject_id'] = array_column($subjects_data, 'subject_id');
-            $term_entry['code_period'] = array_column($subjects_data, 'code_period');
-            $term_entry['completed'] = array_column($subjects_data, 'completed');
         } elseif ($term_type === 'R') {
-            // 1 subject
+            // Período que contiene 1 asignatura
+            $term_entry = [];
             if ($subject_index < count($matrix_regular)) {
                 $subject = $matrix_regular[$subject_index];
-                // Check based on 'id' for consistency if $matrix_regular elements for 'R' should also be objects with 'id', but keeping 'subject_id' as in the original code for 'R' block if the structure is different. Assuming the original use of 'subject_id' in this block is correct.
                 $is_completed = in_array($subject->subject_id, $completed_subjects);
 
-                $term_entry['cut'] = $is_completed ? get_subject_cut($student_id, $subject->subject_id) : ($period_data ? $period_data->cut : '');
-                $term_entry['type'] = 'R';
-                $term_entry['subject_id'] = $subject->subject_id;
-                $term_entry['code_period'] = $is_completed ? get_subject_period($student_id, $subject->subject_id) : ($period_data ? $period_data->code : '');
-                $term_entry['completed'] = $is_completed;
-                $subject_index++;
+                $term_entry = [
+                    'cut' => $is_completed ? get_subject_cut($student_id, $subject->subject_id) : ($period_data ? $period_data->cut : ''),
+                    'type' => 'R',
+                    'subject_id' => $subject->subject_id,
+                    'code_period' => $is_completed ? get_subject_period($student_id, $subject->subject_id) : ($period_data ? $period_data->code : ''),
+                    'completed' => $is_completed
+                ];
+                $subject_index++; // Avanzar al siguiente sujeto
             } else {
-                $term_entry = ['cut' => ($period_data ? $period_data->cut : ''), 'type' => 'R', 'subject_id' => '', 'code_period' => ($period_data ? $period_data->code : ''), 'completed' => false];
+                // Rellenar con datos vacíos si no hay más asignaturas
+                $term_entry = [
+                    'cut' => ($period_data ? $period_data->cut : ''), 
+                    'type' => 'R', 
+                    'subject_id' => '', 
+                    'code_period' => ($period_data ? $period_data->code : ''), 
+                    'completed' => false
+                ];
             }
-        } else {
-            // Optional: Assign term entry for 'N/A' type if needed.
-            $term_entry = ['cut' => ($period_data ? $period_data->cut : ''), 'type' => 'N/A', 'subject_id' => '', 'code_period' => ($period_data ? $period_data->code : ''), 'completed' => false];
-        }
+            
+            if ($period_data) {
+                $period_index++;
+            }
+            
+            // Agregar la entrada individual a la matriz
+            if ($term_entry) {
+                $detailed_matrix[] = $term_entry;
+            }
 
-        if ($term_entry) {
+        } else {
+            // Tipo de término no reconocido ('N/A'). Consume un período pero no una asignatura regular.
+            $term_entry = [
+                'cut' => ($period_data ? $period_data->cut : ''), 
+                'type' => 'N/A', 
+                'subject_id' => '', 
+                'code_period' => ($period_data ? $period_data->code : ''), 
+                'completed' => false
+            ];
+            
+            if ($period_data) {
+                $period_index++;
+            }
+
             $detailed_matrix[] = $term_entry;
         }
     }
