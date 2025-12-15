@@ -22,6 +22,9 @@ include_once( plugin_dir_path(__FILE__).'payment_method_fees/payment_method_fees
 // funciones de edusystem_log
 include_once( plugin_dir_path(EDUSYSTEM__FILE__).'edusystem_log/edusystem_log.php' );
 
+// funciones de actualizar la tabla de documentos del estudiante
+include_once( plugin_dir_path(EDUSYSTEM__FILE__).'update-student-document.php' ); 
+
 if (!class_exists('WP_List_Table')) {
   require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
@@ -840,6 +843,7 @@ function create_tables()
         id INT(11) NOT NULL AUTO_INCREMENT,
         student_id INT(11) NOT NULL,
         document_id TEXT NOT NULL,
+        doc_id INT(11) NOT NULL,
         type_file TEXT NOT NULL,
         id_requisito TEXT NOT NULL,
         attachment_id BIGINT NOT NULL,
@@ -848,6 +852,7 @@ function create_tables()
         description TEXT NULL,
         is_required INT(11) NOT NULL DEFAULT 0,
         is_visible BOOLEAN NOT NULL DEFAULT 1,
+        automatic BOOLEAN NOT NULL DEFAULT 0,
         max_date_upload DATE NULL,
         upload_at DATETIME NULL,
         updated_at DATETIME NULL,

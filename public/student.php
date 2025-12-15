@@ -1096,6 +1096,7 @@ function insert_register_documents( $student_id )
         $is_visible = $document->is_visible;
         $type_file = $document->type_file;
         $id_requisito = $document->id_requisito;
+        $doc_id = $document->id;
 
         // debes poner la condicion de mayor de menor de edad
         if ($is_legal_age && $document_name == 'ID OR CI OF THE PARENTS' && false) {
@@ -1106,6 +1107,7 @@ function insert_register_documents( $student_id )
         $wpdb->insert($table_student_documents, [
             'student_id' => $student_id,
             'document_id' => $document_name, 
+            'doc_id' => $doc_id,
             'is_required' => $is_required,
             'is_visible' => $is_visible,
             'type_file' => $type_file,
@@ -1148,10 +1150,12 @@ function insert_register_documents( $student_id )
         $wpdb->insert($table_student_documents, [
             'student_id' => $student_id,
             'document_id' => $document_id_to_insert,
+            'doc_id' => $doc->id,
             'is_required' => $doc->is_required,
             'is_visible' => $doc->is_visible,
             'type_file' => $doc->id_requisito ?? null,
             'id_requisito' => $doc->id_requisito ?? null,
+            'automatic' => 1,
             'status' => 0,
             'created_at' => current_time('mysql'),
         ]);
