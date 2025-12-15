@@ -41,6 +41,7 @@ require plugin_dir_path(__FILE__) . 'templates-emails.php';
 require plugin_dir_path(__FILE__) . 'expenses-payroll.php';
 require plugin_dir_path(__FILE__) . 'custom-inputs.php';
 require plugin_dir_path(__FILE__) . 'grades-country.php';
+require plugin_dir_path(__FILE__) . 'updating-student-documents.php';
 
 function admin_form_plugin_scripts()
 {
@@ -480,6 +481,7 @@ function add_custom_admin_page()
             );
             add_submenu_page('add_admin_form_admission_content', __('Required Documents', 'edusystem'), __('Required Documents', 'edusystem'), 'manager_documents_aes', 'admission-documents', 'show_admission_documents', 10);
             add_submenu_page('add_admin_form_admission_content', __('Payment link', 'edusystem'), __('Payment link', 'edusystem'), 'manager_dynamic_links', 'add_admin_form_dynamic_link_content', 'add_admin_form_dynamic_link_content', 10);
+            add_submenu_page('add_admin_form_admission_content', __('Updating student documents', 'edusystem'), __('Updating student documents', 'edusystem'), 'updating_student_documents', 'updating-student-documents', 'updating_student_documents', 10);
         }
 
         add_menu_page(
@@ -642,6 +644,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_moodle_settings_aes');
     $role->add_cap('manager_moodle_settings_aes');
     $role->add_cap('manager_logs');
+    $role->add_cap('updating_student_documents');
 }
 
 add_action('admin_init', 'add_cap_to_administrator');
@@ -1743,5 +1746,7 @@ add_action('woocommerce_order_status_changed', function ($order_id, $old_status,
         }
     }
 }, 10, 4);
+
+
 
 
