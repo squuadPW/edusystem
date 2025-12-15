@@ -168,7 +168,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                                 style="width: 100%; min-width: 200px;"
                                                                 <?= $completed || $is_group_disabled ? 'disabled' : '' ?>>
                                                                 <option value="" <?= empty($subject_id) ? 'selected' : '' ?>><?= __('Select Subject', 'edusystem') ?></option>
-                                                                <?php foreach ($subjects as $subject) { ?>
+                                                                <?php foreach ($subjects_regular as $subject) { ?>
                                                                     <option value="<?= $subject->id ?>" <?= ($subject_id == $subject->id) ? 'selected' : '' ?>>
                                                                         <?= esc_html($subject->name) ?>
                                                                     </option>

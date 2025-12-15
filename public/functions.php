@@ -3844,9 +3844,12 @@ function load_current_cut()
 function load_last_cut()
 {
     global $wpdb;
-    $table_academic_periods = $wpdb->prefix . 'academic_periods';
     $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
     $current_time = current_time('mysql');
+
+    $cut = null;
+    $code = null;
+    $end_date = null;
 
     $period_data_cut = $wpdb->get_row($wpdb->prepare(
         "SELECT cut, code, end_date 
@@ -3854,7 +3857,7 @@ function load_last_cut()
         WHERE end_date <= %s 
         ORDER BY end_date DESC 
         LIMIT 1",
-        array($current_time)
+        $current_time
     ));
 
     if ($period_data_cut) {

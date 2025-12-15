@@ -101,13 +101,14 @@ function add_admin_form_academic_projection_content()
                 }
 
                 $academic_period_result = $wpdb->get_row("SELECT * FROM {$table_academic_periods} WHERE code = {$academic_period}");
-                $offer = get_offer_filtered($subject_id, $academic_period, $academic_period_cut);
+                $offer = get_offer_filtered($subject_id, $academic_period, $academic_period_cut, $section);
                 if ($offer) {
                     $teacher = $wpdb->get_row("SELECT * FROM {$table_teachers} WHERE id = {$offer->teacher_id}");
                 }
             }
 
             $projections_result = [
+                'offer' => $offer,
                 'students' => $students,
                 'subject' => $subject,
                 'teacher' => $teacher,
@@ -127,11 +128,10 @@ function add_admin_form_academic_projection_content()
             global $wpdb;
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $table_school_subjects = $wpdb->prefix . 'school_subjects';
-            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at DESC");
             $student_id = (int) $_GET['student_id'];
             $student = get_student_detail($student_id);
             $projection = get_projection_by_student($student_id);
-            $cuts = ['A', 'B', 'C', 'D', 'E'];
+
             $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1");
             // Use the relational table as canonical source for the student's expected matrix.
             if ($projection) {
@@ -139,22 +139,12 @@ function add_admin_form_academic_projection_content()
             } else {
                 $matrix = [];
             }
-            // $matrix is already an array reconstructed from the relational table.
 
-            $lastNameParts = array_filter([$student->last_name, $student->middle_last_name]);
-            $firstNameParts = array_filter([$student->name, $student->middle_name]);
-            $student_full_name = '';
-
-            if (!empty($lastNameParts)) {
-                $student_full_name .= implode(' ', $lastNameParts);
-            }
-
-            if (!empty($firstNameParts)) {
-                if (!empty($student_full_name)) {
-                    $student_full_name .= ', ';
-                }
-                $student_full_name .= implode(' ', $firstNameParts);
-            }
+            // USADO EN EL TEMPLATE STUDENT-MATRIX.PHP
+            $subjects_regular = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE `type` = 'regular' AND is_active = 1");
+            $student_full_name = student_names_lastnames_helper($student->id);
+            $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at DESC");
+            $cuts = ['A', 'B', 'C', 'D', 'E'];
 
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-student-matrix.php');
         }
@@ -536,6 +526,11 @@ function add_admin_form_academic_projection_content()
             $load_current_cut = load_current_cut();
             $code_current_cut = $load_current_cut['code'];
             $cut_current_cut = $load_current_cut['cut'];
+
+            $load_last_cut = load_last_cut();
+            $code_last_cut = $load_last_cut['code'];
+            $cut_last_cut = $load_last_cut['cut'];
+
             if (get_option('send_welcome_email_ready') != $code_current_cut . ' - ' . $cut_current_cut) {
                 update_option('send_welcome_email_ready', '');
             }
@@ -548,7 +543,7 @@ function add_admin_form_academic_projection_content()
             $list_academic_projection = new TT_academic_projection_all_List_Table;
             $list_academic_projection->prepare_items();
 
-            $available_offers = get_offers_availables_by_code($code_current_cut, $cut_current_cut);
+            $available_offers = get_offers_availables_by_code($code_last_cut, $cut_last_cut);
 
             include(plugin_dir_path(__FILE__) . 'templates/list-academic-projection.php');
         }
@@ -2537,3 +2532,27 @@ function update_max_upload_at($student_id)
         ]);
     }
 }
+
+
+function get_close_academic_offer()
+{
+    global $wpdb;
+    $table_academic_offers = $wpdb->prefix . 'academic_offers';
+    $academic_period = $_POST['academic_period'];
+    $academic_period_cut = $_POST['academic_period_cut'];
+    $subject_id = $_POST['subject_id'];
+    $section = $_POST['section'];
+    $close_offer = (int)$_POST['close_offer'];
+
+    $wpdb->update($table_academic_offers, [
+        'grades_downloaded' => $close_offer,
+    ], ['code_period' => $academic_period, 'cut_period' => $academic_period_cut, 'subject_id' => $subject_id, 'section' => $section]);
+
+    setcookie('message', $close_offer ? __('Successfully closed offer.', 'edusystem') : __('Successfully opened offer.', 'edusystem'), time() + 3600, '/');
+
+    echo json_encode(['status' => 'success']);
+    exit;
+}
+
+add_action('wp_ajax_nopriv_close_academic_offer', 'get_close_academic_offer');
+add_action('wp_ajax_close_academic_offer', 'get_close_academic_offer');

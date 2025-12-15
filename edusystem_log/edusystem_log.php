@@ -20,13 +20,18 @@ define('EDUSYSTEM_TYPE_LOGS', [
 // Scripts y estilos para la página de logs
 add_action('admin_enqueue_scripts', function () {
 
-    // valida que solo se activen en la pagina de log
-    if ( !empty( $_GET['page'] ) || $_GET['page'] == 'edusystem-logs' || $_GET['page'] == 'edusystem-logs-delete' ) {
+    $page = $_GET['page'] ?? '';
 
+    // Fix: Only load on specific pages
+    if ( $page === 'edusystem-logs' || $page === 'edusystem-logs-delete' ) {
+        error_log('Loading Edusystem Logs assets');
+        error_log(print_r($_GET, true));
         wp_enqueue_style('styles-log', EDUSYSTEM_URL.'/edusystem_log/assets/css/styles.css');
 
-        wp_register_script('scripts-log',  EDUSYSTEM_URL.'/edusystem_log/assets/js/scripts.js');
-        wp_localize_script( 'scripts-log', 'ajax_object', [
+        wp_register_script('scripts-log',  EDUSYSTEM_URL.'/edusystem_log/assets/js/scripts.js', [], false, true);
+        
+        // Changed name to 'log_data' to avoid conflict
+        wp_localize_script( 'scripts-log', 'log_data', [
             'ajax_url' => admin_url('admin-ajax.php'),
             'translations' => [
                 'select_user' => __('Select a user', 'split-payment-method'),
@@ -34,11 +39,9 @@ add_action('admin_enqueue_scripts', function () {
         ]);
         wp_enqueue_script('scripts-log');
 
-        // Encola Flatpickr para la selección de fechas
         wp_enqueue_style('flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css');
         wp_enqueue_script('flatpickr', 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js');
     }
-
 });
 
 // Crea la tabla en la base de datos

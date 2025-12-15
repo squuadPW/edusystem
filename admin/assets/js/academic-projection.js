@@ -88,3 +88,44 @@ document.querySelectorAll(".modal-close").forEach((close) => {
     }, 100);
   });
 });
+
+
+let close_offer = document.getElementById("close-offer");
+if (close_offer) {
+  close_offer.addEventListener("click", async (e) => {
+    close_offer.disabled = true;
+    const urlParams = new URLSearchParams(window.location.search);
+    const academic_period = urlParams.get("academic_period"); 
+    const academic_period_cut = urlParams.get("academic_period_cut"); 
+    const subject_id = urlParams.get("subject_id"); 
+    const section = urlParams.get("section"); 
+    const close_offfer = document.getElementById("close-offer").value;
+
+    const XHR = new XMLHttpRequest();
+    XHR.open("POST", projection_data.url, true);
+    XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    XHR.responseType = "text";
+    XHR.send(
+      "action=" +
+        projection_data.action +
+        "&academic_period=" + 
+        academic_period +
+        "&academic_period_cut=" + 
+        academic_period_cut +
+        "&subject_id=" + 
+        subject_id +
+        "&section=" + 
+        section +
+        "&close_offer=" + close_offfer
+    );
+    XHR.onload = function () {
+      if (this.readyState == "4" && XHR.status === 200) {
+        // alert("The offer has been successfully closed.");
+        location.reload();
+      } else {
+        close_offer.disabled = false;
+        alert("An error occurred while closing the offer. Please try again.");
+      }
+    };
+  });
+}
