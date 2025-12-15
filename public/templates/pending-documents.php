@@ -35,7 +35,7 @@
                                         <a class="document-link <?= $status_class ?>" 
                                            style="<?= $is_required ?>"
                                            href="<?= get_permalink(get_option('woocommerce_myaccount_page_id')) . '/student-documents'; ?>">
-                                            <?php $name = get_name_document($document->document_id); ?>
+                                            <?php $name = $document->document_id; ?>
                                             • <?= $name; ?>
                                             <?php if ($document->max_date_upload): ?>
                                                 <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
