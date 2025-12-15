@@ -995,7 +995,6 @@ div#application-passwords-section {
 
 .button-success:hover {
   background-color: #218838;
-  transform: translateY(-2px); /* Pequeño efecto de elevación al pasar el ratón */
 }
 
 .button-secondary {
@@ -1005,7 +1004,6 @@ div#application-passwords-section {
 
 .button-secondary:hover {
   background-color: #5a6268;
-  transform: translateY(-2px);
 }
 
 h2 {

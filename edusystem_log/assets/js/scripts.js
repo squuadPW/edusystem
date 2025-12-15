@@ -1,5 +1,5 @@
-ajax_url = ajax_object.ajax_url;
-translations = ajax_object.translations;
+ajax_url = log_data.ajax_url;
+translations = log_data.translations;
 
 document.addEventListener('DOMContentLoaded', () => {
     const date_range = document.getElementById('date-range');

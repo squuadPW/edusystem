@@ -73,6 +73,8 @@
 <div style="text-align: center">
     <input type="hidden" name="name_document"
         value="<?= strtoupper($projections_result['subject']->name) . ' - ' . strtoupper($projections_result['academic_period']->code) ?>">
-    <button type="button" class="button button-success" id="preview-grades"
+    <button type="button" class="button button-primary" id="preview-grades"
         style="margin: 10px"><?= __('Export PDF', 'edusystem'); ?></button>
+        <button type="button" class="button <?= !$projections_result['offer']->grades_downloaded ? 'button-danger' : 'button-success' ?>" id="close-offer" name="close-offer"
+            style="margin: 10px" value="<?= !$projections_result['offer']->grades_downloaded ? 1 : 0 ?>"><?= !$projections_result['offer']->grades_downloaded ? __('Close offer', 'edusystem') : __('Open offer', 'edusystem'); ?></button>
 </div>
