@@ -146,7 +146,7 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
 
         $student_id = insert_student($order); // Assuming this function exists and works
 
-        insert_register_documents($student_id, sanitize_text_field(wp_unslash($program['initial_grade']))); // Assuming this function exists and works
+        insert_register_documents( $student_id ); // Assuming this function exists and works
 
         if (!$order->meta_exists('student_id')) {
             $order->update_meta_data('student_id', $student_id);

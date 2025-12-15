@@ -998,7 +998,172 @@ function insert_register_program($student_id, $program_data)
  * @param int $student_id ID del estudiante.
  * @param int $grade_id ID del grado del estudiante.
  */
-function insert_register_documents($student_id, $grade_id)
+function insert_register_documents( $student_id )
+{
+    global $wpdb;
+
+    $student = get_student_detail($student_id);
+    if ( !$student ) return;
+
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+    $table_documents = $wpdb->prefix . 'documents';
+    $table_documents_certificates = $wpdb->prefix . 'documents_certificates';
+
+    // Obtencion de los documentos por el programa, carrera o mencion
+    $documents = $wpdb->get_results( $wpdb->prepare(
+        "SELECT `d`.id, `d`.name, `d`.is_visible, `d`.type_file, `d`.id_requisito,
+            CASE
+                WHEN `d`.is_required = 1 THEN 1
+                WHEN `d`.is_required = 0 THEN
+                CASE
+                    WHEN `ps`.mention_identificator IS NOT NULL AND `ps`.mention_identificator <> ''
+                        AND JSON_CONTAINS_PATH( `d`.academic_department, 'one', 
+                            CONCAT('$.mention.\"', ps.mention_identificator, '\"') 
+                        ) = 1
+                    THEN IF( 
+                        JSON_UNQUOTE( JSON_EXTRACT( `d`.academic_department,
+                            CONCAT('$.mention.\"', ps.mention_identificator, '\".required')
+                        )) = 'true',
+                        1, 0
+                    )
+                    
+                    WHEN `ps`.career_identificator IS NOT NULL AND `ps`.career_identificator <> ''
+                        AND JSON_CONTAINS_PATH( `d`.academic_department, 'one',
+                            CONCAT('$.career.\"', ps.career_identificator, '\"')
+                        ) = 1
+                    THEN IF(
+                        JSON_UNQUOTE( JSON_EXTRACT( `d`.academic_department,
+                            CONCAT('$.career.\"', ps.career_identificator, '\".required')
+                        )) = 'true',
+                        1, 0
+                    )
+
+                    WHEN `ps`.program_identificator IS NOT NULL AND `ps`.program_identificator <> ''
+                        AND JSON_CONTAINS_PATH( `d`.academic_department, 'one',
+                            CONCAT('$.program.\"', ps.program_identificator, '\"')
+                        ) = 1
+                    THEN IF(
+                        JSON_UNQUOTE( JSON_EXTRACT( `d`.academic_department,
+                            CONCAT('$.program.\"', ps.program_identificator, '\".required')
+                        )) = 'true',
+                        1, 0
+                    )
+                    ELSE 0
+                END
+                ELSE 0
+            END AS is_required
+        FROM {$wpdb->prefix}programs_by_student ps
+        CROSS JOIN {$wpdb->prefix}documents d
+        WHERE `ps`.student_id = %d
+            AND (
+                    ( `ps`.mention_identificator IS NOT NULL AND `ps`.mention_identificator <> ''
+                    AND JSON_CONTAINS_PATH(`d`.academic_department, 'one', CONCAT('$.mention.\"', ps.mention_identificator, '\"')) )
+                OR ( `ps`.career_identificator IS NOT NULL AND `ps`.career_identificator <> ''
+                    AND JSON_CONTAINS_PATH(`d`.academic_department, 'one', CONCAT('$.career.\"', ps.career_identificator, '\"')))
+                OR (`ps`.program_identificator IS NOT NULL AND `ps`.program_identificator <> ''
+                    AND JSON_CONTAINS_PATH(`d`.academic_department, 'one', CONCAT('$.program.\"', ps.program_identificator, '\"')))
+                OR COALESCE(JSON_LENGTH(`d`.academic_department), 0) = 0
+            ) ",
+        $student_id
+    ));
+    if ( empty($documents) ) return;
+
+    // Validaciones de dublicados para documentos usando 'name' como identificador
+    $document_names = wp_list_pluck($documents, 'name' );
+    $placeholders_grade = implode(', ', array_fill(0, count($document_names), '%s'));
+    $query_params_grade = array_merge([$student_id], $document_names );
+    $existing_docs_names = $wpdb->get_col(
+        $wpdb->prepare(
+            "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders_grade})",
+            ...$query_params_grade
+        )
+    );
+
+    // verifica si es mayor o menor de la condicion 
+    $birthDate = new DateTime( $student->birth_date );
+    $is_legal_age = ( $birthDate->diff(new DateTime())->y >= 18 );
+
+    // Insercion de documentos
+    foreach ( $documents as $document ) {
+        
+        $document_name = $document->name;
+        if (is_null($document_name)) continue;
+
+        // valida si el documento existe por el nombre
+        if (in_array( $document_name, $existing_docs_names, true)) continue;
+
+        $is_required = $document->is_required;
+        $is_visible = $document->is_visible;
+        $type_file = $document->type_file;
+        $id_requisito = $document->id_requisito;
+        $doc_id = $document->id;
+
+        // debes poner la condicion de mayor de menor de edad
+        if ($is_legal_age && $document_name == 'ID OR CI OF THE PARENTS' && false) {
+            $is_required = 0;
+            $is_visible = 0;
+        }        
+
+        $wpdb->insert($table_student_documents, [
+            'student_id' => $student_id,
+            'document_id' => $document_name, 
+            'doc_id' => $doc_id,
+            'is_required' => $is_required,
+            'is_visible' => $is_visible,
+            'type_file' => $type_file,
+            'id_requisito' => $id_requisito,
+            'status' => 0,
+            'created_at' => current_time('mysql'),
+        ]);
+    }
+
+    // Obtener documentos automaticos
+    $automatic_docs = $wpdb->get_results(
+        $wpdb->prepare("SELECT * FROM {$table_documents_certificates} WHERE `type` = %s and `status` = %d", 'automatic', 1)
+    );
+
+    // Valida duplicados de documentos automaticos
+    $automatic_doc_id = wp_list_pluck($automatic_docs, 'document_identificator');
+    if ( !empty($automatic_doc_id) ) {
+
+        $placeholders_auto = implode(', ', array_fill(0, count($automatic_doc_id), '%s'));
+        $query_params_auto = array_merge([$student_id], $automatic_doc_id);
+
+        $existing_auto_doc_ids = $wpdb->get_col(
+            $wpdb->prepare(
+                "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders_auto})",
+                ...$query_params_auto
+            )
+        );
+    } else {
+        $existing_auto_doc_ids = [];
+    }
+
+    // Insertar documentos automaticos faltances
+    foreach ( $automatic_docs as $doc ) {
+
+        $document_id_to_insert = $doc->document_identificator;
+
+        // valida si va a insertar
+        if ( in_array($document_id_to_insert, $existing_auto_doc_ids, true) ) continue;
+
+        $wpdb->insert($table_student_documents, [
+            'student_id' => $student_id,
+            'document_id' => $document_id_to_insert,
+            'doc_id' => $doc->id,
+            'is_required' => $doc->is_required,
+            'is_visible' => $doc->is_visible,
+            'type_file' => $doc->id_requisito ?? null,
+            'id_requisito' => $doc->id_requisito ?? null,
+            'automatic' => 1,
+            'status' => 0,
+            'created_at' => current_time('mysql'),
+        ]);
+    }
+}
+
+// respalda la funcion
+/* function insert_register_documents($student_id, $grade_id)
 {
     global $wpdb;
 
@@ -1113,7 +1278,7 @@ function insert_register_documents($student_id, $grade_id)
             'created_at' => current_time('mysql'),
         ]);
     }
-}
+} */
 
 function get_documents($student_id)
 {
