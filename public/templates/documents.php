@@ -75,8 +75,8 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                     <?php $documents = get_documents($student->id); ?>
                     <?php foreach ($documents as $document): ?>
                         <?php if ($document->is_visible) { ?>
-                            <?php $name = get_name_document($document->document_id); ?>
-                            <?php $document_name_complete = get_name_document($document->document_id); ?>
+                            <?php $name = $document->document_id; ?>
+                            <?php $document_name_complete = $document->document_id; ?>
                             <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                     data-title="<?= __('Document', 'edusystem'); ?>" style="max-width: 250px;">
@@ -130,8 +130,8 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                         <div class="custom-file">
                                             <input type="file" class="custom-file-input" <?= in_array($document_name_complete, $arr_photos_student) ? 'id=student_photo' : '' ?>
                                                 name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>"
-                                                accept="<?php echo get_type_file_document($document->document_id) ?>"
-                                                data-fileallowed="<?php echo get_type_file_document($document->document_id) ?>">
+                                                accept="<?= $document->type_file ?>"
+                                                data-fileallowed="<?= $document->type_file ?>">
                                             <span class="custom-file-label" <?= in_array($document_name_complete, $arr_photos_student) ? 'id=student_photo_label_input' : '' ?>><?= __('Select file', 'edusystem') ?></span>
                                         </div>
                                     <?php } else { ?>
@@ -146,7 +146,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                         data-title="<?= __('Document', 'edusystem'); ?>">
                                         <input type="hidden" name="<?= 'file_student_' . $student->id . '_id[]'; ?>"
                                             value="<?= $document->id; ?>">
-                                    <?php $name = get_name_document($document->document_id); ?>
+                                    <?php $name = $document->document_id; ?>
 
                                         <strong><?= $name; ?></strong>
                                     <?php if ($document->max_date_upload): ?>
