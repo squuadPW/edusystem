@@ -94,7 +94,10 @@ add_shortcode('PROGRAM-QUOTAS', function () {
         $language = explode( '_', get_locale() )[0]; 
         
         ?>
-            <div>
+            <div id="payment-cuotes" >
+
+                <div id="container-disable" ></div>
+
                 <div class="radio-group text-center elements-quote-hidden">
                     <label class="m-5"><?= __('Program Payments', 'edusystem') ?></label>
 

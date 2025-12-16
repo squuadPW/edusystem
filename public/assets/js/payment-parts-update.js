@@ -1,49 +1,59 @@
 
 document.addEventListener("DOMContentLoaded", () => {
-  options_quotas = document.querySelectorAll(".options-quotas .option-quota");
+    options_quotas = document.querySelectorAll(".options-quotas .option-quota");
 
-  /**
-   * Maneja la interacción del usuario con las opciones de cuotas en la interfaz.
-   *
-   * Este bloque de código itera sobre cada opción de cuota y agrega un evento de clic
-   * que permite al usuario seleccionar una opción de cuota específica. Al hacer clic en
-   * una opción, se obtienen los datos de la regla correspondiente y se genera la tabla
-   * de pagos utilizando la función `payment_table`. Además, se actualiza el precio del
-   * producto en el carrito de WooCommerce según la regla seleccionada, llamando a la
-   * función `update_price_product_cart_quota_rule_js`.
-   *
-   * @param {NodeList} options_quotas - Lista de opciones de cuotas en la interfaz.
-   *
-   * @return {void} No retorna ningún valor.
-   */
-  options_quotas.forEach((option_quota) => {
-    option_quota.addEventListener("click", function () {
-      // Eliminar la clase 'checked' de todas las opciones
-      options_quotas.forEach((opt) => {
-        opt.querySelector(".option-rule").removeAttribute("checked");
-      });
+    /**
+     * Maneja la interacción del usuario con las opciones de cuotas en la interfaz.
+     *
+     * Este bloque de código itera sobre cada opción de cuota y agrega un evento de clic
+     * que permite al usuario seleccionar una opción de cuota específica. Al hacer clic en
+     * una opción, se obtienen los datos de la regla correspondiente y se genera la tabla
+     * de pagos utilizando la función `payment_table`. Además, se actualiza el precio del
+     * producto en el carrito de WooCommerce según la regla seleccionada, llamando a la
+     * función `update_price_product_cart_quota_rule_js`.
+     *
+     * @param {NodeList} options_quotas - Lista de opciones de cuotas en la interfaz.
+     *
+     * @return {void} No retorna ningún valor.
+     */
+    options_quotas.forEach((option_quota) => {
+        option_quota.addEventListener("click", function () {
+        // Eliminar la clase 'checked' de todas las opciones
+        options_quotas.forEach((opt) => {
+            opt.querySelector(".option-rule").removeAttribute("checked");
+        });
 
-      // Añadir la clase 'checked' a la opción seleccionada
-      option_quota.querySelector(".option-rule").setAttribute("checked", true);
+        // Añadir la clase 'checked' a la opción seleccionada
+        option_quota.querySelector(".option-rule").setAttribute("checked", true);
 
-      rule_id = option_quota.getAttribute("data-id");
-      rule = document.getElementById(`data-rule-${rule_id}`)?.value;
-      if (rule) {
-        rule_data = JSON.parse(rule);
-        
-        payment_table(rule_data);
+        rule_id = option_quota.getAttribute("data-id");
+        rule = document.getElementById(`data-rule-${rule_id}`)?.value;
+        if (rule) {
+            rule_data = JSON.parse(rule);
+            
+            payment_table(rule_data);
 
-        table_payment = document.getElementById("table-payment");
-        product_id = table_payment.getAttribute("data-product_id");
-        update_price_product_cart_quota_rule_js(product_id, rule_id);
-      }
+            table_payment = document.getElementById("table-payment");
+            product_id = table_payment.getAttribute("data-product_id");
+            update_price_product_cart_quota_rule_js(product_id, rule_id);
+        }
+        });
     });
-  });
 
-  // Marcar automáticamente la primera opción de cuotas
-  if (options_quotas.length > 0) {
-    options_quotas[0].click(); // Simula un clic en la primera opción
-  }
+    // Marcar automáticamente la primera opción de cuotas
+    if (options_quotas.length > 0) {
+        options_quotas[0].click(); // Simula un clic en la primera opción
+    }
+
+    // en caso de usar el split payment se bloquean las cuotas
+    const splitPayment = document.getElementById("split_payment_method_active");
+    const contenedor = document.getElementById("container-disable");
+    if (splitPayment && contenedor) {
+        splitPayment.addEventListener("change", () => {
+            contenedor.style.display = splitPayment.checked ? "block" : "none";
+        });
+    }
+
 });
 
 /**
