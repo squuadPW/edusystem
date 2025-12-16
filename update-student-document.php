@@ -19,7 +19,8 @@ function render_update_documents_page() {
     if (isset($_POST['update_documents_1'])) {
         $sql1 = "UPDATE {$prefix}student_documents AS sd 
                  INNER JOIN {$prefix}documents AS d ON sd.document_id = d.name 
-                 SET sd.type_file = d.type_file, sd.id_requisito = d.id_requisito";
+                 SET sd.type_file = d.type_file, sd.id_requisito = d.id_requisito, 
+                     sd.doc_id = d.id";
         $wpdb->query($sql1);
         echo '<div class="updated"><p>Acción 1 ejecutada ✅</p></div>';
     }
@@ -28,7 +29,8 @@ function render_update_documents_page() {
     if (isset($_POST['update_documents_2'])) {
         $sql2 = "UPDATE {$prefix}student_documents AS sd 
                  INNER JOIN {$prefix}documents_certificates AS dc ON sd.document_id = dc.document_identificator 
-                 SET sd.type_file = dc.type_file, sd.id_requisito = dc.id_requisito";
+                 SET sd.type_file = dc.type_file, sd.id_requisito = dc.id_requisito, 
+                     sd.doc_id = dc.id, sd.automatic = 1";
         $wpdb->query($sql2);
         echo '<div class="updated"><p>Acción 2 ejecutada ✅</p></div>';
     }
@@ -42,7 +44,8 @@ function render_update_documents_page() {
     $results = $wpdb->get_results("
         SELECT sd.document_id, sd.type_file, sd.id_requisito 
         FROM {$prefix}student_documents AS sd 
-        WHERE type_file IS NULL OR type_file = '' OR id_requisito IS NULL OR id_requisito = '' 
+        WHERE type_file IS NULL OR type_file = '' OR id_requisito IS NULL OR id_requisito = '' OR
+              doc_id IS NULL OR doc_id = '' 
         LIMIT $offset, $per_page
     ");
     
@@ -50,7 +53,8 @@ function render_update_documents_page() {
     $count_null = $wpdb->get_var("
         SELECT COUNT(*) 
         FROM {$prefix}student_documents 
-        WHERE type_file IS NULL OR type_file = '' OR id_requisito IS NULL OR id_requisito = ''
+        WHERE type_file IS NULL OR type_file = '' OR id_requisito IS NULL OR id_requisito = '' OR
+              doc_id IS NULL OR doc_id = '' 
     ");
     
     // Calcular total de páginas SOLO si hay resultados
@@ -82,6 +86,7 @@ function render_update_documents_page() {
                         <th>Document ID</th>
                         <th>Type File</th>
                         <th>ID Requisito</th>
+                        <th>ID document</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,6 +95,7 @@ function render_update_documents_page() {
                         <td><?php echo esc_html($row->document_id); ?></td>
                         <td><?php echo $row->type_file !== null && $row->type_file !== '' ? esc_html($row->type_file) : '<em>NULL/Vacío</em>'; ?></td>
                         <td><?php echo $row->id_requisito !== null && $row->id_requisito !== '' ? esc_html($row->id_requisito) : '<em>NULL/Vacío</em>'; ?></td>
+                        <td><?php echo $row->doc_id !== null && $row->doc_id !== '' ? esc_html($row->doc_id) : '<em>NULL/Vacío</em>'; ?></td>
                     </tr>
                     <?php endforeach; ?>
                 </tbody>
