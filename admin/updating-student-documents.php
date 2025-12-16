@@ -27,33 +27,27 @@ class Students_Documents_Table extends WP_List_Table {
     function column_default($item, $column_name) {
         switch ($column_name) {
             case 'id':
-            case 'student':
             case 'document':
+            case 'type_files':
                 return isset($item[$column_name]) ? ucwords($item[$column_name]) : '';
-            case 'status':
-                if (function_exists('get_status_document')) {
-                    return ucwords(get_status_document($item['id']));
-                }
-                return isset($item['status']) ? ucwords($item['status']) : '';
             default:
                 return print_r($item, true);
         }
     }
 
     function get_columns() {
-        $columns = array(
+        return [
             'id' => __('ID', 'edusystem'),
-            'student' => __('Student', 'edusystem'),
             'document' => __('Document', 'edusystem'),
-            'status' => __('Status', 'edusystem'),
-        );
-        return $columns;
+            'type_files' => __('Type Files', 'edusystem')
+        ];
     }
         
     function get_sortable_columns() {
-        $sortable_columns = array(
-            'id' => array('sd.id', false),
-        );
+        $sortable_columns = [
+            'id' => ['id', false],
+            'document' => ['document', false],
+        ];
         return $sortable_columns;
     }
 
@@ -70,16 +64,17 @@ class Students_Documents_Table extends WP_List_Table {
     }
 
     function get_students_documents() {
-        global $wpdb;
         
+        $documents = [];
+
+        global $wpdb;
         $table_students = $wpdb->prefix . 'students';
         $table_student_documents = $wpdb->prefix . 'student_documents';
         
         // Obtener la página actual
-        $current_page = $this->get_pagenum();
-        $offset = (($current_page - 1) * $this->per_page);
+        $offset = ( ( $this->get_pagenum() - 1 ) * $this->per_page );
         
-        // Inicializar condiciones WHERE
+        /* // Inicializar condiciones WHERE
         $where_conditions = array();
         $where_values = array();
         
@@ -93,10 +88,10 @@ class Students_Documents_Table extends WP_List_Table {
         if (isset($_GET['initial_cut']) && $_GET['initial_cut'] !== '') {
             $where_conditions[] = "s.initial_cut = %s";
             $where_values[] = sanitize_text_field($_GET['initial_cut']);
-        }
+        } */
         
         // CONCATENAR TODOS LOS CAMPOS DEL NOMBRE DEL ESTUDIANTE
-        $sql = "SELECT sd.id, 
+        /* $sql = "SELECT sd.id, 
                        CONCAT_WS(' ', 
                            s.name, 
                            s.middle_name, 
@@ -106,14 +101,15 @@ class Students_Documents_Table extends WP_List_Table {
                        sd.document_id AS document_identifier, 
                        sd.status  
                 FROM {$table_student_documents} AS sd
-                INNER JOIN {$table_students} AS s ON sd.student_id = s.id";
+                INNER JOIN {$table_students} AS s ON sd.student_id = s.id"; */
         
-        // Agregar condiciones WHERE si existen
+        /* // Agregar condiciones WHERE si existen
         if (!empty($where_conditions)) {
             $sql .= " WHERE " . implode(" AND ", $where_conditions);
         }
-        
-        $sql .= " LIMIT %d OFFSET %d";
+         */
+        /* $sql .= " GROUP BY `sd`.doc_id ";
+        $sql .= " LIMIT %d OFFSET %d ";
         
         // Agregar límites a los valores
         $where_values[] = $this->per_page;
@@ -128,17 +124,28 @@ class Students_Documents_Table extends WP_List_Table {
             $students_documents = $wpdb->get_results(
                 $wpdb->prepare($sql, $this->per_page, $offset)
             );
-        }
+        } */
 
-        $documents = array();
+        $students_documents = $wpdb->get_results( $wpdb->prepare(
+            "SELECT `sd`.id, `sd`.document_id AS document_name,
+                GROUP_CONCAT(DISTINCT `sd`.type_file ORDER BY `sd`.type_file SEPARATOR ', ') AS type_files
+            FROM `{$table_student_documents}` AS `sd`
+            GROUP BY `sd`.doc_id 
+            LIMIT %d OFFSET %d ",
+            $this->per_page,
+            $offset
+        ));
+        
 
         if ($students_documents) {
+
+            $this->total = count( $students_documents );
+
             foreach ($students_documents as $document) {
                 $documents[] = array(
                     'id' => $document->id,
-                    'student' => $document->student_name,
-                    'document' => $document->document_identifier,
-                    'status' => $document->status,
+                    'document' => $document->document_name,
+                    'type_files' => $document->type_files
                 );
             }
         }
@@ -146,91 +153,63 @@ class Students_Documents_Table extends WP_List_Table {
         return $documents;
     }
     
-    function get_total_count() {
-        global $wpdb;
-        
-        $table_students = $wpdb->prefix . 'students';
-        $table_student_documents = $wpdb->prefix . 'student_documents';
-        
-        // Inicializar condiciones WHERE
-        $where_conditions = array();
-        $where_values = array();
-        
-        // Filtrar por academic_period si está establecido
-        if (isset($_GET['academic_period']) && $_GET['academic_period'] !== '') {
-            $where_conditions[] = "s.academic_period = %s";
-            $where_values[] = sanitize_text_field($_GET['academic_period']);
-        }
-        
-        // Filtrar por initial_cut si está establecido
-        if (isset($_GET['initial_cut']) && $_GET['initial_cut'] !== '') {
-            $where_conditions[] = "s.initial_cut = %s";
-            $where_values[] = sanitize_text_field($_GET['initial_cut']);
-        }
-        
-        $sql = "SELECT COUNT(*)
-                FROM {$table_student_documents} AS sd
-                INNER JOIN {$table_students} AS s ON sd.student_id = s.id";
-        
-        // Agregar condiciones WHERE si existen
-        if (!empty($where_conditions)) {
-            $sql .= " WHERE " . implode(" AND ", $where_conditions);
-        }
-        
-        if (!empty($where_conditions)) {
-            return (int) $wpdb->get_var($wpdb->prepare($sql, $where_values));
-        } else {
-            return (int) $wpdb->get_var($sql);
-        }
-    }
-    
-    function extra_tablenav($which) {
-        if ($which == 'top') {
+    function extra_tablenav( $which ) {
+
+        if ( $which == 'top' ) {
+
             global $wpdb;
-            $table_students = $wpdb->prefix . 'students';
+            $table_academic_periods = $wpdb->prefix . 'academic_periods';
+            $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
             
-            // Obtener valores únicos para los filtros
-            $academic_periods = $wpdb->get_col("SELECT DISTINCT academic_period FROM {$table_students} WHERE academic_period IS NOT NULL ORDER BY academic_period");
-            $initial_cuts = $wpdb->get_col("SELECT DISTINCT initial_cut FROM {$table_students} WHERE initial_cut IS NOT NULL ORDER BY initial_cut");
+            // Obtener valores 
+            $academic_periods = $wpdb->get_results( "SELECT * FROM `{$table_academic_periods}`" );
+            $cuts = $wpdb->get_results( "SELECT * FROM `{$table_academic_periods_cut}`" );
             
             // Obtener valores actuales de los filtros
             $current_academic_period = isset($_GET['academic_period']) ? $_GET['academic_period'] : '';
             $current_initial_cut = isset($_GET['initial_cut']) ? $_GET['initial_cut'] : '';
+
             ?>
-            <div class="alignleft actions">
-                <label for="filter-academic-period" style="margin-right:10px;">
-                    <?php _e('Academic Period:', 'edusystem'); ?>
-                    <select name="academic_period" id="filter-academic-period" style="margin-left:5px;">
-                        <option value=""><?php _e('All Periods', 'edusystem'); ?></option>
-                        <?php foreach ($academic_periods as $period): ?>
-                            <option value="<?php echo esc_attr($period); ?>" <?php selected($current_academic_period, $period); ?>>
-                                <?php echo esc_html($period); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
+                <div class="alignleft actions">
+                    <label for="filter-academic-period" >
+
+                        <b><?php _e('Academic Period:', 'edusystem'); ?></b>
+
+                        <select name="academic_period" id="filter-academic-period" >
+                            <option value=""><?= _e('select academic period', 'edusystem'); ?></option>
+                            <?php foreach ($academic_periods as $period): ?>
+                                <option value="<?= esc_attr($period->code); ?>" <?php /* selected($current_academic_period, $period->code); */ ?>>
+                                    <?= esc_html($period->name); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
                 
-                <label for="filter-initial-cut" style="margin-right:10px; margin-left:15px;">
-                    <?php _e('Initial Cut:', 'edusystem'); ?>
-                    <select name="initial_cut" id="filter-initial-cut" style="margin-left:5px;">
-                        <option value=""><?php _e('All Cuts', 'edusystem'); ?></option>
-                        <?php foreach ($initial_cuts as $cut): ?>
-                            <option value="<?php echo esc_attr($cut); ?>" <?php selected($current_initial_cut, $cut); ?>>
-                                <?php echo esc_html($cut); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
+                    <label for="filter-initial-cut" >
+
+                        <b><?php _e('Cuts:', 'edusystem'); ?></b>
+
+                        <select name="initial_cut" id="filter-initial-cut">
+
+                            <option value=""><?= _e('select academic cut', 'edusystem'); ?></option>
+
+                            <?php foreach ( $cuts AS $cut ): ?>
+                                <option value="<?= esc_attr( $cut->code.'-'.$cut->cut ); ?>" <?php /* selected($current_initial_cut, $cut->code); */ ?> >
+                                    <?= esc_html( $cut->code.'-'.$cut->cut ); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </label>
                 
-                <input type="hidden" name="page" value="<?php echo isset($_GET['page']) ? esc_attr($_GET['page']) : ''; ?>" />
-                <?php submit_button(__('Filter', 'edusystem'), 'secondary', 'filter_action', false, array('id' => 'post-query-submit')); ?>
-                
-                <?php if (!empty($_GET['academic_period']) || !empty($_GET['initial_cut'])): ?>
-                    <a href="<?php echo remove_query_arg(array('academic_period', 'initial_cut', 'paged')); ?>" class="button" style="margin-left:5px;">
-                        <?php _e('Clear Filters', 'edusystem'); ?>
-                    </a>
-                <?php endif; ?>
-            </div>
+                    <!-- <input type="hidden" name="page" value="<?php echo isset($_GET['page']) ? esc_attr($_GET['page']) : ''; ?>" />
+                    <?php submit_button(__('Filter', 'edusystem'), 'secondary', 'filter_action', false, array('id' => 'post-query-submit')); ?>
+                    
+                    <?php if (!empty($_GET['academic_period']) || !empty($_GET['initial_cut'])): ?>
+                        <a href="<?php echo remove_query_arg(array('academic_period', 'initial_cut', 'paged')); ?>" class="button" style="margin-left:5px;">
+                            <?php _e('Clear Filters', 'edusystem'); ?>
+                        </a>
+                    <?php endif; ?> -->
+                </div>
             <?php
         }
     }
@@ -240,15 +219,12 @@ class Students_Documents_Table extends WP_List_Table {
     }
 
     function prepare_items() {
+
         // Obtener columnas
         $columns = $this->get_columns();
-        $hidden = array();
+        $hidden = [];
         $sortable = $this->get_sortable_columns();
-        $this->_column_headers = array($columns, $hidden, $sortable);
-
-        
-        // CALCULAR EL TOTAL
-        $this->total = $this->get_total_count();
+        $this->_column_headers = [ $columns, $hidden, $sortable];
         
         // Configurar paginación
         $this->set_pagination_args(array(
@@ -259,11 +235,7 @@ class Students_Documents_Table extends WP_List_Table {
 
         // Obtener elementos
         $this->items = $this->get_students_documents();
-        
-        // Ordenar si es necesario
-        if (isset($_GET['orderby']) && isset($_GET['order'])) {
-            usort($this->items, array($this, 'usort_reorder'));
-        }
+
     }
 }
 
