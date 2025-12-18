@@ -60,7 +60,7 @@ function add_admin_form_dynamic_link_content()
             $last_name = sanitize_text_field($_POST['last_name']);
             $email = sanitize_email($_POST['email']); // Mejor usar sanitize_email
             $program_identificator = sanitize_text_field($_POST['program_identificator']);
-            $subprogram_identificator = intval($_POST['subprogram_id']);
+            $subprogram_identificator = $_POST['subprogram_id'] ? intval($_POST['subprogram_id']) : null;
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
             $save_and_send_email = sanitize_text_field($_POST['save_and_send_email']);
             $manager_id = intval($_POST['manager_id']); // Sanitizar como entero

@@ -91,15 +91,14 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("buttonsave").disabled = true;
       grades_institute = [];
       const gradeSelect = document.querySelector('select[name="grade"]');
+      const isGradeShortcodeValid = subprogramIdShortcode && subprogramIdShortcode.value;
+      const gradeSelectContainer = document.getElementById("grade_select");
       gradeSelect.value = "";
 
       // Clear existing options
       while (gradeSelect.options.length > 1) {
         gradeSelect.remove(1);
       }
-      // Hide grade select initially
-      // document.getElementById("grade_select").style.display = "none";
-      // document.getElementById("grade").required = false;
 
       if (e.target.value == "other") {
         document.getElementById("name-institute-field").style.display = "block";
@@ -107,14 +106,17 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("institute_id").required = false;
         document.getElementById("institute_id_required").textContent = "";
 
-        // document.getElementById("grade_select").style.display = "block";
-        // document.getElementById("grade").required = true;
-
         subprograms_arr.forEach((subprogram, index) => {
           const optionText = getOptionText(index, subprogram);
           const option = createOption(optionText, index + 1);
           gradeSelect.appendChild(option);
         });
+
+        if (isGradeShortcodeValid) {
+          gradeSelect.value = subprogramIdShortcode.value;
+          gradeSelectContainer.style.display = "none";
+          grade.dispatchEvent(new Event("change"));
+        }
         document.getElementById("buttonsave").disabled = false;
       } else {
         document.getElementById("name-institute-field").style.display = "none";
@@ -143,17 +145,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
           XHR.onload = () => {
             if (XHR.status === 200 && XHR.response && XHR.response.data) {
-              // grades_default = XHR.response.data.default_grades;
+              while (gradeSelect.options.length > 1) {
+                gradeSelect.remove(1);
+              }
               grades_institute = XHR.response.data.institute_grades;
-
-              // document.getElementById("grade_select").style.display = "block";
-              // document.getElementById("grade").required = true;
 
               subprograms_arr.forEach((subprogram, index) => {
                 const optionText = getOptionText(index, subprogram);
                 const option = createOption(optionText, index + 1);
                 gradeSelect.appendChild(option);
               });
+
+              if (isGradeShortcodeValid) {
+                gradeSelect.value = subprogramIdShortcode.value;
+                gradeSelectContainer.style.display = "none";
+                grade.dispatchEvent(new Event("change"));
+              }
 
               document.getElementById("buttonsave").disabled = false;
             }
@@ -185,12 +192,10 @@ document.addEventListener("DOMContentLoaded", function () {
         planSelectContainer.style.display = "none";
         planElement.required = false;
       }
-
       const programIdentificator = e.target.value;
+
       const careerSelectContainer = document.getElementById("careers_select");
       const careerElement = document.getElementById("career");
-
-      // Lógica para limpiar el select de carreras si es un <select>
       if (careerElement && careerElement.tagName === "SELECT") {
         while (careerElement.options.length > 1) {
           careerElement.remove(1);
@@ -203,27 +208,10 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      const isCareerSelect =
-        careerElement && careerElement.tagName === "SELECT";
-      const isCareerShortcodeValid =
-        careerIdShortcode && careerIdShortcode.value;
+      const isCareerSelect = careerElement && careerElement.tagName === "SELECT";
+      const isCareerShortcodeValid = careerIdShortcode && careerIdShortcode.value;
       const isPlanSelect = planElement && planElement.tagName === "SELECT";
       const isPlanShortcodeValid = planIdShortcode && planIdShortcode.value;
-
-      // Si el shortcode de la carrera existe y no es un select, no se hace nada.
-      // if (isCareerShortcodeValid && !isCareerSelect) {
-      //     return;
-      // }
-
-      // Si el shortcode del plan existe y no es un select, no se hace nada.
-      // if (
-      //   isPlanShortcodeValid &&
-      //   !isPlanSelect &&
-      //   isCareerShortcodeValid &&
-      //   !isCareerSelect
-      // ) {
-      //   return;
-      // }
 
       const params = new URLSearchParams({
         action: "load_data_program",
@@ -469,6 +457,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const gradeSelectContainer = document.getElementById("grade_select");
       const gradeInput = document.getElementById("grade");
       const planId = e.target.value;
+      const isGradeShortcodeValid = subprogramIdShortcode && subprogramIdShortcode.value;
 
       // Lógica para limpiar y salir temprano
       gradeSelect.value = "";
@@ -514,6 +503,12 @@ document.addEventListener("DOMContentLoaded", function () {
             const option = createOption(optionText, index + 1);
             gradeSelect.appendChild(option);
           });
+
+          if (isGradeShortcodeValid) {
+            gradeSelect.value = subprogramIdShortcode.value;
+            gradeSelectContainer.style.display = "none";
+            grade.dispatchEvent(new Event("change"));
+          }
         } else {
           gradeSelectContainer.style.display = "none";
           gradeInput.required = false;
@@ -624,10 +619,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     });
-
-    if (subprogramIdShortcode && subprogramIdShortcode.value) {
-      grade.dispatchEvent(new Event("change"));
-    }
   }
 
   if (not_institute_others) {
