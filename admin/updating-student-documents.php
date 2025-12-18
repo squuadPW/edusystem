@@ -47,6 +47,7 @@ class Students_Documents_Table extends WP_List_Table {
         $sortable_columns = [
             'id' => ['id', false],
             'document' => ['document', false],
+            'type_files' => ['type_files', false],
         ];
         return $sortable_columns;
     }
@@ -90,26 +91,13 @@ class Students_Documents_Table extends WP_List_Table {
             $where_values[] = sanitize_text_field($_GET['initial_cut']);
         } */
         
-        // CONCATENAR TODOS LOS CAMPOS DEL NOMBRE DEL ESTUDIANTE
-        /* $sql = "SELECT sd.id, 
-                       CONCAT_WS(' ', 
-                           s.name, 
-                           s.middle_name, 
-                           s.last_name, 
-                           s.middle_last_name
-                       ) AS student_name,
-                       sd.document_id AS document_identifier, 
-                       sd.status  
-                FROM {$table_student_documents} AS sd
-                INNER JOIN {$table_students} AS s ON sd.student_id = s.id"; */
         
         /* // Agregar condiciones WHERE si existen
         if (!empty($where_conditions)) {
             $sql .= " WHERE " . implode(" AND ", $where_conditions);
         }
          */
-        /* $sql .= " GROUP BY `sd`.doc_id ";
-        $sql .= " LIMIT %d OFFSET %d ";
+        /* 
         
         // Agregar límites a los valores
         $where_values[] = $this->per_page;
@@ -137,7 +125,7 @@ class Students_Documents_Table extends WP_List_Table {
         ));
         
 
-        if ($students_documents) {
+        if ( $students_documents ) {
 
             $this->total = count( $students_documents );
 
@@ -156,50 +144,82 @@ class Students_Documents_Table extends WP_List_Table {
     function extra_tablenav( $which ) {
 
         if ( $which == 'top' ) {
-
-            global $wpdb;
-            $table_academic_periods = $wpdb->prefix . 'academic_periods';
-            $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
             
-            // Obtener valores 
-            $academic_periods = $wpdb->get_results( "SELECT * FROM `{$table_academic_periods}`" );
-            $cuts = $wpdb->get_results( "SELECT * FROM `{$table_academic_periods_cut}`" );
-            
-            // Obtener valores actuales de los filtros
-            $current_academic_period = isset($_GET['academic_period']) ? $_GET['academic_period'] : '';
-            $current_initial_cut = isset($_GET['initial_cut']) ? $_GET['initial_cut'] : '';
+                global $wpdb;
+                $table_academic_periods = $wpdb->prefix . 'academic_periods';
+                $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+                
+                // Obtener valores 
+                $academic_periods = $wpdb->get_results( "SELECT * FROM `{$table_academic_periods}`" );
+                $cuts = $wpdb->get_results( "SELECT * FROM `{$table_academic_periods_cut}`" );
+                
+                // Obtener valores actuales de los filtros
+                $current_academic_period = isset($_GET['academic_period']) ? $_GET['academic_period'] : '';
+                $current_initial_cut = isset($_GET['initial_cut']) ? $_GET['initial_cut'] : '';
 
             ?>
-                <div class="alignleft actions">
-                    <label for="filter-academic-period" >
+                <div id="accions-docummets" >
 
-                        <b><?php _e('Academic Period:', 'edusystem'); ?></b>
+                    <div class="group" >
 
-                        <select name="academic_period" id="filter-academic-period" >
-                            <option value=""><?= _e('select academic period', 'edusystem'); ?></option>
-                            <?php foreach ($academic_periods as $period): ?>
-                                <option value="<?= esc_attr($period->code); ?>" <?php /* selected($current_academic_period, $period->code); */ ?>>
-                                    <?= esc_html($period->name); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
-                
-                    <label for="filter-initial-cut" >
+                        <h3><?= __('From:','edusystem') ?></h3>
 
-                        <b><?php _e('Cuts:', 'edusystem'); ?></b>
+                        <div>
+                            <label for="filter-academic-period" >
 
-                        <select name="initial_cut" id="filter-initial-cut">
+                                <b><?php _e('Academic Period:', 'edusystem'); ?></b>
 
-                            <option value=""><?= _e('select academic cut', 'edusystem'); ?></option>
+                                <select id="from-period" name="academic_period" >
+                                    <option value=""><?= _e('select academic period', 'edusystem'); ?></option>
+                                    <?php foreach ($academic_periods as $period): ?>
+                                        <option value="<?= esc_attr($period->code); ?>" <?php /* selected($current_academic_period, $period->code); */ ?>>
+                                            <?= esc_html($period->name); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </label>
+                    
+                            <label for="filter-initial-cut"  >
 
-                            <?php foreach ( $cuts AS $cut ): ?>
-                                <option value="<?= esc_attr( $cut->code.'-'.$cut->cut ); ?>" <?php /* selected($current_initial_cut, $cut->code); */ ?> >
-                                    <?= esc_html( $cut->code.'-'.$cut->cut ); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </label>
+                                <b><?php _e('Cuts:', 'edusystem'); ?></b>
+
+                                <select id="from-period-cut" name="initial_cut" >
+                                    <option value=""><?= _e('select academic cut', 'edusystem'); ?></option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="group" >
+
+                        <h3><?= __('To:','edusystem') ?></h3>
+                        
+                        <div>
+                            <label for="filter-academic-period" >
+
+                                <b><?php _e('Academic Period:', 'edusystem'); ?></b>
+
+                                <select id="to-period" name="academic_period">
+                                    <option value=""><?= _e('select academic period', 'edusystem'); ?></option>
+                                    <?php foreach ($academic_periods as $period): ?>
+                                        <option value="<?= esc_attr($period->code); ?>" <?php /* selected($current_academic_period, $period->code); */ ?>>
+                                            <?= esc_html($period->name); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </label>
+                    
+                            <label for="filter-initial-cut" >
+
+                                <b><?php _e('Cuts:', 'edusystem'); ?></b>
+
+                                <select id="to-period-cut" name="initial_cut" >
+                                    <option value=""><?= _e('select academic cut', 'edusystem'); ?></option>
+                                </select>
+                            </label>
+                        </div>
+                        
+                    </div>
                 
                     <!-- <input type="hidden" name="page" value="<?php echo isset($_GET['page']) ? esc_attr($_GET['page']) : ''; ?>" />
                     <?php submit_button(__('Filter', 'edusystem'), 'secondary', 'filter_action', false, array('id' => 'post-query-submit')); ?>
@@ -239,6 +259,37 @@ class Students_Documents_Table extends WP_List_Table {
     }
 }
 
+
+// Registrar la acción AJAX para usuarios logueados
+add_action('wp_ajax_get_cuts_by_period', 'get_cuts_by_period_callback');
+
+// Si también quieres que funcione para usuarios no logueados (frontend), añade:
+add_action('wp_ajax_nopriv_get_cuts_by_period', 'get_cuts_by_period_callback');
+
+function get_cuts_by_period_callback() {
+    global $wpdb;
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+
+    // Recibir el período enviado por JS
+    $period = isset($_POST['period']) ? sanitize_text_field($_POST['period']) : '';
+
+    if ($period) {
+        // Consultar cortes asociados al período
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT code, name 
+                 FROM {$table_academic_periods_cut} 
+                 WHERE academic_period_code = %s",
+                $period
+            )
+        );
+
+        // Devolver como JSON
+        wp_send_json($results);
+    } else {
+        wp_send_json([]); // Si no hay período, devolver vacío
+    }
+}
 
 
 

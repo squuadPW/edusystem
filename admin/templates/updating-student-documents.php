@@ -8,10 +8,10 @@
 
     <div>
         <form method="get">
+            
             <input type="hidden" name="page" value="<?php echo isset($_GET['page']) ? esc_attr($_GET['page']) : ''; ?>" />
+
             <?php 
-                // Mostrar filtros
-                $students_documents_table->extra_tablenav('top');
                 
                 // Mostrar búsqueda si la quieres
                 // $students_documents_table->search_box('Search', 'search');

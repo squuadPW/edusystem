@@ -2617,7 +2617,52 @@ tr.child-order-row {
     } 
 }
 
+div:has( #accions-docummets )  {
 
+    height: auto;
+
+    #accions-docummets {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 5px;
+
+        .group {
+            // flex: 1;
+
+            h3 {
+                margin: 0.5em 0;
+            }
+            
+
+            div {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 10px;
+
+                label {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 5px;
+
+                    select {
+                        max-width: 185px;
+                    }
+
+                    @media ( max-width: 426px ) {
+                        width: 100%;
+
+                        select {
+                            max-width: 100%;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 
