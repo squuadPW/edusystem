@@ -387,6 +387,7 @@ function create_tables()
         last_name TEXT NULL,
         email TEXT NULL,
         program_identificator TEXT NOT NULL,
+        subprogram_identificator INT NULL,
         payment_plan_identificator TEXT NULL,
         transfer_cr BOOLEAN NOT NULL DEFAULT 0,
         fee_payment_completed BOOLEAN NOT NULL DEFAULT 0,

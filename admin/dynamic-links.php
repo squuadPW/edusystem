@@ -35,6 +35,7 @@ function add_admin_form_dynamic_link_content()
                 foreach ($associateds as $key => $plan) {
                     $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
                     if ($plan) {
+                        $plan->subprograms = json_decode($plan->subprograms_json);
                         $payment_plans[] = $plan;
                     }
                 }
@@ -46,7 +47,6 @@ function add_admin_form_dynamic_link_content()
         if ($_GET['section_tab'] == 'add_dynamic_link') {
             include(plugin_dir_path(__FILE__) . 'templates/dynamic-links-detail.php');
         }
-
     } else {
 
         if ($_GET['action'] == 'save_dynamic_link_details') {
@@ -60,6 +60,7 @@ function add_admin_form_dynamic_link_content()
             $last_name = sanitize_text_field($_POST['last_name']);
             $email = sanitize_email($_POST['email']); // Mejor usar sanitize_email
             $program_identificator = sanitize_text_field($_POST['program_identificator']);
+            $subprogram_identificator = intval($_POST['subprogram_id']);
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
             $save_and_send_email = sanitize_text_field($_POST['save_and_send_email']);
             $manager_id = intval($_POST['manager_id']); // Sanitizar como entero
@@ -88,6 +89,7 @@ function add_admin_form_dynamic_link_content()
                     'last_name' => $last_name,
                     'email' => $email,
                     'program_identificator' => $program_identificator,
+                    'subprogram_identificator' => $subprogram_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
                     'transfer_cr' => $transfer_cr,
                     'fee_payment_completed' => $fee_payment_completed,
@@ -111,6 +113,7 @@ function add_admin_form_dynamic_link_content()
                     'last_name' => $last_name,
                     'email' => $email,
                     'program_identificator' => $program_identificator,
+                    'subprogram_identificator' => $subprogram_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
                     'transfer_cr' => $transfer_cr,
                     'fee_payment_completed' => $fee_payment_completed,
@@ -298,7 +301,6 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     function column_default($item, $column_name)
@@ -560,7 +562,6 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 function get_dynamic_link_detail($dynamic_link_id)
@@ -676,13 +677,15 @@ function get_hidden_payment_methods_by_plan(string $payment_plan_identificator, 
 function edusystem_dynamic_links_copy_js()
 {
     if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_dynamic_link_content') {
-        ?>
+?>
         <script>
             function copyToClipboard(text, el) {
                 if (navigator.clipboard) {
-                    navigator.clipboard.writeText(text).then(function () {
+                    navigator.clipboard.writeText(text).then(function() {
                         el.innerText = 'Copied!';
-                        setTimeout(function () { el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
+                        setTimeout(function() {
+                            el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>';
+                        }, 1500);
                     });
                 } else {
                     var tempInput = document.createElement('input');
@@ -692,11 +695,13 @@ function edusystem_dynamic_links_copy_js()
                     document.execCommand('copy');
                     document.body.removeChild(tempInput);
                     el.innerText = 'Copied!';
-                    setTimeout(function () { el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>'; }, 1500);
+                    setTimeout(function() {
+                        el.innerText = '<?php echo esc_js(__('Copy Link', 'edusystem')); ?>';
+                    }, 1500);
                 }
             }
         </script>
-        <?php
+<?php
     }
 }
 add_action('admin_footer', 'edusystem_dynamic_links_copy_js');

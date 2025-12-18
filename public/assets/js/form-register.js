@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const not_institute_others = document.getElementById("institute_id_others");
   const productIdInput = document.getElementById("product_id_input");
   const programIdShortcode = document.getElementById("program_shortcode");
+  const subprogramIdShortcode = document.getElementById("subprogram_shortcode");
   const careerIdShortcode = document.getElementById("career_shortcode");
   const mentionIdShortcode = document.getElementById("mention_shortcode");
   const planIdShortcode = document.getElementById("plan_shortcode");
@@ -623,6 +624,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }
     });
+
+    if (subprogramIdShortcode && subprogramIdShortcode.value) {
+      grade.dispatchEvent(new Event("change"));
+    }
   }
 
   if (not_institute_others) {

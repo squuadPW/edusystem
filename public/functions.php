@@ -262,6 +262,7 @@ function form_asp_psp_optimized($atts)
         $last_name = $dynamic_link_data->last_name;
         $email = $dynamic_link_data->email;
         $program = $dynamic_link_data->program_identificator;
+        $subprogram = $dynamic_link_data->subprogram_identificator ?? null;
         $plan = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
@@ -391,6 +392,7 @@ function student_registration_form_optimized($atts)
         $last_name = $dynamic_link_data->last_name;
         $email = $dynamic_link_data->email;
         $program = $dynamic_link_data->program_identificator;
+        $subprogram = $dynamic_link_data->subprogram_identificator ?? null;
         $plan = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;

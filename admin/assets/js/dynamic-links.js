@@ -1,108 +1,131 @@
-document.addEventListener('DOMContentLoaded', function() {
-	var openModalBtn = document.getElementById('open-upload-modal');
-	var modal = document.getElementById('upload-modal');
-	if (openModalBtn && modal) {
-		openModalBtn.addEventListener('click', function(e) {
-			e.preventDefault();
-			modal.style.display = 'block';
-		});
-	}
-	// Cerrar modal con los botones de salida
-	var closeBtns = document.querySelectorAll('.modal-close');
-	closeBtns.forEach(function(btn) {
-		btn.addEventListener('click', function() {
-			modal.style.display = 'none';
-		});
-	});
+document.addEventListener("DOMContentLoaded", function () {
+  var openModalBtn = document.getElementById("open-upload-modal");
+  var modal = document.getElementById("upload-modal");
+  if (openModalBtn && modal) {
+    openModalBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      modal.style.display = "block";
+    });
+  }
+  // Cerrar modal con los botones de salida
+  var closeBtns = document.querySelectorAll(".modal-close");
+  closeBtns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+  });
 
-	if (document.getElementById('program-identificator')) {
-        let timeout;
-        document.getElementById('program-identificator').addEventListener('change', function(e) {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
+  if (document.getElementById("program-identificator")) {
+    let timeout;
 
-                document.getElementById('scholarship-element').style.display = 'none';
+    // 1. Inicializamos con los datos que PHP ya cargó
+    let currentPlansData = window.initialPlansData || [];
 
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST',wp_ajax.url,true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        var raw;
-                        try {
-                            raw = JSON.parse(xhr.responseText);
-                        } catch (e) {
-                            // invalid JSON
-                            console.error('Invalid JSON response for payment plans:', e, xhr.responseText);
-                            return;
-                        }
+    // Función reutilizable para llenar los subprogramas
+    function updateSubprograms() {
+      const selectedPlanId = document.getElementById(
+        "payment-plan-identificator"
+      ).value;
+      const subprogramElement = document.getElementById("subprogram-element");
+      const subprogramSelect = document.getElementById("subprogram-id");
 
-                        // Normalize response. WordPress AJAX often returns { success: true, data: ... }
-                        var plans = null;
-                        if (raw === null || raw === undefined) {
-                            plans = null;
-                        } else if (Array.isArray(raw)) {
-                            // array of plans
-                            plans = raw;
-                        } else if (raw.data && (Array.isArray(raw.data) || typeof raw.data === 'object')) {
-                            // { success: true, data: { plans: [...] } } or { success: true, data: [...] }
-                            if (raw.data.plans) plans = raw.data.plans;
-                            else plans = raw.data;
-                        } else if (raw.plans) {
-                            plans = raw.plans;
-                        } else if (typeof raw === 'object') {
-                            // object map like { "1": "Plan A", "2": "Plan B" }
-                            plans = raw;
-                        }
+      // USAMOS LA VARIABLE GLOBAL DE WINDOW
+      const selectedSubprogramId = window.selectedSubprogramId || "";
 
-                        var stateSelect = document.getElementById('payment-plan-identificator');
-                        stateSelect.innerHTML = '';
+      subprogramSelect.innerHTML = '<option value="">Select an option</option>';
+      subprogramElement.style.display = "none";
 
-                        var count = 0;
-                        if (plans) {
-                            // If plans is an array of objects [{id, name}] or array of strings
-                            if (Array.isArray(plans)) {
-                                for (var i = 0; i < plans.length; i++) {
-                                    var p = plans[i];
-                                    var option = document.createElement('option');
-                                    if (p && typeof p === 'object') {
-                                        // Use `identificator` as value when available, fallback to id or index
-                                        option.value = p.identificator !== undefined && p.identificator !== '' ? p.identificator : (p.id !== undefined ? p.id : i);
-                                        // Label: name (description) if description exists
-                                        var name = p.name !== undefined ? p.name : (p.label !== undefined ? p.label : String(option.value));
-                                        var desc = p.description !== undefined && p.description !== null && String(p.description).trim() !== '' ? String(p.description).trim() : '';
-                                        option.text = desc ? name + ' (' + desc + ')' : name;
-                                    } else {
-                                        option.value = p;
-                                        option.text = p;
-                                    }
-                                    stateSelect.appendChild(option);
-                                    count++;
-                                }
-                            } else {
-                                // object map
-                                for (var key in plans) {
-                                    if (!Object.prototype.hasOwnProperty.call(plans, key)) continue;
-                                    var option = document.createElement('option');
-                                    option.value = key;
-                                    option.text = plans[key];
-                                    stateSelect.appendChild(option);
-                                    count++;
-                                }
-                            }
-                        }
+      if (!selectedPlanId) return;
 
-                        // Show scholarship element only if we added at least one option
-                        if (count > 0) {
-                            document.getElementById('scholarship-element').style.display = 'block';
-                        } else {
-                            document.getElementById('scholarship-element').style.display = 'none';
-                        }
-                    }
-                };
-                xhr.send('action=get_payments_plans_by_program&program_id=' + e.target.value);
+      const selectedPlan = currentPlansData.find(
+        (p) => (p.identificator || p.id) == selectedPlanId
+      );
 
-            }, 50); // Cambia 2000 a 1000 para 1 segundo si lo prefieres
-        });
+      if (selectedPlan && selectedPlan.subprogram) {
+        let subCount = 0;
+        const subs =
+          typeof selectedPlan.subprogram === "string"
+            ? JSON.parse(selectedPlan.subprogram)
+            : selectedPlan.subprogram;
+
+        for (const key in subs) {
+          if (subs[key].is_active == 1) {
+            var option = document.createElement("option");
+            option.value = key;
+            option.text = subs[key].name;
+
+            if (option.value == selectedSubprogramId) {
+              option.selected = true;
+            }
+
+            subprogramSelect.appendChild(option);
+            subCount++;
+          }
+        }
+
+        if (subCount > 0) {
+          subprogramElement.style.display = "block";
+        }
+      }
     }
+
+    // Ejecutar al cargar la página por si ya hay un plan seleccionado
+    if (document.getElementById("payment-plan-identificator").value) {
+      updateSubprograms();
+    }
+
+    // Evento cuando cambia el programa (AJAX)
+    document
+      .getElementById("program-identificator")
+      .addEventListener("change", function (e) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          document.getElementById("scholarship-element").style.display = "none";
+          document.getElementById("subprogram-element").style.display = "none";
+
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", wp_ajax.url, true);
+          xhr.setRequestHeader(
+            "Content-Type",
+            "application/x-www-form-urlencoded"
+          );
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              var raw = JSON.parse(xhr.responseText);
+              var plans = raw.data?.plans || raw.data || raw;
+              currentPlansData = plans;
+
+              var stateSelect = document.getElementById(
+                "payment-plan-identificator"
+              );
+              stateSelect.innerHTML =
+                '<option value="">Select an option</option>';
+
+              if (Array.isArray(plans)) {
+                plans.forEach((p) => {
+                  var option = document.createElement("option");
+                  option.value = p.identificator || p.id;
+                  option.text =
+                    (p.name || "Plan") +
+                    (p.description ? " (" + p.description + ")" : "");
+                  stateSelect.appendChild(option);
+                });
+                if (plans.length > 0)
+                  document.getElementById("scholarship-element").style.display =
+                    "block";
+              }
+            }
+          };
+          xhr.send(
+            "action=get_payments_plans_by_program&program_id=" + e.target.value
+          );
+        }, 50);
+      });
+
+    // Evento cuando cambia el plan de pago
+    document
+      .getElementById("payment-plan-identificator")
+      .addEventListener("change", updateSubprograms);
+
+  }
 });
