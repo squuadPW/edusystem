@@ -275,12 +275,12 @@ function add_admin_form_academic_projection_content()
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'get_moodle_notes') {
             $subject_id = $_POST['subject_id'];
-            $code = $_POST['code_current_cut'];
-            $cut = $_POST['cut_current_cut'];
+            $code = $_POST['code'];
+            $cut = $_POST['cut'];
 
             get_moodle_notes($subject_id, $code, $cut);
             setcookie('message', __('Successfully updated notes for the students.', 'edusystem'), time() + 3600, '/');
-            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollment_subject&academic_period=' . $code . '&academic_period_cut=' . $cut . '&subject_id=' . $subject_id . '&section=1'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'save_academic_projection') {
             global $wpdb;

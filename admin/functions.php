@@ -300,9 +300,7 @@ function aes_scripts_admin()
         ]);
     }
 
-    error_log('Current admin page: ' . ($_GET['page'] ?? 'none'));
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_academic_projection_content') {
-        error_log('Enqueuing academic-projection script');
         wp_enqueue_script('academic-projection', plugins_url('edusystem') . '/admin/assets/js/academic-projection.js', array('jquery'), $version, true);
 
         wp_localize_script('academic-projection', 'projection_data', [
