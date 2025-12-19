@@ -7,19 +7,9 @@
     ?>
 
     <div>
-        <form method="get">
-            
-            <input type="hidden" name="page" value="<?php echo isset($_GET['page']) ? esc_attr($_GET['page']) : ''; ?>" />
-
-            <?php 
-                
-                // Mostrar búsqueda si la quieres
-                // $students_documents_table->search_box('Search', 'search');
-                
-                // Mostrar la tabla
-                $students_documents_table->display();
-            ?>
-        </form>
+        <?php 
+            $students_documents_table->display();
+        ?>
     </div>
 </div>
 
