@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.9.14
+Version: 3.9.18
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -74,7 +74,6 @@ function create_tables()
     $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
     $table_requests = $wpdb->prefix . 'requests';
     $table_type_requests = $wpdb->prefix . 'type_requests';
-    $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
     $table_expected_matrix_school = $wpdb->prefix . 'expected_matrix_school';
     $table_pensum = $wpdb->prefix . 'pensum';
     $table_feed = $wpdb->prefix . 'feed';
@@ -388,6 +387,7 @@ function create_tables()
         last_name TEXT NULL,
         email TEXT NULL,
         program_identificator TEXT NOT NULL,
+        subprogram_identificator INT NULL,
         payment_plan_identificator TEXT NULL,
         transfer_cr BOOLEAN NOT NULL DEFAULT 0,
         fee_payment_completed BOOLEAN NOT NULL DEFAULT 0,
@@ -1210,90 +1210,6 @@ function create_tables()
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
-
-    // table_expected_matrix - MANTENER el if para la inserción inicial de datos
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_expected_matrix}'") != $table_expected_matrix) {
-        dbDelta(
-        "CREATE TABLE " . $table_expected_matrix . " (
-            id INT(11) NOT NULL AUTO_INCREMENT,
-            grade_id INT(11) NOT NULL,
-            initial_cut TEXT NOT NULL,
-            available_periods INT(11) NOT NULL,
-            max_expected INT(11) NOT NULL,
-            expected_sequence TEXT NOT NULL,
-            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id))$charset_collate;"
-        );
-
-        $wpdb->insert($table_expected_matrix, [
-        'grade_id' => 1,
-        'initial_cut' => 'A',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R,EA,EA'
-        ]);
-
-        $wpdb->insert($table_expected_matrix, [
-        'grade_id' => 1,
-        'initial_cut' => 'B',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R,EA'
-        ]);
-
-        $wpdb->insert($table_expected_matrix, [
-        'grade_id' => 1,
-        'initial_cut' => 'C',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,EA,R'
-        ]);
-
-        $wpdb->insert($table_expected_matrix, [
-        'grade_id' => 1,
-        'initial_cut' => 'D',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EA,EP,R,R'
-        ]);
-
-        $wpdb->insert($table_expected_matrix, [
-        'grade_id' => 1,
-        'initial_cut' => 'E',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,EA,R,EA,EP,R,EA,R,EP,R,R'
-        ]);
-
-        $wpdb->insert($table_expected_matrix, [
-        'grade_id' => 2,
-        'initial_cut' => 'A-E',
-        'max_expected' => 1,
-        'expected_sequence' => 'R,R,R,EA,EP,R,R,R,EA,EP'
-        ]);
-
-        $wpdb->insert($table_expected_matrix, [
-        'grade_id' => 3,
-        'initial_cut' => 'A-E',
-        'max_expected' => 2,
-        'expected_sequence' => 'R,R,EP,R,EP,R,R,R'
-        ]);
-
-        $wpdb->insert($table_expected_matrix, [
-        'grade_id' => 4,
-        'initial_cut' => 'A-E',
-        'max_expected' => 2,
-        'expected_sequence' => 'R,R,EP,R,EP,R,R,R'
-        ]);
-    } else {
-        // Si la tabla ya existe, aún puedes llamar a dbDelta para actualizar su estructura
-        dbDelta(
-        "CREATE TABLE " . $table_expected_matrix . " (
-            id INT(11) NOT NULL AUTO_INCREMENT,
-            grade_id INT(11) NOT NULL,
-            initial_cut TEXT NOT NULL,
-            available_periods INT(11) NOT NULL,
-            max_expected INT(11) NOT NULL,
-            expected_sequence TEXT NOT NULL,
-            created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (id))$charset_collate;"
-        );
-    }
 
     $sql = "CREATE TABLE $table_expected_matrix_school (
         id mediumint(9) NOT NULL AUTO_INCREMENT,

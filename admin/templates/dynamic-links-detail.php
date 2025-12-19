@@ -1,3 +1,8 @@
+<script>
+    window.initialPlansData = <?= json_encode($payment_plans); ?>;
+    window.selectedSubprogramId = "<?= isset($dynamic_link->subprogram_identificator) ? $dynamic_link->subprogram_identificator : ''; ?>";
+</script>
+
 <div class="wrap">
     <?php if (isset($dynamic_link) && !empty($dynamic_link)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Payment link Details', 'edusystem'); ?></h2>
@@ -92,6 +97,13 @@
                                         </select>
                                     </div>
 
+                                    <div style="font-weight:400; display: none;" class="space-offer" id="subprogram-element">
+                                        <label for="subprogram_id"><b><?= __('Subprogram / Level', 'edusystem'); ?></b></label>
+                                        <select name="subprogram_id" id="subprogram-id" autocomplete="off">
+                                            <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                                        </select>
+                                    </div>
+
                                     <div style="font-weight:400;" class="space-offer">
                                         <?php
                                         // Asume que $current_user está disponible y tiene los roles cargados
@@ -126,15 +138,15 @@
                             </div>
 
                             <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                <?php if ($dynamic_link) { 
-                                        $dynamic_link_token = isset($dynamic_link->link) ? $dynamic_link->link : '';
-                                        $dynamic_link_url = site_url('/registration-link?token=' . $dynamic_link_token);
-                                    ?>
+                                <?php if ($dynamic_link) {
+                                    $dynamic_link_token = isset($dynamic_link->link) ? $dynamic_link->link : '';
+                                    $dynamic_link_url = site_url('/registration-link?token=' . $dynamic_link_token);
+                                ?>
                                     <button type="button" onclick="copyToClipboard('<?= $dynamic_link_url ?>', this)" class="button button-secondary"><?= __('Copy link', 'edusystem'); ?></button>
                                 <?php } ?>
                                 <?php if ($dynamic_link && $dynamic_link->email) { ?>
                                     <button onclick='return confirm("Are you sure?");' type="submit"
-                                    class="button button-success" name="save_and_send_email" value="1"><?= __('Save and send email', 'edusystem'); ?></button>
+                                        class="button button-success" name="save_and_send_email" value="1"><?= __('Save and send email', 'edusystem'); ?></button>
                                 <?php } ?>
                                 <button type="submit"
                                     class="button button-primary" name="just_save" value="1"><?= __('Just save', 'edusystem'); ?></button>
@@ -168,7 +180,7 @@
                                         <tbody>
                                             <?php foreach ($dynamic_links_email_log as $log): ?>
                                                 <?php
-                                                    $send_by_user = get_user_by('id', $log->created_by);
+                                                $send_by_user = get_user_by('id', $log->created_by);
                                                 ?>
                                                 <tr>
                                                     <td><?= esc_html(isset($log->created_at) ? $log->created_at : ''); ?></td>

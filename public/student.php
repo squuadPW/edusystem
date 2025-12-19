@@ -1668,7 +1668,8 @@ function load_feed()
 add_filter('woocommerce_account_dashboard', 'trigger_open_elective_modal', 0);
 function trigger_open_elective_modal()
 {
-    if (!is_user_logged_in()) {
+    $site_mode = get_option('site_mode');
+    if (!is_user_logged_in() || $site_mode != 'SCHOOL') {
         return;
     }
 
