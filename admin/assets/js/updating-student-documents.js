@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const period_select = document.getElementById(period_select_id);
         const cut_select = document.getElementById(cut_select_id);
 
+        if( !period_select || !cut_select ) return;
+
         function fetchCuts(period) {
             const formData = new FormData();
             formData.append('action', 'get_cuts_by_period');
@@ -32,9 +34,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 data.forEach(cut => {
                     const option = document.createElement('option');
-                    option.value = cut.id;
+                    option.value = cut.cut;
                     option.textContent = cut.cut;
-                    if (selected_value && selected_value == cut.id) option.selected = true; 
+                    if (selected_value && selected_value == cut.cut) option.selected = true; 
                     cut_select.appendChild(option);
                 });
             });

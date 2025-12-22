@@ -2617,12 +2617,9 @@ tr.child-order-row {
     } 
 }
 
-div:has( #accions-docummets )  {
-
-    height: auto;
-
     #accions-docummets {
         display: flex;
+        justify-content: flex-end;
         flex-direction: row;
         flex-wrap: wrap;
         gap: 5px;
@@ -2667,7 +2664,6 @@ div:has( #accions-docummets )  {
             align-items: flex-end;
         }
     }
-}
 
 
 

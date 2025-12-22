@@ -2343,42 +2343,40 @@ tr.child-order-row .view_details {
   padding-left: 3em;
 }
 
-div:has(#accions-docummets) {
-  height: auto;
-}
-div:has(#accions-docummets) #accions-docummets {
+#accions-docummets {
   display: flex;
+  justify-content: flex-end;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 5px;
 }
-div:has(#accions-docummets) #accions-docummets .group h3 {
+#accions-docummets .group h3 {
   margin: 0.5em 0;
 }
-div:has(#accions-docummets) #accions-docummets .group div {
+#accions-docummets .group div {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px;
 }
-div:has(#accions-docummets) #accions-docummets .group div label {
+#accions-docummets .group div label {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 5px;
 }
-div:has(#accions-docummets) #accions-docummets .group div label select {
+#accions-docummets .group div label select {
   max-width: 185px;
 }
 @media (max-width: 426px) {
-  div:has(#accions-docummets) #accions-docummets .group div label {
+  #accions-docummets .group div label {
     width: 100%;
   }
-  div:has(#accions-docummets) #accions-docummets .group div label select {
+  #accions-docummets .group div label select {
     max-width: 100%;
   }
 }
-div:has(#accions-docummets) #accions-docummets .group-accion {
+#accions-docummets .group-accion {
   display: flex;
   align-items: flex-end;
 }/*# sourceMappingURL=style.css.map */
