@@ -1316,6 +1316,18 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
             },
             'wrap' => false,
         ],
+        'subjects_enrolled' => [
+            'value' => function () use ($student) {
+                return get_subjects_enrolled_table($student->id);
+            },
+            'wrap' => false,
+        ],
+        'subjects_enrolled_spanish' => [
+            'value' => function () use ($student) {
+                return get_subjects_enrolled_table($student->id, true);
+            },
+            'wrap' => false,
+        ],
         'academic_year' => [
             'value' => $academic_period->name,
             'wrap' => true,

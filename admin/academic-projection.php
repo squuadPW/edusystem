@@ -2556,3 +2556,84 @@ function get_close_academic_offer()
 
 add_action('wp_ajax_nopriv_close_academic_offer', 'get_close_academic_offer');
 add_action('wp_ajax_close_academic_offer', 'get_close_academic_offer');
+
+function get_subjects_enrolled_table($student_id, $spanish = false): string
+{
+    global $wpdb;
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
+    $academic_ready = get_academic_ready($student_id);
+
+    if (!$projection || $academic_ready) {
+        return '';
+    }
+
+    $projection_obj = json_decode($projection->projection);
+    $filteredArray = array_filter($projection_obj, function ($item) {
+        return $item->this_cut == true;
+    });
+    $filteredArray = array_values($filteredArray);
+
+    $load = load_current_cut_enrollment();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+
+    $labels = [
+        'code'     => $spanish ? 'CÓDIGO DEL CURSO' : 'COURSE CODE',
+        'subject'  => $spanish ? 'MATERIA' : 'SUBJECT',
+        'elective' => $spanish ? 'ELECTIVA SEGÚN SU SELECCIÓN' : 'ELECTIVE ACCORDING TO YOUR SELECTION'
+    ];
+
+    ob_start();
+
+    if (count($filteredArray) > 0): ?>
+        <table style="margin: 20px 0px; border-collapse: collapse; width: 100%;">
+            <thead>
+                <tr>
+                    <th colspan="4" style="border: 1px solid gray;"><strong><?php echo $labels['code']; ?></strong></th>
+                    <th colspan="8" style="border: 1px solid gray;"><strong><?php echo $labels['subject']; ?></strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($filteredArray as $val):
+                    $subject = $wpdb->get_row($wpdb->prepare("SELECT code_subject, name FROM {$table_school_subjects} WHERE id = %d", $val->subject_id)); 
+                    if ($subject): ?>
+                    <tr>
+                        <td colspan="4" style="border: 1px solid gray;"><?php echo esc_html($subject->code_subject); ?></td>
+                        <td colspan="8" style="border: 1px solid gray;"><?php echo esc_html($subject->name); ?></td>
+                    </tr>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php if ($student && $student->elective): ?>
+            <br>
+            <div><strong><?php echo $labels['elective']; ?></strong></div>
+        <?php endif; ?>
+    <?php else: 
+        $period_cut = $wpdb->get_row($wpdb->prepare("SELECT start_date, end_date FROM {$table_academic_periods_cut} WHERE code = %s AND cut = %s", $academic_period, $cut));
+        $date_start = DateTime::createFromFormat('Y-m-d', $period_cut->start_date);
+        $date_end = DateTime::createFromFormat('Y-m-d', $period_cut->end_date);
+        $start_date = $date_start->format('l, F j, Y');
+        $end_date = $date_end->format('l, F j, Y');
+
+        if ($spanish): ?>
+            <div style="margin: 20px 0px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9;">
+                <p>Durante el Periodo <?php echo $cut; ?> correspondiente al Año Escolar <?php echo $academic_period; ?>, no le será asignada carga académica ya que cuenta actualmente con el avance académico que corresponde a su año de ingreso.</p>
+                <p>Dado que el periodo académico <?php echo $cut; ?> inicia el <strong><?php echo translateDateToSpanish($start_date); ?></strong> y culmina el <strong><?php echo translateDateToSpanish($end_date); ?></strong>, le invitamos a estar atento a sus correos.</p>
+            </div>
+        <?php else: ?>
+            <div style="margin: 20px 0px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9;">
+                <p>During Period <?php echo $cut; ?> of the <?php echo $academic_period; ?> school year, no academic load will be assigned to you, as you currently have the academic progress corresponding to your year of admission.</p>
+                <p>Since Period <?php echo $cut; ?> starts on <strong><?php echo $start_date; ?></strong> and ends on <strong><?php echo $end_date; ?></strong>, we invite you to stay alert to your emails.</p>
+            </div>
+        <?php endif; ?>
+    <?php endif;
+
+    return ob_get_clean();
+}
