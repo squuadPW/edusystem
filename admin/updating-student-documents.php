@@ -1,7 +1,6 @@
 <?php 
 
-function updating_student_documents()
-{   
+function updating_student_documents() {   
     $students_documents_table = new Students_Documents_Table();
     $students_documents_table->prepare_items();
 
@@ -26,34 +25,30 @@ class Students_Documents_Table extends WP_List_Table {
 
     function column_default($item, $column_name) {
         switch ($column_name) {
-            case 'id':
-            case 'student':
             case 'document':
+            case 'type_files':
+            case 'required':
                 return isset($item[$column_name]) ? ucwords($item[$column_name]) : '';
-            case 'status':
-                if (function_exists('get_status_document')) {
-                    return ucwords(get_status_document($item['id']));
-                }
-                return isset($item['status']) ? ucwords($item['status']) : '';
             default:
                 return print_r($item, true);
         }
     }
 
     function get_columns() {
-        $columns = array(
-            'id' => __('ID', 'edusystem'),
-            'student' => __('Student', 'edusystem'),
+        return [
+            'cb' => '<input type="checkbox" />',
             'document' => __('Document', 'edusystem'),
-            'status' => __('Status', 'edusystem'),
-        );
-        return $columns;
+            'type_files' => __('Type Files', 'edusystem'),
+            'required' => __('Required', 'edusystem'),
+        ];
     }
         
     function get_sortable_columns() {
-        $sortable_columns = array(
-            'id' => array('sd.id', false),
-        );
+        $sortable_columns = [
+            'document' => ['document', false],
+            'type_files' => ['type_files', false],
+            'required' => ['required', false],
+        ];
         return $sortable_columns;
     }
 
@@ -69,76 +64,144 @@ class Students_Documents_Table extends WP_List_Table {
         return ($order === 'asc') ? $result : -$result;
     }
 
-    function get_students_documents() {
+    function column_cb($item) {
+        return sprintf(
+            '<input type="checkbox" name="documents[]" value="%d-%d" />',
+            $item['doc_id'],
+            $item['automatic']
+        );
+    }
+
+    function column_required($item) {
+
+        $required = $item['required'];
+        if ( $item['required'] ) {  
+            $required = 'Yes';
+        } else {
+            $required = 'No';
+        }
+
+        return $required;
+    }
+
+    function get_bulk_actions() {
+        return [
+            'mark_required'   => __('Mark as Required', 'edusystem'),
+            'mark_not_required' => __('Mark as Not Required', 'edusystem'),
+        ];
+    }
+
+    function process_bulk_action() {
+
         global $wpdb;
-        
         $table_students = $wpdb->prefix . 'students';
         $table_student_documents = $wpdb->prefix . 'student_documents';
+
+        if ( !empty($_GET['documents']) ) {
+
+            $where = '';
+
+            foreach ( $_GET['documents'] as $document ) {
+
+                list($doc_id, $automatic) = explode( "-", $document );
+
+                if ( !empty($_GET['from_period']) ) {
+
+                    $where = $wpdb->prepare(
+                        " AND `s`.academic_period LIKE %s ",
+                        $_GET['from_period']
+                    );
+
+                    if (!empty($_GET['from_period_cut'])) {
+                        $where .= $wpdb->prepare(
+                            " AND `s`.initial_cut LIKE %s ",
+                            $_GET['from_period_cut']
+                        );
+                    }
+                }
+
+                // Acción masiva
+                switch ( $this->current_action() ) {
+                    case 'mark_required':
+                        $is_required = 1;
+                        break;
+
+                    case 'mark_not_required':
+                        $is_required = 0;
+                        break;
+                }
+
+                // actualizar el documento
+                $wpdb->query( $wpdb->prepare(
+                    "UPDATE {$table_student_documents} `sd` 
+                    INNER JOIN {$table_students} `s` ON `sd`.student_id = `s`.id
+                    SET `sd`.is_required = %d
+                    WHERE `sd`.doc_id = %d
+                    AND `sd`.automatic = %d 
+                    {$where} ",
+                    (int) $is_required,
+                    (int) $doc_id,    
+                    (int) $automatic
+                ));
+            }
+        }
+    }
+
+    function get_students_documents() {
+        
+        $documents = [];
+
+        global $wpdb;
+        $table_students = $wpdb->prefix . 'students';
+        $table_student_documents = $wpdb->prefix . 'student_documents';
+        $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
         
         // Obtener la página actual
-        $current_page = $this->get_pagenum();
-        $offset = (($current_page - 1) * $this->per_page);
+        $offset = ( ( $this->get_pagenum() - 1 ) * $this->per_page );
         
-        // Inicializar condiciones WHERE
-        $where_conditions = array();
-        $where_values = array();
+        $where = '';
         
-        // Filtrar por academic_period si está establecido
-        if (isset($_GET['academic_period']) && $_GET['academic_period'] !== '') {
-            $where_conditions[] = "s.academic_period = %s";
-            $where_values[] = sanitize_text_field($_GET['academic_period']);
-        }
-        
-        // Filtrar por initial_cut si está establecido
-        if (isset($_GET['initial_cut']) && $_GET['initial_cut'] !== '') {
-            $where_conditions[] = "s.initial_cut = %s";
-            $where_values[] = sanitize_text_field($_GET['initial_cut']);
-        }
-        
-        // CONCATENAR TODOS LOS CAMPOS DEL NOMBRE DEL ESTUDIANTE
-        $sql = "SELECT sd.id, 
-                       CONCAT_WS(' ', 
-                           s.name, 
-                           s.middle_name, 
-                           s.last_name, 
-                           s.middle_last_name
-                       ) AS student_name,
-                       sd.document_id AS document_identifier, 
-                       sd.status  
-                FROM {$table_student_documents} AS sd
-                INNER JOIN {$table_students} AS s ON sd.student_id = s.id";
-        
-        // Agregar condiciones WHERE si existen
-        if (!empty($where_conditions)) {
-            $sql .= " WHERE " . implode(" AND ", $where_conditions);
-        }
-        
-        $sql .= " LIMIT %d OFFSET %d";
-        
-        // Agregar límites a los valores
-        $where_values[] = $this->per_page;
-        $where_values[] = $offset;
-        
-        // Preparar y ejecutar consulta
-        if (!empty($where_conditions)) {
-            $students_documents = $wpdb->get_results(
-                $wpdb->prepare($sql, $where_values)
+        // Obtener fechas de inicio y fin de los cortes seleccionados
+        if ( !empty($_GET['from_period']) ) {
+            
+            $where = $wpdb->prepare(
+                " WHERE `s`.academic_period LIKE %s ", 
+                $_GET['from_period'],
             );
-        } else {
-            $students_documents = $wpdb->get_results(
-                $wpdb->prepare($sql, $this->per_page, $offset)
-            );
+
+            if ( !empty($_GET['from_period_cut']) ) {
+                $where .= $wpdb->prepare(
+                    " AND `s`.initial_cut LIKE %s ",
+                    $_GET['from_period_cut']
+                );
+            }
+
         }
 
-        $documents = array();
+        $students_documents = $wpdb->get_results( $wpdb->prepare(
+            "SELECT `sd`.document_id AS document_name, `sd`.doc_id, `sd`.automatic,
+                MIN(`sd`.is_required) AS required,    
+                GROUP_CONCAT(DISTINCT `sd`.type_file ORDER BY `sd`.type_file SEPARATOR ', ') AS type_files
+            FROM `{$table_student_documents}` AS `sd`
+            iNNER JOIN `{$table_students}` AS `s` ON `sd`.student_id = `s`.id
+            {$where}
+            GROUP BY `sd`.doc_id, `sd`.automatic
+            LIMIT %d OFFSET %d ",
+            $this->per_page,
+            $offset
+        ));
+        
+        if ( $students_documents ) {
 
-        if ($students_documents) {
+            $this->total = count( $students_documents );
+
             foreach ($students_documents as $document) {
                 $documents[] = array(
-                    'id' => $document->id,
-                    'student' => $document->student_name,
-                    'document' => $document->document_identifier,
-                    'status' => $document->status,
+                    'document' => $document->document_name,
+                    'type_files' => $document->type_files,
+                    'required' => $document->required,
+                    'doc_id' => $document->doc_id,
+                    'automatic' => $document->automatic
                 );
             }
         }
@@ -146,109 +209,20 @@ class Students_Documents_Table extends WP_List_Table {
         return $documents;
     }
     
-    function get_total_count() {
-        global $wpdb;
-        
-        $table_students = $wpdb->prefix . 'students';
-        $table_student_documents = $wpdb->prefix . 'student_documents';
-        
-        // Inicializar condiciones WHERE
-        $where_conditions = array();
-        $where_values = array();
-        
-        // Filtrar por academic_period si está establecido
-        if (isset($_GET['academic_period']) && $_GET['academic_period'] !== '') {
-            $where_conditions[] = "s.academic_period = %s";
-            $where_values[] = sanitize_text_field($_GET['academic_period']);
-        }
-        
-        // Filtrar por initial_cut si está establecido
-        if (isset($_GET['initial_cut']) && $_GET['initial_cut'] !== '') {
-            $where_conditions[] = "s.initial_cut = %s";
-            $where_values[] = sanitize_text_field($_GET['initial_cut']);
-        }
-        
-        $sql = "SELECT COUNT(*)
-                FROM {$table_student_documents} AS sd
-                INNER JOIN {$table_students} AS s ON sd.student_id = s.id";
-        
-        // Agregar condiciones WHERE si existen
-        if (!empty($where_conditions)) {
-            $sql .= " WHERE " . implode(" AND ", $where_conditions);
-        }
-        
-        if (!empty($where_conditions)) {
-            return (int) $wpdb->get_var($wpdb->prepare($sql, $where_values));
-        } else {
-            return (int) $wpdb->get_var($sql);
-        }
-    }
-    
-    function extra_tablenav($which) {
-        if ($which == 'top') {
-            global $wpdb;
-            $table_students = $wpdb->prefix . 'students';
-            
-            // Obtener valores únicos para los filtros
-            $academic_periods = $wpdb->get_col("SELECT DISTINCT academic_period FROM {$table_students} WHERE academic_period IS NOT NULL ORDER BY academic_period");
-            $initial_cuts = $wpdb->get_col("SELECT DISTINCT initial_cut FROM {$table_students} WHERE initial_cut IS NOT NULL ORDER BY initial_cut");
-            
-            // Obtener valores actuales de los filtros
-            $current_academic_period = isset($_GET['academic_period']) ? $_GET['academic_period'] : '';
-            $current_initial_cut = isset($_GET['initial_cut']) ? $_GET['initial_cut'] : '';
-            ?>
-            <div class="alignleft actions">
-                <label for="filter-academic-period" style="margin-right:10px;">
-                    <?php _e('Academic Period:', 'edusystem'); ?>
-                    <select name="academic_period" id="filter-academic-period" style="margin-left:5px;">
-                        <option value=""><?php _e('All Periods', 'edusystem'); ?></option>
-                        <?php foreach ($academic_periods as $period): ?>
-                            <option value="<?php echo esc_attr($period); ?>" <?php selected($current_academic_period, $period); ?>>
-                                <?php echo esc_html($period); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
-                
-                <label for="filter-initial-cut" style="margin-right:10px; margin-left:15px;">
-                    <?php _e('Initial Cut:', 'edusystem'); ?>
-                    <select name="initial_cut" id="filter-initial-cut" style="margin-left:5px;">
-                        <option value=""><?php _e('All Cuts', 'edusystem'); ?></option>
-                        <?php foreach ($initial_cuts as $cut): ?>
-                            <option value="<?php echo esc_attr($cut); ?>" <?php selected($current_initial_cut, $cut); ?>>
-                                <?php echo esc_html($cut); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
-                
-                <input type="hidden" name="page" value="<?php echo isset($_GET['page']) ? esc_attr($_GET['page']) : ''; ?>" />
-                <?php submit_button(__('Filter', 'edusystem'), 'secondary', 'filter_action', false, array('id' => 'post-query-submit')); ?>
-                
-                <?php if (!empty($_GET['academic_period']) || !empty($_GET['initial_cut'])): ?>
-                    <a href="<?php echo remove_query_arg(array('academic_period', 'initial_cut', 'paged')); ?>" class="button" style="margin-left:5px;">
-                        <?php _e('Clear Filters', 'edusystem'); ?>
-                    </a>
-                <?php endif; ?>
-            </div>
-            <?php
-        }
-    }
-    
     function no_items() {
         _e('No student documents found.', 'edusystem');
     }
 
     function prepare_items() {
+
+        // acciones de bulk
+        $this->process_bulk_action();
+
         // Obtener columnas
         $columns = $this->get_columns();
-        $hidden = array();
+        $hidden = [];
         $sortable = $this->get_sortable_columns();
-        $this->_column_headers = array($columns, $hidden, $sortable);
-
-        
-        // CALCULAR EL TOTAL
-        $this->total = $this->get_total_count();
+        $this->_column_headers = [ $columns, $hidden, $sortable];
         
         // Configurar paginación
         $this->set_pagination_args(array(
@@ -259,14 +233,42 @@ class Students_Documents_Table extends WP_List_Table {
 
         // Obtener elementos
         $this->items = $this->get_students_documents();
-        
-        // Ordenar si es necesario
-        if (isset($_GET['orderby']) && isset($_GET['order'])) {
-            usort($this->items, array($this, 'usort_reorder'));
-        }
+
     }
 }
 
 
+add_action('wp_ajax_get_cuts_by_period', 'get_cuts_by_period_callback');
+function get_cuts_by_period_callback() {
 
+    global $wpdb;
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+
+    // Recibir el período enviado por JS
+    $period = isset($_POST['period']) ? sanitize_text_field($_POST['period']) : '';
+
+    if ( $period ) {
+
+        // Consultar cortes asociados al período
+        $results = $wpdb->get_results( $wpdb->prepare(
+            "SELECT id, cut 
+             FROM `{$table_academic_periods_cut}` 
+             WHERE code LIKE %s",
+            $period
+        ));
+
+        wp_send_json($results);
+
+    } else {
+        wp_send_json([]); // Si no hay período, devolver vacío
+    }
+}
+
+/* 
+
+SELECT *
+FROM wp_academic_periods_cut
+WHERE start_date >= '2023-08-12'
+  AND end_date <= '2024-12-08';
+ */
 

@@ -378,6 +378,26 @@ function aes_scripts_admin()
         ]);
     }
 
+    if (isset($_GET['page']) && $_GET['page'] === 'updating-student-documents') {
+
+        wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
+        wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', ['jquery']);
+
+        // Especifica jQuery como dependencia y usa la versión empaquetada con WordPress
+        wp_enqueue_script('updating-student-documents', plugins_url('edusystem') . '/admin/assets/js/updating-student-documents.js',
+            ['jquery', 'select2'], // Asegura que jQuery y Select2 se carguen primero
+            $version,
+            true
+        );
+
+        wp_localize_script('updating-student-documents', 'var_php', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'translation' => [
+                'select_cut' => __('select academic cut', 'edusystem'),
+            ]
+        ]);
+    }
+
 }
 
 add_action('admin_enqueue_scripts', 'aes_scripts_admin', 3);
@@ -479,7 +499,7 @@ function add_custom_admin_page()
             );
             add_submenu_page('add_admin_form_admission_content', __('Required Documents', 'edusystem'), __('Required Documents', 'edusystem'), 'manager_documents_aes', 'admission-documents', 'show_admission_documents', 10);
             add_submenu_page('add_admin_form_admission_content', __('Payment link', 'edusystem'), __('Payment link', 'edusystem'), 'manager_dynamic_links', 'add_admin_form_dynamic_link_content', 'add_admin_form_dynamic_link_content', 10);
-            // add_submenu_page('add_admin_form_admission_content', __('Updating student documents', 'edusystem'), __('Updating student documents', 'edusystem'), 'updating_student_documents', 'updating-student-documents', 'updating_student_documents', 10);
+            add_submenu_page('add_admin_form_admission_content', __('Updating student documents', 'edusystem'), __('Updating student documents', 'edusystem'), 'updating_student_documents', 'updating-student-documents', 'updating_student_documents', 10);
         }
 
         add_menu_page(
