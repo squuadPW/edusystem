@@ -1301,7 +1301,6 @@ function get_subject_details_optimized($subject_id)
 
 function get_literal_note($calification)
 {
-    // Accept numeric values (including '0' or '0.00'). Treat NULL or empty string as unknown.
     if ($calification === null || $calification === '') {
         return '-';
     }
@@ -1311,24 +1310,28 @@ function get_literal_note($calification)
     }
 
     $calification = (float) $calification;
-    $note = 'A+';
+    $note = 'F';
 
-    if ($calification >= 95) {
-        $note = 'A+';
+    if ($calification >= 94) {
+        $note = 'A';
     } elseif ($calification >= 90) {
         $note = 'A-';
-    } elseif ($calification >= 83) {
+    } elseif ($calification >= 87) {
         $note = 'B+';
+    } elseif ($calification >= 83) {
+        $note = 'B';
     } elseif ($calification >= 80) {
         $note = 'B-';
-    } elseif ($calification >= 73) {
+    } elseif ($calification >= 76) {
         $note = 'C+';
+    } elseif ($calification >= 73) {
+        $note = 'C';
     } elseif ($calification >= 70) {
         $note = 'C-';
     } elseif ($calification >= 67) {
         $note = 'D+';
     } elseif ($calification >= 60) {
-        $note = 'D-';
+        $note = 'D';
     } else {
         $note = 'F';
     }
@@ -1338,7 +1341,6 @@ function get_literal_note($calification)
 
 function get_calc_note($calification)
 {
-    // Accept numeric values (including '0' or '0.00'). Treat NULL or empty string as unknown.
     if ($calification === null || $calification === '') {
         return '-';
     }
@@ -1348,33 +1350,33 @@ function get_calc_note($calification)
     }
 
     $calification = (float) $calification;
-    $note = 0;
+    $note = 0.00;
 
-    if ($calification >= 95) {
+    if ($calification >= 94) {
         $note = 4.00;
     } elseif ($calification >= 90) {
-        $note = 3.75;
+        $note = 3.70;
     } elseif ($calification >= 87) {
-        $note = 3.50;
+        $note = 3.33;
     } elseif ($calification >= 83) {
         $note = 3.00;
     } elseif ($calification >= 80) {
-        $note = 2.75;
-    } elseif ($calification >= 77) {
-        $note = 2.50;
+        $note = 2.70;
+    } elseif ($calification >= 76) {
+        $note = 2.30;
     } elseif ($calification >= 73) {
         $note = 2.00;
     } elseif ($calification >= 70) {
-        $note = 1.75;
+        $note = 1.70;
     } elseif ($calification >= 67) {
-        $note = 1.50;
+        $note = 1.30;
     } elseif ($calification >= 60) {
         $note = 1.00;
     } else {
         $note = 0.00;
     }
 
-    return $note;
+    return number_format($note, 2, '.', '');
 }
 
 function get_count_moodle_pending()
