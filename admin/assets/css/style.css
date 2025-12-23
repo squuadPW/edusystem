@@ -1300,6 +1300,20 @@ h2 {
   margin-top: 0px;
 }
 
+#template-advanced-quota {
+  display: none;
+}
+
+.advanced-quotas-container .acction-buton {
+  display: flex;
+  justify-content: end;
+  margin-bottom: 10px;
+}
+.advanced-quotas-container .group-advanced-quota {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+  margin-bottom: 15px;
+}
+
 .space-offer {
   flex: 1;
   font-weight: 400;

@@ -1409,17 +1409,35 @@ h2 {
 }
 
 .seccion-input {
-  .seccion-title {
-    color: #000;
-  }
 
-  .group-input {
-    margin: 0px 5px;
-  }
+    .seccion-title {
+        color: #000;
+    }
 
-  .space-offer {
-    margin-top: 0px;
-  }
+    .group-input {
+        margin: 0px 5px;
+    }
+
+    .space-offer {
+        margin-top: 0px;
+    }
+}
+
+#template-advanced-quota {
+    display: none;
+}
+.advanced-quotas-container {
+
+    .acction-buton {
+        display: flex;
+        justify-content: end;
+        margin-bottom: 10px;
+    }
+
+    .group-advanced-quota {
+        border-bottom: 1px solid #8080805c;
+        margin-bottom: 15px;
+    }
 }
 
 .space-offer {

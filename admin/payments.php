@@ -1114,6 +1114,7 @@ function add_admin_form_payments_content()
 
             global $wpdb;
             $table_quota_rules = $wpdb->prefix . 'quota_rules';
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
 
             // Sanitizar 
             $program_id = $_POST['program_id'] ?? '';
@@ -1180,7 +1181,54 @@ function add_admin_form_payments_content()
                             'start_charging' => $start_charging,
                             'position' => $position,
                         ]);
+
+                        $rule_id = $wpdb->insert_id;
                     }
+
+                    foreach ( $rule['advanced_quota'] AS $advanced_quota ) {
+
+                        $id               = $advanced_quota['id'] ?? 0;
+                        $quota_id         = $advanced_quota['quota_id'] ?? $rule_id;
+                        $quote_price      = $advanced_quota['quote_price'];
+                        $quote_price_sale = $advanced_quota['quote_price_sale'];
+                        $quotas_quantity  = $advanced_quota['quotas_quantity'];
+                        $frequency_value  = $advanced_quota['frequency_value'];
+                        $type_frequency   = $advanced_quota['type_frequency'];
+                        $position         = $advanced_quota['position'] ?? 0;
+                        
+                        if ( !empty($advanced_quota['id']) ) {
+                            
+                            $wpdb->update(
+                                $table_advanced_quota_rules,
+                                [
+                                    'quote_price'     => $quote_price,
+                                    'quote_price_sale'=> $quote_price_sale,
+                                    'quotas_quantity' => $quotas_quantity,
+                                    'frequency_value' => $frequency_value,
+                                    'type_frequency'  => $type_frequency,
+                                    'position'        => $position,
+                                ],
+                                ['id' => $advanced_quota['id']], 
+                                ['%f','%f','%d','%d','%s','%d'], 
+                                ['%d'] 
+                            );
+                        } else {
+                            // Inserción
+                            $wpdb->insert(
+                                $table_advanced_quota_rules,
+                                [
+                                    'quota_id'        => $quota_id,
+                                    'quote_price'     => $quote_price,
+                                    'quote_price_sale'=> $quote_price_sale,
+                                    'quotas_quantity' => $quotas_quantity,
+                                    'frequency_value' => $frequency_value,
+                                    'type_frequency'  => $type_frequency,
+                                    'position'        => $position,
+                                ],
+                                ['%d','%f','%f','%d','%d','%s','%d'] // formatos
+                            );
+                        }
+                    }   
                 }
 
                 setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
@@ -3293,3 +3341,23 @@ function manage_payments_search_student_callback()
 
 add_action('wp_ajax_nopriv_manage_payments_search_student', 'manage_payments_search_student_callback');
 add_action('wp_ajax_manage_payments_search_student', 'manage_payments_search_student_callback');
+
+
+/* 
+* obtener las reglas de cuotas avanzadas
+*/
+function get_advanced_quota_rules( $rule_id ) {
+    global $wpdb;
+    $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
+    $results = $wpdb->get_results($wpdb->prepare(
+        "SELECT * 
+        FROM {$table_advanced_quota_rules} 
+        WHERE quota_id = %d", 
+        (int) $rule_id
+    ), ARRAY_A);
+
+    return $results;
+}
+
+
+
