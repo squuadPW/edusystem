@@ -390,7 +390,7 @@ function truncate_text($text, $max_length = 100)
                                     <tr>
                                         <td colspan="3">
                                             <label for="expected_graduation_date"><b><?php _e('Expected graduation from high school', 'edusystem'); ?></b></label><br>
-                                            <input type="text" id="expected_graduation_date" name="expected_graduation_date"
+                                            <input type="text" placeholder="MM/YYYY" id="expected_graduation_date" name="expected_graduation_date"
                                                 value="<?php echo $student->expected_graduation_date; ?>" style="width:100%;" required
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
