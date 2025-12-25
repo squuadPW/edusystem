@@ -256,6 +256,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal_delete_program.style.display = "none";
             }
 
+            modal_delete_quota_rule = document.getElementById('modalDeleteAdvancedQuotaRule');
+            if( modal_delete_quota_rule ){
+                modal_delete_quota_rule.style.display = "none";
+            }
+
         });
     });
 
@@ -304,6 +309,26 @@ function update_positions_rule() {
             positionInput.value = index; // Actualiza el valor de posición
         }
     });
+}
+
+/**
+ * Abre el modal para eliminar una regla avanzada de cuota.
+ * Esta función se ejecuta al hacer clic en un botón de eliminación y configura
+ * el modal con el ID de la regla de cuota que se va a eliminar.
+ * 
+ * @param {HTMLElement} button Elemento HTML del botón que debe contener
+ *                             el atributo 'data-advanced_rule_id' con el ID de la regla.
+ * 
+ * @return {void} No retorna ningún valor.
+ */
+function modal_delete_advanced_quota_rule_js ( button ) {
+
+    let modal_delete_advanced_quota_rule = document.getElementById( 'modalDeleteAdvancedQuotaRule' );
+    if( modal_delete_advanced_quota_rule ) {
+        id = button.getAttribute('data-advanced_rule_id');
+        modal_delete_advanced_quota_rule.querySelector('#delete_advanced_quota_rule_input').value = id;
+        modal_delete_advanced_quota_rule.style.display = "block";
+    }
 }
 
 /**

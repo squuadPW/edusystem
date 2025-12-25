@@ -1243,6 +1243,7 @@ function add_admin_form_payments_content()
 
             global $wpdb;
             $table_quota_rules = $wpdb->prefix . 'quota_rules';
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
 
             $rule_id = $_POST['quota_rule_id'];
 
@@ -1253,9 +1254,37 @@ function add_admin_form_payments_content()
             );
 
             if ($deleted) {
+
+                $deleted = $wpdb->delete(
+                    $table_advanced_quota_rules,
+                    ['quota_id' => $rule_id],
+                    ['%d']
+                );
+
                 setcookie('message', __('The quota rule has been deleted successfully.', 'edusystem'), time() + 10, '/');
             } else {
                 setcookie('message-error', __('The quota rule has not been deleted correctly.', 'edusystem'), time() + 10, '/');
+            }
+
+            wp_redirect($_SERVER['HTTP_REFERER']);
+            exit;
+        } else if ($_GET['action'] == 'delete_advanced_quota_rule') {
+
+            global $wpdb;
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
+
+            $rule_id = $_POST['advanced_quota_rule_id'];
+
+            $deleted = $wpdb->delete(
+                $table_advanced_quota_rules,
+                ['id' => $rule_id],
+                ['%d']
+            );
+
+            if ($deleted) {
+                setcookie('message', __('The advanced quota rule has been successfully removed.', 'edusystem'), time() + 10, '/');
+            } else {
+                setcookie('message-error', __('The advanced quota rule has not been deleted correctly.', 'edusystem'), time() + 10, '/');
             }
 
             wp_redirect($_SERVER['HTTP_REFERER']);
@@ -1266,6 +1295,9 @@ function add_admin_form_payments_content()
 
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
+            $table_quotas_rules = $wpdb->prefix . 'quota_rules';
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
+
             $students = $wpdb->get_var($wpdb->prepare(
                 "SELECT COUNT(*) FROM $table_students WHERE program_id LIKE %s",
                 $subprogram_id
@@ -1298,6 +1330,30 @@ function add_admin_form_payments_content()
                 ], ['identificator' => $program_id]);
 
                 if ($update) {
+
+                    $quota_ids = $wpdb->get_col( $wpdb->prepare( 
+                        "SELECT id 
+                        FROM $table_quotas_rules 
+                        WHERE program_id = %s", 
+                        $subprogram_id 
+                    ) ); 
+                    
+                    if (!empty($quota_ids)) { 
+                        
+                        $placeholders = implode(',', array_fill(0, count($quota_ids), '%d')); 
+                        $wpdb->query( $wpdb->prepare( 
+                            "DELETE FROM $table_advanced_quota_rules 
+                            WHERE quota_id IN ($placeholders)",
+                            ...$quota_ids 
+                        ) ); 
+                        
+                        $wpdb->query( $wpdb->prepare( 
+                            "DELETE FROM $table_quotas_rules 
+                            WHERE program_id = %s",
+                            $subprogram_id
+                        ) ); 
+                    }
+
                     setcookie('message', __('The subprogram has been successfully removed.', 'edusystem'), time() + 10, '/');
                 } else {
                     setcookie('message-error', __('The subprogram was not removed correctly.', 'edusystem'), time() + 10, '/');
@@ -1315,6 +1371,7 @@ function add_admin_form_payments_content()
             global $wpdb;
             $table_programs = $wpdb->prefix . 'programs';
             $table_quotas_rules = $wpdb->prefix . 'quota_rules';
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
             $table_students = $wpdb->prefix . 'students';
 
             $program_data = $wpdb->get_row($wpdb->prepare(
@@ -1340,15 +1397,31 @@ function add_admin_form_payments_content()
                     ['%d']
                 );
 
-
                 if ($deleted) {
 
-                    // eliminar las reglas de los quotas
-                    $wpdb->query($wpdb->prepare(
-                        "DELETE FROM $table_quotas_rules WHERE program_id = %s OR program_id LIKE %s",
-                        $program_data->identificator,
-                        $program_data->identificator . '_%'
-                    ));
+                    $quota_ids = $wpdb->get_col( $wpdb->prepare( 
+                        "SELECT id FROM $table_quotas_rules 
+                        WHERE program_id = %s OR program_id LIKE %s", 
+                        $program_data->identificator, 
+                        $program_data->identificator . '_%' 
+                    ) ); 
+                    
+                    if ( !empty($quota_ids) ) { 
+
+                        $placeholders = implode(',', array_fill(0, count($quota_ids), '%d'));
+
+                        $wpdb->query( $wpdb->prepare( 
+                            "DELETE FROM $table_advanced_quota_rules 
+                            WHERE quota_id IN ($placeholders)", 
+                            ...$quota_ids 
+                        ) );
+
+                        $wpdb->query($wpdb->prepare(
+                            "DELETE FROM $table_quotas_rules WHERE program_id = %s OR program_id LIKE %s",
+                            $program_data->identificator,
+                            $program_data->identificator . '_%'
+                        ));
+                    }
 
                     setcookie('message', __('The subprogram has been successfully removed.', 'edusystem'), time() + 10, '/');
                 } else {

@@ -258,7 +258,7 @@
                                                                 </div>
 
                                                                 <div class="container-button" >
-                                                                    <button type="button" class="button button-secondary"><?= __('Delete', 'edusystem'); ?></button>
+                                                                    <button type="button" class="button button-secondary" data-advanced_rule_id="<?= $advanced_quota['id'] ?? 0 ?>" onclick="modal_delete_advanced_quota_rule_js ( this )" ><?= __('Delete', 'edusystem'); ?></button>
                                                                 </div>
 
                                                             </div>
@@ -583,6 +583,9 @@
     </div>
 </div>
 
-<?php include(plugin_dir_path(__FILE__).'modal-delete-quota-rule.php'); ?>
+<?php 
+    include(plugin_dir_path(__FILE__).'modal-delete-quota-rule.php'); 
+    include(plugin_dir_path(__FILE__).'modal-delete-advanced-quota-rule.php'); 
+?>
 
 
