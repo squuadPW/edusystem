@@ -106,6 +106,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
+            const advanced_quota_rule = new_rule.querySelector('.advanced-quota-rule[data-rules_parent]');
+            advanced_quota_rule.dataset.rules_parent = rules_count;
+
             const position_input = new_rule.querySelector('input[name*="[position]"]');
             if ( position_input ) position_input.value = rules_count; // Establecer el valor de position al nuevo índice
 
@@ -142,6 +145,92 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /**
+     * Clona la plantilla de formulario para las reglas avanzadas de las cuotas y habilita los inputs,
+     * asignando el número de posición correspondiente en el atributo 'name'.
+     * Esta función se activa al hacer clic en el botón para agregar reglas de cuotas.
+     * 
+     * @return {void} No retorna ningún valor.
+     */
+    advanced_rules = document.querySelectorAll('.advanced-quota-rule');
+    advanced_rules.forEach( advanced_rule => {
+
+        advanced_rule.parentNode.querySelector('.new-advanced-quota-rule').addEventListener('click', function() {
+
+            let advanced_rules_count = parseInt( advanced_rule.getAttribute('data-advanced_rules_count') ?? 0 );
+            parent_id = advanced_rule.getAttribute('data-rules_parent');
+            
+            // Incrementar el contador para el siguiente regla
+            advanced_rules_count++;
+
+            const advanced_rule_template = document.getElementById('template-advanced-quota');
+
+            // Clonar el template
+            const new_advanced_rule = advanced_rule_template.cloneNode(true);
+
+            // Quitar el atributo 'disabled' y modificar 'name' y 'for'
+            new_advanced_rule.querySelectorAll('input, label, select').forEach(elem => {
+
+                if (elem.tagName.toLowerCase() === 'input' || elem.tagName.toLowerCase() === 'select') {
+                    
+                    // Obtener el nombre actual
+                    const current_name = elem.getAttribute('name');
+                        
+                    let new_name = current_name // Reemplazar los dos corchetes vacíos secuencialmente
+                        .replace(/\[\]/, `[${parent_id}]`)                // primer []
+                        .replace(/\[\]/, `[${advanced_rules_count}]`);    // segundo []
+
+                    elem.setAttribute('name', new_name);
+
+                    // Quitar el atributo 'disabled' si existe
+                    elem.removeAttribute('disabled');
+
+                } else if (elem.tagName.toLowerCase() === 'label') {
+                    const current_for = elem.getAttribute('for');
+                    let new_for = current_for // Reemplazar los dos corchetes vacíos secuencialmente
+                        .replace(/\[\]/, `[${parent_id}]`)                // primer []
+                        .replace(/\[\]/, `[${advanced_rules_count}]`);    // segundo []
+
+                    elem.setAttribute('for', new_for);
+                }
+            });
+
+            /* const position_input = new_advanced_rule.querySelector('input[name*="[position]"]');
+            if ( position_input ) position_input.value = advanced_rules_count; // Establecer el valor de position al nuevo índice
+            */
+
+            //quita el id del template
+            new_advanced_rule.removeAttribute('id');
+
+            // Agregar funcionalidad al botón de eliminar
+            const remove_button = new_advanced_rule.querySelector('.remove-rule-button');
+            remove_button.addEventListener('click', function() {
+                new_advanced_rule.remove(); 
+
+                // Actualizar las posiciones de las reglas al eliminar una.
+                //update_positions_rule();
+            });
+
+            // Actualizar el atributo data-rules_count en el contenedor
+            advanced_rule.setAttribute('data-advanced_rules_count', advanced_rules_count);
+
+            // Agregar el nueva regla al contenedor
+            advanced_rule.appendChild(new_advanced_rule);
+        });
+
+        /* if (Sortable) {
+            Sortable.create( advanced_rule, {
+                animation: 150, // Duración de la animación en milisegundos
+                ghostClass: 'sortable-ghost', // Clase CSS para el elemento fantasma
+                chosenClass: 'sortable-chosen', // Clase CSS para el elemento seleccionado
+                dragClass: 'sortable-drag', // Clase CSS para el elemento arrastrado
+                onEnd: function (evt) {
+                    update_positions_rule()
+                },
+            });
+        } */
+    });
+
+    /**
      * Agrega funcionalidad a los botones de cierre de los modales.
      * Esta función busca todos los elementos con la clase 'modal-close'
      * y les asigna un evento de clic que oculta los modales correspondientes
@@ -165,6 +254,11 @@ document.addEventListener('DOMContentLoaded', function() {
             modal_delete_program = document.getElementById('modalDeleteProgram');
             if( modal_delete_program ){
                 modal_delete_program.style.display = "none";
+            }
+
+            modal_delete_quota_rule = document.getElementById('modalDeleteAdvancedQuotaRule');
+            if( modal_delete_quota_rule ){
+                modal_delete_quota_rule.style.display = "none";
             }
 
         });
@@ -215,6 +309,26 @@ function update_positions_rule() {
             positionInput.value = index; // Actualiza el valor de posición
         }
     });
+}
+
+/**
+ * Abre el modal para eliminar una regla avanzada de cuota.
+ * Esta función se ejecuta al hacer clic en un botón de eliminación y configura
+ * el modal con el ID de la regla de cuota que se va a eliminar.
+ * 
+ * @param {HTMLElement} button Elemento HTML del botón que debe contener
+ *                             el atributo 'data-advanced_rule_id' con el ID de la regla.
+ * 
+ * @return {void} No retorna ningún valor.
+ */
+function modal_delete_advanced_quota_rule_js ( button ) {
+
+    let modal_delete_advanced_quota_rule = document.getElementById( 'modalDeleteAdvancedQuotaRule' );
+    if( modal_delete_advanced_quota_rule ) {
+        id = button.getAttribute('data-advanced_rule_id');
+        modal_delete_advanced_quota_rule.querySelector('#delete_advanced_quota_rule_input').value = id;
+        modal_delete_advanced_quota_rule.style.display = "block";
+    }
 }
 
 /**

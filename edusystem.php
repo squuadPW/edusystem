@@ -82,6 +82,7 @@ function create_tables()
     $table_templates_email = $wpdb->prefix . 'templates_email';
     $table_programs = $wpdb->prefix . 'programs';
     $table_quota_rules = $wpdb->prefix . 'quota_rules';
+    $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
     $table_scholarship_assigned_student = $wpdb->prefix . 'scholarship_assigned_student';
     $table_expenses = $wpdb->prefix . 'expenses';
     $table_alliances_by_institute = $wpdb->prefix . 'alliances_by_institutes';
@@ -345,6 +346,23 @@ function create_tables()
             `frequency_value` INT NOT NULL,
             `type_frequency` TEXT NOT NULL,
             `start_charging` TEXT DEFAULT '',
+            `position` INT NOT NULL DEFAULT 0,
+            `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        )$charset_collate;"
+    );
+
+    // table_advanced_quota_rules
+    dbDelta(
+        "CREATE TABLE $table_advanced_quota_rules (
+            `id` INT(11) NOT NULL AUTO_INCREMENT,
+            `quota_id` INT(1) NOT NULL ,
+            `quote_price` DECIMAL(15, 2) NOT NULL DEFAULT 0.00,
+            `quote_price_sale` DECIMAL(15, 2) NULL DEFAULT null,
+            `quotas_quantity` INT(11) NOT NULL DEFAULT 1,
+            `frequency_value` INT NOT NULL,
+            `type_frequency` TEXT NOT NULL,
             `position` INT NOT NULL DEFAULT 0,
             `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
             `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
