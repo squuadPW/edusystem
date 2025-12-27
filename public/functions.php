@@ -1361,7 +1361,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
     }
 }
 
-function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null)
+/* function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null)
 {
     if (!$student_id) return;
 
@@ -1668,9 +1668,9 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
         ];
         $result = $wpdb->insert($table_student_payment, $data);
     }
-}
+} */
 
-/* function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null) {
+function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null) {
     if (!$student_id) return;
 
     // obtiene los id de los productos en caso tal vengan por las ordenes
@@ -1939,7 +1939,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
         ];
         $result = $wpdb->insert($table_student_payment, $data);
     }
-} */
+}
 
 /**
  * Procesa la cuota de inscripción, crea usuarios y envía datos a sistemas externos.

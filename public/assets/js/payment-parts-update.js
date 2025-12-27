@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * La función genera una tabla de pagos que muestra las cuotas de una regla específica,
  * calculando las fechas y montos de cada cuota, y utilizando el precio inicial como el primer pago si está disponible.
  */
-function payment_table(rule_data) {
+/* function payment_table(rule_data) {
     
     table_payment = document.getElementById("table-payment");
     table_payment.innerHTML = "";
@@ -301,8 +301,8 @@ function payment_table(rule_data) {
     // Insertar tabla en el contenedor
     table_payment.appendChild(table);
 }
+ */
 
-/* 
 function payment_table(rule_data) {
     
     table_payment = document.getElementById("table-payment");
@@ -464,7 +464,7 @@ function payment_table(rule_data) {
     // Insertar tabla en el contenedor
     table_payment.appendChild(table);
 }
- */
+
 
 function format_currency(value, currency, symbol = "$", language = "en") {
 
