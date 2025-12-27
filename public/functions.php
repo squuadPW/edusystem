@@ -1516,6 +1516,10 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
 
             $payment_date = new DateTime();
             
+            // frecuencias y cantidades
+            $frequency_value = $data_quota_rule->frequency_value;
+            $type_frequency = $data_quota_rule->type_frequency;
+            
             $initial_payment_regular = (double) $data_quota_rule->initial_payment;
             $initial_payment_sale = $data_quota_rule->initial_payment_sale ?? null;
             $initial_payment = (double) ($initial_payment_sale != null) ? $initial_payment_sale : $data_quota_rule->initial_payment;
@@ -1524,22 +1528,12 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             $quote_price_sale = $data_quota_rule->quote_price_sale ?? null;
             $quote_price = (double) ($quote_price_sale != null) ? $quote_price_sale : $quote_price_regular;
 
-            $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
-            $frequency_value = $data_quota_rule->frequency_value;
-            $type_frequency = $data_quota_rule->type_frequency;
-
             $total_pay = (double) ($quotas_quantity_rule * $quote_price ) + $initial_payment + $final_payment;
 
             // Aplicación del descuento del cupón a la suma de los montos de la regla
             $total_amount_to_pay = $total_pay - (($total_pay * $discount_cuppon_value) / 100);
 
             $total_original_amount = (double) ($quotas_quantity_rule * $quote_price_regular) + $initial_payment_regular + $final_payment_regular;
-
-            $installments = $quotas_quantity_rule;
-            if ($initial_payment > 0)
-                $installments++;
-            if ($final_payment > 0)
-                $installments++;
 
             for ( $i = 0; $i < $installments; $i++ ) {
 
