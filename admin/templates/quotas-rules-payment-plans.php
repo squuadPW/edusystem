@@ -218,7 +218,7 @@
                                                                             <b><?= __('Sale price', 'edusystem'); ?></b>
                                                                             <span class="text-danger">*</span>
                                                                         </label>
-                                                                        <input type="number" name="rules[<?= $i ?>][advanced_quota][<?= $j ?>][quote_price_sale]" value="<?= $advanced_quota['quote_price_sale'] ?? 0 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" >
+                                                                        <input type="number" name="rules[<?= $i ?>][advanced_quota][<?= $j ?>][quote_price_sale]" value="<?= $advanced_quota['quote_price_sale'] ?? '' ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" >
                                                                     </div>
 
                                                                 </div>

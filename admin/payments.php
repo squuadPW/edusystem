@@ -1187,30 +1187,30 @@ function add_admin_form_payments_content()
 
                     foreach ( $rule['advanced_quota'] AS $advanced_quota ) {
 
-                        $id               = $advanced_quota['id'] ?? 0;
-                        $quota_id         = $advanced_quota['quota_id'] ?? $rule_id;
-                        $quote_price      = $advanced_quota['quote_price'];
-                        $quote_price_sale = $advanced_quota['quote_price_sale'];
-                        $quotas_quantity  = $advanced_quota['quotas_quantity'];
-                        $frequency_value  = $advanced_quota['frequency_value'];
-                        $type_frequency   = $advanced_quota['type_frequency'];
-                        $position         = $advanced_quota['position'] ?? 0;
+                        $advanced_id               = $advanced_quota['id'] ?? 0;
+                        $advanced_quota_id         = $advanced_quota['quota_id'] ?? $rule_id;
+                        $advanced_quote_price      = $advanced_quota['quote_price'];
+                        $advanced_quote_price_sale = $advanced_quota['quote_price_sale'] ?? null;
+                        $advanced_quotas_quantity  = $advanced_quota['quotas_quantity'];
+                        $advanced_frequency_value  = $advanced_quota['frequency_value'];
+                        $advanced_type_frequency   = $advanced_quota['type_frequency'];
+                        $advanced_position         = $advanced_quota['position'] ?? 0;
+
+                        $advanced_quote_price_sale = ($advanced_quote_price_sale == "") ? null : $advanced_quote_price_sale;
                         
                         if ( !empty($advanced_quota['id']) ) {
                             
                             $wpdb->update(
                                 $table_advanced_quota_rules,
                                 [
-                                    'quote_price'     => $quote_price,
-                                    'quote_price_sale'=> $quote_price_sale,
-                                    'quotas_quantity' => $quotas_quantity,
-                                    'frequency_value' => $frequency_value,
-                                    'type_frequency'  => $type_frequency,
-                                    'position'        => $position,
+                                    'quote_price'     => $advanced_quote_price,
+                                    'quote_price_sale'=> $advanced_quote_price_sale,
+                                    'quotas_quantity' => $advanced_quotas_quantity,
+                                    'frequency_value' => $advanced_frequency_value,
+                                    'type_frequency'  => $advanced_type_frequency,
+                                    'position'        => $advanced_position,
                                 ],
                                 ['id' => $advanced_quota['id']], 
-                                ['%f','%f','%d','%d','%s','%d'], 
-                                ['%d'] 
                             );
                         } else {
                             // Inserción

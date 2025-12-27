@@ -1363,8 +1363,7 @@ function process_program_payments(WC_Order $order, int $order_id): void
 
 function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null)
 {
-    if (!$student_id)
-        return;
+    if (!$student_id) return;
 
     // obtiene los id de los productos en caso tal vengan por las ordenes
     $order_id = null;
@@ -1393,8 +1392,321 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
         $product_id
     ));
 
-    if ($existing_record_count > 0)
+    if ($existing_record_count > 0) return;
+
+    // Inicializacion de variables necesarias para el registro
+    $manager_user_id = null;
+    $institute_id = null;
+    $current_item_institute_fee = 0.0;
+    $current_item_alliances_json = null;
+    $installments = 1;
+
+    // Variables iniciales para el cálculo final si no hay regla
+    $amount = 0.0;
+    $original_price = 0.0;
+    $total_amount_to_pay = 0.0;
+    $total_original_amount = 0.0;
+
+    // Obtener el producto (necesario para la validación de cupón)
+    $product = wc_get_product(($variation_id == 0) ? $product_id : $variation_id);
+    if (!$product)
         return;
+
+    // obtiene la orden si viene
+    if ($order) {
+
+        // --- NUEVA LÓGICA DE CUPONES (se mueve aquí para usar $order y $product) ---
+        $coupons = $order->get_coupon_codes(); // OBTENER TODOS LOS CÓDIGOS DE CUPÓN DE LA ORDEN
+
+        // obtiene el valor de descuento que venga por cuppon
+        if (!empty($coupons) && is_array($coupons)) {
+            foreach ($coupons as $coupon_code) { // Iteramos sobre los códigos de cupón de la orden
+                $coupon = new WC_Coupon($coupon_code);
+                // Validar si el cupón es aplicable al producto y si es un descuento porcentual
+                if ($coupon->is_valid_for_product($product) && $coupon->get_discount_type() == 'percent') {
+                    $discount_cuppon_value += (double) $coupon->get_amount();
+                }
+            }
+        }
+        // --- FIN DE NUEVA LÓGICA DE CUPONES ---
+
+        // obtiene la data del estudiante
+        $student_data = get_student_detail($student_id);
+
+        // ... lógica de institute, alliances, fees, etc. (sin cambios) ...
+
+        $alliances = [];
+        $institute = null;
+        if ($student_data && isset($student_data->institute_id) && !empty($student_data->institute_id)) {
+
+            $institute_id = $student_data->institute_id;
+            $selected_manager_user_ids = get_managers_institute($institute_id);
+            $manager_user_id = isset($selected_manager_user_ids) ? $selected_manager_user_ids[0] : 0;
+
+            $institute = get_institute_details($institute_id);
+            if ($institute) {
+                $alliances = get_alliances_from_institute($institute_id);
+                if (!is_array($alliances))
+                    $alliances = [];
+            }
+        }
+
+        $product_id_registration = get_fee_product_id($student_id, 'registration');
+        $product_id_graduation = get_fee_product_id($student_id, 'graduation');
+        $is_fee_product = in_array($product_id, [$product_id_registration, $product_id_graduation]);
+
+        $is_scholarship = (bool) $order->get_meta('is_scholarship');
+
+        if ($institute && !$is_fee_product && !$is_scholarship) {
+            $institute_fee_percentage = (float) ($institute->fee ?? 0);
+            $current_item_institute_fee = ($institute_fee_percentage * (float) $item->get_total()) / 100;
+        }
+
+        $current_item_alliances_fees = [];
+        if (!empty($alliances) && is_array($alliances)) {
+            foreach ($alliances as $alliance) {
+
+                $alliance_id = $alliance->id ?? null;
+                $alliance_data = ($alliance_id) ? get_alliance_detail($alliance_id) : null;
+                $alliance_fee_percentage = (float) $alliance->fee ?? ($alliance_data->fee ?? 0);
+
+                $total_alliance_fee = 0.0;
+                if (!$is_fee_product && !$is_scholarship) {
+                    $total_alliance_fee = ($alliance_fee_percentage * (float) $item->get_total()) / 100;
+                }
+
+                if ($alliance_id) {
+                    $current_item_alliances_fees[] = [
+                        'id' => $alliance_id,
+                        'fee_percentage' => $alliance_fee_percentage,
+                        'calculated_fee_amount' => $total_alliance_fee,
+                    ];
+                }
+            }
+        }
+
+        $current_item_alliances_json = json_encode($current_item_alliances_fees) ?? json_encode([]);
+
+        // --- Cálculos de precios (se usan como fallback si no hay regla) ---
+        $amount = (double) ($item->get_total() / $item->get_quantity());
+        $original_price = (double) ($item->get_subtotal() / $item->get_quantity());
+        $total_amount_to_pay = $amount * $installments;
+        $total_original_amount = $original_price * $installments;
+
+        // obtiene el id de la regla si existe
+        $rule_id = $item->get_meta('quota_rule_id') ?? null;
+        // LÍNEA ELIMINADA: $coupons = $item->get_meta('coupons', true) ?? []; 
+
+    } else {
+        // En caso de que se llame la función sin orden/item, necesitamos el producto para la lógica de abajo.
+        $product_id = $product_id ?? $item->get_product_id();
+    }
+
+    $payments = [];
+    $needs_next_payment = !$is_fee_product;
+
+    if ($rule_id) {
+        // ... Lógica de reglas de cuotas ...
+        $data_quota_rule = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM `{$wpdb->prefix}quota_rules` WHERE id = %d",
+            (int) $rule_id
+        ));
+
+        if ( $data_quota_rule ) {
+
+            $payment_date = new DateTime();
+            
+            $initial_payment_regular = (double) $data_quota_rule->initial_payment;
+            $initial_payment_sale = $data_quota_rule->initial_payment_sale ?? null;
+            $initial_payment = (double) ($initial_payment_sale != null) ? $initial_payment_sale : $data_quota_rule->initial_payment;
+
+            $quote_price_regular = (double) $data_quota_rule->quote_price;
+            $quote_price_sale = $data_quota_rule->quote_price_sale ?? null;
+            $quote_price = (double) ($quote_price_sale != null) ? $quote_price_sale : $quote_price_regular;
+
+            $quotas_quantity_rule = (int) $data_quota_rule->quotas_quantity;
+            $frequency_value = $data_quota_rule->frequency_value;
+            $type_frequency = $data_quota_rule->type_frequency;
+
+            $total_pay = (double) ($quotas_quantity_rule * $quote_price ) + $initial_payment + $final_payment;
+
+            // Aplicación del descuento del cupón a la suma de los montos de la regla
+            $total_amount_to_pay = $total_pay - (($total_pay * $discount_cuppon_value) / 100);
+
+            $total_original_amount = (double) ($quotas_quantity_rule * $quote_price_regular) + $initial_payment_regular + $final_payment_regular;
+
+            $installments = $quotas_quantity_rule;
+            if ($initial_payment > 0)
+                $installments++;
+            if ($final_payment > 0)
+                $installments++;
+
+            for ( $i = 0; $i < $installments; $i++ ) {
+
+                if ($needs_next_payment && $rule_id) {
+
+                    $original_price_pay = $quote_price;
+                    $original_price_regular = $quote_price_regular;
+                    if ($i == 0 && $initial_payment > 0) {
+                        $original_price_pay = $initial_payment;
+                        $original_price_regular = $initial_payment_regular;
+                    } else if (($i + 1) == $installments && $final_payment > 0) {
+                        $original_price_pay = $final_payment;
+                        $original_price_regular = $final_payment_regular;
+                    }
+
+                    // Calcular el monto a pagar con descuento de cupon (Monto para la columna 'amount')
+                    $amount = $original_price_pay - (($original_price_pay * $discount_cuppon_value) / 100);
+
+                    // Precio original para la columna 'original_amount_product'
+                    $original_price = $original_price_regular;
+
+                    if ($i > 0 && $type_frequency) {
+                        switch ($type_frequency) {
+                            case 'day':
+                                $payment_date->modify("+{$frequency_value} days");
+                                break;
+                            case 'month':
+                                $payment_date->modify("+{$frequency_value} months");
+                                break;
+                            case 'year':
+                                $payment_date->modify("+{$frequency_value} years");
+                                break;
+                        }
+                    }
+                    $next_payment_date = ;
+                }
+                // monto del descuento total
+                $total_discount_amount = $total_original_amount - $total_amount_to_pay;
+
+                $payments[] = [
+                    'amount' => $amount,
+                    'original_amount_product' => $original_price,
+                    'total_amount' => $total_amount_to_pay,
+                    'original_amount' => $total_original_amount,
+                    'discount_amount' => $total_discount_amount,
+                    'date_next_payment' => $payment_date->format('Y-m-d'), // listo
+                ];
+            }
+
+            $final_payment_regular = (double) $data_quota_rule->final_payment;
+            $final_payment_sale = $data_quota_rule->final_payment_sale ?? null;
+            $final_payment = (double) ($final_payment_sale != null) ? $final_payment_sale : $final_payment_regular;
+
+            if( $final_payment > 0 ) {
+
+                // Calcular el monto a pagar con descuento de cupon (Monto para la columna 'amount')
+                $amount = $final_payment - ( ($final_payment * $discount_cuppon_value) / 100 );
+
+                switch ($type_frequency) {
+                    case 'day':
+                        $payment_date->modify("+{$frequency_value} days");
+                        break;
+                    case 'month':
+                        $payment_date->modify("+{$frequency_value} months");
+                        break;
+                    case 'year':
+                        $payment_date->modify("+{$frequency_value} years");
+                        break;
+                }
+
+                $payments[] = [
+                    'amount' => $amount, // listo
+                    'original_amount_product' => $final_payment_regular, // listo
+                    'total_amount' => $total_amount_to_pay,
+                    'original_amount' => $total_original_amount,
+                    'discount_amount' => $total_discount_amount,
+                    'date_next_payment' => $payment_date->format('Y-m-d'), // listo
+                ];
+            }
+
+        }
+
+    } else if ( !$order && $product ) { // Usamos $product ya inicializado
+
+        // Cálculos de precios sin regla, toma el precio del producto
+        $amount = $product->get_price() - ( ($product->get_price() * $discount_cuppon_value) / 100);
+        $original_price = $product->get_regular_price();
+        $total_amount_to_pay = $amount * 1;
+        $total_original_amount = $original_price * 1;
+
+        $total_discount_amount = $total_original_amount - $total_amount_to_pay;
+
+        // fecha de pago
+        $date_next_payment = new DateTime();
+
+        // insertamos los datos del pago
+        $payments[] = [
+            'amount' => $amount,
+            'original_amount_product' => $original_price,
+            'total_amount' => $total_amount_to_pay,
+            'original_amount' => $total_original_amount,
+            'discount_amount' => $total_discount_amount,
+            'date_next_payment' => $date_next_payment->format('Y-m-d'),
+        ];
+    }
+
+    
+    $date = new DateTime();
+    for ( $i = 0; $i < count($payments) ; $i++ ) {
+
+        $data = [
+            'status_id' => 0, // listo
+            'student_id' => $student_id, // listo
+            'order_id' => $i == 0 ? $order_id : null, // listo
+            'product_id' => $product_id, //listo
+            'variation_id' => $variation_id, // listo
+            'manager_id' => $i == 0 ? $manager_user_id : null, // listo
+            'institute_id' => $i == 0 ? $institute_id : null, // listo
+            'institute_fee' => $i == 0 ? $current_item_institute_fee : 0, // listo
+            'alliances' => $i == 0 ? $current_item_alliances_json : null, // listo
+            'currency' => $currency,  // listo
+            'amount' => $amount,
+            'original_amount_product' => $original_price,
+            'total_amount' => $total_amount_to_pay,
+            'original_amount' => $total_original_amount,
+            'discount_amount' => $total_discount_amount,
+            'type_payment' => count($payments) > 1 ? 1 : 2, // listo
+            'cuote' => ($i + 1), // listo
+            'num_cuotes' => count($payments), // listo
+            'date_payment' => $i == 0 ? $date->format('Y-m-d') : null, // listo
+            'date_next_payment' => $next_payment_date,
+        ];
+        $result = $wpdb->insert($table_student_payment, $data);
+    }
+}
+
+/* function process_payments($student_id, $order, $item, $product_id = null, $variation_id = 0, $rule_id = null, $coupons = [], $currency = null) {
+    if (!$student_id) return;
+
+    // obtiene los id de los productos en caso tal vengan por las ordenes
+    $order_id = null;
+
+    // Inicialización de variables de descuento para asegurar su disponibilidad
+    $discount_cuppon_value = 0;
+
+    if ($order && $item) {
+        $order_id = $order->get_id();
+        $product_id = $item->get_product_id();
+        $variation_id = $item->get_variation_id() ?? 0;
+        $currency = $order->get_currency();
+    }
+
+    // obtienen la moneda si no viene
+    if ($currency === null)
+        $currency = get_woocommerce_currency();
+
+    global $wpdb;
+    $table_student_payment = $wpdb->prefix . 'student_payments';
+
+    // Evita la redundancia procesando solo si no existe un registro previo
+    $existing_record_count = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table_student_payment} WHERE student_id = %d AND product_id = %d",
+        $student_id,
+        $product_id
+    ));
+
+    if ($existing_record_count > 0) return;
 
     // Inicializacion de variables necesarias para el registro
     $manager_user_id = null;
@@ -1572,7 +1884,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
     $start_date = new DateTime();
     $payment_date = clone $start_date;
 
-    for ($i = 0; $i < $installments; $i++) {
+    for ( $i = 0; $i < $installments; $i++ ) {
 
         $next_payment_date = null;
         if ($needs_next_payment && $rule_id) {
@@ -1633,8 +1945,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
         ];
         $result = $wpdb->insert($table_student_payment, $data);
     }
-}
-
+} */
 
 /**
  * Procesa la cuota de inscripción, crea usuarios y envía datos a sistemas externos.
