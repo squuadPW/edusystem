@@ -494,6 +494,15 @@
                 </div>
             </div>
 
+            <div class="capability-group">
+                <h3><?= __('Split Payment Method', 'edusystem'); ?></h3>
+                <div class="capability-item">
+                    <input <?= !in_array('split_payment_method', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?> type="checkbox" name="capabilities[]"
+                        id="split_payment_method" value="split_payment_method" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['split_payment_method'])) ? 'checked' : ''; ?>>
+                    <label for="split_payment_method" <?= !in_array('split_payment_method', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?>><?= __('Split Payment Method', 'edusystem'); ?></label>
+                </div>
+            </div>
+
         </div>
         <div style="display:flex;width:100%;justify-content:end;margin-top:10px;">
             <button class="button button-primary"><?= __('Save Changes', 'edusystem'); ?></button>
