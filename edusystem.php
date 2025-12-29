@@ -23,7 +23,7 @@ include_once( plugin_dir_path(__FILE__).'payment_method_fees/payment_method_fees
 include_once( plugin_dir_path(EDUSYSTEM__FILE__).'edusystem_log/edusystem_log.php' );
 
 // funciones de actualizar la tabla de documentos del estudiante
-include_once( plugin_dir_path(EDUSYSTEM__FILE__).'update-student-document.php' ); 
+//include_once( plugin_dir_path(EDUSYSTEM__FILE__).'update-student-document.php' ); 
 
 if (!class_exists('WP_List_Table')) {
   require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
