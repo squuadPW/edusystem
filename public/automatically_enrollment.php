@@ -101,7 +101,7 @@ function automatically_enrollment($student_id)
 
             // mandamos a moodle
             $offer = get_offer_filtered($subject->id, $code, $cut, $section);
-            if ($offer && isset($offer->moodle_course_id)) {
+            if ($offer && isset($offer->moodle_course_id) && get_option('auto_enroll_regular')) {
                 $enrollments = courses_enroll_student($student->id, [(int) $offer->moodle_course_id]);
                 if (!empty($enrollments)) {
                     enroll_student($enrollments);
