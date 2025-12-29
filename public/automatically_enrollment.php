@@ -252,9 +252,9 @@ function generate_projection_student($student_id, $force = false)
         }
     }
 
-    // Obtener información del estudiante incluyendo expected_graduation_date y created_at
+    // Obtener información del estudiante incluyendo expected_graduation_date y academic_period
     $student = $wpdb->get_row($wpdb->prepare(
-        "SELECT id, expected_graduation_date, created_at FROM {$table_students} WHERE id = %d",
+        "SELECT id, expected_graduation_date, academic_period FROM {$table_students} WHERE id = %d",
         $student_id
     ));
 
@@ -291,8 +291,9 @@ function generate_projection_student($student_id, $force = false)
             $graduation_date = new DateTime("$year-$month-01");
             $graduation_date->modify('last day of this month');
 
-            // Crear rango desde created_at hasta expected_graduation_date
-            $registration_date = new DateTime($student->created_at);
+            // Crear rango desde academic_period hasta expected_graduation_date
+            $period = get_period_details_code($student->academic_period);
+            $registration_date = new DateTime($period->start_date);
 
             // Contar períodos académicos únicos en ese rango
             $periods_count = $wpdb->get_var($wpdb->prepare(
@@ -1069,17 +1070,18 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
 
     // Obtener detalles del estudiante y fecha de creación
     $student = get_student_detail($student_id);
-    // Verificar si $student es válido y tiene la propiedad 'created_at'
-    if (!$student || !isset($student->created_at)) {
+    // Verificar si $student es válido
+    if (!$student) {
         // En un escenario real, deberías decidir qué hacer si el estudiante no existe.
         return [];
     }
-    $created_at = new DateTime($student->created_at);
+    $period = get_period_details_code($student->academic_period);
+    $registration_date = new DateTime($period->start_date);
 
     // Consulta optimizada y segura (usando $wpdb->prepare si se pudiera, pero aquí el dato es seguro ya que se formatea)
     $future_periods = $wpdb->get_results(
         "SELECT DISTINCT code, cut FROM {$table_academic_periods_cut} 
-         WHERE start_date >= '" . $created_at->format('Y-m-d') . "' ORDER BY start_date ASC LIMIT 20"
+         WHERE start_date >= '" . $registration_date->format('Y-m-d') . "' ORDER BY start_date ASC LIMIT 20"
     );
 
     // Obtener inscripciones del estudiante y clasificar por estado
