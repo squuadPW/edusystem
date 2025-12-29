@@ -63,6 +63,11 @@
                         value="manager_documents_aes" id="manager_documents_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_documents_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_documents_aes" <?= !in_array('manager_documents_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Required Documents', 'edusystem'); ?></label>
                 </div>
+                <div class="capability-item indented">
+                    <input <?= !in_array('updating_student_documents', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="updating_student_documents" id="updating_student_documents" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['updating_student_documents'])) ? 'checked' : ''; ?>>
+                    <label for="manager_documents_aes" <?= !in_array('updating_student_documents', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Updating student documents', 'edusystem'); ?></label>
+                </div>
                 <div class="capability-item">
                     <input <?= !in_array('only_read_admission_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?> type="checkbox" name="capabilities[]"
                         value="only_read_admission_aes" id="only_read_admission_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['only_read_admission_aes'])) ? 'checked' : ''; ?>>
