@@ -1504,17 +1504,17 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             $payment_date = new DateTime();
             
             // frecuencias y cantidades
-            $frequency_value = $data_quota_rule->frequency_value;
+            $frequency_value = (int) $data_quota_rule->frequency_value;
             $type_frequency = $data_quota_rule->type_frequency;
             
             // cuotas y pagos iniciales
             $initial_payment_regular = (double) $data_quota_rule->initial_payment;
             $initial_payment_sale = $data_quota_rule->initial_payment_sale ?? null;
-            $initial_payment = (double) ($initial_payment_sale != null) ? $initial_payment_sale : $data_quota_rule->initial_payment;
+            $initial_payment = ($initial_payment_sale != null) ? (double) $initial_payment_sale : $data_quota_rule->initial_payment;
 
             $quote_price_regular = (double) $data_quota_rule->quote_price;
             $quote_price_sale = $data_quota_rule->quote_price_sale ?? null;
-            $quote_price = (double) ($quote_price_sale != null) ? $quote_price_sale : $quote_price_regular;
+            $quote_price = ($quote_price_sale != null) ? (double) $quote_price_sale : $quote_price_regular;
 
             // número de cuotas
             $quotas_quantity = (int) $data_quota_rule->quotas_quantity;
@@ -1532,6 +1532,8 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
                 // Calcular el monto a pagar con descuento de cupon 
                 $amount = $original_price - ( ($original_price * $discount_cuppon_value) / 100 );
 
+                if( $amount <= 0 ) continue;
+
                 if ( $i > 0 && $type_frequency) {
                     switch ($type_frequency) {
                         case 'day':
@@ -1547,8 +1549,8 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
                 }
                 
                 $payments[] = [
-                    'amount' => $amount,
-                    'original_amount_product' => $original_price_regular,
+                    'amount' => (double) $amount,
+                    'original_amount_product' => (double) $original_price_regular,
                     'date_next_payment' => $payment_date->format('Y-m-d'),
                 ];
 
@@ -1558,18 +1560,22 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             }
 
             // cuotas avanzadas
-            $advanced_quota_rules = get_advanced_quota_rules( $rule_id );
+            $advanced_quota_rules = $wpdb->get_results($wpdb->prepare(
+                "SELECT * FROM `{$wpdb->prefix}advanced_quota_rules` WHERE quota_id = %d" ,
+                (int) $rule_id
+            ));
             if( $advanced_quota_rules && is_array( $advanced_quota_rules ) ) {
-                foreach( $advanced_quota_rules as $advanced_quota_rule ) {
+
+                foreach( $advanced_quota_rules  as $advanced_quota_rule ) {
 
                     // frecuencias y cantidades
-                    $frequency_value = $advanced_quota_rule->frequency_value;
+                    $frequency_value = (int) $advanced_quota_rule->frequency_value;
                     $type_frequency = $advanced_quota_rule->type_frequency;
 
                     // precios de la cuota avanzada
                     $advanced_quote_price_regular = (double) $advanced_quota_rule->quote_price;
                     $advanced_quote_price_sale = $advanced_quota_rule->quote_price_sale ?? null;
-                    $advanced_quote_price = (double) ($advanced_quote_price_sale != null) ? $advanced_quote_price_sale : $advanced_quote_price_regular;
+                    $advanced_quote_price = ($advanced_quote_price_sale != null) ? (double) $advanced_quote_price_sale : $advanced_quote_price_regular;
 
                     // número de cuotas
                     $quotas_quantity = (int) $advanced_quota_rule->quotas_quantity;
@@ -1579,7 +1585,9 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
                         // Calcular el monto a pagar con descuento de cupon 
                         $amount = $advanced_quote_price - ( ($advanced_quote_price * $discount_cuppon_value) / 100 );
 
-                        if ( $i > 0 && $type_frequency) {
+                        if( $amount <= 0 ) continue;
+
+                        if ( $type_frequency) {
                             switch ($type_frequency) {
                                 case 'day':
                                     $payment_date->modify("+{$frequency_value} days");
@@ -1592,10 +1600,10 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
                                     break;
                             }
                         }
-                        
+
                         $payments[] = [
-                            'amount' => $amount,
-                            'original_amount_product' => $original_price_regular,
+                            'amount' => (double) $amount,
+                            'original_amount_product' => (double) $advanced_quote_price_regular,
                             'date_next_payment' => $payment_date->format('Y-m-d'),
                         ];
 
@@ -1610,7 +1618,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             // Quota final
             $final_payment_regular = (double) $data_quota_rule->final_payment;
             $final_payment_sale = $data_quota_rule->final_payment_sale ?? null;
-            $final_payment = (double) ($final_payment_sale != null) ? $final_payment_sale : $final_payment_regular;
+            $final_payment = ($final_payment_sale != null) ? (double) $final_payment_sale : $final_payment_regular;
 
             if( $final_payment > 0 ) {
 
@@ -1630,8 +1638,8 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
                 }
 
                 $payments[] = [
-                    'amount' => $amount,
-                    'original_amount_product' => $final_payment_regular,
+                    'amount' => (double) $amount,
+                    'original_amount_product' => (double) $final_payment_regular,
                     'date_next_payment' => $payment_date->format('Y-m-d'), 
                 ];
 
@@ -1641,6 +1649,26 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
             }
 
         }
+
+    } else if ( $order ) { 
+
+        // Cálculos de precios sin regla, toma el precio del ítem de la orden
+        $amount = (double) ($item->get_total() / $item->get_quantity());
+        $original_price = (double) ($item->get_subtotal() / $item->get_quantity());
+
+        // fecha de pago
+        $date_next_payment = new DateTime();
+
+        // insertamos los datos del pago
+        $payments[] = [
+            'amount' => (double) $amount,
+            'original_amount_product' => (double) $original_price,
+            'date_next_payment' => $date_next_payment->format('Y-m-d'),
+        ];
+
+        // montos totales
+        $total_amount_to_pay = $amount;
+        $total_original_amount = $original_price;
 
     } else if ( !$order && $product ) { // Usamos $product ya inicializado
 
@@ -1653,8 +1681,8 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
 
         // insertamos los datos del pago
         $payments[] = [
-            'amount' => $amount,
-            'original_amount_product' => $original_price,
+            'amount' => (double) $amount,
+            'original_amount_product' => (double) $original_price,
             'date_next_payment' => $date_next_payment->format('Y-m-d'),
         ];
 
@@ -1667,7 +1695,7 @@ function process_payments($student_id, $order, $item, $product_id = null, $varia
     $date = new DateTime(); // fecha actual
     $installments = count( $payments ); // número de cuotas
     $total_discount_amount = $total_original_amount - $total_amount_to_pay; // monto del descuento total
-
+    
     foreach ( $payments as $i => $payment ) {
     
         $data = [
