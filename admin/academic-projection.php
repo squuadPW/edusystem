@@ -868,7 +868,7 @@ function get_inscriptions_by_student_automatically_enrollment($subject_id, $stat
     // Iniciar la consulta base y el array de argumentos con los parámetros requeridos
     $query = "SELECT * FROM {$table_student_period_inscriptions} 
               WHERE (subject_id = %d OR code_subject = %s) 
-                AND status_id IN ({$status_ids_in_clause})";
+                AND status_id IN ({$status_ids_in_clause}) AND `type` = 'regular'";
 
     $args = [
         $subject_id,
