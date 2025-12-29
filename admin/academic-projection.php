@@ -146,6 +146,33 @@ function add_admin_form_academic_projection_content()
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at DESC");
             $cuts = ['A', 'B', 'C', 'D', 'E'];
 
+            $load = load_current_cut_enrollment();
+            $code = $load['code'];
+            $cut = $load['cut'];
+            
+            // Calcular términos restantes basándose en la matriz JSON de la proyección
+            $terms_available_left = 0;
+            if ($projection && !empty($projection->matrix)) {
+                $matrix_json = json_decode($projection->matrix, true);
+                if (is_array($matrix_json)) {
+                    $found_index = -1;
+                    // Buscar el índice donde code_period y cut coinciden con el período/corte actual
+                    foreach ($matrix_json as $index => $term) {
+                        if (isset($term['code_period']) && isset($term['cut']) 
+                            && $term['code_period'] === $code && $term['cut'] === $cut) {
+                            $found_index = $index;
+                            break;
+                        }
+                    }
+                    
+                    // Si encontramos una coincidencia, contar los términos restantes (desde ese índice hasta el final)
+                    if ($found_index >= 0) {
+                        $terms_available_left = count($matrix_json) - $found_index;
+                    }
+                    // Si no se encuentra, terms_available_left queda en 0
+                }
+            }
+
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-student-matrix.php');
         }
     } else {
