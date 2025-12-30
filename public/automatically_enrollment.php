@@ -254,7 +254,7 @@ function generate_projection_student($student_id, $force = false)
 
     // Obtener información del estudiante incluyendo expected_graduation_date y academic_period
     $student = $wpdb->get_row($wpdb->prepare(
-        "SELECT id, expected_graduation_date, academic_period FROM {$table_students} WHERE id = %d",
+        "SELECT id, expected_graduation_date, academic_period, initial_cut FROM {$table_students} WHERE id = %d",
         $student_id
     ));
 
@@ -292,7 +292,7 @@ function generate_projection_student($student_id, $force = false)
             $graduation_date->modify('last day of this month');
 
             // Crear rango desde academic_period hasta expected_graduation_date
-            $period = get_period_details_code($student->academic_period);
+            $period = get_period_cut_details_code($student->academic_period, $student->initial_cut);
             $registration_date = new DateTime($period->start_date);
 
             // Contar períodos académicos únicos en ese rango
@@ -1075,7 +1075,7 @@ function build_detailed_matrix($terms_config, $terms_available, $matrix_regular,
         // En un escenario real, deberías decidir qué hacer si el estudiante no existe.
         return [];
     }
-    $period = get_period_details_code($student->academic_period);
+    $period = get_period_cut_details_code($student->academic_period, $student->initial_cut);
     $registration_date = new DateTime($period->start_date);
 
     // Consulta optimizada y segura (usando $wpdb->prepare si se pudiera, pero aquí el dato es seguro ya que se formatea)
