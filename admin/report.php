@@ -4734,6 +4734,10 @@ class TT_Pending_Matrix_List_Table extends WP_List_Table
 
         // --- 1. PREPARACIÓN Y RECOLECCIÓN DE DATOS DE ENTRADA ---
         $table_students = $wpdb->prefix . 'students';
+        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+        $table_school_subjects = $wpdb->prefix . 'school_subjects';
+        $table_pensum = $wpdb->prefix . 'pensum';
+
         // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
@@ -4748,8 +4752,40 @@ class TT_Pending_Matrix_List_Table extends WP_List_Table
 
         // --- 2. CONSTRUCCIÓN DE CONDICIONES WHERE ---
 
-        // Condición de estado (status_id = 6 para 'retired' / 'retirado')
+        // Condición de estado: terms_available es null
         $conditions[] = "terms_available is null";
+
+        // Subconsulta para contar las materias electivas aprobadas (status_id = 3) por estudiante.
+        $elective_subquery = "(
+            SELECT COUNT(DISTINCT spi_e.subject_id)
+            FROM {$table_student_period_inscriptions} AS spi_e
+            INNER JOIN {$table_school_subjects} AS ss_e ON spi_e.subject_id = ss_e.id
+            WHERE spi_e.student_id = {$table_students}.id
+              AND spi_e.status_id = 3
+              AND ss_e.type = 'elective'
+        )";
+
+        // Subconsulta para contar las materias regulares aprobadas (status_id = 3) por estudiante.
+        $regular_subquery = "(
+            SELECT COUNT(DISTINCT spi_r.subject_id)
+            FROM {$table_student_period_inscriptions} AS spi_r
+            INNER JOIN {$table_school_subjects} AS ss_r ON spi_r.subject_id = ss_r.id
+            WHERE spi_r.student_id = {$table_students}.id
+              AND spi_r.status_id = 3
+              AND ss_r.type = 'regular'
+              AND EXISTS (
+                  SELECT 1
+                  FROM {$table_pensum} AS p
+                  WHERE p.program_id = {$table_students}.program_id
+                    AND p.type = 'program'
+                    AND p.status = 1
+                    AND JSON_CONTAINS(p.matrix, JSON_OBJECT('id', spi_r.subject_id, 'type', 'Regular'))
+              )
+        )";
+
+        // Condición: estudiantes que NO estén listos académicamente
+        // (NO tengan >= 6 regulares Y >= 2 electivas aprobadas)
+        $conditions[] = "NOT ({$regular_subquery} >= 6 AND {$elective_subquery} >= 2)";
 
         // Filtro por período académico
         if (!empty($academic_period_student)) {
@@ -6065,20 +6101,61 @@ function get_students_pending_matrix_count()
     global $wpdb;
 
     $table_students = $wpdb->prefix . 'students';
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $table_pensum = $wpdb->prefix . 'pensum';
 
-    // Contar directamente el número de estudiantes con status_id = 5
-    $total_count = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT COUNT(id) FROM %i WHERE terms_available is null",
-            $table_students
-        )
-    );
+    // Subconsulta para contar las materias electivas aprobadas (status_id = 3) por estudiante.
+    // Una materia es electiva si su tipo en school_subjects es 'elective'.
+    $elective_subquery = "(
+        SELECT COUNT(DISTINCT spi_e.subject_id)
+        FROM {$table_student_period_inscriptions} AS spi_e
+        INNER JOIN {$table_school_subjects} AS ss_e ON spi_e.subject_id = ss_e.id
+        WHERE spi_e.student_id = s.id
+          AND spi_e.status_id = 3
+          AND ss_e.type = 'elective'
+    )";
+
+    // Subconsulta para contar las materias regulares aprobadas (status_id = 3) por estudiante.
+    // Una materia es regular si está en el pensum activo del programa del estudiante y su tipo es 'Regular'.
+    // Esta subconsulta verifica si el subject_id de la inscripción está entre los subject_ids
+    // de las materias regulares del pensum activo (usando JSON_CONTAINS para buscar en la matriz).
+    $regular_subquery = "(
+        SELECT COUNT(DISTINCT spi_r.subject_id)
+        FROM {$table_student_period_inscriptions} AS spi_r
+        INNER JOIN {$table_school_subjects} AS ss_r ON spi_r.subject_id = ss_r.id
+        WHERE spi_r.student_id = s.id
+          AND spi_r.status_id = 3
+          AND ss_r.type = 'regular'
+          AND EXISTS (
+              SELECT 1
+              FROM {$table_pensum} AS p
+              WHERE p.program_id = s.program_id
+                AND p.type = 'program'
+                AND p.status = 1
+                AND JSON_CONTAINS(p.matrix, JSON_OBJECT('id', spi_r.subject_id, 'type', 'Regular'))
+          )
+    )";
+
+    // Consulta principal: contar estudiantes donde terms_available es null
+    // Y que NO estén listos académicamente (NO tengan >= 6 regulares Y >= 2 electivas aprobadas)
+    $query = "
+        SELECT COUNT(s.id)
+        FROM {$table_students} AS s
+        WHERE s.terms_available IS NULL
+          AND NOT (
+              {$regular_subquery} >= 6
+              AND {$elective_subquery} >= 2
+          )
+    ";
+
+    $total_count = $wpdb->get_var($query);
 
     if ($total_count === null) {
         return 0;
     }
 
-    return (int) $total_count; // Asegurarse de que el retorno sea un entero
+    return (int) $total_count;
 }
 
 function get_students_scholarships_count()
