@@ -1284,6 +1284,30 @@ function persist_expected_matrix($student_id, $detailed_matrix)
     // term_index = secuencia incremental por registro insertado (1..N) para mantener el orden de inserción.
     $inserted = 0;
     $seq = 1;
+    
+    // Cargar períodos futuros desde el período de inscripción actual para asignación secuencial
+    $current_load = load_current_cut_enrollment();
+    $current_code = $current_load['code'];
+    $current_cut = $current_load['cut'];
+    
+    // Obtener el período actual para obtener su start_date
+    $current_period_details = get_period_cut_details_code($current_code, $current_cut);
+    $future_periods = [];
+    $future_period_index = 0;
+    
+    if ($current_period_details && !empty($current_period_details->start_date)) {
+        global $wpdb;
+        $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+        $current_start_date = $current_period_details->start_date;
+        
+        // Obtener todos los períodos futuros (incluyendo el actual) ordenados
+        $future_periods = $wpdb->get_results(
+            "SELECT code, cut, end_date FROM {$table_academic_periods_cut} 
+             WHERE start_date >= '{$current_start_date}' 
+             ORDER BY start_date ASC LIMIT 50"
+        );
+    }
+    
     foreach ($flat as $pos => &$entry) {
         // Omitir registros sin subject_id (subject_id === null)
         if ($entry['subject_id'] === null) {
@@ -1328,13 +1352,37 @@ function persist_expected_matrix($student_id, $detailed_matrix)
             }
         }
 
+        // Si el status es 'pendiente', verificar si el período ya pasó y asignar secuencialmente
+        $final_academic_period = $entry['academic_period'];
+        $final_academic_period_cut = $entry['academic_period_cut'];
+        
+        if ($status_text === 'pendiente' && !empty($entry['academic_period']) && !empty($entry['academic_period_cut'])) {
+            // Obtener detalles del período para verificar si ya pasó
+            $period_details = get_period_cut_details_code($entry['academic_period'], $entry['academic_period_cut']);
+            
+            if ($period_details && !empty($period_details->end_date)) {
+                $end_date = new DateTime($period_details->end_date);
+                $today = new DateTime('now');
+                
+                // Si el end_date ya pasó (es anterior a hoy), asignar el siguiente período futuro disponible
+                if ($end_date < $today) {
+                    if ($future_period_index < count($future_periods)) {
+                        $next_period = $future_periods[$future_period_index];
+                        $final_academic_period = $next_period->code;
+                        $final_academic_period_cut = $next_period->cut;
+                        $future_period_index++; // Avanzar al siguiente período para el próximo pendiente viejo
+                    }
+                }
+            }
+        }
+
         $wpdb->insert($table, [
             'student_id' => $student_id,
             'term_index' => $seq,
             'term_position' => intval($pos) + 1,
             'subject_id' => $entry['subject_id'],
-            'academic_period' => $entry['academic_period'],
-            'academic_period_cut' => $entry['academic_period_cut'],
+            'academic_period' => $final_academic_period,
+            'academic_period_cut' => $final_academic_period_cut,
             'status' => $status_text,
             'created_at' => current_time('mysql')
         ]);
