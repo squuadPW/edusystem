@@ -4734,13 +4734,9 @@ class TT_Pending_Matrix_List_Table extends WP_List_Table
 
         // --- 1. PREPARACIÓN Y RECOLECCIÓN DE DATOS DE ENTRADA ---
         $table_students = $wpdb->prefix . 'students';
-        $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-        $table_school_subjects = $wpdb->prefix . 'school_subjects';
-        $table_pensum = $wpdb->prefix . 'pensum';
 
         // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
-        $offset = (($pagenum - 1) * $per_page);
 
         // Obtener y sanear entradas
         $search = $_POST['s'] ?? '';
@@ -4754,38 +4750,6 @@ class TT_Pending_Matrix_List_Table extends WP_List_Table
 
         // Condición de estado: terms_available es null
         $conditions[] = "terms_available is null";
-
-        // Subconsulta para contar las materias electivas aprobadas (status_id = 3) por estudiante.
-        $elective_subquery = "(
-            SELECT COUNT(DISTINCT spi_e.subject_id)
-            FROM {$table_student_period_inscriptions} AS spi_e
-            INNER JOIN {$table_school_subjects} AS ss_e ON spi_e.subject_id = ss_e.id
-            WHERE spi_e.student_id = {$table_students}.id
-              AND spi_e.status_id = 3
-              AND ss_e.type = 'elective'
-        )";
-
-        // Subconsulta para contar las materias regulares aprobadas (status_id = 3) por estudiante.
-        $regular_subquery = "(
-            SELECT COUNT(DISTINCT spi_r.subject_id)
-            FROM {$table_student_period_inscriptions} AS spi_r
-            INNER JOIN {$table_school_subjects} AS ss_r ON spi_r.subject_id = ss_r.id
-            WHERE spi_r.student_id = {$table_students}.id
-              AND spi_r.status_id = 3
-              AND ss_r.type = 'regular'
-              AND EXISTS (
-                  SELECT 1
-                  FROM {$table_pensum} AS p
-                  WHERE p.program_id = {$table_students}.program_id
-                    AND p.type = 'program'
-                    AND p.status = 1
-                    AND JSON_CONTAINS(p.matrix, JSON_OBJECT('id', spi_r.subject_id, 'type', 'Regular'))
-              )
-        )";
-
-        // Condición: estudiantes que NO estén listos académicamente
-        // (NO tengan >= 6 regulares Y >= 2 electivas aprobadas)
-        $conditions[] = "NOT ({$regular_subquery} >= 6 AND {$elective_subquery} >= 2)";
 
         // Filtro por período académico
         if (!empty($academic_period_student)) {
@@ -4841,31 +4805,44 @@ class TT_Pending_Matrix_List_Table extends WP_List_Table
         // --- 3. CONSTRUCCIÓN Y EJECUCIÓN DE LA CONSULTA PRINCIPAL ---
         $where_clause = !empty($conditions) ? " WHERE " . implode(" AND ", $conditions) : "";
 
-        // Consulta principal con LIMIT y OFFSET
+        // Consulta para obtener TODOS los estudiantes que cumplen las condiciones base
+        // (sin paginación SQL, porque necesitamos filtrar en PHP)
         $query = "
-        SELECT SQL_CALC_FOUND_ROWS *
-        FROM {$table_students}
-        {$where_clause}
-        ORDER BY id DESC
-        LIMIT %d OFFSET %d
-    ";
-
-        // Añadir placeholders para LIMIT y OFFSET al final de los parámetros
-        $params[] = $per_page; // MODIFICADO: usar $per_page
-        $params[] = $offset;
+            SELECT *
+            FROM {$table_students}
+            {$where_clause}
+            ORDER BY id DESC
+        ";
 
         // Ejecutar la consulta de estudiantes
-        $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+        if (!empty($params)) {
+            $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+        } else {
+            $students = $wpdb->get_results($query, "ARRAY_A");
+        }
 
-        // Obtener el total de filas
-        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        // --- 4. FILTRAR EN PHP: solo estudiantes que NO están listos académicamente ---
+        $filtered_students = [];
+        if ($students) {
+            foreach ($students as $student) {
+                // Solo incluir estudiantes que NO estén listos académicamente
+                if (!get_academic_ready($student['id'])) {
+                    $filtered_students[] = $student;
+                }
+            }
+        }
+
+        // --- 5. PAGINACIÓN MANUAL EN PHP ---
+        $total_count = count($filtered_students);
+        $offset = (($pagenum - 1) * $per_page);
+        $paginated_students = array_slice($filtered_students, $offset, $per_page);
 
         $students_array = [];
 
-        // --- 4. PROCESAMIENTO DE LOS RESULTADOS (Optimización de consultas en bucle) ---
-        if ($students) {
+        // --- 6. PROCESAMIENTO DE LOS RESULTADOS (Optimización de consultas en bucle) ---
+        if ($paginated_students) {
             // Obtener una lista de todos los 'partner_id' (IDs de los padres)
-            $parent_ids = array_filter(array_column($students, 'partner_id'));
+            $parent_ids = array_filter(array_column($paginated_students, 'partner_id'));
             $parent_data = [];
 
             // Pre-cargar todos los datos de usuario y meta de los padres en una sola operación
@@ -4900,7 +4877,7 @@ class TT_Pending_Matrix_List_Table extends WP_List_Table
             }
 
             // El bucle ahora solo procesa los datos ya cargados
-            foreach ($students as $student) {
+            foreach ($paginated_students as $student) {
                 $partner_id = $student['partner_id'];
                 $parent_full_name = '';
                 $parent_email = '';
@@ -6101,61 +6078,27 @@ function get_students_pending_matrix_count()
     global $wpdb;
 
     $table_students = $wpdb->prefix . 'students';
-    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $table_school_subjects = $wpdb->prefix . 'school_subjects';
-    $table_pensum = $wpdb->prefix . 'pensum';
+    $count = 0;
 
-    // Subconsulta para contar las materias electivas aprobadas (status_id = 3) por estudiante.
-    // Una materia es electiva si su tipo en school_subjects es 'elective'.
-    $elective_subquery = "(
-        SELECT COUNT(DISTINCT spi_e.subject_id)
-        FROM {$table_student_period_inscriptions} AS spi_e
-        INNER JOIN {$table_school_subjects} AS ss_e ON spi_e.subject_id = ss_e.id
-        WHERE spi_e.student_id = s.id
-          AND spi_e.status_id = 3
-          AND ss_e.type = 'elective'
-    )";
+    // Obtener todos los estudiantes con terms_available NULL
+    $students = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT id FROM %i WHERE terms_available IS NULL",
+            $table_students
+        ),
+        "ARRAY_A"
+    );
 
-    // Subconsulta para contar las materias regulares aprobadas (status_id = 3) por estudiante.
-    // Una materia es regular si está en el pensum activo del programa del estudiante y su tipo es 'Regular'.
-    // Esta subconsulta verifica si el subject_id de la inscripción está entre los subject_ids
-    // de las materias regulares del pensum activo (usando JSON_CONTAINS para buscar en la matriz).
-    $regular_subquery = "(
-        SELECT COUNT(DISTINCT spi_r.subject_id)
-        FROM {$table_student_period_inscriptions} AS spi_r
-        INNER JOIN {$table_school_subjects} AS ss_r ON spi_r.subject_id = ss_r.id
-        WHERE spi_r.student_id = s.id
-          AND spi_r.status_id = 3
-          AND ss_r.type = 'regular'
-          AND EXISTS (
-              SELECT 1
-              FROM {$table_pensum} AS p
-              WHERE p.program_id = s.program_id
-                AND p.type = 'program'
-                AND p.status = 1
-                AND JSON_CONTAINS(p.matrix, JSON_OBJECT('id', spi_r.subject_id, 'type', 'Regular'))
-          )
-    )";
-
-    // Consulta principal: contar estudiantes donde terms_available es null
-    // Y que NO estén listos académicamente (NO tengan >= 6 regulares Y >= 2 electivas aprobadas)
-    $query = "
-        SELECT COUNT(s.id)
-        FROM {$table_students} AS s
-        WHERE s.terms_available IS NULL
-          AND NOT (
-              {$regular_subquery} >= 6
-              AND {$elective_subquery} >= 2
-          )
-    ";
-
-    $total_count = $wpdb->get_var($query);
-
-    if ($total_count === null) {
-        return 0;
+    // Filtrar en PHP: solo contar los que NO están listos académicamente
+    if ($students) {
+        foreach ($students as $student) {
+            if (!get_academic_ready($student['id'])) {
+                $count++;
+            }
+        }
     }
 
-    return (int) $total_count;
+    return $count;
 }
 
 function get_students_scholarships_count()
