@@ -42,7 +42,6 @@ function show_report_sales()
             $order = wc_get_order($order_id);
             include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
         }
-
     } else {
         global $current_user;
         include(plugin_dir_path(__FILE__) . 'templates/report-sales.php');
@@ -59,7 +58,6 @@ function show_report_sales_product()
             $order = wc_get_order($order_id);
             include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
         }
-
     } else {
         global $current_user;
         include(plugin_dir_path(__FILE__) . 'templates/report-sales-product.php');
@@ -76,7 +74,6 @@ function show_report_accounts_receivables()
             $order = wc_get_order($order_id);
             include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
         }
-
     } else {
         global $current_user;
         include(plugin_dir_path(__FILE__) . 'templates/report-accounts-receivables.php');
@@ -93,7 +90,6 @@ function show_report_students()
             $order = wc_get_order($order_id);
             include(plugin_dir_path(__FILE__) . 'templates/payment-details.php');
         }
-
     } else {
         global $current_user, $wpdb;
         $table_academic_periods = $wpdb->prefix . 'academic_periods';
@@ -118,6 +114,7 @@ function show_report_current_students()
     $total_count_pending_documents = (int) get_students_pending_documents_count();
     $total_count_graduated = (int) get_students_graduated_count();
     $total_count_retired = (int) get_students_retired_count();
+    $total_count_pending_matrix = (int) get_students_pending_matrix_count();
     $total_count_scholarships = (int) get_students_scholarships_count();
     $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
     $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut}  ORDER BY created_at ASC");
@@ -164,6 +161,10 @@ function show_report_current_students()
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'retired') {
             $list_students = new TT_Retired_List_Table;
+            $list_students->prepare_items();
+            include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
+        } else if ($_GET['section_tab'] == 'pending_matrix') {
+            $list_students = new TT_Pending_Matrix_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'scholarships') {
@@ -1574,7 +1575,6 @@ function get_list_orders_sales()
                 ]
             ]
         ];
-
     } else {
         $html = "";
         $html .= "<tr>";
@@ -1659,7 +1659,6 @@ function list_sales_product()
                     }
                 }
             }
-
         } else {
             $html .= "<tr>";
             $html .= "<td colspan='6' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
@@ -1691,9 +1690,9 @@ function list_accounts_receivables()
                 if ($cuote->student) {
                     $student_display_name = strtoupper(
                         (isset($cuote->student['last_name']) ? $cuote->student['last_name'] . ' ' : '') .
-                        (isset($cuote->student['middle_last_name']) ? $cuote->student['middle_last_name'] . ' ' : '') .
-                        (isset($cuote->student['name']) ? $cuote->student['name'] . ' ' : '') .
-                        (isset($cuote->student['middle_name']) ? $cuote->student['middle_name'] : '')
+                            (isset($cuote->student['middle_last_name']) ? $cuote->student['middle_last_name'] . ' ' : '') .
+                            (isset($cuote->student['name']) ? $cuote->student['name'] . ' ' : '') .
+                            (isset($cuote->student['middle_name']) ? $cuote->student['middle_name'] : '')
                     );
                     $html .= "<td class='column-primary text-uppercase' data-colname='" . __('Student', 'edusystem') . "'>" . esc_html(trim($student_display_name)) . "<button type='button' class='toggle-row'><span class='screen-reader-text'></span></button></td>";
                 } else {
@@ -1703,7 +1702,7 @@ function list_accounts_receivables()
                 if ($cuote->customer) {
                     $customer_display_name = strtoupper(
                         (isset($cuote->customer->last_name) ? $cuote->customer->last_name : '') . ' ' .
-                        (isset($cuote->customer->first_name) ? $cuote->customer->first_name : '')
+                            (isset($cuote->customer->first_name) ? $cuote->customer->first_name : '')
                     );
                     $html .= "<td class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>" . esc_html(trim($customer_display_name)) . "</td>";
                 } else {
@@ -1770,7 +1769,6 @@ function list_report_students()
             $html .= "<td data-colname='" . __('Institute', 'edusystem') . "'>" . $student->name_institute . "</td>";
             $html .= "</tr>";
         }
-
     } else {
         $html .= "<tr>";
         $html .= "<td colspan='9' style='text-align:center;'>" . __('There are not records', 'edusystem') . "</td>";
@@ -1854,7 +1852,6 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -2147,7 +2144,6 @@ class TT_Pending_Elective_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Current_Student_List_Table extends WP_List_Table
@@ -2164,7 +2160,6 @@ class TT_Current_Student_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -2441,7 +2436,6 @@ class TT_Current_Student_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Active_Student_List_Table extends WP_List_Table
@@ -2458,7 +2452,6 @@ class TT_Active_Student_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     protected function get_per_page_option_name()
@@ -2629,7 +2622,6 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -2897,7 +2889,6 @@ class TT_Documents_Active_Student_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
@@ -2914,7 +2905,6 @@ class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -3192,7 +3182,6 @@ class TT_Enrollments_Active_Student_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Summary_Comissions_Institute_List_Table extends WP_List_Table
@@ -3209,7 +3198,6 @@ class TT_Summary_Comissions_Institute_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     function column_default($item, $column_name)
@@ -3294,7 +3282,6 @@ class TT_Summary_Comissions_Institute_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Summary_Comissions_Alliance_List_Table extends WP_List_Table
@@ -3311,7 +3298,6 @@ class TT_Summary_Comissions_Alliance_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     function column_default($item, $column_name)
@@ -3395,7 +3381,6 @@ class TT_Summary_Comissions_Alliance_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Pending_Graduation_List_Table extends WP_List_Table
@@ -3412,7 +3397,6 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -3699,7 +3683,6 @@ class TT_Pending_Graduation_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Pending_Documents_List_Table extends WP_List_Table
@@ -3716,7 +3699,6 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -4030,7 +4012,6 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Graduated_List_Table extends WP_List_Table
@@ -4047,7 +4028,6 @@ class TT_Graduated_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -4340,7 +4320,6 @@ class TT_Graduated_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Retired_List_Table extends WP_List_Table
@@ -4357,7 +4336,6 @@ class TT_Retired_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -4648,7 +4626,324 @@ class TT_Retired_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
+}
 
+class TT_Pending_Matrix_List_Table extends WP_List_Table
+{
+
+    function __construct()
+    {
+        global $status, $page, $categories;
+
+        parent::__construct(
+            array(
+                'singular' => 'active',
+                'plural' => 'actives',
+                'ajax' => true
+            )
+        );
+    }
+
+    // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
+    protected function get_per_page_option_name()
+    {
+        return 'tt_students_per_page';
+    }
+
+    protected function get_per_page()
+    {
+        $storage_key = 'tt_students_per_page';
+        $default_value = 20;
+
+        $per_page = (int) get_user_option($storage_key);
+
+        if (empty($per_page) || $per_page < 1) {
+            $per_page = $default_value;
+        }
+
+        return $per_page;
+    }
+    // --- FIN NUEVO ---
+
+    function column_default($item, $column_name)
+    {
+        switch ($column_name) {
+            case 'view_details':
+                $buttons = '';
+                $buttons .= "<a href='" . admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $item['id']) . "' class='button button-primary'>" . __('View', 'edusystem') . "</a>";
+                return $buttons;
+            default:
+                return $item[$column_name];
+        }
+    }
+
+    function column_name($item)
+    {
+
+        return ucwords($item['name']);
+    }
+
+    function column_cb($item)
+    {
+        return '';
+    }
+
+    function get_columns()
+    {
+        $columns = array(
+            'income' => __('Income', 'edusystem'),
+            'term' => __('Term', 'edusystem'),
+            'id_document' => __('ID', 'edusystem'),
+            'student' => __('Student', 'edusystem'),
+            'email' => __('Student email', 'edusystem'),
+            'parent' => __('Parent', 'edusystem'),
+            'parent_email' => __('Parent email', 'edusystem'),
+            'country' => __('Country', 'edusystem'),
+            // 'grade' => __('Grade', 'edusystem'),
+            'institute' => __('Institute', 'edusystem'),
+            'view_details' => __('Actions', 'edusystem'),
+        );
+
+        return $columns;
+    }
+
+    function get_sortable_columns()
+    {
+        $sortable_columns = [];
+        return $sortable_columns;
+    }
+
+    function get_bulk_actions()
+    {
+        $actions = [];
+        return $actions;
+    }
+
+    function process_bulk_action()
+    {
+
+        //Detect when a bulk action is being triggered...
+        if ('delete' === $this->current_action()) {
+            wp_die('Items deleted (or they would be if we had items to delete)!');
+        }
+    }
+
+    function get_student_retired($per_page = 20) // MODIFICADO: agregar parámetro con valor por defecto
+    {
+        global $wpdb;
+
+        // --- 1. PREPARACIÓN Y RECOLECCIÓN DE DATOS DE ENTRADA ---
+        $table_students = $wpdb->prefix . 'students';
+
+        // MODIFICADO: usar parámetro $per_page en lugar de valor fijo
+        $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
+
+        // Obtener y sanear entradas
+        $search = $_POST['s'] ?? '';
+        $academic_period_student = $_POST['academic_period'] ?? '';
+        $academic_period_cut_student = $_POST['academic_period_cut'] ?? '';
+
+        $conditions = [];
+        $params = [];
+
+        // --- 2. CONSTRUCCIÓN DE CONDICIONES WHERE ---
+
+        // Condición de estado: terms_available es null
+        $conditions[] = "terms_available is null";
+
+        // Filtro por período académico
+        if (!empty($academic_period_student)) {
+            $conditions[] = "academic_period = %s";
+            $params[] = $academic_period_student;
+        }
+
+        // Filtro por corte de período
+        if (!empty($academic_period_cut_student)) {
+            $conditions[] = "initial_cut = %s";
+            $params[] = $academic_period_cut_student;
+        }
+
+        // Condición de búsqueda inteligente
+        if (!empty($search)) {
+            // Usar un array para las sub-condiciones de búsqueda
+            $search_sub_conditions = [];
+            $search_term_like = '%' . $wpdb->esc_like($search) . '%';
+            $search_fields = [
+                'id_document',
+                'email',
+                'name',
+                'middle_name',
+                'last_name',
+                'middle_last_name',
+            ];
+
+            // Añadir condiciones LIKE para campos individuales
+            foreach ($search_fields as $field) {
+                $search_sub_conditions[] = "{$field} LIKE %s";
+                $params[] = $search_term_like; // Agregar el parámetro
+            }
+
+            // Simplificación y optimización de CONCAT_WS (Se puede limitar a las combinaciones más comunes)
+            // Nota: Estas combinaciones son muy costosas y no utilizan índices. Es una necesidad de diseño actual.
+            $combined_fields = [
+                'CONCAT_WS(" ", name, last_name)',
+                'CONCAT_WS(" ", last_name, name)',
+                'CONCAT_WS(" ", name, middle_name, last_name, middle_last_name)'
+            ];
+
+            foreach ($combined_fields as $field_combination) {
+                $search_sub_conditions[] = "{$field_combination} LIKE %s";
+                $params[] = $search_term_like; // Agregar el parámetro
+            }
+
+            // Agregamos la condición de búsqueda principal al array de condiciones generales
+            if (!empty($search_sub_conditions)) {
+                $conditions[] = "(" . implode(" OR ", $search_sub_conditions) . ")";
+            }
+        }
+
+        // --- 3. CONSTRUCCIÓN Y EJECUCIÓN DE LA CONSULTA PRINCIPAL ---
+        $where_clause = !empty($conditions) ? " WHERE " . implode(" AND ", $conditions) : "";
+
+        // Consulta para obtener TODOS los estudiantes que cumplen las condiciones base
+        // (sin paginación SQL, porque necesitamos filtrar en PHP)
+        $query = "
+            SELECT *
+            FROM {$table_students}
+            {$where_clause}
+            ORDER BY id DESC
+        ";
+
+        // Ejecutar la consulta de estudiantes
+        if (!empty($params)) {
+            $students = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+        } else {
+            $students = $wpdb->get_results($query, "ARRAY_A");
+        }
+
+        // --- 4. FILTRAR EN PHP: solo estudiantes que NO están listos académicamente ---
+        $filtered_students = [];
+        if ($students) {
+            foreach ($students as $student) {
+                // Solo incluir estudiantes que NO estén listos académicamente
+                if (!get_academic_ready($student['id'])) {
+                    $filtered_students[] = $student;
+                }
+            }
+        }
+
+        // --- 5. PAGINACIÓN MANUAL EN PHP ---
+        $total_count = count($filtered_students);
+        $offset = (($pagenum - 1) * $per_page);
+        $paginated_students = array_slice($filtered_students, $offset, $per_page);
+
+        $students_array = [];
+
+        // --- 6. PROCESAMIENTO DE LOS RESULTADOS (Optimización de consultas en bucle) ---
+        if ($paginated_students) {
+            // Obtener una lista de todos los 'partner_id' (IDs de los padres)
+            $parent_ids = array_filter(array_column($paginated_students, 'partner_id'));
+            $parent_data = [];
+
+            // Pre-cargar todos los datos de usuario y meta de los padres en una sola operación
+            if (!empty($parent_ids)) {
+                $parent_ids_placeholders = implode(',', array_fill(0, count($parent_ids), '%d'));
+                $table_users = $wpdb->users;
+                $table_usermeta = $wpdb->usermeta;
+
+                // 1. Obtener emails de los padres
+                $user_query = "SELECT ID, user_email FROM {$table_users} WHERE ID IN ({$parent_ids_placeholders})";
+                $users = $wpdb->get_results($wpdb->prepare($user_query, $parent_ids), ARRAY_A);
+
+                foreach ($users as $user) {
+                    $parent_data[$user['ID']] = ['email' => $user['user_email'], 'last_name' => '', 'first_name' => ''];
+                }
+
+                // 2. Obtener meta data (last_name y first_name)
+                // Esto se podría hacer en una sola consulta para mejorar la eficiencia.
+                $meta_query = "
+                SELECT user_id, meta_key, meta_value 
+                FROM {$table_usermeta} 
+                WHERE user_id IN ({$parent_ids_placeholders}) 
+                AND meta_key IN ('last_name', 'first_name')
+            ";
+                $metas = $wpdb->get_results($wpdb->prepare($meta_query, $parent_ids), ARRAY_A);
+
+                foreach ($metas as $meta) {
+                    if (isset($parent_data[$meta['user_id']])) {
+                        $parent_data[$meta['user_id']][$meta['meta_key']] = $meta['meta_value'];
+                    }
+                }
+            }
+
+            // El bucle ahora solo procesa los datos ya cargados
+            foreach ($paginated_students as $student) {
+                $partner_id = $student['partner_id'];
+                $parent_full_name = '';
+                $parent_email = '';
+
+                if (isset($parent_data[$partner_id])) {
+                    $parent_data_item = $parent_data[$partner_id];
+                    $parent_name = strtoupper($parent_data_item['last_name'] . ' ' . $parent_data_item['first_name']);
+                    $parent_full_name = "<span class='text-uppercase' data-colname='" . __('Parent', 'edusystem') . "'>{$parent_name}</span>";
+                    $parent_email = $parent_data_item['email'];
+                }
+
+                // Format Student Name (Optimized)
+                $student_full_name = '<span class="text-uppercase">' . student_names_lastnames_helper($student['id']) . '</span>';
+
+                $students_array[] = [
+                    'student' => $student_full_name,
+                    'id' => $student['id'],
+                    'id_document' => $student['id_document'],
+                    'email' => $student['email'],
+                    'income' => $student['academic_period'],
+                    'term' => $student['initial_cut'],
+                    'parent' => $parent_full_name,
+                    'parent_email' => $parent_email,
+                    'country' => $student['country'],
+                    // Se asume que get_name_grade y get_name_institute son funciones externas eficientes o almacenan datos en caché.
+                    'grade' => function_exists('get_name_grade') ? get_name_grade($student['grade_id']) : $student['grade_id'],
+                    'institute' => (function_exists('get_name_institute') && $student['institute_id']) ? get_name_institute($student['institute_id']) : ($student['name_institute'] ?? '')
+                ];
+            }
+        }
+
+        return ['data' => $students_array, 'total_count' => $total_count];
+    }
+
+    function prepare_items()
+    {
+        // MODIFICADO: usar get_per_page() en lugar de valor fijo
+        $per_page = $this->get_per_page();
+        $data_student = $this->get_student_retired($per_page);
+
+        $columns = $this->get_columns();
+        $hidden = array();
+        $sortable = $this->get_sortable_columns();
+
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->process_bulk_action();
+
+        $data = $data_student['data'];
+        $total_count = (int) $data_student['total_count'];
+
+        function usort_reorder($a, $b)
+        {
+            $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'order';
+            $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+            $result = strcmp($a[$orderby], $b[$orderby]);
+            return ($order === 'asc') ? $result : -$result;
+        }
+
+        // MODIFICADO: usar $per_page en lugar de 20
+        $this->set_pagination_args(array(
+            'total_items' => $total_count,
+            'per_page' => $per_page,
+        ));
+
+        $this->items = $data;
+    }
 }
 
 class TT_Scholarships_List_Table extends WP_List_Table
@@ -4665,7 +4960,6 @@ class TT_Scholarships_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -4929,7 +5223,6 @@ class TT_Scholarships_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 class TT_Non_Enrolled_List_Table extends WP_List_Table
 {
@@ -4945,7 +5238,6 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     // --- NUEVO: MÉTODOS PARA PAGINACIÓN ---
@@ -5217,7 +5509,6 @@ class TT_Non_Enrolled_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Ranking_Alliances_List_Table extends WP_List_Table
@@ -5234,7 +5525,6 @@ class TT_Ranking_Alliances_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     function column_default($item, $column_name)
@@ -5399,7 +5689,6 @@ class TT_Ranking_Alliances_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 class TT_Ranking_Institutes_List_Table extends WP_List_Table
@@ -5416,7 +5705,6 @@ class TT_Ranking_Institutes_List_Table extends WP_List_Table
                 'ajax' => true
             )
         );
-
     }
 
     function column_default($item, $column_name)
@@ -5581,7 +5869,6 @@ class TT_Ranking_Institutes_List_Table extends WP_List_Table
 
         $this->items = $data;
     }
-
 }
 
 function get_students_pending_elective_count()
@@ -5784,6 +6071,34 @@ function get_students_retired_count()
     }
 
     return (int) $total_count; // Asegurarse de que el retorno sea un entero
+}
+
+function get_students_pending_matrix_count()
+{
+    global $wpdb;
+
+    $table_students = $wpdb->prefix . 'students';
+    $count = 0;
+
+    // Obtener todos los estudiantes con terms_available NULL
+    $students = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT id FROM %i WHERE terms_available IS NULL",
+            $table_students
+        ),
+        "ARRAY_A"
+    );
+
+    // Filtrar en PHP: solo contar los que NO están listos académicamente
+    if ($students) {
+        foreach ($students as $student) {
+            if (!get_academic_ready($student['id'])) {
+                $count++;
+            }
+        }
+    }
+
+    return $count;
 }
 
 function get_students_scholarships_count()

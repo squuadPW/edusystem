@@ -510,6 +510,16 @@ function get_period_details_code($code)
     return $period;
 }
 
+function get_period_cut_details_code($code, $cut)
+{
+
+    global $wpdb;
+    $table_periods_cuts = $wpdb->prefix . 'academic_periods_cut';
+
+    $period = $wpdb->get_row("SELECT * FROM {$table_periods_cuts} WHERE code='{$code}' AND cut='{$cut}'");
+    return $period;
+}
+
 function get_period_details_cuts($code)
 {
 
