@@ -138,6 +138,61 @@ function load_inscriptions_electives($student)
     return count($inscriptions);
 }
 
+function load_inscriptions_electives_valid_arr($student, $status = "(status_id = 1 OR status_id = 3)")
+{
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+
+    $offers = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE `type` = 'elective'");
+    $electives_ids = [];
+    $electives_codes = [];
+    foreach ($offers as $key => $elective) {
+        array_push($electives_ids, $elective->id);
+        array_push($electives_codes, $elective->code_subject);
+    }
+
+    if (empty($electives_ids) && empty($electives_codes)) {
+        return 0;
+    }
+
+    $conditions = array();
+    $params = array();
+
+    // Crear condiciones para subject_id y code_subject
+    $or_conditions = array();
+
+    if (!empty($electives_ids)) {
+        $or_conditions[] = "subject_id IN (" . implode(',', array_fill(0, count($electives_ids), '%d')) . ")";
+        $params = array_merge($params, $electives_ids);
+    }
+
+    if (!empty($electives_codes)) {
+        $or_conditions[] = "code_subject IN (" . implode(',', array_fill(0, count($electives_codes), '%s')) . ")";
+        $params = array_merge($params, $electives_codes);
+    }
+
+    // Agregar la condición de OR si hay condiciones
+    if (!empty($or_conditions)) {
+        $conditions[] = "(" . implode(" OR ", $or_conditions) . ")";
+    }
+
+    // Agregar la condición de student_id
+    $conditions[] = "student_id = %d";
+    $params[] = $student->id;
+
+    // Agregar la condición de status
+    $conditions[] = $status;
+
+    $query = "SELECT * FROM {$table_student_period_inscriptions}";
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
+    }
+
+    $inscriptions = $wpdb->get_results($wpdb->prepare($query, $params));
+    return $inscriptions;
+}
+
 function load_inscriptions_electives_valid($student, $status = "(status_id = 1 OR status_id = 3)")
 {
     global $wpdb;

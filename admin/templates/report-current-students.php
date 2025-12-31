@@ -35,6 +35,8 @@
     <a href="<?= admin_url('admin.php?page=report-students&section_tab=pending_matrix'); ?>"
         class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'pending_matrix') ? 'nav-tab-active' : ''; ?>"><?= __('Students pending by expected matrix', 'edusystem'); ?>
         (<strong><?= $total_count_pending_matrix ?></strong>)</a>
+	<a href="<?= admin_url('admin.php?page=report-students&section_tab=report_electives'); ?>"
+        class="nav-tab <?= (isset($_GET['section_tab']) && !empty($_GET['section_tab']) && $_GET['section_tab'] == 'report_electives') ? 'nav-tab-active' : ''; ?>"><?= __('Electives report', 'edusystem'); ?></a>
 </h2>
 
 <div class="tabs-content">
@@ -111,6 +113,11 @@
 					$heading_text = __('Pending matrix students', 'edusystem');
 					$name_document = __('Pending matrix students.xlsx', 'edusystem');
 					$headers = ['Income', 'Term', 'ID', 'Student', 'Student email', 'Parent', 'Parent email', 'Country', 'Grade', 'Institute'];
+					break;
+				case 'report_electives':
+					$heading_text = __('Report electives', 'edusystem');
+					$name_document = __('Report electives.xlsx', 'edusystem');
+					$headers = ['Student', 'Electives', 'Country', 'Institute'];
 					break;
 				case 'scholarships':
 					$heading_text = __('Scholarship students', 'edusystem');
