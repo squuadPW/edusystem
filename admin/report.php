@@ -5156,9 +5156,9 @@ class TT_Report_Electives_List_Table extends WP_List_Table
         // }
 
         // --- 5. PAGINACIÓN MANUAL EN PHP ---
-        $total_count = count($filtered_students);
+        $total_count = count($students);
         $offset = (($pagenum - 1) * $per_page);
-        $paginated_students = array_slice($filtered_students, $offset, $per_page);
+        $paginated_students = array_slice($students, $offset, $per_page);
 
         $students_array = [];
 
