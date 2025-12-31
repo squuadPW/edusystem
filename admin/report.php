@@ -5072,7 +5072,7 @@ class TT_Report_Electives_List_Table extends WP_List_Table
         // --- 2. CONSTRUCCIÓN DE CONDICIONES WHERE ---
 
         // Condición de estado: terms_available es null
-        $conditions[] = "terms_available is null";
+        // $conditions[] = "terms_available is null";
 
         // Filtro por período académico
         if (!empty($academic_period_student)) {
@@ -5146,14 +5146,14 @@ class TT_Report_Electives_List_Table extends WP_List_Table
 
         // --- 4. FILTRAR EN PHP: solo estudiantes que NO están listos académicamente ---
         $filtered_students = [];
-        if ($students) {
-            foreach ($students as $student) {
-                // Solo incluir estudiantes que NO estén listos académicamente
-                if (!get_academic_ready($student['id'])) {
-                    $filtered_students[] = $student;
-                }
-            }
-        }
+        // if ($students) {
+        //     foreach ($students as $student) {
+        //         // Solo incluir estudiantes que NO estén listos académicamente
+        //         if (!get_academic_ready($student['id'])) {
+        //             $filtered_students[] = $student;
+        //         }
+        //     }
+        // }
 
         // --- 5. PAGINACIÓN MANUAL EN PHP ---
         $total_count = count($filtered_students);
