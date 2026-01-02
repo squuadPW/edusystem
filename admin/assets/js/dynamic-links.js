@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
       modal.style.display = "block";
     });
   }
-  // Cerrar modal con los botones de salida
+
   var closeBtns = document.querySelectorAll(".modal-close");
   closeBtns.forEach(function (btn) {
     btn.addEventListener("click", function () {
@@ -17,30 +17,80 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (document.getElementById("program-identificator")) {
     let timeout;
-
-    // 1. Inicializamos con los datos que PHP ya cargó
     let currentPlansData = window.initialPlansData || [];
 
-    // Función reutilizable para llenar los subprogramas
+    function updatePaymentPlanDetails(selectedPlanId) {
+      const detailsElement = document.getElementById(
+        "details-payment-plan-element"
+      );
+      const detailsContainer = document.getElementById("details-payment-plan");
+
+      if (!selectedPlanId) {
+        detailsElement.style.display = "none";
+        detailsContainer.innerHTML = "";
+        return;
+      }
+
+      const planWrapper = currentPlansData.find(
+        (p) => (p.plan.identificator || p.plan.id) == selectedPlanId
+      );
+
+      if (planWrapper) {
+        const p = planWrapper.plan;
+        const fees = planWrapper.fees || [];
+        const quotes = planWrapper.quote_rules || [];
+        const currency = p.currency || "$";
+
+        let html = `
+          <p><strong>Name:</strong> ${p.name}</p>
+          <p><strong>Description:</strong> ${p.description}</p>
+          <p><strong>Regular Price:</strong> ${currency}${p.total_price}</p>
+        `;
+
+        if (fees.length > 0) {
+          html += `<label style="margin-top:10px; display:block;"><b>Fees</b></label>`;
+          fees.forEach((fee) => {
+            html += `<p style="margin-left:10px;">• ${fee.name}: ${
+              fee.currency || currency
+            }${fee.price}</p>`;
+          });
+        }
+
+        if (quotes.length > 0) {
+          html += `<label style="margin-top:10px; display:block;"><b>Payment Options</b></label>`;
+          quotes.forEach((quote) => {
+            // Lógica para que se vea más profesional
+            const qty = parseInt(quote.quotas_quantity);
+            const label =
+              qty === 1 ? "Single installment" : `${qty} Installments`;
+            html += `<p style="margin-left:10px;">• ${quote.name}: <strong>${label}</strong></p>`;
+          });
+        }
+
+        detailsContainer.innerHTML = html;
+        detailsElement.style.display = "block";
+      }
+    }
+
     function updateSubprograms() {
-      const selectedPlanId = document.getElementById(
-        "payment-plan-identificator"
-      ).value;
+      const planSelect = document.getElementById("payment-plan-identificator");
+      const selectedPlanId = planSelect.value;
       const subprogramElement = document.getElementById("subprogram-element");
       const subprogramSelect = document.getElementById("subprogram-id");
-
-      // USAMOS LA VARIABLE GLOBAL DE WINDOW
       const selectedSubprogramId = window.selectedSubprogramId || "";
 
       subprogramSelect.innerHTML = '<option value="">Select an option</option>';
       subprogramElement.style.display = "none";
 
+      updatePaymentPlanDetails(selectedPlanId);
+
       if (!selectedPlanId) return;
 
-      const selectedPlan = currentPlansData.find(
-        (p) => (p.identificator || p.id) == selectedPlanId
+      const newSelectedPlan = currentPlansData.find(
+        (p) => (p.plan.identificator || p.plan.id) == selectedPlanId
       );
 
+      let selectedPlan = newSelectedPlan ? newSelectedPlan.plan : null;
       if (selectedPlan && selectedPlan.subprogram) {
         let subCount = 0;
         const subs =
@@ -52,29 +102,20 @@ document.addEventListener("DOMContentLoaded", function () {
           if (subs[key].is_active == 1) {
             var option = document.createElement("option");
             option.value = key;
-            option.text = subs[key].name;
-
-            if (option.value == selectedSubprogramId) {
-              option.selected = true;
-            }
-
+            option.text = `${subs[key].name}`;
+            if (option.value == selectedSubprogramId) option.selected = true;
             subprogramSelect.appendChild(option);
             subCount++;
           }
         }
-
-        if (subCount > 0) {
-          subprogramElement.style.display = "block";
-        }
+        if (subCount > 0) subprogramElement.style.display = "block";
       }
     }
 
-    // Ejecutar al cargar la página por si ya hay un plan seleccionado
     if (document.getElementById("payment-plan-identificator").value) {
       updateSubprograms();
     }
 
-    // Evento cuando cambia el programa (AJAX)
     document
       .getElementById("program-identificator")
       .addEventListener("change", function (e) {
@@ -82,6 +123,10 @@ document.addEventListener("DOMContentLoaded", function () {
         timeout = setTimeout(() => {
           document.getElementById("scholarship-element").style.display = "none";
           document.getElementById("subprogram-element").style.display = "none";
+          document.getElementById(
+            "details-payment-plan-element"
+          ).style.display = "none";
+          document.getElementById("details-payment-plan").innerHTML = "";
 
           var xhr = new XMLHttpRequest();
           xhr.open("POST", wp_ajax.url, true);
@@ -102,12 +147,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 '<option value="">Select an option</option>';
 
               if (Array.isArray(plans)) {
-                plans.forEach((p) => {
+                plans.forEach((plak) => {
+                  let p = plak.plan ? plak.plan : plak;
                   var option = document.createElement("option");
                   option.value = p.identificator || p.id;
-                  option.text =
-                    (p.name || "Plan") +
-                    (p.description ? " (" + p.description + ")" : "");
+                  option.text = `${p.name || "Plan"}${
+                    p.description ? " (" + p.description + ")" : ""
+                  } - ${
+                    p.total_price
+                      ? `${p.currency ? p.currency : "$"}${p.total_price}`
+                      : ""
+                  }`;
                   stateSelect.appendChild(option);
                 });
                 if (plans.length > 0)
@@ -122,10 +172,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 50);
       });
 
-    // Evento cuando cambia el plan de pago
     document
       .getElementById("payment-plan-identificator")
       .addEventListener("change", updateSubprograms);
-
   }
 });

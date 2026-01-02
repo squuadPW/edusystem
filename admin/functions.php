@@ -987,7 +987,10 @@ function get_payments_plans_by_program()
     foreach ($associateds as $key => $plan) {
         $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
         if ($plan) {
-            $payment_plans[] = $plan;
+            $fees = get_fees_associated_plan_complete($plan->identificator);   
+            error_log('Fees for plan ' . $plan->identificator . ': ' . print_r($fees, true));
+            $quote_rules = get_quotes_rules_associated_plan_complete($plan->identificator);   
+            $payment_plans[] = ['plan' => $plan, 'fees' => $fees, 'quote_rules' => $quote_rules];
         }
     }
 

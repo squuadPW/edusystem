@@ -36,7 +36,9 @@ function add_admin_form_dynamic_link_content()
                     $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
                     if ($plan) {
                         $plan->subprograms = json_decode($plan->subprograms_json);
-                        $payment_plans[] = $plan;
+                        $fees = get_fees_associated_plan_complete($plan->identificator);   
+                        $quote_rules = get_quotes_rules_associated_plan_complete($plan->identificator);   
+                        $payment_plans[] = ['plan' => $plan, 'fees' => $fees, 'quote_rules' => $quote_rules];
                     }
                 }
             }
