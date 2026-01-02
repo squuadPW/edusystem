@@ -198,14 +198,27 @@ class TT_staff_all_List_Table extends WP_List_Table
         global $wpdb;
         $staff_array = [];
 
-        $args = array(
-            'role__in' => ROLES_OF_STAFF,
-        );
+        // Si viene un rol desde el select 
+        if (!empty($_POST['role'])) { 
+            $selected_role = sanitize_text_field($_POST['role']); 
+            $args['role'] = $selected_role; // filtra por un único rol 
+        } else {
+            $args = array(
+                'role__in' => ROLES_OF_STAFF,
+            );
+        }
+
+        if( !empty($_POST['s']) ) {
+            $search_term = sanitize_text_field($_POST['s']);
+            $args['search'] = '*' . esc_attr($search_term) . '*';
+            $args['search_columns'] = array('user_login', 'user_email', 'display_name');
+
+        }
 
         $staffs = get_users($args);
 
         if ($staffs) {
-            foreach ($staffs as $staff) {
+            foreach ( $staffs as $staff ) {
                 $user_data = get_userdata($staff->ID);
                 $roles = $user_data->roles;
                 $roles = array_map(function ($value) {
