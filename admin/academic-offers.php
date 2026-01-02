@@ -297,12 +297,25 @@ function get_offer_filtered($subject_id, $code, $cut, $section = 1)
 }
 
 
-function get_offer_filtered_all($subject_id, $code, $cut, $section = 1)
+function get_offer_filtered_all($subject_id, $code, $cut, $section = null)
 {
     global $wpdb;
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
 
-    $offer = $wpdb->get_results("SELECT * FROM {$table_academic_offers} WHERE subject_id={$subject_id} AND code_period='{$code}' AND cut_period='{$cut}' AND section={$section} ORDER BY section ASC");
+    $query = $wpdb->prepare(
+        "SELECT * FROM {$table_academic_offers} WHERE subject_id = %d AND code_period = %s AND cut_period = %s",
+        $subject_id,
+        $code,
+        $cut
+    );
+
+    if ($section !== null) {
+        $query .= $wpdb->prepare(" AND section = %d", $section);
+    }
+
+    $query .= " ORDER BY section ASC";
+
+    $offer = $wpdb->get_results($query);
     return $offer;
 }
 
