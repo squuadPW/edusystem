@@ -2613,7 +2613,7 @@ function get_subjects_enrolled_table($student_id, $spanish = false): string
 
     $projection_obj = json_decode($projection->projection);
     $filteredArray = array_filter($projection_obj, function ($item) {
-        return $item->this_cut == true;
+        return $item->this_cut == true && $item->type == 'regular';
     });
     $filteredArray = array_values($filteredArray);
 
