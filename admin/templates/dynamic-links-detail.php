@@ -92,7 +92,7 @@
                                         <select name="payment_plan_identificator" id="payment-plan-identificator" autocomplete="off" required>
                                             <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                                             <?php foreach ($payment_plans as $payment_plan): ?>
-                                                <option value="<?= $payment_plan->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan->identificator) ? 'selected' : ''; ?>><?= $payment_plan->name; ?> (<?= $payment_plan->description; ?>)</option>
+                                                <option value="<?= $payment_plan['plan']->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan['plan']->identificator) ? 'selected' : ''; ?>><?= $payment_plan['plan']->name; ?> (<?= $payment_plan['plan']->description; ?>) - <?= $payment_plan['plan']->total_price ? ($payment_plan['plan']->currency ? $payment_plan['plan']->currency : "$") . "" . $payment_plan['plan']->total_price : "0"; ?></option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
@@ -102,6 +102,32 @@
                                         <select name="subprogram_id" id="subprogram-id" autocomplete="off">
                                             <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                                         </select>
+                                    </div>
+
+                                    <div style="font-weight:400; <?= empty($payment_plans) ? 'display: none;' : ''; ?>" class="space-offer" id="details-payment-plan-element">
+                                        <label for="details-payment-plan"><b><?= __('Details', 'edusystem'); ?></b></label>
+                                        <div id="details-payment-plan">
+                                            <?php foreach ($payment_plans as $payment_plan): ?>
+                                                <?php if ($payment_plan['plan']->identificator == $dynamic_link->payment_plan_identificator) { ?>
+                                                    <p><?= __('Name:', 'edusystem') ?> <?= $payment_plan['plan']->name; ?></p>
+                                                    <p><?= __('Description:', 'edusystem') ?> <?= $payment_plan['plan']->description; ?></p>
+                                                    <p><?= __('Regular Price:', 'edusystem') ?> <?= $payment_plan['plan']->currency ? $payment_plan['plan']->currency : get_woocommerce_currency_symbol() . $payment_plan['plan']->total_price; ?></p>
+                                                    <label for="details-payment-plan"><b><?= __('Fees', 'edusystem'); ?></b></label>
+                                                    <?php foreach ($payment_plan['fees'] as $fee): ?>
+                                                        <p><?= $fee->name; ?> - <?= $fee->currency ? $fee->currency : get_woocommerce_currency_symbol() . $fee->price; ?></p>
+                                                    <?php endforeach; ?>
+                                                    <label for="details-payment-plan"><b><?= __('Quotas', 'edusystem'); ?></b></label>
+                                                    <?php foreach ($payment_plan['quote_rules'] as $quote): ?>
+                                                        <?php
+                                                        $qty = (int)$quote->quotas_quantity;
+                                                        // Determinamos el texto según la cantidad de cuotas
+                                                        $installment_text = ($qty === 1) ? __('Single installment', 'edusystem') : $qty . ' ' . __('Installments', 'edusystem');
+                                                        ?>
+                                                        <p><?= esc_html($quote->name); ?>: <strong><?= $installment_text; ?></strong></p>
+                                                    <?php endforeach; ?>
+                                                <?php } ?>
+                                            <?php endforeach; ?>
+                                        </div>
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">

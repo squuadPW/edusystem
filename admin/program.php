@@ -700,6 +700,22 @@ function get_fees_associated_plan_complete($identificator, $type_fee = null)
     return $fees;
 }
 
+function get_quotes_rules_associated_plan_complete($identificator)
+{
+    global $wpdb;
+    $table_quota_rules = $wpdb->prefix . 'quota_rules';
+
+    // Construye la base de la consulta SQL y los argumentos.
+    $sql = "SELECT * FROM {$table_quota_rules} WHERE is_active = 1 AND program_id = %s";
+    $args = [$identificator];
+
+    // Prepara y ejecuta la consulta.
+    $sql = $wpdb->prepare($sql, ...$args);
+    $fees = $wpdb->get_results($sql); 
+    
+    return $fees;
+}
+
 function get_program_details_by_identificator($identificator)
 {
     global $wpdb;
