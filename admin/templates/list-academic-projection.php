@@ -15,9 +15,9 @@
 			$style_pending = 'background-color: #2271b1; color: white;';
 		// }
 
-		// if ($pending_emails_count > 0) {
+		if ($pending_emails_count > 0) {
 			$style_pending_email = 'background-color: #2271b1; color: white;';
-		// }
+		}
 		?>
 		<div class="buttons-academic-projection">
 			<?php if (current_user_can('manager_enrollments_aes')) { ?>
