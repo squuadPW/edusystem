@@ -1383,7 +1383,7 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
         ],
         'table_inscriptions' => [
             'value' => function () use ($student) {
-                return table_inscriptions_html(get_inscriptions_by_student($student->id));
+                return table_inscriptions_html(get_inscriptions_by_student($student->id, 'regular'));
             },
             'wrap' => false,
         ],

@@ -809,11 +809,20 @@ function get_projection_by_student($student_id)
     return $projection;
 }
 
-function get_inscriptions_by_student($student_id)
+function get_inscriptions_by_student($student_id, $type = null)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student_id} AND code_subject IS NOT NULL AND code_subject <> ''");
+
+    $query = "SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = %d AND code_subject IS NOT NULL AND code_subject <> ''";
+    $params = [$student_id];
+
+    if ($type !== null) {
+        $query .= " AND type = %s";
+        $params[] = $type;
+    }
+
+    $inscriptions = $wpdb->get_results($wpdb->prepare($query, $params));
     return $inscriptions;
 }
 
