@@ -108,22 +108,44 @@
                                         <label for="details-payment-plan"><b><?= __('Details', 'edusystem'); ?></b></label>
                                         <div id="details-payment-plan">
                                             <?php foreach ($payment_plans as $payment_plan): ?>
-                                                <?php if ($payment_plan['plan']->identificator == $dynamic_link->payment_plan_identificator) { ?>
-                                                    <p><?= __('Name:', 'edusystem') ?> <?= $payment_plan['plan']->name; ?></p>
-                                                    <p><?= __('Description:', 'edusystem') ?> <?= $payment_plan['plan']->description; ?></p>
-                                                    <p><?= __('Regular Price:', 'edusystem') ?> <?= $payment_plan['plan']->currency ? $payment_plan['plan']->currency : get_woocommerce_currency_symbol() . $payment_plan['plan']->total_price; ?></p>
-                                                    <label for="details-payment-plan"><b><?= __('Fees', 'edusystem'); ?></b></label>
+                                                <?php if ($payment_plan['plan']->identificator == $dynamic_link->payment_plan_identificator) {
+                                                    $currency = $payment_plan['plan']->currency ? $payment_plan['plan']->currency : get_woocommerce_currency_symbol();
+                                                ?>
+                                                    <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                                                        <p><strong><?= __('Name:', 'edusystem') ?></strong> <?= $payment_plan['plan']->name; ?></p>
+                                                        <p><strong><?= __('Description:', 'edusystem') ?></strong> <?= $payment_plan['plan']->description; ?></p>
+                                                        <p><strong><?= __('Regular Price:', 'edusystem') ?></strong> <?= $currency . $payment_plan['plan']->total_price; ?></p>
+                                                    </div>
+
+                                                    <label><b><?= __('Fees', 'edusystem'); ?></b></label>
                                                     <?php foreach ($payment_plan['fees'] as $fee): ?>
-                                                        <p><?= $fee->name; ?> - <?= $fee->currency ? $fee->currency : get_woocommerce_currency_symbol() . $fee->price; ?></p>
+                                                        <p style="margin-left:10px; font-size: 0.9em;">• <?= $fee->name; ?> - <?= $fee->currency ? $fee->currency : $currency . $fee->price; ?></p>
                                                     <?php endforeach; ?>
-                                                    <label for="details-payment-plan"><b><?= __('Quotas', 'edusystem'); ?></b></label>
-                                                    <?php foreach ($payment_plan['quote_rules'] as $quote): ?>
-                                                        <?php
+
+                                                    <label style="margin-top:10px; display:block;"><b><?= __('Payment Options', 'edusystem'); ?></b></label>
+                                                    <?php foreach ($payment_plan['quote_rules'] as $quote):
                                                         $qty = (int)$quote->quotas_quantity;
-                                                        // Determinamos el texto según la cantidad de cuotas
-                                                        $installment_text = ($qty === 1) ? __('Single installment', 'edusystem') : $qty . ' ' . __('Installments', 'edusystem');
-                                                        ?>
-                                                        <p><?= esc_html($quote->name); ?>: <strong><?= $installment_text; ?></strong></p>
+                                                        $freq_val = (int)$quote->frequency_value;
+
+                                                        // Lógica para textos limpios
+                                                        $freq_text = ($freq_val === 0 || $qty === 1)
+                                                            ? __('One-time payment', 'edusystem')
+                                                            : sprintf(__('Every %d %s%s', 'edusystem'), $freq_val, $quote->type_frequency, ($freq_val > 1 ? 's' : ''));
+
+                                                        $installment_label = ($qty === 1) ? __('Single installment', 'edusystem') : $qty . ' ' . __('Installments', 'edusystem');
+                                                    ?>
+                                                        <div style="background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px; margin: 10px 0;">
+                                                            <div style="margin-bottom: 5px;"><strong><?= esc_html($quote->name); ?></strong> (<?= $installment_label; ?>)</div>
+                                                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; font-size: 11px; line-height: 1.2;">
+                                                                <div><strong><?= __('Frequency:', 'edusystem') ?></strong> <?= $freq_text; ?></div>
+                                                                <div><strong><?= __('Starts:', 'edusystem') ?></strong> <?= esc_html($quote->start_charging); ?></div>
+                                                                <div><strong><?= __('Initial:', 'edusystem') ?></strong> <?= $currency . $quote->initial_payment_sale ?? 0 ?> <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->initial_payment ?></span></div>
+                                                                <?php if ($qty > 1): ?>
+                                                                    <div><strong><?= __('Installment:', 'edusystem') ?></strong> <?= $currency . $quote->quote_price_sale ?> <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->quote_price ?></span></div>
+                                                                <?php endif; ?>
+                                                                <div><strong><?= __('Final:', 'edusystem') ?></strong> <?= $currency . $quote->final_payment_sale ?? 0 ?> <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->final_payment ?></span></div>
+                                                            </div>
+                                                        </div>
                                                     <?php endforeach; ?>
                                                 <?php } ?>
                                             <?php endforeach; ?>

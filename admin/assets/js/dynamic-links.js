@@ -42,28 +42,66 @@ document.addEventListener("DOMContentLoaded", function () {
         const currency = p.currency || "$";
 
         let html = `
-          <p><strong>Name:</strong> ${p.name}</p>
-          <p><strong>Description:</strong> ${p.description}</p>
-          <p><strong>Regular Price:</strong> ${currency}${p.total_price}</p>
+            <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                <p><strong>Name:</strong> ${p.name}</p>
+                <p><strong>Description:</strong> ${p.description}</p>
+                <p><strong>Regular Price:</strong> ${currency}${p.total_price}</p>
+            </div>
         `;
 
         if (fees.length > 0) {
-          html += `<label style="margin-top:10px; display:block;"><b>Fees</b></label>`;
+          html += `<label><b>Fees</b></label>`;
           fees.forEach((fee) => {
-            html += `<p style="margin-left:10px;">• ${fee.name}: ${
-              fee.currency || currency
-            }${fee.price}</p>`;
+            html += `<p style="margin-left:10px; font-size: 0.9em;">• ${
+              fee.name
+            }: ${fee.currency || currency}${fee.price}</p>`;
           });
         }
 
         if (quotes.length > 0) {
           html += `<label style="margin-top:10px; display:block;"><b>Payment Options</b></label>`;
           quotes.forEach((quote) => {
-            // Lógica para que se vea más profesional
             const qty = parseInt(quote.quotas_quantity);
-            const label =
+            const freqVal = parseInt(quote.frequency_value);
+
+            // Lógica para etiquetas más limpias
+            let frequencyText =
+              freqVal === 0 || qty === 1
+                ? "One-time payment"
+                : `Every ${freqVal} ${quote.type_frequency}${
+                    freqVal > 1 ? "s" : ""
+                  }`;
+
+            let installmentLabel =
               qty === 1 ? "Single installment" : `${qty} Installments`;
-            html += `<p style="margin-left:10px;">• ${quote.name}: <strong>${label}</strong></p>`;
+
+            html += `
+                <div style="background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px; margin: 10px 0;">
+                    <div style="margin-bottom: 5px;"><strong>${
+                      quote.name
+                    }</strong> (${installmentLabel})</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; font-size: 11px; line-height: 1.2;">
+                        <div><strong>Frequency:</strong> ${frequencyText}</div>
+                        <div><strong>Starts:</strong> ${
+                          quote.start_charging
+                        }</div>
+                        <div><strong>Initial:</strong> ${currency}${
+              quote.initial_payment_sale ?? 0
+            } <span style="text-decoration:line-through; color: #999;">${currency}${
+              quote.initial_payment
+            }</span></div>
+                        ${
+                          qty > 1
+                            ? `<div><strong>Installment:</strong> ${currency}${quote.quote_price_sale} <span style="text-decoration:line-through; color: #999;">${currency}${quote.quote_price}</span></div>`
+                            : ""
+                        }
+                        <div><strong>Final:</strong> ${currency}${
+              quote.final_payment_sale ?? 0
+            } <span style="text-decoration:line-through; color: #999;">${currency}${
+              quote.final_payment
+            }</span></div>
+                    </div>
+                </div>`;
           });
         }
 
