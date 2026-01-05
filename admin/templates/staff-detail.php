@@ -111,7 +111,7 @@
                                                     $all_roles = wp_roles()->get_names();
 
                                                     global $wpdb;
-                                                    $departments = $wpdb->get_results( "SELECT name FROM {$wpdb->prefix}departments" );
+                                                    $departments = $wpdb->get_col( "SELECT name FROM {$wpdb->prefix}departments" );
                                                 ?>
 
                                                 <select name="user_roles[]">
