@@ -515,7 +515,7 @@
 
                         </div>
 
-                        <?php if( !array_intersect(['institutes', 'alliance', 'webinar-aliance'], $roles) || !current_user_can('manager_payments_read_aes') ){?>
+                        <?php if( !array_intersect(['institutes', 'alliance', 'webinar-aliance'], $roles) && !current_user_can('manager_payments_read_aes') ){?>
                             
                             <div id="button-acction-payment" style="margin-top:20px;display:flex;flex-direction:row;width:100%;justify-content:end;">
                                     
