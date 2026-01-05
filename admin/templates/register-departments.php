@@ -213,6 +213,11 @@
             <div class="capability-group">
                 <h3><?= __('Payments', 'edusystem'); ?></h3>
                 <div class="capability-item">
+                    <input <?= !in_array('manager_payments_read_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_payments_read_aes" id="manager_payments_read_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payments_read_aes'])) ? 'checked' : ''; ?>>
+                    <label for="manager_payments_read_aes" <?= !in_array('manager_payments_read_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?>><?= __('Only read payments', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item">
                     <input <?= !in_array('manager_payments_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_payments_aes" id="manager_payments_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payments_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_payments_aes" <?= !in_array('manager_payments_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?>><?= __('Payments', 'edusystem'); ?></label>
