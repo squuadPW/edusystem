@@ -64,6 +64,52 @@ function truncate_text($text, $max_length = 100)
             </a>
         <?php } ?> -->
     </div>
+
+    <div class="status-student-datails" >
+        <?php
+            
+            $background = "#dfdedd";
+            $color = "#black";
+
+            switch ($student->status_id):
+                case 0:
+                    $Status = __('is pending payment','edusystem');
+                    break;
+
+                case 1:
+                    $Status = __('payment has been approved','edusystem');  
+                    $background = "#ffc107";
+                    $color = "black";
+                    break;
+                    
+                case 2:
+                    $Status = __('documents have been approved','edusystem'); 
+                    $background = "#2271b1";
+                    $color = "white";
+                    break;
+                    
+                case 3:
+                    $Status = __('has administrative clearance','edusystem');
+                    $background = "#4caf50";
+                    $color = "white";  
+                    break;
+                    
+                case 6:
+                    $Status = __('has been withdrawn','edusystem');
+                    break;
+                
+                default:
+                    $Status = __('has an unknown status','edusystem');
+                    $background = "#f44336";
+                    $color = "white";
+            endswitch;
+        ?>
+
+        <label style="background:<?=$background?>;color:<?=$color?>;" ><?=  __('The student','edusystem')." {$Status}" ?></label>
+    </div>
+
+
+
     <?php if (in_array('administrator', haystack: $roles) || in_array('admision', haystack: $roles) || in_array('administrador', haystack: $roles)): ?>
         <!-- <h2 style="margin-bottom:15px; text-align: center;"><?= __('Status student', 'edusystem'); ?></h2> -->
         <div id="notice-status" class="notice-custom notice-info" style="display:none;">
