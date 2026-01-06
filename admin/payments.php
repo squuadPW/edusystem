@@ -1915,7 +1915,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
         $columns = array(
             'payment_id' => __('Payment ID', 'edusystem'),
             'date' => __('Date', 'edusystem'),
-            'partner_name' => __('Parent', 'edusystem'),
+            // 'partner_name' => __('Parent', 'edusystem'),
             'student_name' => __('Student', 'edusystem'),
             'total' => __('Total', 'edusystem'),
             'payment_method' => __('Payment Method', 'edusystem'),
@@ -2239,7 +2239,7 @@ class TT_all_payments_List_Table extends WP_List_Table
         $columns = array(
             'payment_id' => __('Payment ID', 'edusystem'),
             'date' => __('Date', 'edusystem'),
-            'partner_name' => __('Parent', 'edusystem'),
+            // 'partner_name' => __('Parent', 'edusystem'),
             'student_name' => __('Student', 'edusystem'),
             'total' => __('Total', 'edusystem'),
             'payment_method' => __('Payment Method', 'edusystem'),
