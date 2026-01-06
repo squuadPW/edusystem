@@ -299,6 +299,18 @@
 
                                                 </div>
 
+                                                <div class="seccion-input" >
+
+                                                    <label for="rules[<?= $i ?>][description]" class="seccion-title" >
+                                                        <b><?= __('Description', 'edusystem'); ?></b>
+                                                    </label>
+
+                                                    <div class="group-input" >
+                                                        <textarea name="rules[<?= $i ?>][description]"  style="width: 100%; margin-bottom: 10px;" ><?=$rule['description'] ?? '' ?></textarea>
+                                                    </div>
+
+                                                </div>
+
                                                 <div class="container-button" >
                                                     <button type="button" data-rule_id="<?= $rule['id'] ?>" class="button button-primary " onclick="modal_delete_quota_rule_js( this )" ><?= __('Delete', 'edusystem'); ?></button>
                                                 </div>
@@ -480,6 +492,18 @@
                                                     <input type="number" name="rules[][final_payment_sale]" value="" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" disabled>
                                                 </div>
 
+                                            </div>
+
+                                        </div>
+
+                                        <div class="seccion-input" >
+
+                                            <label for="rules[][description]" class="seccion-title" >
+                                                <b><?= __('Description', 'edusystem'); ?></b>
+                                            </label>
+
+                                            <div class="group-input" >
+                                                <textarea name="rules[][description]" disabled style="width: 100%; margin-bottom: 10px;" ></textarea>
                                             </div>
 
                                         </div>

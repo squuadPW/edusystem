@@ -1138,6 +1138,7 @@ function add_admin_form_payments_content()
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
                     $start_charging = $rule['start_charging'];
+                    $description = $rule['description'] ?? '';
                     $position = $rule['position'] ?? 0;
 
                     // si los valores de descuento son vacios los convierte a null
@@ -1162,6 +1163,7 @@ function add_admin_form_payments_content()
                             'type_frequency' => $type_frequency,
                             'start_charging' => $start_charging,
                             'position' => $position,
+                            'description' => $description,
                         ], ['id' => $rule_id]);
                     } else {
 
@@ -1180,6 +1182,7 @@ function add_admin_form_payments_content()
                             'type_frequency' => $type_frequency,
                             'start_charging' => $start_charging,
                             'position' => $position,
+                            'description' => $description,
                         ]);
 
                         $rule_id = $wpdb->insert_id;

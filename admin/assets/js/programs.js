@@ -83,10 +83,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const new_rule = rule_template.cloneNode(true);
 
             // Quitar el atributo 'disabled' y modificar 'name' y 'for'
-            new_rule.querySelectorAll('input, label, select').forEach( elem => {
+            new_rule.querySelectorAll('input, label, select, textarea').forEach( elem => {
 
                 // Modificar los atributos 'name' y 'for' solo si son inputs o labels
-                if ( elem.tagName.toLowerCase() === 'input' || elem.tagName.toLowerCase() === 'select' ) {
+                if ( elem.tagName.toLowerCase() === 'input'|| elem.tagName.toLowerCase() === 'textarea'  || elem.tagName.toLowerCase() === 'select' ) {
 
                     // Obtener el nombre actual y reemplazar los corchetes
                     const current_name = elem.getAttribute('name');

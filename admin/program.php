@@ -261,6 +261,10 @@ function add_admin_form_program_content()
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
                     $position = $rule['position'] ?? 0;
+                    $description = $rule['description'] ?? '';
+
+                    var_dump($description);
+                    exit;
 
                     // crea o actualiza el sub programa
                     if ( !empty( $rule_id ) ) {
@@ -275,6 +279,7 @@ function add_admin_form_program_content()
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
                             'position' => $position,
+                            'description' => $description,
                         ], ['id' => $rule_id] );
 
                     } else {
@@ -290,6 +295,7 @@ function add_admin_form_program_content()
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
                             'position' => $position,
+                            'description' => $description,
                         ]);
                     }
                 }
