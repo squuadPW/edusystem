@@ -120,7 +120,7 @@ function add_admin_form_staff_content()
                 setcookie('message', __('Usuario creado exitosamente.', 'edusystem'), time() + 10, '/');
             }   
 
-            // wp_redirect($redirect_url);
+            wp_redirect($redirect_url);
             exit;
         } else {
             $list_staff = new TT_staff_all_List_Table;
