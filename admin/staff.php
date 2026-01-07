@@ -204,8 +204,12 @@ class TT_staff_all_List_Table extends WP_List_Table
             $selected_role = sanitize_text_field($_POST['role']); 
             $args['role'] = $selected_role; // filtra por un único rol 
         } else {
+
+            global $wpdb;
+            $departments = $wpdb->get_col( "SELECT name FROM {$wpdb->prefix}departments" );
+            
             $args = array(
-                'role__in' => ROLES_OF_STAFF,
+                'role__in' => $departments,
             );
         }
 
@@ -267,7 +271,6 @@ class TT_staff_all_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
         $data_staff = $this->get_staff();
 
         $per_page = 10;
