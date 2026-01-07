@@ -35,13 +35,29 @@
 
                             <td data-colname="<?= __('Programs','edusystem'); ?>">
 
-                            <?php $academic_department = json_decode($document->academic_department, true) ?>
+                                <?php $academic_department = json_decode($document->academic_department, true) ?>
                                 <?php if( !empty( $academic_department )  ): ?>
+
+                                    <?php
+                                        global $wpdb;
+                                        $programs = $wpdb->get_results(
+                                            "SELECT identificator, name FROM {$wpdb->prefix}student_program"
+                                        );
+
+                                        $mentions = $wpdb->get_results($wpdb->prepare(
+                                            "SELECT identificator, name 
+                                            FROM {$wpdb->prefix}mentions_by_career
+                                            WHERE career_identificator = %s",
+                                            $career->identificator
+                                        ));
+                                    ?>
                                     
                                     <ul>
-                                        <?php if (!empty($academic_department['program'])) : ?>
+                                        <?php foreach ( $programs AS $program ) : ?>
                                             <li>
-                                                <strong>Programas</strong>
+                                                <?php if( in_array( $program->identificator, $academic_department['program'] ) ) ?>
+                                                    <b><?= $program->name ?></b>
+                                                
 
                                                 <ul> 
                                                     <?php foreach ($academic_department['program'] as $program): ?>
