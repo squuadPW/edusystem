@@ -17,6 +17,7 @@
                     <tr>
                         <th scope="col" class="manage-column column-primary column-title"><?= __('Document','edusystem') ?></th>
                         <th scope="col" class="manage-column column-title-translate"><?= __('Type file','edusystem') ?></th>
+                        <th scope="col" class="manage-column column-title-translate"><?= __('Programs','edusystem') ?></th>
                         <th scope="col" class="manage-column column-title-translate"><?= __('Actions','edusystem') ?></th>
                     </tr>
                 </thead>
@@ -28,8 +29,56 @@
                                 <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                             </td>
 
-                            <td data-colname="<?= __('Required for access to the virtual classroom','edusystem'); ?>">
+                            <td data-colname="<?= __('Type file','edusystem'); ?>">
                                 <span><?= $document->type_file; ?></span>
+                            </td>
+
+                            <td data-colname="<?= __('Programs','edusystem'); ?>">
+
+                            <?php $academic_department = json_decode($document->academic_department, true) ?>
+                                <?php if( !empty( $academic_department )  ): ?>
+                                    
+                                    <ul>
+                                        <?php if (!empty($academic_department['program'])) : ?>
+                                            <li>
+                                                <strong>Programas</strong>
+
+                                                <ul> 
+                                                    <?php foreach ($academic_department['program'] as $program): ?>
+                                                        <li><?= esc_html($program['identificator']) ?> </li>
+                                                    <?php endforeach ?>
+                                                </ul>
+                                            </li>
+                                        <?php endif ?>
+                                        
+                                        <?php if (!empty($academic_department['career'])): ?> 
+                                            <li>
+                                                <strong>Carreras</strong>
+                                                
+                                                <ul>
+                                                    <?php foreach ($academic_department['career'] as $career): ?>
+                                                        <li><?= esc_html($career['identificator'])?></li>
+                                                    <?php endforeach ?>
+                                                </ul>
+                                            </li>
+                                        <?php endif ?> 
+
+                                        <?php if (!empty($academic_department['mention'])): ?>
+                                            <li>
+                                                <strong>Menciones</strong>
+                                                
+                                                <ul>
+                                                    <?php foreach ($academic_department['mention'] as $mention): ?>
+                                                        <li> <?= esc_html($mention['identificator'])?> </li> 
+                                                    <?php endforeach ?>
+                                                </ul>
+                                            </li>
+                                        <?php endif ?>
+                                    </ul>
+                                <?php else: ?>
+                                    <span><?= __('All programs','edusystem') ?></span>
+                                <?php endif; ?>
+
                             </td>
 
                             <td data-colname="<?= __('Actions','edusystem'); ?>">
