@@ -111,10 +111,10 @@
                                                     $all_roles = wp_roles()->get_names();
 
                                                     global $wpdb;
-                                                    $departments = $wpdb->get_results( "SELECT name FROM {$wpdb->prefix}departments" );
+                                                    $departments = $wpdb->get_col( "SELECT name FROM {$wpdb->prefix}departments" );
                                                 ?>
 
-                                                <select name="user_roles[]">
+                                                <select name="user_rol">
                                                     <?php foreach ($all_roles as $role => $label): ?>
                                                         <?php if( in_array($role, $departments) ): ?>
                                                             <option value="<?= $role; ?>" <?= in_array($role, $roles_user) ? 'selected' : ''; ?>><?= $label; ?></option>
@@ -133,7 +133,7 @@
 
                                                 ?>
 
-                                                <select name="user_roles[]">
+                                                <select name="user_rol">
                                                     <?php foreach ($roles as $role => $label): ?>
                                                         <?php if( in_array($role, $departments) ): ?>
                                                             <option value="<?= $role; ?>"><?= $label; ?></option>

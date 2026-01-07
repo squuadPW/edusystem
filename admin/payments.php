@@ -1127,7 +1127,7 @@ function add_admin_form_payments_content()
 
                     $rule_id = $rule['id'] ?? '';
                     $is_active = $rule['is_active'] ? true : false;
-                    $name = $rule['name'];
+                    $name = $rule['name'] ? htmlspecialchars($rule['name']) : '';
                     $initial_payment = $rule['initial_payment'];
                     $initial_payment_sale = $rule['initial_payment_sale'] ?? null;
                     $final_payment = $rule['final_payment'];
@@ -1138,12 +1138,17 @@ function add_admin_form_payments_content()
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
                     $start_charging = $rule['start_charging'];
+                    $description = $rule['description'] ?? '';
                     $position = $rule['position'] ?? 0;
 
                     // si los valores de descuento son vacios los convierte a null
                     $initial_payment_sale = ($initial_payment_sale == "") ? null : $initial_payment_sale;
                     $final_payment_sale = ($final_payment_sale == "") ? null : $final_payment_sale;
                     $quote_price_sale = ($quote_price_sale == "") ? null : $quote_price_sale;
+
+                    $allowed_tags = wp_kses_allowed_html( 'post' );
+                    unset( $allowed_tags['script'] ); 
+                    $description = wp_kses( $description, $allowed_tags );
 
                     // crea o actualiza el sub programa
                     if (!empty($rule_id)) {
@@ -1162,6 +1167,7 @@ function add_admin_form_payments_content()
                             'type_frequency' => $type_frequency,
                             'start_charging' => $start_charging,
                             'position' => $position,
+                            'description' => $description,
                         ], ['id' => $rule_id]);
                     } else {
 
@@ -1180,6 +1186,7 @@ function add_admin_form_payments_content()
                             'type_frequency' => $type_frequency,
                             'start_charging' => $start_charging,
                             'position' => $position,
+                            'description' => $description,
                         ]);
 
                         $rule_id = $wpdb->insert_id;

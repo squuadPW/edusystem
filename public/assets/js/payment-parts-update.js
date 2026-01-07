@@ -243,8 +243,6 @@ function payment_table(rule_data) {
         total += final_payment;
     }
 
-    console.log(payments);
-
     payments.forEach( ( payment, i ) => {
 
         // acomoda el precio para que solo tome 2 decimales
@@ -300,6 +298,10 @@ function payment_table(rule_data) {
 
     // Insertar tabla en el contenedor
     table_payment.appendChild(table);
+
+    description_container = document.getElementById("quota-description-container");
+    if( description_container ) description_container.innerHTML = rule_data.description ?? '';
+    
 }
 
 
