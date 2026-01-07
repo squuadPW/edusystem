@@ -2064,6 +2064,30 @@ function are_required_documents_approved($student_id)
     return $unapproved_docs_count == 0;
 }
 
+function are_required_documents_approved_deadline($student_id)
+{
+    global $wpdb;
+    $table_student_documents = $wpdb->prefix . 'student_documents';
+
+    // Regla solicitada:
+    // - Si un documento es requerido pero tiene deadline mayor a la fecha actual -> no se considera requerido.
+    // - Si tiene deadline y es menor o igual a la fecha actual -> se considera requerido.
+    // - Si no tiene deadline -> se considera requerido.
+    $today = current_time('Y-m-d');
+
+    // Contar documentos requeridos que NO están aprobados (status != 5)
+    // y que actualmente deben ser entregados según la regla de deadlines:
+    //    max_date_upload IS NULL/empty OR DATE(max_date_upload) <= today
+    $query = $wpdb->prepare(
+        "SELECT COUNT(*) FROM {$table_student_documents} WHERE student_id = %d AND is_required = 1 AND status != 5 AND (max_date_upload IS NULL OR max_date_upload = '' OR DATE(max_date_upload) <= %s)",
+        $student_id,
+        $today
+    );
+
+    $unapproved_docs_count = $wpdb->get_var($query);
+    return $unapproved_docs_count == 0;
+}
+
 /**
  * Prepara el array de datos para enviar a la API de Laravel.
  *

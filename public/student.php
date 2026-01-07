@@ -1592,9 +1592,9 @@ function view_access_classroom()
         }
 
         // Bloqueo 2: Documentos rechazados (status_id < 2 y moodle_student_id existe).
-        elseif ($student->status_id < 2) {
+        elseif (are_required_documents_approved_deadline($student->id) === false) {
             $student_access = false;
-            $error_access = 'Some of your documents required for classroom access have been declined, please check the documents area for more information.';
+            $error_access = 'You are missing some of the documents required for access. Please refer to the documents section for more information.';
         }
 
         // Bloqueo 3: Acceso caducado por pagos.
