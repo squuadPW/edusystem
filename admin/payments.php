@@ -1127,7 +1127,7 @@ function add_admin_form_payments_content()
 
                     $rule_id = $rule['id'] ?? '';
                     $is_active = $rule['is_active'] ? true : false;
-                    $name = $rule['name'];
+                    $name = $rule['name'] ? htmlspecialchars($rule['name']) : '';
                     $initial_payment = $rule['initial_payment'];
                     $initial_payment_sale = $rule['initial_payment_sale'] ?? null;
                     $final_payment = $rule['final_payment'];
@@ -1145,6 +1145,10 @@ function add_admin_form_payments_content()
                     $initial_payment_sale = ($initial_payment_sale == "") ? null : $initial_payment_sale;
                     $final_payment_sale = ($final_payment_sale == "") ? null : $final_payment_sale;
                     $quote_price_sale = ($quote_price_sale == "") ? null : $quote_price_sale;
+
+                    $allowed_tags = wp_kses_allowed_html( 'post' );
+                    unset( $allowed_tags['script'] ); 
+                    $description = wp_kses( $description, $allowed_tags );
 
                     // crea o actualiza el sub programa
                     if (!empty($rule_id)) {

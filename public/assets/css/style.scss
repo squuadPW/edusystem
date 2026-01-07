@@ -1498,8 +1498,6 @@ body.logged-in .custom-logo-link {
 }
 
 
-
-
 #payment-cuotes {
     position: relative;
 
@@ -1511,5 +1509,9 @@ body.logged-in .custom-logo-link {
         opacity: 0.5;
         background: white;
     }
+}
+
+#quota-description-container {
+    margin-bottom: 40px;
 }
 

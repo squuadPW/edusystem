@@ -148,7 +148,18 @@ add_shortcode('PROGRAM-QUOTAS', function () {
             </div>
         <?php
     }
+
+    // Agregar una sección personalizada antes de la parte de pago
+    add_action( 'woocommerce_review_order_before_payment', function () {
+        ?>
+            <div id="quota-description-container" class="quota-descripcion" ></div>
+        <?php
+    }, 1 );
+
 });
+
+
+
 
 
     

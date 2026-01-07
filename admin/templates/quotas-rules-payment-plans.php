@@ -67,7 +67,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="text" name="rules[<?= $i ?>][name]" value="<?= $rule['name'] ?>" required>
+                                                        <input type="text" name="rules[<?= $i ?>][name]" value="<?= htmlspecialchars_decode( $rule['name'] ?? '' ) ?>" required>
                                                     </div>
                                                 </div>
 
@@ -306,7 +306,7 @@
                                                     </label>
 
                                                     <div class="group-input" >
-                                                        <textarea name="rules[<?= $i ?>][description]"  style="width: 100%; margin-bottom: 10px;" ><?=$rule['description'] ?? '' ?></textarea>
+                                                        <textarea name="rules[<?= $i ?>][description]"  style="width: 100%; margin-bottom: 10px;" ><?= htmlspecialchars_decode( $rule['description'], ENT_QUOTES ) ?></textarea>
                                                     </div>
 
                                                 </div>

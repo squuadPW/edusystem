@@ -1429,4 +1429,8 @@ body.logged-in .custom-logo-link {
   height: 100%;
   opacity: 0.5;
   background: white;
+}
+
+#quota-description-container {
+  margin-bottom: 40px;
 }/*# sourceMappingURL=style.css.map */
