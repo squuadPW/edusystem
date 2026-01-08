@@ -482,9 +482,9 @@ function generate_projection_student($student_id, $force = false)
     // Agregar materias electivas a la proyección
     foreach ($elective_inscriptions as $inscription) {
         // Solo agregar materias electivas completadas (Aprobadas = 3)
-        if ((int) $inscription->status_id !== 3) {
-            continue;
-        }
+        // if ((int) $inscription->status_id !== 3) {
+        //     continue;
+        // }
 
         // Obtener detalles de la materia electiva
         $subject = $inscription->subject_id && $inscription->subject_id != '' ? get_subject_details($inscription->subject_id) : get_subject_details_code($inscription->code_subject);
