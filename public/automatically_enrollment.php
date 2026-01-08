@@ -497,9 +497,9 @@ function generate_projection_student($student_id, $force = false)
                 'hc' => $subject->hc,
                 'cut' => $inscription->cut_period,
                 'code_period' => $inscription->code_period,
-                'calification' => $inscription->calification,
-                'is_completed' => true,
-                'this_cut' => false,
+                'calification' => $inscription->calification ?? 0,
+                'is_completed' => $inscription->status_id === 3,
+                'this_cut' => $inscription->status_id === 1 ? true : false,
                 'welcome_email' => true,
                 'type' => 'elective'
             ];
