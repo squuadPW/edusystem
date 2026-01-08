@@ -498,8 +498,8 @@ function generate_projection_student($student_id, $force = false)
                 'cut' => $inscription->cut_period,
                 'code_period' => $inscription->code_period,
                 'calification' => $inscription->calification ?? 0,
-                'is_completed' => $inscription->status_id === 3,
-                'this_cut' => $inscription->status_id === 1 || $inscription->status_id === 3 ? true : false,
+                'is_completed' => $inscription->status_id == 3 ? true : false,
+                'this_cut' => $inscription->status_id == 1 ? true : false,
                 'welcome_email' => true,
                 'type' => 'elective'
             ];
