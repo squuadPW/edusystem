@@ -162,7 +162,7 @@ function get_list_grades_documents($program_id = "", $career_id = "", $mention_i
     global $wpdb;
     $table_documents = $wpdb->prefix . 'documents';
 
-    // if (!empty($grade_id)) {
+    if ( !empty($program_id) || !empty($career_id) || !empty($mention_id) ) {
 
         $documents = $wpdb->get_results($wpdb->prepare( 
             "SELECT * FROM {$table_documents} 
@@ -174,11 +174,10 @@ function get_list_grades_documents($program_id = "", $career_id = "", $mention_i
                 $career_id, 
                 $program_id 
         ));
-        return $documents;
-    // }
+    }
 
-   /*  $documents = $wpdb->get_results("SELECT * FROM {$table_documents}");
-    return $documents; */
+    $documents = $wpdb->get_results("SELECT * FROM {$table_documents}");
+    return $documents;
 }
 
 function get_status_approved($document_id = "", $student_id = "")
