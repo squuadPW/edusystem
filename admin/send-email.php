@@ -331,7 +331,14 @@ function send_email_to_students($students, $subject, $message, $academic_period 
         if ($send_to_parent && !empty($student->partner_id)) {
             $parent = get_user_by('id', $student->partner_id);
             if ($parent) {
-                $email_user->trigger($parent, $subject, $message_student);
+                // Evitar enviar el mismo correo dos veces cuando el padre/usuario
+                // tiene el mismo email que el estudiante.
+                $parent_email = isset($parent->user_email) ? $parent->user_email : '';
+                $student_email = isset($student->email) ? $student->email : '';
+
+                if ($parent_email === '' || $student_email === '' || $parent_email !== $student_email) {
+                    $email_user->trigger($parent, $subject, $message_student);
+                }
             }
         }
     }
