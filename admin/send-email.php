@@ -15,6 +15,8 @@ function add_admin_form_send_email_content()
 
     $variables = get_variables_documents() ?? [];
     $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} ORDER BY created_at ASC");
     $templates = $wpdb->get_results("SELECT * FROM {$table_templates_email} ORDER BY id ASC");
     include(plugin_dir_path(__FILE__) . 'templates/send-email.php');
 }

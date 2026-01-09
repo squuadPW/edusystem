@@ -219,3 +219,65 @@ if (summaryEmailButtonConfirm) {
     document.getElementById("summary-email-send").click();
   });
 }
+
+// Dynamic loading of cuts when academic period changes (replicates behavior from document.js)
+document.addEventListener("DOMContentLoaded", function () {
+  let selectorAcademicPeriod = document.querySelector("select[name=academic_period]");
+  let selectorCuts = document.querySelector("select[name=academic_period_cut]");
+
+  if (!selectorCuts) return;
+
+  const initialCut = selectorCuts.dataset.initialCut;
+  const textoption = selectorCuts.dataset.textoption;
+
+  if (selectorAcademicPeriod && selectorCuts) {
+    selectorAcademicPeriod.addEventListener("change", function (e) {
+      const XHR = new XMLHttpRequest();
+      XHR.open("POST", summary_email.url, true);
+      XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      XHR.responseType = "json";
+      XHR.send("action=load_cuts_period&period=" + e.target.value);
+      XHR.onload = function () {
+        if (this.readyState == "4" && XHR.status === 200) {
+          let cuts = this.response;
+
+          // Limpia el select de cortes
+          selectorCuts.innerHTML = "";
+
+          // Opción por defecto
+          let defaultOption = document.createElement("option");
+          defaultOption.value = "";
+          defaultOption.text = textoption ?? "Select term to filter";
+          if (initialCut === "nocut" || initialCut === "out" || initialCut === "") {
+            defaultOption.selected = true;
+          }
+          selectorCuts.appendChild(defaultOption);
+
+          // Agrega las nuevas opciones
+          cuts.forEach((cut) => {
+            let option = document.createElement("option");
+            option.value = cut.cut;
+            option.text = cut.cut;
+            if (option.value === initialCut) {
+              option.selected = true;
+            }
+            selectorCuts.appendChild(option);
+          });
+        }
+      };
+    });
+    // Inicialización: si ya hay un academic_period seleccionado, disparar carga; si no, mantener solo la opción por defecto
+    if (selectorAcademicPeriod.value && selectorAcademicPeriod.value.trim() !== "") {
+      // dispara el evento para cargar los cortes del periodo seleccionado
+      selectorAcademicPeriod.dispatchEvent(new Event('change'));
+    } else {
+      // asegurar que solo exista la opción por defecto cuando no hay periodo seleccionado
+      selectorCuts.innerHTML = '';
+      let defaultOptionInit = document.createElement('option');
+      defaultOptionInit.value = '';
+      defaultOptionInit.text = textoption ?? 'Select term to filter';
+      defaultOptionInit.selected = true;
+      selectorCuts.appendChild(defaultOptionInit);
+    }
+  }
+});
