@@ -187,14 +187,14 @@ function truncate_text($text, $max_length = 100)
                                     <tr>
                                         <p style="text-align: center; padding: 12px !important">
                                             <?php
-                                            $hasMoodleAccess = isset($student->moodle_student_id);
-                                            $statusText = $hasMoodleAccess
-                                                ? ($student->status_id < 2 ? 'Classroom access removed' : 'Full access to classroom')
-                                                : 'Without classroom';
+                                            if (!function_exists('edusystem_get_student_classroom_access')) {
+                                                require_once dirname(__DIR__) . '/student-access-helper.php';
+                                            }
 
-                                            $backgroundColor = $hasMoodleAccess
-                                                ? ($student->status_id < 2 ? '#f980127d' : '#f98012')
-                                                : '#dfdedd';
+                                            $access_info = edusystem_get_student_classroom_access($student);
+                                            $hasMoodleAccess = $access_info['has_moodle'];
+                                            $statusText = $access_info['status_text'];
+                                            $backgroundColor = $access_info['background_color'];
 
                                             $style = "background-color: $backgroundColor; text-align: center; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; padding: 8px;";
                                             $style .= $hasMoodleAccess ? ' cursor: pointer;' : ' cursor: not-allowed;';
@@ -204,8 +204,11 @@ function truncate_text($text, $max_length = 100)
                                                 data-moodle="<?php echo $hasMoodleAccess ? 'Yes' : 'No'; ?>"
                                                 data-student_id="<?php echo $student->id; ?>"
                                                 style="<?php echo $style; ?>">
-                                                <?= $statusText; ?>
+                                                <?php echo esc_html($statusText); ?>
                                             </span>
+                                            <?php if (!empty($access_info['error'])): ?>
+                                                <p class="moodle-access-error" style="color:#b71c1c;text-align:center;margin-top:8px;padding:0 12px;"><?php echo esc_html($access_info['error']); ?></p>
+                                            <?php endif; ?>
                                         </p>
                                     </tr>
                                     <tr>

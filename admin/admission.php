@@ -614,21 +614,21 @@ class TT_document_review_List_Table extends WP_List_Table
         $data = array();
         foreach ($data_categories as $key => $value) {
             $value['index'] = $key + 1;
-            $hasMoodleAccess = isset($value['moodle_student_id']);
 
-            $statusText = $hasMoodleAccess
-                ? ($value['status_id'] < 2 ? 'Classroom access removed' : 'Full access to classroom')
-                : 'Without classroom';
+            if (!function_exists('edusystem_get_student_classroom_access')) {
+                require_once plugin_dir_path(__FILE__) . 'student-access-helper.php';
+            }
 
-            $backgroundColor = $hasMoodleAccess
-                ? ($value['status_id'] < 2 ? '#f980127d' : '#f98012')
-                : '#dfdedd';
+            $access_info = edusystem_get_student_classroom_access($value);
+            $hasMoodleAccess = $access_info['has_moodle'];
+            $statusText = $access_info['status_text'];
+            $backgroundColor = $access_info['background_color'];
 
             $style = "background-color: $backgroundColor; text-align: center; font-size: 10px; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; padding: 4px;";
             $style .= $hasMoodleAccess ? ' cursor: pointer;' : ' cursor: not-allowed;';
             $style .= ' width: auto; float: right;';
 
-            $value['moodle_active'] = '<div class="moodle-active" data-moodle="' . ($hasMoodleAccess ? 'Yes' : 'No') . '" data-student_id="' . $value['id'] . '" style="' . $style . '">' . $statusText . '</div>';
+            $value['moodle_active'] = '<div class="moodle-active" data-moodle="' . ($hasMoodleAccess ? 'Yes' : 'No') . '" data-student_id="' . $value['id'] . '" style="' . $style . '">' . esc_html($statusText) . '</div>';
             $data[] = $value;
         }
 
@@ -889,21 +889,21 @@ class TT_all_student_List_Table extends WP_List_Table
                 $value['student'] = '<label class="text-uppercase">' . $student_full_name . '</label>';
                 $value['parent'] = '<label class="text-uppercase">' . $parent->last_name . ', ' . $parent->first_name . '</label>';
             }
-            $hasMoodleAccess = isset($value['moodle_student_id']);
 
-            $statusText = $hasMoodleAccess
-                ? ($value['status_id'] < 2 ? 'Classroom access removed' : 'Full access to classroom')
-                : 'Without classroom';
+            if (!function_exists('edusystem_get_student_classroom_access')) {
+                require_once plugin_dir_path(__FILE__) . 'student-access-helper.php';
+            }
 
-            $backgroundColor = $hasMoodleAccess
-                ? ($value['status_id'] < 2 ? '#f980127d' : '#f98012')
-                : '#dfdedd';
+            $access_info = edusystem_get_student_classroom_access($value);
+            $hasMoodleAccess = $access_info['has_moodle'];
+            $statusText = $access_info['status_text'];
+            $backgroundColor = $access_info['background_color'];
 
             $style = "background-color: $backgroundColor; text-align: center; font-size: 10px; border-radius: 6px; font-weight: bold; color: #000000; width: 40px; padding: 4px;";
             $style .= $hasMoodleAccess ? ' cursor: pointer;' : ' cursor: not-allowed;';
             $style .= ' width: auto; float: right;';
 
-            $value['moodle_active'] = '<div class="moodle-active" data-moodle="' . ($hasMoodleAccess ? 'Yes' : 'No') . '" data-student_id="' . $value['id'] . '" style="' . $style . '">' . $statusText . '</div>';
+            $value['moodle_active'] = '<div class="moodle-active" data-moodle="' . ($hasMoodleAccess ? 'Yes' : 'No') . '" data-student_id="' . $value['id'] . '" style="' . $style . '">' . esc_html($statusText) . '</div>';
             $data[] = $value;
         }
 
