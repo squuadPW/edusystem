@@ -2407,4 +2407,24 @@ tr.child-order-row .view_details {
   padding: 8px;
   background: #dfdedd;
   color: #000000;
+}
+
+#table-products .program-list-document {
+  margin: 0;
+  padding: 0;
+}
+#table-products .program-list-document .program-item-document {
+  margin-bottom: 10px;
+}
+#table-products .program-list-document .program-item-document .career-list-document {
+  margin-left: 20px;
+}
+#table-products .program-list-document .program-item-document .career-list-document .career-item-document {
+  margin-bottom: 6px;
+}
+#table-products .program-list-document .program-item-document .career-list-document .career-item-document .mention-list-document {
+  margin-left: 20px;
+}
+#table-products .program-list-document .program-item-document .career-list-document .career-item-document .mention-list-document .mention-item-document {
+  margin-bottom: 4px;
 }/*# sourceMappingURL=style.css.map */

@@ -8,9 +8,36 @@
             include(plugin_dir_path(__FILE__) . 'cookie-message.php');
         ?>
 
-        <div style="text-align:end;">
-            <a href="<?= admin_url('admin.php?page=admission-documents&action=edit')?>" class="button button-primary" ><?= __('Add Document','edusystem'); ?></a>
+        <div>
+
+            <div>
+                
+                <form method="GET" >
+                    
+                    <input type="hidden" name="page" value="<?= $_REQUEST['page'] ?>" />
+
+                    <?php 
+                        global $wpdb;
+                        $programs = $wpdb->get_results(
+                            "SELECT identificator, name FROM {$wpdb->prefix}student_program"
+                        );
+                    ?>
+                    <select name="program_id" >
+                        <option value="" <?= selected($program->identificator, '') ?> ><?= __('Select program','edusystem') ?></option>
+                        <?php foreach( $programs AS $program ): ?>
+                            <option value="<?=$program->identificator?>" <?= selected($program->identificator,$_GET['program_id']) ?> ><?= $program->name ?></option>
+                        <?php endforeach ?>
+                    </select>
+                    
+                    <input type="submit" class="button" value="<?=__('Change','edusystem')?>" />
+                </form>
+            </div>
+
+            <div style="text-align:end;">
+                <a href="<?= admin_url('admin.php?page=admission-documents&action=edit')?>" class="button button-primary" ><?= __('Add Document','edusystem'); ?></a>
+            </div>
         </div>
+
         <div>
             <table id="table-products" class="wp-list-table widefat fixed posts" style="margin-top:20px;">
                 <thead>
@@ -38,59 +65,104 @@
                                 <?php $academic_department = json_decode($document->academic_department, true) ?>
                                 <?php if( !empty( $academic_department )  ): ?>
 
-                                    <?php
+                                    <?
+                                        $list_programs = [];
+
                                         global $wpdb;
                                         $programs = $wpdb->get_results(
                                             "SELECT identificator, name FROM {$wpdb->prefix}student_program"
                                         );
-
-                                        $mentions = $wpdb->get_results($wpdb->prepare(
-                                            "SELECT identificator, name 
-                                            FROM {$wpdb->prefix}mentions_by_career
-                                            WHERE career_identificator = %s",
-                                            $career->identificator
-                                        ));
-                                    ?>
-                                    
-                                    <ul>
-                                        <?php foreach ( $programs AS $program ) : ?>
-                                            <li>
-                                                <?php if( in_array( $program->identificator, $academic_department['program'] ) ) ?>
-                                                    <b><?= $program->name ?></b>
-                                                
-
-                                                <ul> 
-                                                    <?php foreach ($academic_department['program'] as $program): ?>
-                                                        <li><?= esc_html($program['identificator']) ?> </li>
-                                                    <?php endforeach ?>
-                                                </ul>
-                                            </li>
-                                        <?php endif ?>
                                         
-                                        <?php if (!empty($academic_department['career'])): ?> 
-                                            <li>
-                                                <strong>Carreras</strong>
-                                                
-                                                <ul>
-                                                    <?php foreach ($academic_department['career'] as $career): ?>
-                                                        <li><?= esc_html($career['identificator'])?></li>
-                                                    <?php endforeach ?>
-                                                </ul>
-                                            </li>
-                                        <?php endif ?> 
+                                        foreach ( $programs AS $program ) {
 
-                                        <?php if (!empty($academic_department['mention'])): ?>
-                                            <li>
-                                                <strong>Menciones</strong>
-                                                
-                                                <ul>
-                                                    <?php foreach ($academic_department['mention'] as $mention): ?>
-                                                        <li> <?= esc_html($mention['identificator'])?> </li> 
+                                            $program_exists  = !empty( $academic_department['program'][$program->identificator]  );
+
+                                            $list_programs[$program->identificator] = [
+                                                'name' => $program->name,
+                                                'exists' => $program_exists,
+                                                'careers' => []
+                                            ];
+
+                                            // Carreras del programa
+                                            $careers = $wpdb->get_results($wpdb->prepare(
+                                                "SELECT identificator, name 
+                                                FROM {$wpdb->prefix}careers_by_program
+                                                WHERE program_identificator = %s",
+                                                $program->identificator
+                                            ));  
+
+                                            foreach( $careers AS $career ) {
+
+                                                $career_exists = !empty( $academic_department['career'][$career->identificator]  );
+
+                                                $list_programs[$program->identificator]['careers'][$career->identificator] = [
+                                                    'name' => $career->name,
+                                                    'exists' => $career_exists,
+                                                    'mentions' => []
+                                                ];
+
+                                                $mentions = $wpdb->get_results($wpdb->prepare(
+                                                    "SELECT identificator, name 
+                                                    FROM {$wpdb->prefix}mentions_by_career
+                                                    WHERE career_identificator = %s",
+                                                    $career->identificator
+                                                )); 
+
+                                                foreach( $mentions AS $mention  ) {
+
+                                                    if( !empty( $academic_department['mention'][$mention->identificator]  ) ){
+                                                        
+                                                        $list_programs[$program->identificator]['careers'][$career->identificator]['mentions'][$mention->identificator]  = [
+                                                            'name' => $mention->name,
+                                                        ];
+                                                    }
+                                                }
+                                                        
+                                                if ( !$career_exists && empty($list_programs[$program->identificator]['careers'][$career->identificator]['mentions']) ) { 
+                                                    unset($list_programs[$program->identificator]['careers'][$career->identificator]); 
+                                                }
+
+                                            }
+
+                                            if ( !$program_exists && empty($list_programs[$program->identificator]['careers'])) { 
+                                                unset($list_programs[$program->identificator]); 
+                                            }
+                                        }
+
+                                    ?>
+                                        
+                                    <ul class="program-list-document">
+                                        <?php foreach( $list_programs AS $program ): ?>
+                                            <li class="program-item-document">
+                                                <?php if( $program['exists'] ): ?>
+                                                    <b class="program-name-document"><?= $program['name'] ?></b>
+                                                <?php else: ?>
+                                                    <span class="program-name-document"><?= $program['name'] ?></span>
+                                                <?php endif ?>
+
+                                                <ul class="career-list-document">
+                                                    <?php foreach( $program['careers'] AS $careers ): ?>
+                                                        <li class="career-item-document">
+                                                            <?php if( $careers['exists'] ): ?>
+                                                                <b class="career-name-document"><?= $careers['name'] ?></b>
+                                                            <?php else: ?>
+                                                                <span class="career-name-document"><?= $careers['name'] ?></span>
+                                                            <?php endif ?>
+
+                                                            <ul class="mention-list-document">
+                                                                <?php foreach( $careers['mentions'] AS $mention ): ?>
+                                                                    <li class="mention-item-document">
+                                                                        <b class="mention-name-document"><?= $mention['name'] ?></b>
+                                                                    </li>
+                                                                <?php endforeach ?>
+                                                            </ul>
+                                                        </li>
                                                     <?php endforeach ?>
                                                 </ul>
                                             </li>
-                                        <?php endif ?>
+                                        <?php endforeach ?>
                                     </ul>
+
                                 <?php else: ?>
                                     <span><?= __('All programs','edusystem') ?></span>
                                 <?php endif; ?>

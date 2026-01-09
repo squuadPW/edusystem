@@ -2700,4 +2700,32 @@ tr.child-order-row {
     }
 }
 
+#table-products {
+    .program-list-document {
+        margin: 0;
+        padding: 0;
+
+        .program-item-document {
+            margin-bottom: 10px;
+
+            .career-list-document {
+                margin-left: 20px;
+
+                .career-item-document {
+                    margin-bottom: 6px;
+
+                    .mention-list-document {
+                        margin-left: 20px;
+
+                        .mention-item-document {
+                            margin-bottom: 4px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
             

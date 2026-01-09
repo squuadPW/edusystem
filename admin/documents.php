@@ -128,8 +128,8 @@ function show_admission_documents()
 
     } else {
 
-        $grades = get_grades();
-        $documents = get_list_grades_documents();
+        $program_id = $_GET['program_id'] ?? '';
+        $documents = get_list_grades_documents( $program_id );
         include(plugin_dir_path(__FILE__) . 'templates/list-documents.php');
         include(plugin_dir_path(__FILE__) . 'templates/modal-delete-document.php');
     }
@@ -156,20 +156,29 @@ function get_grades()
     return $grades;
 }
 
-function get_list_grades_documents($grade_id = "")
+function get_list_grades_documents($program_id = "", $career_id = "", $mention_id = "" )
 {
 
     global $wpdb;
     $table_documents = $wpdb->prefix . 'documents';
 
-    if (!empty($grade_id)) {
+    // if (!empty($grade_id)) {
 
-        $documents = $wpdb->get_results("SELECT * FROM {$table_documents} WHERE grade_id={$grade_id}");
+        $documents = $wpdb->get_results($wpdb->prepare( 
+            "SELECT * FROM {$table_documents} 
+            WHERE  JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.mention.\"', %s, '\"')) 
+                OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.career.\"', %s, '\"')) 
+                OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.program.\"', %s, '\"')) 
+                OR COALESCE(JSON_LENGTH(academic_department), 0) = 0", 
+                $mention_id, 
+                $career_id, 
+                $program_id 
+        ));
         return $documents;
-    }
+    // }
 
-    $documents = $wpdb->get_results("SELECT * FROM {$table_documents}");
-    return $documents;
+   /*  $documents = $wpdb->get_results("SELECT * FROM {$table_documents}");
+    return $documents; */
 }
 
 function get_status_approved($document_id = "", $student_id = "")
