@@ -1539,6 +1539,10 @@ function view_access_classroom()
 {
     // Accede a las variables globales necesarias.
     global $current_user, $wpdb;
+    $roles = (array) $current_user->roles;
+    if (!in_array('student', $roles)) {
+        return;
+    }
 
     // Inicialización de variables. Se usa null para indicar un estado no encontrado/no determinado.
     $student = null;
@@ -1574,7 +1578,6 @@ function view_access_classroom()
     }
 
     // Si el usuario tiene el rol 'student', pero no tiene cursos asignados.
-    $roles = (array) $current_user->roles;
     if (in_array('student', $roles)) {
         // Validación de inscripción debe ir primero.
         $access = is_enrolled_in_courses($student->id);
