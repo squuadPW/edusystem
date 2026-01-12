@@ -284,10 +284,15 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'admission-documents') {
-        wp_enqueue_script('admission-documents', plugins_url('edusystem') . '/admin/assets/js/admission-documents.js', ['jquery'], $version, true);
+        wp_enqueue_script('admission-documents', plugins_url('edusystem') . '/admin/assets/js/admission-documents.js', ['jquery'], '23', true);
 
         wp_localize_script('admission-documents', 'vars', [
-            'url' => admin_url('admin-ajax.php')
+            'url' => admin_url('admin-ajax.php'),
+            'url_ajax' => admin_url('admin-ajax.php'),
+            'translation' => [
+                'select_career' =>  __('Select career','edusystem'),
+                'select_mention' =>  __('Select mention','edusystem'),
+            ]
         ]);
     }
 

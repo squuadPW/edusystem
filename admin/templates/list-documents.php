@@ -22,11 +22,19 @@
                             "SELECT identificator, name FROM {$wpdb->prefix}student_program"
                         );
                     ?>
-                    <select name="program_id" >
+                    <select  id="select-program" name="program_id" >
                         <option value="" <?= selected($program->identificator, '') ?> ><?= __('Select program','edusystem') ?></option>
                         <?php foreach( $programs AS $program ): ?>
                             <option value="<?=$program->identificator?>" <?= selected($program->identificator,$_GET['program_id']) ?> ><?= $program->name ?></option>
                         <?php endforeach ?>
+                    </select>
+
+                    <select id="select-career" name="career_id" >
+                        <option><?= __('Select Career','edusystem')?></option>
+                    </select>
+
+                    <select id="select-mention" name="mention_id" >
+                        <option><?= __('Select Mention','edusystem')?></option>
                     </select>
                     
                     <input type="submit" class="button" value="<?=__('Change','edusystem')?>" />

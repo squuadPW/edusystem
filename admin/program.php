@@ -1010,6 +1010,45 @@ function check_student_program_identificator_exists() {
     } 
 }
 
+//
+add_action('wp_ajax_get_careers_by_program_ajax', 'get_careers_by_program_ajax');
+add_action('wp_ajax_nopriv_get_careers_by_program_ajax', 'get_careers_by_program_ajax');
+function get_careers_by_program_ajax() {
+    global $wpdb;
+
+    $program_id = sanitize_text_field($_POST['program_id']);
+
+    $careers = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT identificator, name 
+             FROM {$wpdb->prefix}careers_by_program
+             WHERE program_identificator = %s",
+            $program_id
+        )
+    );
+
+    wp_send_json($careers);
+}
+
+add_action('wp_ajax_get_mentions_by_career_ajax', 'get_mentions_by_career_ajax');
+add_action('wp_ajax_nopriv_get_mentions_by_career_ajax', 'get_mentions_by_career_ajax');
+function get_mentions_by_career_ajax() {
+    global $wpdb;
+
+    $career_id = sanitize_text_field($_POST['career_id']);
+
+    $mentions = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT identificator, name 
+             FROM {$wpdb->prefix}mentions_by_career
+             WHERE career_identificator = %s",
+            $career_id
+        )
+    );
+
+    wp_send_json($mentions);
+}
+
 
 
 

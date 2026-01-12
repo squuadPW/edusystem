@@ -129,7 +129,9 @@ function show_admission_documents()
     } else {
 
         $program_id = $_GET['program_id'] ?? '';
-        $documents = get_list_grades_documents( $program_id );
+        $career_id = $_GET['career_id'] ?? '';
+        $mention_id = $_GET['mention_id'] ?? '';
+        $documents = get_list_grades_documents( $program_id, $career_id, $mention_id );
         include(plugin_dir_path(__FILE__) . 'templates/list-documents.php');
         include(plugin_dir_path(__FILE__) . 'templates/modal-delete-document.php');
     }
@@ -162,21 +164,25 @@ function get_list_grades_documents($program_id = "", $career_id = "", $mention_i
     global $wpdb;
     $table_documents = $wpdb->prefix . 'documents';
 
-    if ( !empty($program_id) || !empty($career_id) || !empty($mention_id) ) {
+    if ( $program_id != '' || $career_id != '' || $mention_id != '' ) {
+
+        $where = " COALESCE(JSON_LENGTH(academic_department), 0) = 0 ";
+
+        if( $mention_id != "" ) {
+            $where .= $wpdb->prepare(" OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.mention.\"', %s, '\"')) ", $career_id );
+        } else if( $career_id != "" ) {
+            $where .= $wpdb->prepare(" OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.career.\"', %s, '\"')) ", $career_id );
+        } else if( $mention_id != "" ) {
+            $where .= $wpdb->prepare(" OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.program.\"', %s, '\"')) ", $program_id );
+        }
 
         $documents = $wpdb->get_results($wpdb->prepare( 
-            "SELECT * FROM {$table_documents} 
-            WHERE  JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.mention.\"', %s, '\"')) 
-                OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.career.\"', %s, '\"')) 
-                OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.program.\"', %s, '\"')) 
-                OR COALESCE(JSON_LENGTH(academic_department), 0) = 0", 
-                $mention_id, 
-                $career_id, 
-                $program_id 
+            "SELECT * FROM {$table_documents} WHERE {$where}", 
         ));
+    } else {
+        $documents = $wpdb->get_results("SELECT * FROM {$table_documents}");
     }
-
-    $documents = $wpdb->get_results("SELECT * FROM {$table_documents}");
+    
     return $documents;
 }
 
