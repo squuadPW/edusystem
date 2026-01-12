@@ -657,6 +657,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_sales_aes');
     $role->add_cap('manager_accounts_receivables_aes');
     $role->add_cap('manager_documents_aes');
+    $role->add_cap('manager_statusbar_student');
     $role->add_cap('manager_payments_aes');
     $role->add_cap('manager_payment_plans');
     $role->add_cap('manager_payment_fees');

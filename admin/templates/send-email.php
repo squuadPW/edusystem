@@ -61,13 +61,11 @@
                         <label for="academic_period_cut">
                             <?= __('Academic period cut-off', 'edusystem'); ?>
                         </label>
-                        <select name="academic_period_cut" style="width: 100%">
+                        <select name="academic_period_cut" style="width: 100%" data-textoption="<?= esc_attr(__('Select term to filter', 'edusystem')) ?>" data-initial-cut="<?= !empty($_REQUEST['academic_period_cut']) ? esc_attr($_REQUEST['academic_period_cut']) : '' ?>">
                             <option value="" selected><?= __('Select an option', 'edusystem'); ?></option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                            <option value="E">E</option>
+                            <?php if (!empty($_REQUEST['academic_period_cut'])): ?>
+                                <option value="<?= esc_attr($_REQUEST['academic_period_cut']) ?>" selected><?= esc_html($_REQUEST['academic_period_cut']) ?></option>
+                            <?php endif; ?>
                         </select>
                     </div>
                 </div>

@@ -15,6 +15,8 @@ function add_admin_form_send_email_content()
 
     $variables = get_variables_documents() ?? [];
     $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    $periods_cuts = $wpdb->get_results("SELECT * FROM {$table_academic_periods_cut} ORDER BY created_at ASC");
     $templates = $wpdb->get_results("SELECT * FROM {$table_templates_email} ORDER BY id ASC");
     include(plugin_dir_path(__FILE__) . 'templates/send-email.php');
 }
@@ -329,7 +331,14 @@ function send_email_to_students($students, $subject, $message, $academic_period 
         if ($send_to_parent && !empty($student->partner_id)) {
             $parent = get_user_by('id', $student->partner_id);
             if ($parent) {
-                $email_user->trigger($parent, $subject, $message_student);
+                // Evitar enviar el mismo correo dos veces cuando el padre/usuario
+                // tiene el mismo email que el estudiante.
+                $parent_email = isset($parent->user_email) ? $parent->user_email : '';
+                $student_email = isset($student->email) ? $student->email : '';
+
+                if ($parent_email === '' || $student_email === '' || $parent_email !== $student_email) {
+                    $email_user->trigger($parent, $subject, $message_student);
+                }
             }
         }
     }
