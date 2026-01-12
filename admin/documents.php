@@ -166,22 +166,19 @@ function get_list_grades_documents($program_id = "", $career_id = "", $mention_i
 
     if ( $program_id != '' || $career_id != '' || $mention_id != '' ) {
 
-        $where = " COALESCE(JSON_LENGTH(academic_department), 0) = 0 ";
+        $where = "WHERE COALESCE(JSON_LENGTH(academic_department), 0) = 0 ";
 
         if( $mention_id != "" ) {
-            $where .= $wpdb->prepare(" OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.mention.\"', %s, '\"')) ", $career_id );
+            $where .= $wpdb->prepare(" OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.mention.\"', %s, '\"')) ", $mention_id );
         } else if( $career_id != "" ) {
             $where .= $wpdb->prepare(" OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.career.\"', %s, '\"')) ", $career_id );
         } else if( $mention_id != "" ) {
             $where .= $wpdb->prepare(" OR JSON_CONTAINS_PATH(academic_department, 'one', CONCAT('$.program.\"', %s, '\"')) ", $program_id );
         }
-
-        $documents = $wpdb->get_results($wpdb->prepare( 
-            "SELECT * FROM {$table_documents} WHERE {$where}", 
-        ));
-    } else {
-        $documents = $wpdb->get_results("SELECT * FROM {$table_documents}");
     }
+    
+    $documents = $wpdb->get_results("SELECT * FROM {$table_documents} {$where} ");
+    
     
     return $documents;
 }

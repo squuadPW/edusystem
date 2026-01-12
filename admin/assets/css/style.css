@@ -2427,4 +2427,23 @@ tr.child-order-row .view_details {
 }
 #table-products .program-list-document .program-item-document .career-list-document .career-item-document .mention-list-document .mention-item-document {
   margin-bottom: 4px;
+}
+
+.filters-document form {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.filters-document form .group-input {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 500px) {
+  .filters-document form .group-input {
+    width: 100%;
+  }
 }/*# sourceMappingURL=style.css.map */

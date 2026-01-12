@@ -10,40 +10,66 @@
 
         <div>
 
-            <div>
+            <div style="text-align:end;">
+                <a href="<?= admin_url('admin.php?page=admission-documents&action=edit')?>" class="button button-primary" ><?= __('Add Document','edusystem'); ?></a>
+            </div>
+
+            <div class="filters-document" >
                 
                 <form method="GET" >
                     
                     <input type="hidden" name="page" value="<?= $_REQUEST['page'] ?>" />
 
-                    <?php 
-                        global $wpdb;
-                        $programs = $wpdb->get_results(
-                            "SELECT identificator, name FROM {$wpdb->prefix}student_program"
-                        );
-                    ?>
-                    <select  id="select-program" name="program_id" >
-                        <option value="" <?= selected($program->identificator, '') ?> ><?= __('Select program','edusystem') ?></option>
-                        <?php foreach( $programs AS $program ): ?>
-                            <option value="<?=$program->identificator?>" <?= selected($program->identificator,$_GET['program_id']) ?> ><?= $program->name ?></option>
-                        <?php endforeach ?>
-                    </select>
+                    <div class="group-input" >
+                        <label><?= __('Program','edusystem') ?></label>
 
-                    <select id="select-career" name="career_id" >
-                        <option><?= __('Select Career','edusystem')?></option>
-                    </select>
-
-                    <select id="select-mention" name="mention_id" >
-                        <option><?= __('Select Mention','edusystem')?></option>
-                    </select>
+                        <?php 
+                            global $wpdb;
+                            $programs = $wpdb->get_results(
+                                "SELECT identificator, name FROM {$wpdb->prefix}student_program"
+                            );
+                        ?>
+                        
+                        <select  id="select-program" name="program_id" >
+                            <option value="" <?= selected($program->identificator, '') ?> ><?= __('Select program','edusystem') ?></option>
+                            <?php foreach( $programs AS $program ): ?>
+                                <option value="<?=$program->identificator?>" <?= selected($program->identificator,$_GET['program_id']) ?> ><?= $program->name ?></option>
+                            <?php endforeach ?>
+                        </select>
+                    </div>
                     
-                    <input type="submit" class="button" value="<?=__('Change','edusystem')?>" />
+                    <div class="group-input" >
+                        
+                        <label><?= __('Career','edusystem') ?></label>
+
+                        <select id="select-career" name="career_id" data-select_value="<?= $_GET['career_id'] ?? "" ?>" >
+                            <option><?= __('Select career','edusystem')?></option>
+                        </select>
+                    </div>
+                    
+                    <div class="group-input" >
+                        
+                        <label><?= __('Mention','edusystem') ?></label>
+
+                        <select id="select-mention" name="mention_id" data-select_value="<?= $_GET['mention_id'] ?? "" ?>" >
+                            <option><?= __('Select mention','edusystem')?></option>
+                        </select>
+
+                    </div>
+                    
+                    <div class="group-input" >
+                        <input type="submit" class="button" value="<?=__('Change','edusystem')?>" />
+
+                        <?php if (!empty($_GET['program_id']) || !empty($_GET['career_id']) || !empty($_GET['mention_id']) ):  ?>
+                            <a href="<?= remove_query_arg(['program_id','career_id', 'mention_id']); ?>" class="button button-primary">
+                                <?= __('Clear Filters', 'edusystem'); ?>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+
                 </form>
             </div>
 
-            <div style="text-align:end;">
-                <a href="<?= admin_url('admin.php?page=admission-documents&action=edit')?>" class="button button-primary" ><?= __('Add Document','edusystem'); ?></a>
-            </div>
         </div>
 
         <div>

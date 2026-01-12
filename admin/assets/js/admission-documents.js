@@ -118,11 +118,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     const option = document.createElement("option"); 
                     option.value = career.identificator; 
                     option.textContent = career.name; 
+
+                    // marcar seleccionado si coincide con el valor en GET 
+                    if ( career.identificator == select_career.dataset.select_value ) { 
+                        option.selected = true; 
+                    }
+
                     select_career.appendChild(option); 
+
+                    if ( career.identificator == select_career.dataset.select_value ) { 
+                        select_career.dispatchEvent(new Event("change"));
+                    }
                 });
             })
             .catch((err) => {});
         });
+
+        select_program.dispatchEvent(new Event("change"));
     }
     
     if (select_career && select_mention ) {
@@ -153,6 +165,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
                     const option = document.createElement("option");
                     option.value = mention.identificator;
                     option.textContent = mention.name;
+
+                    // marcar seleccionado si coincide con el valor en GET 
+                    if ( mention.identificator == select_mention.dataset.select_value ) {
+                        option.selected = true; 
+                    }
+
                     select_mention.appendChild(option);
                 });
             })
