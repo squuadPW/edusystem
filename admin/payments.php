@@ -171,8 +171,12 @@ function add_admin_form_payments_content()
 
                             // nuevos valores de la cuota
                             $new_amount = $total_order_items;
-
-                            $increased_portion = $amount_credit / $cuote_payment->amount;
+                            
+                            $increased_portion = 0;
+                            if( $cuote_payment->amount > 0 ) {
+                                $increased_portion = $amount_credit / $cuote_payment->amount;
+                            }
+                            
                             $new_original_amount_product = $cuote_payment->original_amount_product * (1 + $increased_portion);
 
                             // actualiza el monto de la original
@@ -372,7 +376,7 @@ function add_admin_form_payments_content()
             exit;
         } else if ($_GET['action'] == 'generate_payment') {
             $cancel = $_POST['cancel'];
-            if (isset($cancel) && $cancel == 1) {
+            if ( isset( $cancel ) && $cancel == 1 ) {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment'));
                 exit;
             }
@@ -1975,7 +1979,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
                     echo esc_html( $payment_order->get_date_created()->date_i18n('m/d/Y H:i:s') );
                     echo '</td>';
 
-                    echo '<td class="partner_name column-partner_name"></td>';
+                    //echo '<td class="partner_name column-partner_name"></td>';
                     echo '<td class="student_name column-student_name" ></td>';
 
                     echo '<td class="total column-total" data-colname="Total"><b>' . wc_price( $payment['amount'], [ 'currency' => $payment_order->get_currency() ]  ) . '</b></td>';
