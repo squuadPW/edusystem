@@ -3205,8 +3205,6 @@ function get_admission_fee($fee_id)
     return $fee ?? null;
 }
 
-
-
 add_action('wp_ajax_nopriv_generate_quote_public', 'generate_quote_public_callback');
 add_action('wp_ajax_generate_quote_public', 'generate_quote_public_callback');
 
