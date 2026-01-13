@@ -1,3 +1,5 @@
+url_ajax = vars.url_ajax;
+
 document.addEventListener('DOMContentLoaded',function(){
 
     approved_status = document.getElementById('approved_payment');
@@ -66,9 +68,28 @@ document.addEventListener('DOMContentLoaded',function(){
 
     document.querySelectorAll('.modal-close').forEach((close) => {
         close.addEventListener('click',(e) => {
-            document.getElementById('modalStatusPayment').style.display = "none";
-            document.getElementById('modalGenerateOrder').style.display = "none";
-            document.getElementById('modalEditItemSplitPayment').style.display = "none";
+
+            modal_status_payment = document.getElementById('modalStatusPayment');
+            if( modal_status_payment ) modal_status_payment.style.display = "none";
+
+            modal_generate_order = document.getElementById('modalGenerateOrder');
+            if( modal_generate_order ) modal_generate_order.style.display = "none";
+
+            modal_edit_item_split_payment = document.getElementById('modalEditItemSplitPayment');
+            if( modal_edit_item_split_payment ) modal_edit_item_split_payment.style.display = "none";
+
+            modal_status_payment_pending = document.getElementById('modalStatusPaymentToPending')
+            if( modal_status_payment_pending ){
+
+                select_status_payment = document.getElementById('select_status_payment');
+                if ( select_status_payment ) {
+
+                    select_status_payment.value = 'completed';
+                    select_status_payment.dispatchEvent(new Event('change'));
+                }
+
+                modal_status_payment_pending.style.display = "none";
+            }
         });
     });
 
@@ -138,67 +159,133 @@ function desactive_edit_price_item () {
 // modal para verificar si el monto ingresado excede el monto pendiente si es de split payment
 document.addEventListener('DOMContentLoaded', function() {
 
-    document.getElementById('recalculate_button').addEventListener('click', function(event) {
-        
-        // Selecciona todos los inputs que tengan el atributo data-fee-split-payment
-        split_payment = document.querySelector('input[data-fee-split-payment]');
-        if( split_payment ) {
-            event.preventDefault();
+    recalculate_button = document.getElementById('recalculate_button');
+    if( recalculate_button ) {
+        recalculate_button.addEventListener('click', function(event) {
             
-            pending = document.getElementById('input_amount_pending')?.value ?? 0;
-            currency = document.getElementById('input_amount_pending')?.getAttribute('data-currency') ?? '';
-
-            pending = parseFloat(pending);
-            total_entered = parseFloat(split_payment.value);
-            origin_price = parseFloat(split_payment.getAttribute('data-origin-price') ?? 0);
-
-            pending_entered = total_entered - origin_price;
-
-            if( pending_entered > pending ) {
+            // Selecciona todos los inputs que tengan el atributo data-fee-split-payment
+            split_payment = document.querySelector('input[data-fee-split-payment]');
+            if( split_payment ) {
+                event.preventDefault();
                 
-                excess_amount = pending_entered - pending;
+                pending = document.getElementById('input_amount_pending')?.value ?? 0;
+                currency = document.getElementById('input_amount_pending')?.getAttribute('data-currency') ?? '';
 
-                modal = document.getElementById('modalEditItemSplitPayment');
-                if( modal ) {
+                pending = parseFloat(pending);
+                total_entered = parseFloat(split_payment.value);
+                origin_price = parseFloat(split_payment.getAttribute('data-origin-price') ?? 0);
 
-                    input_excess_amount = document.getElementById('input_excess_amount');
-                    if( input_excess_amount ) input_excess_amount.value = excess_amount;
+                pending_entered = total_entered - origin_price;
 
-                    text_excess_amount = document.getElementById('excess_amount');
-                    if( text_excess_amount ) text_excess_amount.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(excess_amount);
+                if( pending_entered > pending ) {
+                    
+                    excess_amount = pending_entered - pending;
 
-                    amount_entered = document.getElementById('amount_entered');
-                    if( amount_entered ) amount_entered.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(total_entered);
+                    modal = document.getElementById('modalEditItemSplitPayment');
+                    if( modal ) {
 
-                    modal.style.display = "block";
+                        input_excess_amount = document.getElementById('input_excess_amount');
+                        if( input_excess_amount ) input_excess_amount.value = excess_amount;
+
+                        text_excess_amount = document.getElementById('excess_amount');
+                        if( text_excess_amount ) text_excess_amount.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(excess_amount);
+
+                        amount_entered = document.getElementById('amount_entered');
+                        if( amount_entered ) amount_entered.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(total_entered);
+
+                        modal.style.display = "block";
+                    }
+
+                } else {
+                    // Si no excede, envía el formulario
+                    event.target.closest('form').submit();
                 }
-
-            } else {
-                // Si no excede, envía el formulario
-                event.target.closest('form').submit();
             }
-        }
 
-    });
+        });
+    }
 
-    document.getElementById('modalEditItemSplitPaymentYes').addEventListener('click', function() {
+    modal_edit_item_split = document.getElementById('modalEditItemSplitPaymentYes');
+    if ( modal_edit_item_split ) {
+        modal_edit_item_split.addEventListener('click', function() {
 
-        // Selecciona todos los inputs que tengan el atributo data-fee-split-payment
-        split_payment = document.querySelector('input[data-fee-split-payment]');
-        if( split_payment ){
+            // Selecciona todos los inputs que tengan el atributo data-fee-split-payment
+            split_payment = document.querySelector('input[data-fee-split-payment]');
+            if( split_payment ){
+                
+                pending = document.getElementById('input_amount_pending')?.value ?? 0;
+                pending = parseFloat(pending);
+                
+                origin_price = parseFloat(split_payment.getAttribute('data-origin-price') ?? 0);
+                
+                excess_amount = origin_price + pending;
+
+                split_payment.value = excess_amount;
+
+                // Busca el formulario padre del botón y lo envía
+                document.getElementById('recalculate_button').closest('form').submit();
+            }
+        });
+    }
+
+    // abre el modal de pagos completados a pendientes
+    select_status_payment = document.getElementById('select_status_payment');
+    if ( select_status_payment ) {
+        select_status_payment.addEventListener('change', function() {
+
+            const selected_value = this.value;  // Obtiene el valor seleccionado del select
             
-            pending = document.getElementById('input_amount_pending')?.value ?? 0;
-            pending = parseFloat(pending);
-            
-            origin_price = parseFloat(split_payment.getAttribute('data-origin-price') ?? 0);
-            
-            excess_amount = origin_price + pending;
+            if ( selected_value != 'pending' ) return;
 
-            split_payment.value = excess_amount;
+            modal = document.getElementById('modalStatusPaymentToPending');
+            if( modal ){
 
-            // Busca el formulario padre del botón y lo envía
-            document.getElementById('recalculate_button').closest('form').submit();
-        }
-    });
+                payment_id = select_status_payment.dataset.payment_id;
+
+                payment_input = modal.querySelector('#payment_id');
+                if ( payment_input ) payment_input.value = payment_id;
+                
+                description_area = modal.querySelector('#description'); 
+                if ( description_area ) description_area.value = '';
+
+                modal.style.display = 'block';
+            }
+        });
+    }
+
+    // en caso de que accepten poner como pendiente el pago
+    payment_to_pending_from = document.querySelector('#payment_to_pending_from');
+    if( payment_to_pending_from ) {
+
+        payment_to_pending_from.addEventListener('submit', (event) => {
+
+            event.preventDefault();
+
+            button_submit = document.getElementById('payment_to_pending_submit');
+            if( button_submit )  button_submit.disabled = true;
+            
+            payment_id = payment_to_pending_from.querySelector('#payment_id').value; 
+            description = payment_to_pending_from.querySelector('#description').value; 
+
+            const formData = new FormData(); 
+            formData.append("action", "update_payment_to_pending"); 
+            formData.append("payment_id", payment_id);
+            formData.append("description", description);
+
+            fetch(url_ajax, {
+                method: "POST",
+                body: formData,
+            }).then( (res) => res.json() )
+            .then((res) => {
+
+                //recarga la pagina 
+                location.reload();
+            
+            })
+            .catch((err) => {});
+        });
+
+    }
 
 });
+

@@ -3418,10 +3418,8 @@ function manage_payments_search_student_callback()
     // Send JSON response
     wp_send_json(['items' => $data]);
 }
-
 add_action('wp_ajax_nopriv_manage_payments_search_student', 'manage_payments_search_student_callback');
 add_action('wp_ajax_manage_payments_search_student', 'manage_payments_search_student_callback');
-
 
 /* 
 * obtener las reglas de cuotas avanzadas
@@ -3439,5 +3437,77 @@ function get_advanced_quota_rules( $rule_id ) {
     return $results;
 }
 
+/*
+ * Acción AJAX para colocar un pago como pendiente.
+ * Actualiza el status_id del pago a 0, registra en el log y, si existe, cambia el estado de la orden a 'pending' en WooCommerce.
+ */
+add_action('wp_ajax_nopriv_update_payment_to_pending', 'update_payment_to_pending');
+add_action('wp_ajax_update_payment_to_pending', 'update_payment_to_pending');
+function update_payment_to_pending() {
+    // Obtener y sanitizar el payment_id
+    $payment_id = intval($_POST['payment_id']); // Sanitizar como entero
+    $description = sanitize_text_field($_POST['description'] ?? ''); // Sanitizar descripción
 
+    if (!$payment_id) {
+        wp_send_json_error([
+            'message' => __('Invalid payment ID', 'edusystem'),
+            'updated' => false
+        ]);
+        return; 
+    }
 
+    global $wpdb;
+    wp_get_current_user(); // Obtener el usuario actual
+    global $current_user;
+
+    // Preparar y ejecutar la consulta para obtener datos del pago
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+    $payment = $wpdb->get_row(
+        $wpdb->prepare("SELECT student_id, order_id, amount, currency FROM {$table_student_payments} WHERE id = %d", $payment_id)
+    );
+
+    if (!$payment) {
+        wp_send_json_error([
+            'message' => __('Payment not found', 'edusystem'),
+            'updated' => false
+        ]);
+        return;
+    }
+
+    // Actualizar el status_id del pago a 0 (pendiente)
+    $updated = $wpdb->update($table_student_payments, ['status_id' => 0], ['id' => $payment_id]);
+    if ($updated === false) {
+        wp_send_json_error([
+            'message' => __('Error updating payment', 'edusystem'),
+            'updated' => false
+        ]);
+        return;
+    }
+
+    // Crear el registro del log
+    $table_student_payments_log = $wpdb->prefix . 'student_payments_log'; 
+    $wpdb->insert($table_student_payments_log, [
+        'student_id' => $payment->student_id,
+        'old_amount' => $payment->amount,
+        'new_amount' => $payment->amount,
+        'difference' => 0.00,
+        'currency' => $payment->currency,
+        'user_id' => $current_user->ID,
+        'description' => $description,
+    ]);
+
+    // Si existe order_id, actualizar el estado de la orden a 'pending' en WooCommerce
+    if ( $payment->order_id ) {
+        $order = wc_get_order($payment->order_id);
+        if ($order) {
+            $order->update_status('pending');
+        }
+    }
+
+    // Enviar respuesta JSON de éxito
+    wp_send_json_success([
+        'message' => __('Payment successfully updated to pending', 'edusystem'),
+        'payment_id' => $payment_id,
+        'updated' => true
+    ]);
+}

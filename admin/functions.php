@@ -71,6 +71,10 @@ function aes_scripts_admin()
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_content') {
         wp_enqueue_script('student-payment', plugins_url('edusystem') . '/admin/assets/js/payment.js', array('jquery'), $version, true);
+
+        wp_localize_script('student-payment', 'vars', [
+            'url_ajax' => admin_url('admin-ajax.php'),
+        ]);
     }
 
     if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_pensum_content' && $_GET['section_tab'] == 'pensum_details') {
