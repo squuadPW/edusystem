@@ -20,6 +20,49 @@ document.addEventListener("DOMContentLoaded", function () {
   const confirmPasswordInput = document.getElementById("confirm_password");
   const errorDiv = document.getElementById("password-error");
 
+  const attachPasswordToggle = (inputEl) => {
+    if (!inputEl) return;
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "relative";
+    wrapper.style.width = "100%";
+
+    // Insert wrapper before the input and move the input inside
+    inputEl.parentElement.insertBefore(wrapper, inputEl);
+    wrapper.appendChild(inputEl);
+    inputEl.style.paddingRight = "60px";
+
+    const toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "toggle-password-btn";
+    const eyeOpen =
+      '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12Z"/><circle cx="12" cy="12" r="3"/></svg>';
+    const eyeClosed =
+      '<svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-6.94"/><path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.65 21.65 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+    toggleBtn.innerHTML = eyeOpen;
+    toggleBtn.setAttribute("aria-label", "Toggle password visibility");
+    toggleBtn.style.position = "absolute";
+    toggleBtn.style.right = "16px";
+    toggleBtn.style.top = "50%";
+    toggleBtn.style.transform = "translateY(-50%)";
+    toggleBtn.style.background = "transparent";
+    toggleBtn.style.border = "none";
+    toggleBtn.style.color = "#555";
+    toggleBtn.style.fontWeight = "600";
+    toggleBtn.style.cursor = "pointer";
+
+    toggleBtn.addEventListener("click", () => {
+      const isPassword = inputEl.type === "password";
+      inputEl.type = isPassword ? "text" : "password";
+      toggleBtn.innerHTML = isPassword ? eyeClosed : eyeOpen;
+    });
+
+    inputEl.insertAdjacentElement("afterend", toggleBtn);
+  };
+
+  attachPasswordToggle(passwordInput);
+  attachPasswordToggle(confirmPasswordInput);
+
   const mesAnio = document.getElementById('expected_graduation_date');
   if (mesAnio) {
     mesAnio.addEventListener('input', function(e) {
