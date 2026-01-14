@@ -3477,7 +3477,18 @@ function update_payment_to_pending() {
     }
 
     // Actualizar el status_id del pago a 0 (pendiente)
-    $updated = $wpdb->update($table_student_payments, ['status_id' => 0], ['id' => $payment_id]);
+    $updated = $wpdb->update(
+        $table_student_payments, 
+        [
+            'status_id' => 0,
+            'manager_id' => NULL,
+            'institute_id' => NULL,
+            'institute_fee' => 0.00,
+            'alliances' => NULL,
+            'date_payment' => NULL,
+        ], 
+        ['id' => $payment_id]
+    );
     if ($updated === false) {
         wp_send_json_error([
             'message' => __('Error updating payment', 'edusystem'),

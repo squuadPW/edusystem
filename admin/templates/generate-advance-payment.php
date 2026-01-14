@@ -98,6 +98,9 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 					<h2 class="section-title"><?= __('Student Payments Overview', 'edusystem'); ?></h2>
 
 					<div class="header-actions">
+
+						<a class="button button-primary" ><?= __('New quota', 'edusystem') ?></a>
+
 						<?php
 						$payments_status = [
 							'registration' => get_fee_paid($student->id, 'registration'),
@@ -209,7 +212,7 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 
 								<td data-colname="<?= __('Status', 'edusystem'); ?>">
 									<?php if ($is_paid) { ?>
-										<select id="select_status_payment" data-payment_id="<?= $payment->id ?>" >
+										<select class="select_status_payment" data-payment_id="<?= $payment->id ?>" >
 											<option value="completed" <?= selected($is_paid,true) ?> ><?= __('Completed', 'edusystem') ?></span>
 											<option value="pending"><?= __('Pending', 'edusystem') ?></span>
 										</select>

@@ -229,8 +229,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // abre el modal de pagos completados a pendientes
-    select_status_payment = document.getElementById('select_status_payment');
-    if ( select_status_payment ) {
+    document.querySelectorAll('.select_status_payment').forEach( select_status_payment => {
+        
         select_status_payment.addEventListener('change', function() {
 
             const selected_value = this.value;  // Obtiene el valor seleccionado del select
@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.style.display = 'block';
             }
         });
-    }
+    });
 
     // en caso de que accepten poner como pendiente el pago
     payment_to_pending_from = document.querySelector('#payment_to_pending_from');
