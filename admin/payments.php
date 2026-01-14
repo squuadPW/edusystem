@@ -1683,6 +1683,53 @@ function add_admin_form_payments_content()
                 wp_redirect($_SERVER['HTTP_REFERER']);
             }
             exit;
+        }else if ($_GET['action'] == 'new_quota_student') {
+
+            $student_id = $_POST['student_id'] ?? 0;
+            $product_id = $_POST['product_id'] ?? 0;
+            $variation_id = $_POST['variation_id'] ?? 0;
+            $amount = $_POST['amount'] ?? 0.00;
+            $original_amount_product = $_POST['original_amount_product'] ?? 0.00;
+            $currency = $_POST['currency'] ?? get_woocommerce_currency();
+            $date_next_payment = $_POST['date_next_payment'];
+
+            if( $student_id ) {
+
+                $date_next_payment = DateTime::createFromFormat('d/m/Y', $date_next_payment);
+
+                $status_id = 0;
+                $total_amount = $amount;
+                $original_amount = $original_amount_product;
+                $discount_amount = 0.00;
+                $cuote = 1;
+                $num_cuotes = 1;
+                $type_payment = 1;
+
+                global $wpdb;
+                $wpdb->insert("{$wpdb->prefix}student_payments", [
+                    'status_id' => 0,
+                    'student_id' => $student_id,
+                    'order_id' => NULL,
+                    'product_id' => $product_id, 
+                    'variation_id' => $variation_id,
+                    'manager_id' => NULL,
+                    'institute_id' => NULL,
+                    'institute_fee' => 0.00,
+                    'alliances' => NULL,
+                    'currency' => $currency,
+                    'amount' => $amount, 
+                    'original_amount_product' => $original_amount_product,
+                    'total_amount' => $total_amount, // procesa
+                    'original_amount' => $original_amount, // procesa
+                    'discount_amount' => $discount_amount,  // procesar
+                    'type_payment' => $type_payment, // procesar
+                    'cuote' => $cuote, // procesar
+                    'num_cuotes' => $num_cuotes, // procesar
+                    'date_payment' => NULL,
+                    'date_next_payment' => $date_next_payment->format('Y-m-d'),
+                ]);
+            }
+
         }
     }
 

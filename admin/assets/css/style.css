@@ -2446,4 +2446,26 @@ tr.child-order-row .view_details {
   .filters-document form .group-input {
     width: 100%;
   }
+}
+
+#modalNewQuota .modal-body {
+  margin: 10px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#modalNewQuota .modal-body .seccion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+#modalNewQuota .modal-body .seccion .group-input {
+  flex: 1;
+}
+#modalNewQuota .modal-body .group-input {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
 }/*# sourceMappingURL=style.css.map */

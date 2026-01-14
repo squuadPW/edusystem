@@ -99,7 +99,7 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 
 					<div class="header-actions">
 
-						<a class="button button-primary" ><?= __('New quota', 'edusystem') ?></a>
+						<a class="button button-primary" onclick="open_modal_new_quota_student(<?=$student->id?>)" ><?= __('New quota', 'edusystem') ?></a>
 
 						<?php
 						$payments_status = [
@@ -323,7 +323,10 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 	</div>
 </div>
 
-<?php include(plugin_dir_path(__FILE__).'modal-status-payment-to-pending.php'); ?>
+<?php 
+	include(plugin_dir_path(__FILE__).'modal-status-payment-to-pending.php');
+	include(plugin_dir_path(__FILE__).'modal-new-quota.php');
+?>
 
 <script>
 	document.addEventListener('DOMContentLoaded', function () {

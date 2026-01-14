@@ -90,6 +90,10 @@ document.addEventListener('DOMContentLoaded',function(){
 
                 modal_status_payment_pending.style.display = "none";
             }
+
+            modal_new_quota = document.getElementById('modalNewQuota');
+            if( modal_new_quota ) modal_new_quota.style.display = "none";
+
         });
     });
 
@@ -288,4 +292,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+
+function open_modal_new_quota_student( student_id ){
+
+    modal = document.getElementById('modalNewQuota');
+    if( modal ){
+
+        student_id_input = modal.querySelector('student_id');
+        if( student_id_input ) student_id_input.value = student_id;
+
+        modal.style.display = 'block';
+    }
+}
+
 
