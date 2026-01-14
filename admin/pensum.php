@@ -12,6 +12,7 @@ function add_admin_form_pensum_content()
             $pensum = get_pensum_details($pensum_id);
             $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1 AND `type` <> 'elective'");
             $institutes = $wpdb->get_results("SELECT * FROM {$table_institutes} WHERE `status` = 1");
+            $programs = get_student_program();
             include(plugin_dir_path(__FILE__) . 'templates/pensum-details.php');
         }
 
