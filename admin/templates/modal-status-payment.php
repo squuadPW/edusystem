@@ -185,7 +185,11 @@
 								}
 								?>
 
-								<?php if( !$less_amount )?> <option value="new_cuote"> <?= __('New cuote','edusystem') ?> </option>
+								<?php if( $less_amount ):?> 
+									<option value="new_cuote"> <?= __('New cuote','edusystem') ?> </option>
+								<?php else:?> 
+									<option value="send_balance"> <?= __('Send to balance','edusystem') ?> </option>
+								<?php endif ?>
 								
 							</select>
 						</div>

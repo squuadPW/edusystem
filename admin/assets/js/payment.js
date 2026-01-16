@@ -90,6 +90,10 @@ document.addEventListener('DOMContentLoaded',function(){
 
                 modal_status_payment_pending.style.display = "none";
             }
+
+            modal_new_quota = document.getElementById('modalNewQuota');
+            if( modal_new_quota ) modal_new_quota.style.display = "none";
+
         });
     });
 
@@ -229,8 +233,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // abre el modal de pagos completados a pendientes
-    select_status_payment = document.getElementById('select_status_payment');
-    if ( select_status_payment ) {
+    document.querySelectorAll('.select_status_payment').forEach( select_status_payment => {
+        
         select_status_payment.addEventListener('change', function() {
 
             const selected_value = this.value;  // Obtiene el valor seleccionado del select
@@ -251,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.style.display = 'block';
             }
         });
-    }
+    });
 
     // en caso de que accepten poner como pendiente el pago
     payment_to_pending_from = document.querySelector('#payment_to_pending_from');
@@ -288,4 +292,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+
+function open_modal_new_quota_student( student_id ){
+
+    modal = document.getElementById('modalNewQuota');
+    if( modal ){
+
+        student_id_input = modal.querySelector('#student_id');
+        if( student_id_input ) student_id_input.value = student_id;
+
+        modal.style.display = 'block';
+    }
+}
+
 
