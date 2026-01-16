@@ -8,21 +8,21 @@
 
 		<form method="POST" action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=new_quota_student'); ?>" >
 
-			<input type="hidden" id="student_id" value="" />
-			<input type="hidden" id="product_id" value="" />
-			<input type="hidden" id="variation_id" value="" />
+			<input type="hidden" id="student_id" name="student_id" value="" />
+			<input type="hidden" id="product_id" name="product_id" value="" />
+			<input type="hidden" id="variation_id" name="variation_id" value="" />
 
 			<div class="modal-body">
 
 				<div class="seccion" >
 					<div class="group-input" >
 						<label><?= __('Amount','edusystem') ?></label>
-						<input type="number" id="amount" min="0" />
+						<input type="number" id="amount" name="amount" min="0" />
 					</div>
 
 					<div class="group-input" >
 						<label><?= __('Original amount','edusystem') ?></label>
-						<input type="number" id="original_amount_product" min="0" />
+						<input type="number" id="original_amount_product" name="original_amount_product" min="0" />
 					</div>
 				</div>
 
@@ -38,7 +38,7 @@
 
 				<div class="group-input" >
 					<label><?= __('Date next payment','edusystem') ?></label>
-					<input type="date" id="date_next_payment" min="0" />
+					<input type="date" id="date_next_payment" name="date_next_payment" min="0" />
 				</div>
 				
 			</div>

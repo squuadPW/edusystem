@@ -299,7 +299,7 @@ function open_modal_new_quota_student( student_id ){
     modal = document.getElementById('modalNewQuota');
     if( modal ){
 
-        student_id_input = modal.querySelector('student_id');
+        student_id_input = modal.querySelector('#student_id');
         if( student_id_input ) student_id_input.value = student_id;
 
         modal.style.display = 'block';
