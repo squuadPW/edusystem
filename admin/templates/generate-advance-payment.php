@@ -99,7 +99,7 @@
 
 					<div class="header-actions">
 
-						<a class="button button-primary" onclick="open_modal_new_quota_student(<?=$student->id?>)" ><?= __('New quota', 'edusystem') ?></a>
+						<!-- <a class="button button-primary" onclick="open_modal_new_quota_student(<?=$student->id?>)" ><?= __('New quota', 'edusystem') ?></a> -->
 
 						<?php
 						$payments_status = [

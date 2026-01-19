@@ -20,20 +20,15 @@
 						<input type="number" id="amount" name="amount" min="0" />
 					</div>
 
-					<div class="group-input" >
-						<label><?= __('Original amount','edusystem') ?></label>
-						<input type="number" id="original_amount_product" name="original_amount_product" min="0" />
+					<div class="group-input currency" >
+						<label><?= __('Currency','edusystem') ?></label>
+						<select name="currency" id="currency" >
+							<option value=""><?= __('select a currency','edusystem') ?></option>
+							<?php foreach ( get_woocommerce_currencies() as $code => $name ): ?>
+								<option value="<?php echo esc_attr($code); ?>"><?php echo esc_html($name . ' (' . $code . ')'); ?></option>
+							<?php endforeach; ?>
+						</select>
 					</div>
-				</div>
-
-				<div class="group-input" >
-					<label><?= __('Currency','edusystem') ?></label>
-					<select name="currency" id="currency" >
-						<option value=""><?= __('select a currency','edusystem') ?></option>
-						<?php foreach ( get_woocommerce_currencies() as $code => $name ): ?>
-							<option value="<?php echo esc_attr($code); ?>"><?php echo esc_html($name . ' (' . $code . ')'); ?></option>
-						<?php endforeach; ?>
-					</select>
 				</div>
 
 				<div class="group-input" >
