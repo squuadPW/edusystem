@@ -2377,4 +2377,8 @@ div:has(#accions-docummets) #accions-docummets .group div label select {
   div:has(#accions-docummets) #accions-docummets .group div label select {
     max-width: 100%;
   }
+}
+div:has(#accions-docummets) #accions-docummets .group-accion {
+  display: flex;
+  align-items: flex-end;
 }/*# sourceMappingURL=style.css.map */

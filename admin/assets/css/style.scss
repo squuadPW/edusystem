@@ -2661,6 +2661,11 @@ div:has( #accions-docummets )  {
                 }
             }
         }
+
+        .group-accion {
+            display: flex;
+            align-items: flex-end;
+        }
     }
 }
 
