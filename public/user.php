@@ -123,7 +123,9 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     $all_student_data_set = true;
     $student = $registration_data['student'] ?? [];
     foreach ($required_student_data as $key) {
-        if (!isset($student[$key]) || empty($student[$key])) {
+        // Considerar inválido solo si no está seteado o es cadena vacía.
+        // No usar `empty()` porque trata '0' como vacío.
+        if (!isset($student[$key]) || $student[$key] === '') {
             $all_student_data_set = false;
             break;
         }
@@ -135,7 +137,9 @@ function create_and_login_user_if_payment_successful($order_id, $old_status, $ne
     $all_program_data_set = true;
     $program = $registration_data['program'] ?? [];
     foreach ($required_program_data as $key) {
-        if (!isset($program[$key]) || empty($program[$key])) {
+        // Considerar inválido solo si no está seteado o es cadena vacía.
+        // No usar `empty()` porque trata '0' como vacío.
+        if (!isset($program[$key]) || $program[$key] === '') {
             $all_program_data_set = false;
             break;
         }

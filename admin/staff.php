@@ -41,7 +41,7 @@ function add_admin_form_staff_content()
             $first_name = isset($_POST['first_name']) ? sanitize_text_field($_POST['first_name']) : '';
             $last_name = isset($_POST['last_name']) ? sanitize_text_field($_POST['last_name']) : '';
             $display_name = isset($_POST['display_name']) ? sanitize_text_field($_POST['display_name']) : '';
-            $roles = isset($_POST['user_roles']) ? (array) $_POST['user_roles'] : [];
+            $rol = isset($_POST['user_rol']) ? $_POST['user_rol'] : '';
             $manager_user_id = isset($_POST['manager_user_id']) ? absint($_POST['manager_user_id']) : 0;
 
             // Pequeña validación básica
@@ -75,6 +75,7 @@ function add_admin_form_staff_content()
                 }
 
             } else {
+
                 // 3. Crear nuevo usuario
                 if (empty($user_login) || empty($password)) {
                     setcookie('message', __('Error: Nombre de usuario y contraseña son requeridos para crear un nuevo usuario.', 'edusystem'), time() + 10, '/');
@@ -89,21 +90,20 @@ function add_admin_form_staff_content()
                     wp_redirect(admin_url('admin.php?page=add_admin_form_staff_content'));
                     exit;
                 }
+
             }
 
             // 4. Manejo de roles (aplicable tanto a creación como actualización)
             $user_obj = new WP_User($user_id);
-            if (!empty($roles)) {
+            if (!empty($rol)) {
+                
                 // Eliminar roles existentes antes de asignar los nuevos para evitar duplicados o roles no deseados
-                $user_obj->set_roles([]);
-                foreach ($roles as $role) {
-                    $user_obj->add_role(sanitize_key($role)); // Usar add_role para añadir uno por uno
-                }
+                $user_obj->set_role($rol);
+                
             } else {
                 // Si no se envían roles, establecer un rol predeterminado o eliminar todos los roles
                 $user_obj->set_role(get_option('default_role'));
             }
-
 
             // 5. Actualización de meta-datos de usuario (consolidado)
             update_user_meta($user_id, 'first_name', $first_name);
@@ -118,7 +118,8 @@ function add_admin_form_staff_content()
                 $redirect_url = admin_url('admin.php?page=add_admin_form_staff_content&section_tab=staff_details&staff_id=' . $user_id);
             } else {
                 setcookie('message', __('Usuario creado exitosamente.', 'edusystem'), time() + 10, '/');
-            }
+            }   
+
             wp_redirect($redirect_url);
             exit;
         } else {
@@ -198,19 +199,36 @@ class TT_staff_all_List_Table extends WP_List_Table
         global $wpdb;
         $staff_array = [];
 
-        $args = array(
-            'role__in' => ROLES_OF_STAFF,
-        );
+        // Si viene un rol desde el select 
+        if (!empty($_POST['role'])) { 
+            $selected_role = sanitize_text_field($_POST['role']); 
+            $args['role'] = $selected_role; // filtra por un único rol 
+        } else {
+
+            global $wpdb;
+            $departments = $wpdb->get_col( "SELECT name FROM {$wpdb->prefix}departments" );
+            
+            $args = array(
+                'role__in' => $departments,
+            );
+        }
+
+        if( !empty($_POST['s']) ) {
+            $search_term = sanitize_text_field($_POST['s']);
+            $args['search'] = '*' . esc_attr($search_term) . '*';
+            $args['search_columns'] = array('user_login', 'user_email', 'display_name');
+
+        }
 
         $staffs = get_users($args);
 
         if ($staffs) {
-            foreach ($staffs as $staff) {
+            foreach ( $staffs as $staff ) {
                 $user_data = get_userdata($staff->ID);
                 $roles = $user_data->roles;
-                $roles = array_map(function ($value) {
+                /* $roles = array_map(function ($value) {
                     return str_replace("administrador", "manager", $value);
-                }, $roles);
+                }, $roles); */
 
                 array_push($staff_array, [
                     'id' => $staff->ID,
@@ -253,7 +271,6 @@ class TT_staff_all_List_Table extends WP_List_Table
 
     function prepare_items()
     {
-
         $data_staff = $this->get_staff();
 
         $per_page = 10;

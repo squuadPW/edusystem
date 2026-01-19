@@ -24,8 +24,6 @@ add_action('admin_enqueue_scripts', function () {
 
     // Fix: Only load on specific pages
     if ( $page === 'edusystem-logs' || $page === 'edusystem-logs-delete' ) {
-        error_log('Loading Edusystem Logs assets');
-        error_log(print_r($_GET, true));
         wp_enqueue_style('styles-log', EDUSYSTEM_URL.'/edusystem_log/assets/css/styles.css');
 
         wp_register_script('scripts-log',  EDUSYSTEM_URL.'/edusystem_log/assets/js/scripts.js', [], false, true);

@@ -22,7 +22,7 @@
 			</p>
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= __('Search','edusystem').':'; ?></label>
-				<select name="academic_period_cut" data-textoption="Select term to filter">
+				<select name="academic_period_cut" data-textoption="Select term to filter" data-initial-cut="<?= !empty($_GET['academic_period_cut']) ? esc_attr($_GET['academic_period_cut']) : ''; ?>">
 					<option value="" selected><?= __('Select term to filter', 'edusystem') ?></option>
 					<?php foreach ($periods_cuts as $key => $cut) { ?>
 						<option value="<?= $cut->code ?>" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == $cut->code) ? 'selected' : '') : ''; ?>><?= $cut->cut ?></option>

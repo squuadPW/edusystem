@@ -106,26 +106,38 @@
                                                 <label for="input_id"><b><?= __('Roles', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <?php
-                                                $user_data = get_userdata($staff->ID);
-                                                $roles_user = $user_data->roles;
-                                                $all_roles = wp_roles()->get_names();
+                                                    $user_data = get_userdata($staff->ID);
+                                                    $roles_user = $user_data->roles;
+                                                    $all_roles = wp_roles()->get_names();
+
+                                                    global $wpdb;
+                                                    $departments = $wpdb->get_col( "SELECT name FROM {$wpdb->prefix}departments" );
                                                 ?>
 
-                                                <select multiple="multiple" name="user_roles[]">
+                                                <select name="user_rol">
                                                     <?php foreach ($all_roles as $role => $label): ?>
-                                                        <option value="<?php echo $role; ?>" <?php echo in_array($role, $roles_user) ? 'selected' : ''; ?>><?php echo $label; ?></option>
+                                                        <?php if( in_array($role, $departments) ): ?>
+                                                            <option value="<?= $role; ?>" <?= in_array($role, $roles_user) ? 'selected' : ''; ?>><?= $label; ?></option>
+                                                        <?php endif; ?>
                                                     <?php endforeach; ?>
                                                 </select>
+
                                             <?php else: ?>
                                                 <label for="input_id"><b><?= __('Roles', 'edusystem'); ?></b><span
                                                         class="text-danger">*</span></label><br>
                                                 <?php
-                                                $roles = wp_roles()->get_names();
+                                                    $roles = wp_roles()->get_names();
+
+                                                    global $wpdb;
+                                                    $departments = $wpdb->get_col( "SELECT name FROM {$wpdb->prefix}departments" );
+
                                                 ?>
 
-                                                <select multiple="multiple" name="user_roles[]">
+                                                <select name="user_rol">
                                                     <?php foreach ($roles as $role => $label): ?>
-                                                        <option value="<?php echo $role; ?>"><?php echo $label; ?></option>
+                                                        <?php if( in_array($role, $departments) ): ?>
+                                                            <option value="<?= $role; ?>"><?= $label; ?></option>
+                                                        <?php endif; ?>
                                                     <?php endforeach; ?>
                                                 </select>
 

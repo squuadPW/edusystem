@@ -28,6 +28,7 @@
     <input type="hidden" name="max_age" id="max_age" value="<?= $max_age ?>">
     <input type="hidden" name="limit_age" id="limit_age" value="<?= $limit_age ?>">
     <input type="hidden" name="program_shortcode" id="program_shortcode" value="<?= $program ?>">
+    <input type="hidden" name="subprogram_shortcode" id="subprogram_shortcode" value="<?= $subprogram ?>">
     <input type="hidden" name="career_shortcode" id="career_shortcode" value="<?= $career ?>">
     <input type="hidden" name="mention_shortcode" id="mention_shortcode" value="<?= $mention ?>">
     <input type="hidden" name="plan_shortcode" id="plan_shortcode" value="<?= $plan ?>">

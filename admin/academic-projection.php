@@ -146,6 +146,33 @@ function add_admin_form_academic_projection_content()
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at DESC");
             $cuts = ['A', 'B', 'C', 'D', 'E'];
 
+            $load = load_current_cut_enrollment();
+            $code = $load['code'];
+            $cut = $load['cut'];
+            
+            // Calcular términos restantes basándose en la matriz JSON de la proyección
+            $terms_available_left = 0;
+            if ($projection && !empty($projection->matrix)) {
+                $matrix_json = json_decode($projection->matrix, true);
+                if (is_array($matrix_json)) {
+                    $found_index = -1;
+                    // Buscar el índice donde code_period y cut coinciden con el período/corte actual
+                    foreach ($matrix_json as $index => $term) {
+                        if (isset($term['code_period']) && isset($term['cut']) 
+                            && $term['code_period'] === $code && $term['cut'] === $cut) {
+                            $found_index = $index;
+                            break;
+                        }
+                    }
+                    
+                    // Si encontramos una coincidencia, contar los términos restantes (desde ese índice hasta el final)
+                    if ($found_index >= 0) {
+                        $terms_available_left = count($matrix_json) - $found_index;
+                    }
+                    // Si no se encuentra, terms_available_left queda en 0
+                }
+            }
+
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-student-matrix.php');
         }
     } else {
@@ -275,12 +302,12 @@ function add_admin_form_academic_projection_content()
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'get_moodle_notes') {
             $subject_id = $_POST['subject_id'];
-            $code = $_POST['code_current_cut'];
-            $cut = $_POST['cut_current_cut'];
+            $code = $_POST['code'];
+            $cut = $_POST['cut'];
 
             get_moodle_notes($subject_id, $code, $cut);
             setcookie('message', __('Successfully updated notes for the students.', 'edusystem'), time() + 3600, '/');
-            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content'));
+            wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollment_subject&academic_period=' . $code . '&academic_period_cut=' . $cut . '&subject_id=' . $subject_id . '&section=1'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'save_academic_projection') {
             global $wpdb;
@@ -782,11 +809,20 @@ function get_projection_by_student($student_id)
     return $projection;
 }
 
-function get_inscriptions_by_student($student_id)
+function get_inscriptions_by_student($student_id, $type = null)
 {
     global $wpdb;
     $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
-    $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student_id} AND code_subject IS NOT NULL AND code_subject <> ''");
+
+    $query = "SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = %d AND code_subject IS NOT NULL AND code_subject <> ''";
+    $params = [$student_id];
+
+    if ($type !== null) {
+        $query .= " AND type = %s";
+        $params[] = $type;
+    }
+
+    $inscriptions = $wpdb->get_results($wpdb->prepare($query, $params));
     return $inscriptions;
 }
 
@@ -868,7 +904,7 @@ function get_inscriptions_by_student_automatically_enrollment($subject_id, $stat
     // Iniciar la consulta base y el array de argumentos con los parámetros requeridos
     $query = "SELECT * FROM {$table_student_period_inscriptions} 
               WHERE (subject_id = %d OR code_subject = %s) 
-                AND status_id IN ({$status_ids_in_clause})";
+                AND status_id IN ({$status_ids_in_clause}) AND `type` = 'regular'";
 
     $args = [
         $subject_id,
@@ -1301,7 +1337,6 @@ function get_subject_details_optimized($subject_id)
 
 function get_literal_note($calification)
 {
-    // Accept numeric values (including '0' or '0.00'). Treat NULL or empty string as unknown.
     if ($calification === null || $calification === '') {
         return '-';
     }
@@ -1311,24 +1346,28 @@ function get_literal_note($calification)
     }
 
     $calification = (float) $calification;
-    $note = 'A+';
+    $note = 'F';
 
-    if ($calification >= 95) {
-        $note = 'A+';
+    if ($calification >= 94) {
+        $note = 'A';
     } elseif ($calification >= 90) {
         $note = 'A-';
-    } elseif ($calification >= 83) {
+    } elseif ($calification >= 87) {
         $note = 'B+';
+    } elseif ($calification >= 83) {
+        $note = 'B';
     } elseif ($calification >= 80) {
         $note = 'B-';
-    } elseif ($calification >= 73) {
+    } elseif ($calification >= 76) {
         $note = 'C+';
+    } elseif ($calification >= 73) {
+        $note = 'C';
     } elseif ($calification >= 70) {
         $note = 'C-';
     } elseif ($calification >= 67) {
         $note = 'D+';
     } elseif ($calification >= 60) {
-        $note = 'D-';
+        $note = 'D';
     } else {
         $note = 'F';
     }
@@ -1338,7 +1377,6 @@ function get_literal_note($calification)
 
 function get_calc_note($calification)
 {
-    // Accept numeric values (including '0' or '0.00'). Treat NULL or empty string as unknown.
     if ($calification === null || $calification === '') {
         return '-';
     }
@@ -1348,33 +1386,33 @@ function get_calc_note($calification)
     }
 
     $calification = (float) $calification;
-    $note = 0;
+    $note = 0.00;
 
-    if ($calification >= 95) {
+    if ($calification >= 94) {
         $note = 4.00;
     } elseif ($calification >= 90) {
-        $note = 3.75;
+        $note = 3.70;
     } elseif ($calification >= 87) {
-        $note = 3.50;
+        $note = 3.33;
     } elseif ($calification >= 83) {
         $note = 3.00;
     } elseif ($calification >= 80) {
-        $note = 2.75;
-    } elseif ($calification >= 77) {
-        $note = 2.50;
+        $note = 2.70;
+    } elseif ($calification >= 76) {
+        $note = 2.30;
     } elseif ($calification >= 73) {
         $note = 2.00;
     } elseif ($calification >= 70) {
-        $note = 1.75;
+        $note = 1.70;
     } elseif ($calification >= 67) {
-        $note = 1.50;
+        $note = 1.30;
     } elseif ($calification >= 60) {
         $note = 1.00;
     } else {
         $note = 0.00;
     }
 
-    return $note;
+    return number_format($note, 2, '.', '');
 }
 
 function get_count_moodle_pending()
@@ -2556,3 +2594,84 @@ function get_close_academic_offer()
 
 add_action('wp_ajax_nopriv_close_academic_offer', 'get_close_academic_offer');
 add_action('wp_ajax_close_academic_offer', 'get_close_academic_offer');
+
+function get_subjects_enrolled_table($student_id, $spanish = false): string
+{
+    global $wpdb;
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $table_students = $wpdb->prefix . 'students';
+    $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+
+    $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id = {$student_id}");
+    $projection = $wpdb->get_row("SELECT * FROM {$table_student_academic_projection} WHERE student_id={$student_id}");
+    $academic_ready = get_academic_ready($student_id);
+
+    if (!$projection || $academic_ready) {
+        return '';
+    }
+
+    $projection_obj = json_decode($projection->projection);
+    $filteredArray = array_filter($projection_obj, function ($item) {
+        return $item->this_cut == true && $item->type == 'regular';
+    });
+    $filteredArray = array_values($filteredArray);
+
+    $load = load_current_cut_enrollment();
+    $academic_period = $load['code'];
+    $cut = $load['cut'];
+
+    $labels = [
+        'code'     => $spanish ? 'CÓDIGO DEL CURSO' : 'COURSE CODE',
+        'subject'  => $spanish ? 'MATERIA' : 'SUBJECT',
+        'elective' => $spanish ? 'ELECTIVA SEGÚN SU SELECCIÓN' : 'ELECTIVE ACCORDING TO YOUR SELECTION'
+    ];
+
+    ob_start();
+
+    if (count($filteredArray) > 0): ?>
+        <table style="margin: 20px 0px; border-collapse: collapse; width: 100%;">
+            <thead>
+                <tr>
+                    <th colspan="4" style="border: 1px solid gray;"><strong><?php echo $labels['code']; ?></strong></th>
+                    <th colspan="8" style="border: 1px solid gray;"><strong><?php echo $labels['subject']; ?></strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($filteredArray as $val):
+                    $subject = $wpdb->get_row($wpdb->prepare("SELECT code_subject, name FROM {$table_school_subjects} WHERE id = %d", $val->subject_id)); 
+                    if ($subject): ?>
+                    <tr>
+                        <td colspan="4" style="border: 1px solid gray;"><?php echo esc_html($subject->code_subject); ?></td>
+                        <td colspan="8" style="border: 1px solid gray;"><?php echo esc_html($subject->name); ?></td>
+                    </tr>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+        <?php if ($student && $student->elective): ?>
+            <br>
+            <div><strong><?php echo $labels['elective']; ?></strong></div>
+        <?php endif; ?>
+    <?php else: 
+        $period_cut = $wpdb->get_row($wpdb->prepare("SELECT start_date, end_date FROM {$table_academic_periods_cut} WHERE code = %s AND cut = %s", $academic_period, $cut));
+        $date_start = DateTime::createFromFormat('Y-m-d', $period_cut->start_date);
+        $date_end = DateTime::createFromFormat('Y-m-d', $period_cut->end_date);
+        $start_date = $date_start->format('l, F j, Y');
+        $end_date = $date_end->format('l, F j, Y');
+
+        if ($spanish): ?>
+            <div style="margin: 20px 0px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9;">
+                <p>Durante el Periodo <?php echo $cut; ?> correspondiente al Año Escolar <?php echo $academic_period; ?>, no le será asignada carga académica ya que cuenta actualmente con el avance académico que corresponde a su año de ingreso.</p>
+                <p>Dado que el periodo académico <?php echo $cut; ?> inicia el <strong><?php echo translateDateToSpanish($start_date); ?></strong> y culmina el <strong><?php echo translateDateToSpanish($end_date); ?></strong>, le invitamos a estar atento a sus correos.</p>
+            </div>
+        <?php else: ?>
+            <div style="margin: 20px 0px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9;">
+                <p>During Period <?php echo $cut; ?> of the <?php echo $academic_period; ?> school year, no academic load will be assigned to you, as you currently have the academic progress corresponding to your year of admission.</p>
+                <p>Since Period <?php echo $cut; ?> starts on <strong><?php echo $start_date; ?></strong> and ends on <strong><?php echo $end_date; ?></strong>, we invite you to stay alert to your emails.</p>
+            </div>
+        <?php endif; ?>
+    <?php endif;
+
+    return ob_get_clean();
+}

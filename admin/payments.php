@@ -116,11 +116,11 @@ function add_admin_form_payments_content()
                         $order->update_meta_data('payment_approved_by', $current_user->ID);
                     }
 
-                    if ($cuote_credit) {
+                    if ( $cuote_credit ) {
 
                         // obtiene el toltal de los item de la orden sin los fee bancarios
                         $total_order_items = 0;
-                        foreach ($order->get_items() as $item) {
+                        foreach ( $order->get_items() as $item ) {
                             $total_order_items += $item->get_total(); // subtotal sin impuestos
                         }
 
@@ -165,14 +165,18 @@ function add_admin_form_payments_content()
                         $balance_id = $student_balance->id ?? 0;
 
                         // guarda el monto de mas en el balance
-                        if ($status_order != 'completed' && $total_order_items > $cuote_payment->amount_pay) {
+                        if ( $status_order != 'completed' && $total_order_items > $cuote_payment->amount_pay ) {
 
                             $amount_credit = $total_order_items - $cuote_payment->amount_pay;
 
                             // nuevos valores de la cuota
                             $new_amount = $total_order_items;
-
-                            $increased_portion = $amount_credit / $cuote_payment->amount;
+                            
+                            $increased_portion = 0;
+                            if( $cuote_payment->amount > 0 ) {
+                                $increased_portion = $amount_credit / $cuote_payment->amount;
+                            }
+                            
                             $new_original_amount_product = $cuote_payment->original_amount_product * (1 + $increased_portion);
 
                             // actualiza el monto de la original
@@ -182,15 +186,14 @@ function add_admin_form_payments_content()
                             ], ['id' => $cuote_payment->id]);
 
                             $balance = $balance + $amount_credit;
-                            if (!$student_balance) {
+                            if ( !$student_balance ) {
                                 $wpdb->insert(
-                                    $wpdb->prefix . 'student_balance',
+                                    $table_student_balance,
                                     [
                                         'student_id' => $student_id,
                                         'balance' => $balance ?? 0,
                                         'currency' => $currency,
                                     ],
-                                    ['%d', '%f']
                                 );
 
                                 $balance_id = $wpdb->insert_id;
@@ -198,7 +201,8 @@ function add_admin_form_payments_content()
 
                             // registra la cantidad de mas que fue acreditada
                             $order->update_meta_data('amount_credit', $amount_credit);
-                        } elseif ($total_order_items < $cuote_payment->amount_pay) {
+
+                        } elseif ( $total_order_items < $cuote_payment->amount_pay ) {
 
                             $less_amount = $cuote_payment->amount_pay - $total_order_items;
 
@@ -294,62 +298,66 @@ function add_admin_form_payments_content()
                             }
                         }
 
-                       /*  $recargar = false;
-                        if ($balance > 0) {
+                        $recargar = false;
+                        if ( $balance > 0 && $cuote_credit != 'new_cuote' ) {
 
-                            // nueva quota a pagar
-                            $payment_row = $wpdb->get_row("SELECT id, amount, original_amount_product, cuote  FROM {$table_student_payments} WHERE id = {$cuote_credit}");
-                            
-                            $balance = floatval($balance);
-                            $amount_payment = floatval($payment_row->amount);
-                            $amount_original = floatval($payment_row->original_amount_product);
-                            
-                            if ($balance < $amount_payment) {
+                            if( $cuote_credit != 'send_balance' ) {
+
+                                // nueva quota a pagar
+                                $payment_row = $wpdb->get_row("SELECT id, amount, original_amount_product, cuote  FROM {$table_student_payments} WHERE id = {$cuote_credit}");
                                 
-                                $new_amount = $amount_payment - $balance;
+                                $balance = floatval($balance);
+                                $amount_payment = floatval($payment_row->amount);
+                                $amount_original = floatval($payment_row->original_amount_product);
+                                
+                                if ($balance < $amount_payment) {
+                                    
+                                    $new_amount = $amount_payment - $balance;
 
-                                // Nuevo monto original proporcional
-                                $paid_portion = $balance / $amount_payment;
-                                $new_original_amount_product = $amount_original * (1 - $paid_portion);
-                                $wpdb->update($table_student_payments, [
-                                    'amount' => $new_amount,
-                                    'original_amount_product' => $new_original_amount_product,
-                                ], ['id' => $payment_row->id]);
+                                    // Nuevo monto original proporcional
+                                    $paid_portion = $balance / $amount_payment;
+                                    $new_original_amount_product = $amount_original * (1 - $paid_portion);
+                                    $wpdb->update($table_student_payments, [
+                                        'amount' => $new_amount,
+                                        'original_amount_product' => $new_original_amount_product,
+                                    ], ['id' => $payment_row->id]);
 
-                                $balance = 0;
-                            } elseif ($balance >= $amount_payment) {
+                                    $balance = 0;
+                                } elseif ($balance >= $amount_payment) {
 
-                                $balance = $balance - $amount_payment;
-                                $wpdb->delete($table_student_payments, array('id' => (int) $payment_row->id));
+                                    $balance = $balance - $amount_payment;
+                                    $wpdb->delete($table_student_payments, array('id' => (int) $payment_row->id));
 
-                                // actualiza el total de las cuotas si elimina una
-                                $wpdb->query($wpdb->prepare(
-                                    "UPDATE {$table_student_payments} 
-                                    SET num_cuotes = num_cuotes - 1
-                                    WHERE student_id = %d AND product_id = %d AND variation_id = %d AND num_cuotes > 1",
-                                    $cuote_payment->student_id,
-                                    $cuote_payment->product_id,
-                                    $cuote_payment->variation_id
-                                ));
+                                    // actualiza el total de las cuotas si elimina una
+                                    $wpdb->query($wpdb->prepare(
+                                        "UPDATE {$table_student_payments} 
+                                        SET num_cuotes = num_cuotes - 1
+                                        WHERE student_id = %d AND product_id = %d AND variation_id = %d AND num_cuotes > 1",
+                                        $cuote_payment->student_id,
+                                        $cuote_payment->product_id,
+                                        $cuote_payment->variation_id
+                                    ));
 
-                                // actualiza el numero de cuota si elimina una
-                                $wpdb->query($wpdb->prepare(
-                                    "UPDATE {$table_student_payments} 
-                                    SET cuote = cuote - 1
-                                    WHERE student_id = %d AND product_id = %d AND variation_id = %d AND cuote > %d ",
-                                    $cuote_payment->student_id,
-                                    $cuote_payment->product_id,
-                                    $cuote_payment->variation_id,
-                                    $payment_row->cuote,
-                                ));
+                                    // actualiza el numero de cuota si elimina una
+                                    $wpdb->query($wpdb->prepare(
+                                        "UPDATE {$table_student_payments} 
+                                        SET cuote = cuote - 1
+                                        WHERE student_id = %d AND product_id = %d AND variation_id = %d AND cuote > %d ",
+                                        $cuote_payment->student_id,
+                                        $cuote_payment->product_id,
+                                        $cuote_payment->variation_id,
+                                        $payment_row->cuote,
+                                    ));
 
-                                $recargar = true;
+                                    $recargar = true;
+                                }
+
                             }
 
                             $wpdb->update($table_student_balance, [
                                 'balance' => $balance,
                             ], ['id' => $balance_id]);
-                        } */
+                        }
                     }
                 }
 
@@ -372,7 +380,7 @@ function add_admin_form_payments_content()
             exit;
         } else if ($_GET['action'] == 'generate_payment') {
             $cancel = $_POST['cancel'];
-            if (isset($cancel) && $cancel == 1) {
+            if ( isset( $cancel ) && $cancel == 1 ) {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment'));
                 exit;
             }
@@ -1114,6 +1122,7 @@ function add_admin_form_payments_content()
 
             global $wpdb;
             $table_quota_rules = $wpdb->prefix . 'quota_rules';
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
 
             // Sanitizar 
             $program_id = $_POST['program_id'] ?? '';
@@ -1126,7 +1135,7 @@ function add_admin_form_payments_content()
 
                     $rule_id = $rule['id'] ?? '';
                     $is_active = $rule['is_active'] ? true : false;
-                    $name = $rule['name'];
+                    $name = $rule['name'] ? htmlspecialchars($rule['name']) : '';
                     $initial_payment = $rule['initial_payment'];
                     $initial_payment_sale = $rule['initial_payment_sale'] ?? null;
                     $final_payment = $rule['final_payment'];
@@ -1137,12 +1146,17 @@ function add_admin_form_payments_content()
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
                     $start_charging = $rule['start_charging'];
+                    $description = $rule['description'] ?? '';
                     $position = $rule['position'] ?? 0;
 
                     // si los valores de descuento son vacios los convierte a null
                     $initial_payment_sale = ($initial_payment_sale == "") ? null : $initial_payment_sale;
                     $final_payment_sale = ($final_payment_sale == "") ? null : $final_payment_sale;
                     $quote_price_sale = ($quote_price_sale == "") ? null : $quote_price_sale;
+
+                    $allowed_tags = wp_kses_allowed_html( 'post' );
+                    unset( $allowed_tags['script'] ); 
+                    $description = wp_kses( $description, $allowed_tags );
 
                     // crea o actualiza el sub programa
                     if (!empty($rule_id)) {
@@ -1161,6 +1175,7 @@ function add_admin_form_payments_content()
                             'type_frequency' => $type_frequency,
                             'start_charging' => $start_charging,
                             'position' => $position,
+                            'description' => $description,
                         ], ['id' => $rule_id]);
                     } else {
 
@@ -1179,8 +1194,56 @@ function add_admin_form_payments_content()
                             'type_frequency' => $type_frequency,
                             'start_charging' => $start_charging,
                             'position' => $position,
+                            'description' => $description,
                         ]);
+
+                        $rule_id = $wpdb->insert_id;
                     }
+
+                    foreach ( $rule['advanced_quota'] AS $advanced_quota ) {
+
+                        $advanced_id               = $advanced_quota['id'] ?? 0;
+                        $advanced_quota_id         = $advanced_quota['quota_id'] ?? $rule_id;
+                        $advanced_quote_price      = $advanced_quota['quote_price'];
+                        $advanced_quote_price_sale = $advanced_quota['quote_price_sale'] ?? null;
+                        $advanced_quotas_quantity  = $advanced_quota['quotas_quantity'];
+                        $advanced_frequency_value  = $advanced_quota['frequency_value'];
+                        $advanced_type_frequency   = $advanced_quota['type_frequency'];
+                        $advanced_position         = $advanced_quota['position'] ?? 0;
+
+                        $advanced_quote_price_sale = ($advanced_quote_price_sale == "") ? null : $advanced_quote_price_sale;
+                        
+                        if ( !empty($advanced_quota['id']) ) {
+                            
+                            $wpdb->update(
+                                $table_advanced_quota_rules,
+                                [
+                                    'quote_price'     => $advanced_quote_price,
+                                    'quote_price_sale'=> $advanced_quote_price_sale,
+                                    'quotas_quantity' => $advanced_quotas_quantity,
+                                    'frequency_value' => $advanced_frequency_value,
+                                    'type_frequency'  => $advanced_type_frequency,
+                                    'position'        => $advanced_position,
+                                ],
+                                ['id' => $advanced_quota['id']], 
+                            );
+                        } else {
+                            // Inserción
+                            $wpdb->insert(
+                                $table_advanced_quota_rules,
+                                [
+                                    'quota_id'        => $quota_id,
+                                    'quote_price'     => $quote_price,
+                                    'quote_price_sale'=> $quote_price_sale,
+                                    'quotas_quantity' => $quotas_quantity,
+                                    'frequency_value' => $frequency_value,
+                                    'type_frequency'  => $type_frequency,
+                                    'position'        => $position,
+                                ],
+                                ['%d','%f','%f','%d','%d','%s','%d'] // formatos
+                            );
+                        }
+                    }   
                 }
 
                 setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
@@ -1195,6 +1258,7 @@ function add_admin_form_payments_content()
 
             global $wpdb;
             $table_quota_rules = $wpdb->prefix . 'quota_rules';
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
 
             $rule_id = $_POST['quota_rule_id'];
 
@@ -1205,9 +1269,37 @@ function add_admin_form_payments_content()
             );
 
             if ($deleted) {
+
+                $deleted = $wpdb->delete(
+                    $table_advanced_quota_rules,
+                    ['quota_id' => $rule_id],
+                    ['%d']
+                );
+
                 setcookie('message', __('The quota rule has been deleted successfully.', 'edusystem'), time() + 10, '/');
             } else {
                 setcookie('message-error', __('The quota rule has not been deleted correctly.', 'edusystem'), time() + 10, '/');
+            }
+
+            wp_redirect($_SERVER['HTTP_REFERER']);
+            exit;
+        } else if ($_GET['action'] == 'delete_advanced_quota_rule') {
+
+            global $wpdb;
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
+
+            $rule_id = $_POST['advanced_quota_rule_id'];
+
+            $deleted = $wpdb->delete(
+                $table_advanced_quota_rules,
+                ['id' => $rule_id],
+                ['%d']
+            );
+
+            if ($deleted) {
+                setcookie('message', __('The advanced quota rule has been successfully removed.', 'edusystem'), time() + 10, '/');
+            } else {
+                setcookie('message-error', __('The advanced quota rule has not been deleted correctly.', 'edusystem'), time() + 10, '/');
             }
 
             wp_redirect($_SERVER['HTTP_REFERER']);
@@ -1218,6 +1310,9 @@ function add_admin_form_payments_content()
 
             global $wpdb;
             $table_students = $wpdb->prefix . 'students';
+            $table_quotas_rules = $wpdb->prefix . 'quota_rules';
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
+
             $students = $wpdb->get_var($wpdb->prepare(
                 "SELECT COUNT(*) FROM $table_students WHERE program_id LIKE %s",
                 $subprogram_id
@@ -1250,6 +1345,30 @@ function add_admin_form_payments_content()
                 ], ['identificator' => $program_id]);
 
                 if ($update) {
+
+                    $quota_ids = $wpdb->get_col( $wpdb->prepare( 
+                        "SELECT id 
+                        FROM $table_quotas_rules 
+                        WHERE program_id = %s", 
+                        $subprogram_id 
+                    ) ); 
+                    
+                    if (!empty($quota_ids)) { 
+                        
+                        $placeholders = implode(',', array_fill(0, count($quota_ids), '%d')); 
+                        $wpdb->query( $wpdb->prepare( 
+                            "DELETE FROM $table_advanced_quota_rules 
+                            WHERE quota_id IN ($placeholders)",
+                            ...$quota_ids 
+                        ) ); 
+                        
+                        $wpdb->query( $wpdb->prepare( 
+                            "DELETE FROM $table_quotas_rules 
+                            WHERE program_id = %s",
+                            $subprogram_id
+                        ) ); 
+                    }
+
                     setcookie('message', __('The subprogram has been successfully removed.', 'edusystem'), time() + 10, '/');
                 } else {
                     setcookie('message-error', __('The subprogram was not removed correctly.', 'edusystem'), time() + 10, '/');
@@ -1267,6 +1386,7 @@ function add_admin_form_payments_content()
             global $wpdb;
             $table_programs = $wpdb->prefix . 'programs';
             $table_quotas_rules = $wpdb->prefix . 'quota_rules';
+            $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
             $table_students = $wpdb->prefix . 'students';
 
             $program_data = $wpdb->get_row($wpdb->prepare(
@@ -1292,15 +1412,31 @@ function add_admin_form_payments_content()
                     ['%d']
                 );
 
-
                 if ($deleted) {
 
-                    // eliminar las reglas de los quotas
-                    $wpdb->query($wpdb->prepare(
-                        "DELETE FROM $table_quotas_rules WHERE program_id = %s OR program_id LIKE %s",
-                        $program_data->identificator,
-                        $program_data->identificator . '_%'
-                    ));
+                    $quota_ids = $wpdb->get_col( $wpdb->prepare( 
+                        "SELECT id FROM $table_quotas_rules 
+                        WHERE program_id = %s OR program_id LIKE %s", 
+                        $program_data->identificator, 
+                        $program_data->identificator . '_%' 
+                    ) ); 
+                    
+                    if ( !empty($quota_ids) ) { 
+
+                        $placeholders = implode(',', array_fill(0, count($quota_ids), '%d'));
+
+                        $wpdb->query( $wpdb->prepare( 
+                            "DELETE FROM $table_advanced_quota_rules 
+                            WHERE quota_id IN ($placeholders)", 
+                            ...$quota_ids 
+                        ) );
+
+                        $wpdb->query($wpdb->prepare(
+                            "DELETE FROM $table_quotas_rules WHERE program_id = %s OR program_id LIKE %s",
+                            $program_data->identificator,
+                            $program_data->identificator . '_%'
+                        ));
+                    }
 
                     setcookie('message', __('The subprogram has been successfully removed.', 'edusystem'), time() + 10, '/');
                 } else {
@@ -1551,6 +1687,54 @@ function add_admin_form_payments_content()
                 wp_redirect($_SERVER['HTTP_REFERER']);
             }
             exit;
+        }else if ($_GET['action'] == 'new_quota_student') {
+
+            $student_id = $_POST['student_id'] ?? 0;
+            $product_id = $_POST['product_id'] ?? 0;
+            $variation_id = $_POST['variation_id'] ?? 0;
+            $amount = $_POST['amount'] ?? 0.00;
+            $original_amount_product = $_POST['original_amount_product'] ?? 0.00;
+            $currency = $_POST['currency'] ?? get_woocommerce_currency();
+            $date_next_payment = $_POST['date_next_payment'];
+
+            if( $student_id ) {
+
+                $status_id = 0;
+                $total_amount = $amount;
+                $original_amount = $original_amount_product;
+                $discount_amount = 0.00;
+                $cuote = 1;
+                $num_cuotes = 1;
+                $type_payment = 1;
+
+                global $wpdb;
+                $wpdb->insert("{$wpdb->prefix}student_payments", [
+                    'status_id' => 0,
+                    'student_id' => $student_id,
+                    'order_id' => NULL,
+                    'product_id' => $product_id, 
+                    'variation_id' => $variation_id,
+                    'manager_id' => NULL,
+                    'institute_id' => NULL,
+                    'institute_fee' => 0.00,
+                    'alliances' => NULL,
+                    'currency' => $currency,
+                    'amount' => $amount, 
+                    'original_amount_product' => $original_amount_product,
+                    'total_amount' => $total_amount, // procesa
+                    'original_amount' => $original_amount, // procesa
+                    'discount_amount' => $discount_amount,  // procesar
+                    'type_payment' => $type_payment, // procesar
+                    'cuote' => $cuote, // procesar
+                    'num_cuotes' => $num_cuotes, // procesar
+                    'date_payment' => NULL,
+                    'date_next_payment' => $date_next_payment,
+                ]);
+            }
+
+            wp_redirect($_SERVER['REQUEST_URI']);
+            exit;
+
         }
     }
 
@@ -1794,7 +1978,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
         $columns = array(
             'payment_id' => __('Payment ID', 'edusystem'),
             'date' => __('Date', 'edusystem'),
-            'partner_name' => __('Parent', 'edusystem'),
+            // 'partner_name' => __('Parent', 'edusystem'),
             'student_name' => __('Student', 'edusystem'),
             'total' => __('Total', 'edusystem'),
             'payment_method' => __('Payment Method', 'edusystem'),
@@ -1847,7 +2031,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
                     echo esc_html( $payment_order->get_date_created()->date_i18n('m/d/Y H:i:s') );
                     echo '</td>';
 
-                    echo '<td class="partner_name column-partner_name"></td>';
+                    //echo '<td class="partner_name column-partner_name"></td>';
                     echo '<td class="student_name column-student_name" ></td>';
 
                     echo '<td class="total column-total" data-colname="Total"><b>' . wc_price( $payment['amount'], [ 'currency' => $payment_order->get_currency() ]  ) . '</b></td>';
@@ -2118,7 +2302,7 @@ class TT_all_payments_List_Table extends WP_List_Table
         $columns = array(
             'payment_id' => __('Payment ID', 'edusystem'),
             'date' => __('Date', 'edusystem'),
-            'partner_name' => __('Parent', 'edusystem'),
+            // 'partner_name' => __('Parent', 'edusystem'),
             'student_name' => __('Student', 'edusystem'),
             'total' => __('Total', 'edusystem'),
             'payment_method' => __('Payment Method', 'edusystem'),
@@ -3073,8 +3257,6 @@ function get_admission_fee($fee_id)
     return $fee ?? null;
 }
 
-
-
 add_action('wp_ajax_nopriv_generate_quote_public', 'generate_quote_public_callback');
 add_action('wp_ajax_generate_quote_public', 'generate_quote_public_callback');
 
@@ -3290,6 +3472,107 @@ function manage_payments_search_student_callback()
     // Send JSON response
     wp_send_json(['items' => $data]);
 }
-
 add_action('wp_ajax_nopriv_manage_payments_search_student', 'manage_payments_search_student_callback');
 add_action('wp_ajax_manage_payments_search_student', 'manage_payments_search_student_callback');
+
+/* 
+* obtener las reglas de cuotas avanzadas
+*/
+function get_advanced_quota_rules( $rule_id ) {
+    global $wpdb;
+    $table_advanced_quota_rules = $wpdb->prefix . 'advanced_quota_rules';
+    $results = $wpdb->get_results($wpdb->prepare(
+        "SELECT * 
+        FROM {$table_advanced_quota_rules} 
+        WHERE quota_id = %d", 
+        (int) $rule_id
+    ), ARRAY_A);
+
+    return $results;
+}
+
+/*
+ * Acción AJAX para colocar un pago como pendiente.
+ * Actualiza el status_id del pago a 0, registra en el log y, si existe, cambia el estado de la orden a 'pending' en WooCommerce.
+ */
+add_action('wp_ajax_nopriv_update_payment_to_pending', 'update_payment_to_pending');
+add_action('wp_ajax_update_payment_to_pending', 'update_payment_to_pending');
+function update_payment_to_pending() {
+    // Obtener y sanitizar el payment_id
+    $payment_id = intval($_POST['payment_id']); // Sanitizar como entero
+    $description = sanitize_text_field($_POST['description'] ?? ''); // Sanitizar descripción
+
+    if (!$payment_id) {
+        wp_send_json_error([
+            'message' => __('Invalid payment ID', 'edusystem'),
+            'updated' => false
+        ]);
+        return; 
+    }
+
+    global $wpdb;
+    wp_get_current_user(); // Obtener el usuario actual
+    global $current_user;
+
+    // Preparar y ejecutar la consulta para obtener datos del pago
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+    $payment = $wpdb->get_row(
+        $wpdb->prepare("SELECT student_id, order_id, amount, currency FROM {$table_student_payments} WHERE id = %d", $payment_id)
+    );
+
+    if (!$payment) {
+        wp_send_json_error([
+            'message' => __('Payment not found', 'edusystem'),
+            'updated' => false
+        ]);
+        return;
+    }
+
+    // Actualizar el status_id del pago a 0 (pendiente)
+    $updated = $wpdb->update(
+        $table_student_payments, 
+        [
+            'status_id' => 0,
+            'manager_id' => NULL,
+            'institute_id' => NULL,
+            'institute_fee' => 0.00,
+            'alliances' => NULL,
+            'date_payment' => NULL,
+        ], 
+        ['id' => $payment_id]
+    );
+    if ($updated === false) {
+        wp_send_json_error([
+            'message' => __('Error updating payment', 'edusystem'),
+            'updated' => false
+        ]);
+        return;
+    }
+
+    // Crear el registro del log
+    $table_student_payments_log = $wpdb->prefix . 'student_payments_log'; 
+    $wpdb->insert($table_student_payments_log, [
+        'student_id' => $payment->student_id,
+        'old_amount' => $payment->amount,
+        'new_amount' => $payment->amount,
+        'difference' => 0.00,
+        'currency' => $payment->currency,
+        'user_id' => $current_user->ID,
+        'description' => $description,
+    ]);
+
+    // Si existe order_id, actualizar el estado de la orden a 'pending' en WooCommerce
+    if ( $payment->order_id ) {
+        $order = wc_get_order($payment->order_id);
+        if ($order) {
+            $order->update_status('pending');
+        }
+    }
+
+    // Enviar respuesta JSON de éxito
+    wp_send_json_success([
+        'message' => __('Payment successfully updated to pending', 'edusystem'),
+        'payment_id' => $payment_id,
+        'updated' => true
+    ]);
+}

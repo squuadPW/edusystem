@@ -42,6 +42,8 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
                     <div class="inside">
                         <h1 style="text-align: center; margin-bottom: 30px;"><?= $student_full_name ?></h1>
+                        <p style="text-align: center; margin-bottom: 30px;"><?= sprintf(__('The student was created with %s terms available.', 'edusystem'), $student->terms_available); ?></p>
+                        <p style="text-align: center; margin-bottom: 30px;"><?= sprintf(__('Now, the student has %s terms left.', 'edusystem'), $terms_available_left); ?></p>
 
                         <?php if (!empty($matrix) && is_array($matrix)): ?>
 

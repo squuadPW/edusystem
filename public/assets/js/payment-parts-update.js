@@ -93,6 +93,237 @@ function payment_table(rule_data) {
     const headersAttr = table_payment.getAttribute("data-text_table_headers");
     let headers = [];
     try {
+        headers = headersAttr && headersAttr.trim() ? JSON.parse(headersAttr) : [];
+        if (!Array.isArray(headers)) headers = [];
+    } catch (e) {
+        headers = [];
+    }
+
+    // Crear tabla
+    const table = document.createElement("table");
+    table.setAttribute("data-rule_id", rule_data.id);
+    table.className = "payment-parts-table mt-5";
+
+    // Crear fila de encabezado
+    const header_row = document.createElement("tr");
+    // Crear encabezados
+    headers.forEach((header_text) => {
+        const th = document.createElement("th");
+        th.className = "payment-parts-table-header";
+        th.textContent = header_text;
+        header_row.appendChild(th);
+    });
+    table.appendChild(header_row);
+
+    // fecha para formato
+    const opcions_date = { year: "numeric", month: "long", day: "numeric" };
+    const discount_value = parseFloat(
+        document.getElementById("discount_value").value ?? 0
+    );
+
+    total = 0;
+    payments = []; // Crear filas de datos
+    let date = new Date(); // fecha de pago
+
+    // datos principales
+    type_frequency = rule_data.type_frequency;
+    frequency_value = parseInt(rule_data.frequency_value);
+    
+    // pago  inicial y cuota regular
+    initial_payment_sale = rule_data.initial_payment_sale ?? null;
+    initial_payment = ( initial_payment_sale != null ) ? initial_payment_sale : rule_data.initial_payment;
+    initial_payment = parseFloat(initial_payment);
+
+    quote_price_sale = rule_data.quote_price_sale ?? null;
+    quote_price = ( quote_price_sale != null ) ? quote_price_sale : rule_data.quote_price;
+    quote_price = parseFloat(quote_price);
+
+    quotas_quantity = rule_data.quotas_quantity;
+    if ( initial_payment > 0 ) quotas_quantity++;
+
+    if ( discount_value > 0 ) {
+        initial_payment = initial_payment - ( (initial_payment * discount_value) / 100 );
+        quote_price = quote_price - ( quote_price * discount_value) / 100;
+    }
+
+    // si todos los valores son 0 no crea la tabla
+    if( initial_payment == 0 && quote_price == 0 ) return;
+
+    // cuotas y pago inicial
+    for ( let i = 0; i < quotas_quantity; i++ ) {
+
+        price = 0;
+        price = ( i == 0 && initial_payment > 0 ) ? initial_payment : quote_price;
+        if( price == 0 ) continue; 
+
+        if( i > 0 ) {
+            
+            date.setFullYear( date.getFullYear() + 
+                (type_frequency == "year" ? frequency_value : 0)
+            );
+            date.setMonth( date.getMonth() + 
+                (type_frequency == "month" ? frequency_value : 0)
+            );
+            date.setDate( date.getDate() + 
+                (type_frequency == "day" ? frequency_value : 0)
+            );
+        }
+        
+        payments.push({ 
+            price: price, 
+            date: new Date(date)
+        });
+        
+        total += price;
+    }
+
+    // cuotas avanzadas
+    rule_data.advanced_rules.forEach( advanced_rule => {
+        
+        quote_price_sale = advanced_rule.quote_price_sale ?? null;
+        quote_price = ( quote_price_sale != null ) ? quote_price_sale : advanced_rule.quote_price;
+        quote_price = parseFloat(quote_price);
+
+        if ( discount_value > 0 ) {
+            quote_price = quote_price - ( quote_price * discount_value) / 100;
+        }
+
+        // si todos los valores son 0 no inserta el pago
+        if( quote_price == 0 ) return;
+
+        type_frequency = advanced_rule.type_frequency;
+        frequency_value = parseInt(advanced_rule.frequency_value);
+
+        for ( let i = 0; i < advanced_rule.quotas_quantity; i++ ) {
+
+            date.setFullYear( date.getFullYear() + 
+                (type_frequency == "year" ? frequency_value : 0)
+            );
+            date.setMonth( date.getMonth() + 
+                (type_frequency == "month" ? frequency_value : 0)
+            );
+            date.setDate( date.getDate() + 
+                (type_frequency == "day" ? frequency_value : 0)
+            );
+            
+            payments.push({ 
+                price: quote_price, 
+                date: new Date(date)
+            });
+            
+            total += quote_price;
+        }
+    });
+
+    final_payment_sale = rule_data.final_payment_sale ?? null;
+    final_payment = ( final_payment_sale != null ) ? final_payment_sale : rule_data.final_payment;
+    final_payment = parseFloat(final_payment);
+
+    if( final_payment > 0 ) {
+
+        date.setFullYear( date.getFullYear() + 
+            (type_frequency == "year" ? frequency_value : 0)
+        );
+        date.setMonth( date.getMonth() + 
+            (type_frequency == "month" ? frequency_value : 0)
+        );
+        date.setDate( date.getDate() + 
+            (type_frequency == "day" ? frequency_value : 0)
+        );
+
+        if ( discount_value > 0 ) {
+            final_payment = final_payment - ( (final_payment * discount_value) / 100 );
+        }
+
+        payments.push({ 
+            price: final_payment, 
+            date: new Date(date)
+        });
+
+        total += final_payment;
+    }
+
+    payments.forEach( ( payment, i ) => {
+
+        // acomoda el precio para que solo tome 2 decimales
+        price = parseFloat( parseFloat(payment.price).toFixed(2) );
+
+        const row = document.createElement("tr");
+
+        // Crear celdas
+        const payment_cell = document.createElement("td");
+        payment_cell.className = "payment-parts-table-data";
+        payment_cell.textContent = (i + 1).toString();
+        row.appendChild(payment_cell);
+
+        const lang = document.documentElement.lang || "en-US";
+
+        const date_cell = document.createElement("td");
+        date_cell.className = "payment-parts-table-data";
+        date_cell.textContent = new Intl.DateTimeFormat( lang, opcions_date).format(payment.date) + (i === 0 ? " (Current)" : "");
+        row.appendChild(date_cell);
+
+        const amount_cell = document.createElement("td");
+        amount_cell.className = "payment-parts-table-data";
+
+        amount_cell.textContent = format_currency(payment.price, currency, symbol, language );
+        row.appendChild(amount_cell);
+
+        // Añadir fila a la tabla
+        table.appendChild(row);
+        
+    });
+
+    // Fila de total
+    const total_row = document.createElement("tr");
+    const total_header = document.createElement("th");
+    total_header.className = "payment-parts-table-header text-end";
+    total_header.colSpan = 3;
+    total_header.textContent = text_total;
+    total_row.appendChild(total_header);
+    table.appendChild(total_row);
+
+    const total_payment_row = document.createElement("tr");
+    total_payment_row.className = "payment-parts-table-row";
+
+    const total_payment_cell = document.createElement("td");
+    total_payment_cell.className = "payment-parts-table-data text-end";
+    total_payment_cell.colSpan = 3;
+
+    // Asegúrate de que 'total' sea un número antes de formatearlo
+    total_payment_cell.textContent = format_currency(parseFloat(total), currency, symbol, language );
+
+    total_payment_row.appendChild(total_payment_cell);
+    table.appendChild(total_payment_row);
+
+    // Insertar tabla en el contenedor
+    table_payment.appendChild(table);
+
+    description_container = document.getElementById("quota-description-container");
+    if( description_container ) description_container.innerHTML = rule_data.description ?? '';
+    
+}
+
+
+/* function payment_table(rule_data) {
+    
+    table_payment = document.getElementById("table-payment");
+    table_payment.innerHTML = "";
+
+    const currencyAttr = table_payment.getAttribute("data-currency");
+    const currency = (currencyAttr && currencyAttr.trim()) || "USD";
+    const languageAttr = table_payment.getAttribute("data-language");
+    const language = (languageAttr && languageAttr.trim()) || "en";
+
+    const symbolAttr = table_payment.getAttribute("data-symbol");
+    const symbol = (symbolAttr && symbolAttr.trim()) || "$";
+
+    const textTotalAttr = table_payment.getAttribute("data-text_total");
+    const text_total = (textTotalAttr && textTotalAttr.trim()) || "Total";
+
+    const headersAttr = table_payment.getAttribute("data-text_table_headers");
+    let headers = [];
+    try {
       headers = headersAttr && headersAttr.trim() ? JSON.parse(headersAttr) : [];
       if (!Array.isArray(headers)) headers = [];
     } catch (e) {
@@ -234,7 +465,8 @@ function payment_table(rule_data) {
 
     // Insertar tabla en el contenedor
     table_payment.appendChild(table);
-}
+} */
+
 
 function format_currency(value, currency, symbol = "$", language = "en") {
 

@@ -1300,6 +1300,20 @@ h2 {
   margin-top: 0px;
 }
 
+#template-advanced-quota {
+  display: none;
+}
+
+.advanced-quotas-container .acction-buton {
+  display: flex;
+  justify-content: end;
+  margin-bottom: 10px;
+}
+.advanced-quotas-container .group-advanced-quota {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+  margin-bottom: 15px;
+}
+
 .space-offer {
   flex: 1;
   font-weight: 400;
@@ -2343,42 +2357,115 @@ tr.child-order-row .view_details {
   padding-left: 3em;
 }
 
-div:has(#accions-docummets) {
-  height: auto;
-}
-div:has(#accions-docummets) #accions-docummets {
+#accions-docummets {
   display: flex;
+  justify-content: flex-end;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 5px;
 }
-div:has(#accions-docummets) #accions-docummets .group h3 {
+#accions-docummets .group h3 {
   margin: 0.5em 0;
 }
-div:has(#accions-docummets) #accions-docummets .group div {
+#accions-docummets .group div {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px;
 }
-div:has(#accions-docummets) #accions-docummets .group div label {
+#accions-docummets .group div label {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 5px;
 }
-div:has(#accions-docummets) #accions-docummets .group div label select {
+#accions-docummets .group div label select {
   max-width: 185px;
 }
 @media (max-width: 426px) {
-  div:has(#accions-docummets) #accions-docummets .group div label {
+  #accions-docummets .group div label {
     width: 100%;
   }
-  div:has(#accions-docummets) #accions-docummets .group div label select {
+  #accions-docummets .group div label select {
     max-width: 100%;
   }
 }
-div:has(#accions-docummets) #accions-docummets .group-accion {
+#accions-docummets .group-accion {
   display: flex;
   align-items: flex-end;
+}
+
+.status-student-datails {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 0px 10px 0px;
+}
+.status-student-datails label {
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 8px;
+  background: #dfdedd;
+  color: #000000;
+}
+
+#table-products .program-list-document {
+  margin: 0;
+  padding: 0;
+}
+#table-products .program-list-document .program-item-document {
+  margin-bottom: 10px;
+}
+#table-products .program-list-document .program-item-document .career-list-document {
+  margin-left: 20px;
+}
+#table-products .program-list-document .program-item-document .career-list-document .career-item-document {
+  margin-bottom: 6px;
+}
+#table-products .program-list-document .program-item-document .career-list-document .career-item-document .mention-list-document {
+  margin-left: 20px;
+}
+#table-products .program-list-document .program-item-document .career-list-document .career-item-document .mention-list-document .mention-item-document {
+  margin-bottom: 4px;
+}
+
+.filters-document form {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.filters-document form .group-input {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 500px) {
+  .filters-document form .group-input {
+    width: 100%;
+  }
+}
+
+#modalNewQuota .modal-body {
+  margin: 10px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#modalNewQuota .modal-body .seccion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+#modalNewQuota .modal-body .seccion .group-input {
+  flex: 1;
+}
+#modalNewQuota .modal-body .group-input {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
 }/*# sourceMappingURL=style.css.map */

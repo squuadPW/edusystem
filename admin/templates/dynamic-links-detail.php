@@ -1,3 +1,8 @@
+<script>
+    window.initialPlansData = <?= json_encode($payment_plans); ?>;
+    window.selectedSubprogramId = "<?= isset($dynamic_link->subprogram_identificator) ? $dynamic_link->subprogram_identificator : ''; ?>";
+</script>
+
 <div class="wrap">
     <?php if (isset($dynamic_link) && !empty($dynamic_link)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Payment link Details', 'edusystem'); ?></h2>
@@ -87,9 +92,64 @@
                                         <select name="payment_plan_identificator" id="payment-plan-identificator" autocomplete="off" required>
                                             <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
                                             <?php foreach ($payment_plans as $payment_plan): ?>
-                                                <option value="<?= $payment_plan->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan->identificator) ? 'selected' : ''; ?>><?= $payment_plan->name; ?> (<?= $payment_plan->description; ?>)</option>
+                                                <option value="<?= $payment_plan['plan']->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan['plan']->identificator) ? 'selected' : ''; ?>><?= $payment_plan['plan']->name; ?> (<?= $payment_plan['plan']->description; ?>) - <?= $payment_plan['plan']->total_price ? ($payment_plan['plan']->currency ? $payment_plan['plan']->currency : "$") . "" . $payment_plan['plan']->total_price : "0"; ?></option>
                                             <?php endforeach; ?>
                                         </select>
+                                    </div>
+
+                                    <div style="font-weight:400; display: none;" class="space-offer" id="subprogram-element">
+                                        <label for="subprogram_id"><b><?= __('Subprogram / Level', 'edusystem'); ?></b></label>
+                                        <select name="subprogram_id" id="subprogram-id" autocomplete="off">
+                                            <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                                        </select>
+                                    </div>
+
+                                    <div style="font-weight:400; <?= empty($payment_plans) ? 'display: none;' : ''; ?>" class="space-offer" id="details-payment-plan-element">
+                                        <label for="details-payment-plan"><b><?= __('Details', 'edusystem'); ?></b></label>
+                                        <div id="details-payment-plan">
+                                            <?php foreach ($payment_plans as $payment_plan): ?>
+                                                <?php if ($payment_plan['plan']->identificator == $dynamic_link->payment_plan_identificator) {
+                                                    $currency = $payment_plan['plan']->currency ? $payment_plan['plan']->currency : get_woocommerce_currency_symbol();
+                                                ?>
+                                                    <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                                                        <p><strong><?= __('Name:', 'edusystem') ?></strong> <?= $payment_plan['plan']->name; ?></p>
+                                                        <p><strong><?= __('Description:', 'edusystem') ?></strong> <?= $payment_plan['plan']->description; ?></p>
+                                                        <p><strong><?= __('Regular Price:', 'edusystem') ?></strong> <?= $currency . $payment_plan['plan']->total_price; ?></p>
+                                                    </div>
+
+                                                    <label><b><?= __('Fees', 'edusystem'); ?></b></label>
+                                                    <?php foreach ($payment_plan['fees'] as $fee): ?>
+                                                        <p style="margin-left:10px; font-size: 0.9em;">• <?= $fee->name; ?> - <?= $fee->currency ? $fee->currency : $currency . $fee->price; ?></p>
+                                                    <?php endforeach; ?>
+
+                                                    <label style="margin-top:10px; display:block;"><b><?= __('Payment Options', 'edusystem'); ?></b></label>
+                                                    <?php foreach ($payment_plan['quote_rules'] as $quote):
+                                                        $qty = (int)$quote->quotas_quantity;
+                                                        $freq_val = (int)$quote->frequency_value;
+
+                                                        // Lógica para textos limpios
+                                                        $freq_text = ($freq_val === 0 || $qty === 1)
+                                                            ? __('One-time payment', 'edusystem')
+                                                            : sprintf(__('Every %d %s%s', 'edusystem'), $freq_val, $quote->type_frequency, ($freq_val > 1 ? 's' : ''));
+
+                                                        $installment_label = ($qty === 1) ? __('Single installment', 'edusystem') : $qty . ' ' . __('Installments', 'edusystem');
+                                                    ?>
+                                                        <div style="background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px; margin: 10px 0;">
+                                                            <div style="margin-bottom: 5px;"><strong><?= esc_html($quote->name); ?></strong> (<?= $installment_label; ?>)</div>
+                                                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; font-size: 11px; line-height: 1.2;">
+                                                                <div><strong><?= __('Frequency:', 'edusystem') ?></strong> <?= $freq_text; ?></div>
+                                                                <div><strong><?= __('Starts:', 'edusystem') ?></strong> <?= esc_html($quote->start_charging); ?></div>
+                                                                <div><strong><?= __('Initial:', 'edusystem') ?></strong> <?= $currency . $quote->initial_payment_sale ?? 0 ?> <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->initial_payment ?></span></div>
+                                                                <?php if ($qty > 1): ?>
+                                                                    <div><strong><?= __('Installment:', 'edusystem') ?></strong> <?= $currency . $quote->quote_price_sale ?> <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->quote_price ?></span></div>
+                                                                <?php endif; ?>
+                                                                <div><strong><?= __('Final:', 'edusystem') ?></strong> <?= $currency . $quote->final_payment_sale ?? 0 ?> <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->final_payment ?></span></div>
+                                                            </div>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                <?php } ?>
+                                            <?php endforeach; ?>
+                                        </div>
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
@@ -126,15 +186,15 @@
                             </div>
 
                             <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
-                                <?php if ($dynamic_link) { 
-                                        $dynamic_link_token = isset($dynamic_link->link) ? $dynamic_link->link : '';
-                                        $dynamic_link_url = site_url('/registration-link?token=' . $dynamic_link_token);
-                                    ?>
+                                <?php if ($dynamic_link) {
+                                    $dynamic_link_token = isset($dynamic_link->link) ? $dynamic_link->link : '';
+                                    $dynamic_link_url = site_url('/registration-link?token=' . $dynamic_link_token);
+                                ?>
                                     <button type="button" onclick="copyToClipboard('<?= $dynamic_link_url ?>', this)" class="button button-secondary"><?= __('Copy link', 'edusystem'); ?></button>
                                 <?php } ?>
                                 <?php if ($dynamic_link && $dynamic_link->email) { ?>
                                     <button onclick='return confirm("Are you sure?");' type="submit"
-                                    class="button button-success" name="save_and_send_email" value="1"><?= __('Save and send email', 'edusystem'); ?></button>
+                                        class="button button-success" name="save_and_send_email" value="1"><?= __('Save and send email', 'edusystem'); ?></button>
                                 <?php } ?>
                                 <button type="submit"
                                     class="button button-primary" name="just_save" value="1"><?= __('Just save', 'edusystem'); ?></button>
@@ -168,7 +228,7 @@
                                         <tbody>
                                             <?php foreach ($dynamic_links_email_log as $log): ?>
                                                 <?php
-                                                    $send_by_user = get_user_by('id', $log->created_by);
+                                                $send_by_user = get_user_by('id', $log->created_by);
                                                 ?>
                                                 <tr>
                                                     <td><?= esc_html(isset($log->created_at) ? $log->created_at : ''); ?></td>

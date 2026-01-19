@@ -67,7 +67,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="text" name="rules[<?= $i ?>][name]" value="<?= $rule['name'] ?>" required>
+                                                        <input type="text" name="rules[<?= $i ?>][name]" value="<?= htmlspecialchars_decode( $rule['name'] ?? '' ) ?>" required>
                                                     </div>
                                                 </div>
 
@@ -179,6 +179,96 @@
 
                                                 </div>
 
+                                                <div class="advanced-quotas-container seccion-input" >
+
+                                                    <label class="seccion-title" >
+                                                        <b><?= __('Advanced Quota Rules', 'edusystem'); ?></b>
+                                                    </label>
+
+                                                    <div class="acction-buton" >
+                                                        <button type="button" class="new-advanced-quota-rule button button-secondary" >
+                                                            <?= __('New Advanced Quota', 'edusystem'); ?>
+                                                        </button>
+                                                    </div>
+
+                                                    <?php $advanced_quotas = get_advanced_quota_rules( $rule['id'] ) ?? [] ?>
+                                                    <div class="advanced-quota-rule" data-rules_parent="<?= $i ?>" data-advanced_rules_count="<?= count( $advanced_quotas ) ?>" >
+                                                        
+                                                        <?php foreach( $advanced_quotas as $j => $advanced_quota ): ?>
+
+                                                            <div class="group-advanced-quota" >
+
+                                                                <input type="hidden" name="rules[<?= $i ?>][advanced_quota][<?= $j ?>][id]" value="<?= $advanced_quota['id'] ?? 0 ?>" >
+
+                                                                <div class="group-input" >
+
+                                                                    <div class="space-offer">
+
+                                                                        <label for="rules[<?= $i ?>][advanced_quota][<?= $j ?>][quote_price]">
+                                                                            <b><?= __('Regular price', 'edusystem'); ?></b>
+                                                                            <span class="text-danger">*</span>
+                                                                        </label>
+
+                                                                        <input type="number" name="rules[<?= $i ?>][advanced_quota][<?= $j ?>][quote_price]" value="<?= $advanced_quota['quote_price'] ?? 0 ?>" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" required >
+                                                                    </div>
+
+                                                                    <div class="space-offer">
+
+                                                                        <label for="rules[<?= $i ?>][advanced_quota][<?= $j ?>][quote_price_sale]">
+                                                                            <b><?= __('Sale price', 'edusystem'); ?></b>
+                                                                            <span class="text-danger">*</span>
+                                                                        </label>
+                                                                        <input type="number" name="rules[<?= $i ?>][advanced_quota][<?= $j ?>][quote_price_sale]" value="<?= $advanced_quota['quote_price_sale'] ?? '' ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" >
+                                                                    </div>
+
+                                                                </div>
+
+                                                                <div class="group-input" >
+
+                                                                    <div class="space-offer">
+                                                                        <label for="rules[<?= $i ?>][advanced_quota][<?= $j ?>][quotas_quantity]">
+                                                                            <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
+                                                                            <span class="text-danger">*</span>
+                                                                        </label>
+
+                                                                        <input type="number" name="rules[<?= $i ?>][advanced_quota][<?= $j ?>][quotas_quantity]" value="<?= $advanced_quota['quotas_quantity'] ?? 0 ?>" min="0" step="1" onkeydown="return !['.', '-', 'e'].includes(event.key)" required >
+                                                                    </div>
+
+                                                                    <div class="space-offer">
+
+                                                                        <label for="rules[<?= $i ?>][advanced_quota][<?= $j ?>][frequency_value]">
+                                                                            <b><?= __('Frequency', 'edusystem'); ?></b>
+                                                                            <span class="text-danger">*</span>
+                                                                        </label>
+
+                                                                        <div class="input-frequency" >
+                                                                            <input type="number" name="rules[<?= $i ?>][advanced_quota][<?= $j ?>][frequency_value]" value="<?= $advanced_quota['frequency_value'] ?? 0 ?>" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" required >
+
+                                                                            <select name="rules[<?= $i ?>][advanced_quota][<?= $j ?>][type_frequency]">
+                                                                                <option value="" <?= selected('', $advanced_quota['type_frequency'] ?? '') ?> ><?= __('Frequency type','edusystem') ?></option>
+                                                                                <option value="day" <?= selected('day', $advanced_quota['type_frequency'] ?? '') ?> ><?= __('Day','edusystem') ?></option>
+                                                                                <option value="month" <?= selected('month', $advanced_quota['type_frequency'] ?? '') ?>><?= __('Month','edusystem') ?></option>
+                                                                                <option value="year" <?= selected('year', $advanced_quota['type_frequency'] ?? '') ?> ><?= __('Year','edusystem') ?></option>
+                                                                            </select>
+
+                                                                        </div>
+                                                                                        
+                                                                    </div>
+                                                                                    
+                                                                </div>
+
+                                                                <div class="container-button" >
+                                                                    <button type="button" class="button button-secondary" data-advanced_rule_id="<?= $advanced_quota['id'] ?? 0 ?>" onclick="modal_delete_advanced_quota_rule_js ( this )" ><?= __('Delete', 'edusystem'); ?></button>
+                                                                </div>
+
+                                                            </div>
+
+                                                        <?php endforeach; ?>
+                                                        
+                                                    </div>
+
+                                                </div>
+
                                                 <div class="seccion-input" >
 
                                                     <label class="seccion-title" >
@@ -209,8 +299,20 @@
 
                                                 </div>
 
+                                                <div class="seccion-input" >
+
+                                                    <label for="rules[<?= $i ?>][description]" class="seccion-title" >
+                                                        <b><?= __('Description', 'edusystem'); ?></b>
+                                                    </label>
+
+                                                    <div class="group-input" >
+                                                        <textarea name="rules[<?= $i ?>][description]"  style="width: 100%; margin-bottom: 10px;" ><?= htmlspecialchars_decode( $rule['description'], ENT_QUOTES ) ?></textarea>
+                                                    </div>
+
+                                                </div>
+
                                                 <div class="container-button" >
-                                                    <button type="button" data-rule_id="<?= $rule['id'] ?>" class="button button-secondary " onclick="modal_delete_quota_rule_js( this )" ><?= __('Delete', 'edusystem'); ?></button>
+                                                    <button type="button" data-rule_id="<?= $rule['id'] ?>" class="button button-primary " onclick="modal_delete_quota_rule_js( this )" ><?= __('Delete', 'edusystem'); ?></button>
                                                 </div>
 
                                             </div>
@@ -348,6 +450,22 @@
 
                                         </div>
 
+                                        <div class="advanced-quotas-container seccion-input" >
+
+                                            <label class="seccion-title" >
+                                                <b><?= __('Advanced Quota Rules', 'edusystem'); ?></b>
+                                            </label>
+
+                                            <div class="acction-buton" >
+                                                <button type="button" class="new-advanced-quota-rule button button-secondary" >
+                                                    <?= __('New Advanced Quota', 'edusystem'); ?>
+                                                </button>
+                                            </div>
+
+                                            <div class="advanced-quota-rule" data-rules_parent data-advanced_rules_count="0" ></div>
+
+                                        </div>
+
                                         <div class="seccion-input" >
 
                                             <label class="seccion-title" >
@@ -376,6 +494,82 @@
 
                                             </div>
 
+                                        </div>
+
+                                        <div class="seccion-input" >
+
+                                            <label for="rules[][description]" class="seccion-title" >
+                                                <b><?= __('Description', 'edusystem'); ?></b>
+                                            </label>
+
+                                            <div class="group-input" >
+                                                <textarea name="rules[][description]" disabled style="width: 100%; margin-bottom: 10px;" ></textarea>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="container-button" >
+                                            <button type="button" class="button button-primary remove-rule-button"><?= __('Delete', 'edusystem'); ?></button>
+                                        </div>
+
+                                    </div>
+
+                                    <div id="template-advanced-quota" class="group-advanced-quota" >
+                                        <div class="group-input" >
+
+                                            <div class="space-offer">
+
+                                                <label for="rules[][advanced_quota][][quote_price]">
+                                                    <b><?= __('Regular price', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+
+                                                <input type="number" name="rules[][advanced_quota][][quote_price]" value="" step="0.01" min="0" onkeydown="return !['-', 'e'].includes(event.key)" required disabled >
+                                            </div>
+
+                                            <div class="space-offer">
+
+                                                <label for="rules[][advanced_quota][][quote_price_sale]">
+                                                    <b><?= __('Sale price', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+                                                <input type="number" name="rules[][advanced_quota][][quote_price_sale]" value="" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" disabled >
+                                            </div>
+
+                                        </div>
+
+                                        <div class="group-input" >
+
+                                            <div class="space-offer">
+                                                <label for="rules[][advanced_quota][][quotas_quantity]">
+                                                    <b><?= __('Quotas quantity ', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+
+                                                <input type="number" name="rules[][advanced_quota][][quotas_quantity]" value="" min="0" step="1" onkeydown="return !['.', '-', 'e'].includes(event.key)" required disabled>
+                                            </div>
+
+                                            <div class="space-offer">
+
+                                                <label for="rules[][advanced_quota][][frequency_value]">
+                                                    <b><?= __('Frequency', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
+                                                </label>
+
+                                                <div class="input-frequency" >
+                                                    <input type="number" name="rules[][advanced_quota][][frequency_value]" value="" step="1" min="0" onkeydown="return !['.', '-', 'e'].includes(event.key)" required disabled>
+
+                                                    <select name="rules[][advanced_quota][][type_frequency]" disabled>
+                                                        <option value=""><?= __('Frequency type','edusystem') ?></option>
+                                                        <option value="day"><?= __('Day','edusystem') ?></option>
+                                                        <option value="month"><?= __('Month','edusystem') ?></option>
+                                                        <option value="year"><?= __('Year','edusystem') ?></option>
+                                                    </select>
+
+                                                </div>
+                                                                
+                                            </div>
+                                                            
                                         </div>
 
                                         <div class="container-button" >
@@ -413,6 +607,9 @@
     </div>
 </div>
 
-<?php include(plugin_dir_path(__FILE__).'modal-delete-quota-rule.php'); ?>
+<?php 
+    include(plugin_dir_path(__FILE__).'modal-delete-quota-rule.php'); 
+    include(plugin_dir_path(__FILE__).'modal-delete-advanced-quota-rule.php'); 
+?>
 
 

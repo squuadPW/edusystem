@@ -71,6 +71,10 @@ function aes_scripts_admin()
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_payments_content') {
         wp_enqueue_script('student-payment', plugins_url('edusystem') . '/admin/assets/js/payment.js', array('jquery'), $version, true);
+
+        wp_localize_script('student-payment', 'vars', [
+            'url_ajax' => admin_url('admin-ajax.php'),
+        ]);
     }
 
     if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_pensum_content' && $_GET['section_tab'] == 'pensum_details') {
@@ -284,10 +288,15 @@ function aes_scripts_admin()
     }
 
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'admission-documents') {
-        wp_enqueue_script('admission-documents', plugins_url('edusystem') . '/admin/assets/js/admission-documents.js', ['jquery'], $version, true);
+        wp_enqueue_script('admission-documents', plugins_url('edusystem') . '/admin/assets/js/admission-documents.js', ['jquery'], '23', true);
 
         wp_localize_script('admission-documents', 'vars', [
-            'url' => admin_url('admin-ajax.php')
+            'url' => admin_url('admin-ajax.php'),
+            'url_ajax' => admin_url('admin-ajax.php'),
+            'translation' => [
+                'select_career' =>  __('Select career','edusystem'),
+                'select_mention' =>  __('Select mention','edusystem'),
+            ]
         ]);
     }
 
@@ -300,9 +309,7 @@ function aes_scripts_admin()
         ]);
     }
 
-    error_log('Current admin page: ' . ($_GET['page'] ?? 'none'));
     if (isset($_GET['page']) && !empty($_GET['page']) && $_GET['page'] == 'add_admin_form_academic_projection_content') {
-        error_log('Enqueuing academic-projection script');
         wp_enqueue_script('academic-projection', plugins_url('edusystem') . '/admin/assets/js/academic-projection.js', array('jquery'), $version, true);
 
         wp_localize_script('academic-projection', 'projection_data', [
@@ -654,6 +661,7 @@ function add_cap_to_administrator()
     $role->add_cap('manager_sales_aes');
     $role->add_cap('manager_accounts_receivables_aes');
     $role->add_cap('manager_documents_aes');
+    $role->add_cap('manager_statusbar_student');
     $role->add_cap('manager_payments_aes');
     $role->add_cap('manager_payment_plans');
     $role->add_cap('manager_payment_fees');
@@ -989,7 +997,10 @@ function get_payments_plans_by_program()
     foreach ($associateds as $key => $plan) {
         $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
         if ($plan) {
-            $payment_plans[] = $plan;
+            $fees = get_fees_associated_plan_complete($plan->identificator);   
+            error_log('Fees for plan ' . $plan->identificator . ': ' . print_r($fees, true));
+            $quote_rules = get_quotes_rules_associated_plan_complete($plan->identificator);   
+            $payment_plans[] = ['plan' => $plan, 'fees' => $fees, 'quote_rules' => $quote_rules];
         }
     }
 
@@ -1338,6 +1349,18 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
             },
             'wrap' => false,
         ],
+        'subjects_enrolled' => [
+            'value' => function () use ($student) {
+                return get_subjects_enrolled_table($student->id);
+            },
+            'wrap' => false,
+        ],
+        'subjects_enrolled_spanish' => [
+            'value' => function () use ($student) {
+                return get_subjects_enrolled_table($student->id, true);
+            },
+            'wrap' => false,
+        ],
         'academic_year' => [
             'value' => $academic_period->name,
             'wrap' => true,
@@ -1370,7 +1393,7 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
         ],
         'table_inscriptions' => [
             'value' => function () use ($student) {
-                return table_inscriptions_html(get_inscriptions_by_student($student->id));
+                return table_inscriptions_html(get_inscriptions_by_student($student->id, 'regular'));
             },
             'wrap' => false,
         ],

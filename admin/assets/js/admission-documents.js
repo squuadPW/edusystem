@@ -1,3 +1,6 @@
+url_ajax = vars.url_ajax;
+translation = vars.translation;
+
 document.addEventListener('DOMContentLoaded', ()=>{
     
     // Declaracion y evento del select scope
@@ -79,6 +82,104 @@ document.addEventListener('DOMContentLoaded', ()=>{
     closeButtons.forEach(btn => {
         btn.addEventListener('click', close_delete_modal);
     });
+
+    //evento de los select de la lista de los documentos
+    select_program = document.getElementById('select-program');
+    select_career = document.getElementById('select-career');
+    const select_mention = document.getElementById('select-mention');
+
+    if( select_program && select_career ) {
+
+        select_program.addEventListener('change', () => {
+
+            const identificator = select_program.value; 
+            
+            const formData = new FormData(); 
+            formData.append("action", "get_careers_by_program_ajax"); 
+            formData.append("program_id", identificator);
+
+            fetch(url_ajax, {
+                method: "POST",
+                body: formData,
+            }).then((res) => res.json())
+            .then((res) => {
+
+                // limpiar opciones anteriores 
+                select_career.innerHTML = ""; 
+
+                // agregar opción por defecto 
+                const defaultOption = document.createElement("option"); 
+                defaultOption.value = ""; 
+                defaultOption.textContent = translation.select_career; 
+                select_career.appendChild(defaultOption); 
+                
+                // recorrer resultados y agregarlos al select 
+                res.forEach(career => { 
+                    const option = document.createElement("option"); 
+                    option.value = career.identificator; 
+                    option.textContent = career.name; 
+
+                    // marcar seleccionado si coincide con el valor en GET 
+                    if ( career.identificator == select_career.dataset.select_value ) { 
+                        option.selected = true; 
+                    }
+
+                    select_career.appendChild(option); 
+
+                    if ( career.identificator == select_career.dataset.select_value ) { 
+                        select_career.dispatchEvent(new Event("change"));
+                    }
+                });
+            })
+            .catch((err) => {});
+        });
+
+        select_program.dispatchEvent(new Event("change"));
+    }
+    
+    if (select_career && select_mention ) {
+        select_career.addEventListener('change', () => {
+            const identificator = select_career.value; // carrera seleccionada
+
+            const formData = new FormData();
+            formData.append("action", "get_mentions_by_career_ajax"); // nueva acción
+            formData.append("career_id", identificator);
+
+            fetch(url_ajax, {
+                method: "POST",
+                body: formData,
+            })
+            .then((res) => res.json())
+            .then((res) => {
+                // limpiar opciones anteriores
+                select_mention.innerHTML = "";
+
+                // opción por defecto
+                const defaultOption = document.createElement("option");
+                defaultOption.value = "";
+                defaultOption.textContent = translation.select_mention; 
+                select_mention.appendChild(defaultOption);
+
+                // recorrer resultados y agregarlos al select
+                res.forEach(mention => {
+                    const option = document.createElement("option");
+                    option.value = mention.identificator;
+                    option.textContent = mention.name;
+
+                    // marcar seleccionado si coincide con el valor en GET 
+                    if ( mention.identificator == select_mention.dataset.select_value ) {
+                        option.selected = true; 
+                    }
+
+                    select_mention.appendChild(option);
+                });
+            })
+            .catch((err) => {
+                console.error("Error cargando menciones:", err);
+            });
+        });
+    }
+
 
 });
 

@@ -261,6 +261,10 @@ function add_admin_form_program_content()
                     $frequency_value = $rule['frequency_value'];
                     $type_frequency = $rule['type_frequency'];
                     $position = $rule['position'] ?? 0;
+                    $description = $rule['description'] ?? '';
+
+                    var_dump($description);
+                    exit;
 
                     // crea o actualiza el sub programa
                     if ( !empty( $rule_id ) ) {
@@ -275,6 +279,7 @@ function add_admin_form_program_content()
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
                             'position' => $position,
+                            'description' => $description,
                         ], ['id' => $rule_id] );
 
                     } else {
@@ -290,6 +295,7 @@ function add_admin_form_program_content()
                             'frequency_value' => $frequency_value,
                             'type_frequency' => $type_frequency,
                             'position' => $position,
+                            'description' => $description,
                         ]);
                     }
                 }
@@ -700,6 +706,22 @@ function get_fees_associated_plan_complete($identificator, $type_fee = null)
     return $fees;
 }
 
+function get_quotes_rules_associated_plan_complete($identificator)
+{
+    global $wpdb;
+    $table_quota_rules = $wpdb->prefix . 'quota_rules';
+
+    // Construye la base de la consulta SQL y los argumentos.
+    $sql = "SELECT * FROM {$table_quota_rules} WHERE is_active = 1 AND program_id = %s";
+    $args = [$identificator];
+
+    // Prepara y ejecuta la consulta.
+    $sql = $wpdb->prepare($sql, ...$args);
+    $fees = $wpdb->get_results($sql); 
+    
+    return $fees;
+}
+
 function get_program_details_by_identificator($identificator)
 {
     global $wpdb;
@@ -986,6 +1008,45 @@ function check_student_program_identificator_exists() {
             'message' => __('Identifier is not in use.','edusystem'),
         ]);
     } 
+}
+
+//
+add_action('wp_ajax_get_careers_by_program_ajax', 'get_careers_by_program_ajax');
+add_action('wp_ajax_nopriv_get_careers_by_program_ajax', 'get_careers_by_program_ajax');
+function get_careers_by_program_ajax() {
+    global $wpdb;
+
+    $program_id = sanitize_text_field($_POST['program_id']);
+
+    $careers = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT identificator, name 
+             FROM {$wpdb->prefix}careers_by_program
+             WHERE program_identificator = %s",
+            $program_id
+        )
+    );
+
+    wp_send_json($careers);
+}
+
+add_action('wp_ajax_get_mentions_by_career_ajax', 'get_mentions_by_career_ajax');
+add_action('wp_ajax_nopriv_get_mentions_by_career_ajax', 'get_mentions_by_career_ajax');
+function get_mentions_by_career_ajax() {
+    global $wpdb;
+
+    $career_id = sanitize_text_field($_POST['career_id']);
+
+    $mentions = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT identificator, name 
+             FROM {$wpdb->prefix}mentions_by_career
+             WHERE career_identificator = %s",
+            $career_id
+        )
+    );
+
+    wp_send_json($mentions);
 }
 
 

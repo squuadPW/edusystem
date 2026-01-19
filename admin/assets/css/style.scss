@@ -1409,17 +1409,35 @@ h2 {
 }
 
 .seccion-input {
-  .seccion-title {
-    color: #000;
-  }
 
-  .group-input {
-    margin: 0px 5px;
-  }
+    .seccion-title {
+        color: #000;
+    }
 
-  .space-offer {
-    margin-top: 0px;
-  }
+    .group-input {
+        margin: 0px 5px;
+    }
+
+    .space-offer {
+        margin-top: 0px;
+    }
+}
+
+#template-advanced-quota {
+    display: none;
+}
+.advanced-quotas-container {
+
+    .acction-buton {
+        display: flex;
+        justify-content: end;
+        margin-bottom: 10px;
+    }
+
+    .group-advanced-quota {
+        border-bottom: 1px solid #8080805c;
+        margin-bottom: 15px;
+    }
 }
 
 .space-offer {
@@ -2617,12 +2635,9 @@ tr.child-order-row {
     } 
 }
 
-div:has( #accions-docummets )  {
-
-    height: auto;
-
     #accions-docummets {
         display: flex;
+        justify-content: flex-end;
         flex-direction: row;
         flex-wrap: wrap;
         gap: 5px;
@@ -2667,8 +2682,100 @@ div:has( #accions-docummets )  {
             align-items: flex-end;
         }
     }
+
+
+
+.status-student-datails {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px 0px 10px 0px;
+
+    label {
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 8px;
+        background: #dfdedd;
+        color:#000000;
+    }
+}
+
+#table-products {
+    .program-list-document {
+        margin: 0;
+        padding: 0;
+
+        .program-item-document {
+            margin-bottom: 10px;
+
+            .career-list-document {
+                margin-left: 20px;
+
+                .career-item-document {
+                    margin-bottom: 6px;
+
+                    .mention-list-document {
+                        margin-left: 20px;
+
+                        .mention-item-document {
+                            margin-bottom: 4px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+.filters-document form {
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 5px;
+
+    .group-input {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        gap: 10px;
+
+        @media( max-width: 500px ) {
+            width: 100%;
+        }
+    }
 }
 
 
+#modalNewQuota {
+
+    .modal-body {
+        margin: 10px;
+        padding: 0px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .seccion {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+
+            .group-input {
+                flex: 1;
+            }
+        }
+
+        .group-input {
+            display: flex;
+            gap: 5px;
+            flex-direction: column;
+        }
+    } 
+
+}
 
             

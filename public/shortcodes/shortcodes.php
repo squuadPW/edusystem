@@ -121,6 +121,8 @@ add_shortcode('PROGRAM-QUOTAS', function () {
 
                         <?php foreach ($quotas_rules as $rule): ?>
 
+                            <?php $rule->advanced_rules = get_advanced_quota_rules( $rule->id ); ?>
+
                             <div id="option-rule-<?= $rule->id ?>" class="radio-input option-quota" data-id="<?= $rule->id ?>">
 
                                 <input id="data-rule-<?= $rule->id ?>" class="form-check-input data-rule" type="radio"
@@ -146,7 +148,18 @@ add_shortcode('PROGRAM-QUOTAS', function () {
             </div>
         <?php
     }
+
+    // Agregar una sección personalizada antes de la parte de pago
+    add_action( 'woocommerce_review_order_before_payment', function () {
+        ?>
+            <div id="quota-description-container" class="quota-descripcion" ></div>
+        <?php
+    }, 1 );
+
 });
+
+
+
 
 
     

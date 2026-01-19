@@ -1,5 +1,5 @@
 <?php
-include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
+	include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 ?>
 
 <div class="tabs-content">
@@ -98,6 +98,9 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 					<h2 class="section-title"><?= __('Student Payments Overview', 'edusystem'); ?></h2>
 
 					<div class="header-actions">
+
+						<!-- <a class="button button-primary" onclick="open_modal_new_quota_student(<?=$student->id?>)" ><?= __('New quota', 'edusystem') ?></a> -->
+
 						<?php
 						$payments_status = [
 							'registration' => get_fee_paid($student->id, 'registration'),
@@ -143,6 +146,9 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 							</th>
 							<th scope="col" class="manage-column column-status-header">
 								<?= __('Status', 'edusystem'); ?>
+							</th>
+							<th scope="col" class="manage-column column-status-header">
+								<?= __('Action', 'edusystem'); ?>
 							</th>
 						</tr>
 					</thead>
@@ -196,23 +202,33 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 								<td data-colname="<?= __('Amount', 'edusystem'); ?>">
 									<?php if ($is_paid) { ?>
 										<?= wc_price($payment->amount); ?>
-										<input type="hidden" name="amount_payment[]" class="amount_payment"
+										<input type="hidden" name="amount_payment[]" style="width: 100%;" class="amount_payment"
 											value="<?= $payment->amount; ?>" />
 									<?php } else { ?>
-										<input type="number" step="0.01" name="amount_payment[]" class="amount_payment"
+										<input type="number" step="0.01" name="amount_payment[]" style="width: 100%;" class="amount_payment"
 											value="<?= $payment->amount; ?>" />
 									<?php } ?>
 								</td>
 
 								<td data-colname="<?= __('Status', 'edusystem'); ?>">
 									<?php if ($is_paid) { ?>
+										<select class="select_status_payment" data-payment_id="<?= $payment->id ?>" >
+											<option value="completed" <?= selected($is_paid,true) ?> ><?= __('Completed', 'edusystem') ?></span>
+											<option value="pending"><?= __('Pending', 'edusystem') ?></span>
+										</select>
+
+									<?php } else { ?>
+										<span style="color: gray"><?= __('Pending', 'edusystem') ?></span>
+									<?php } ?>
+								</td>
+
+								<td data-colname="<?= __('Action', 'edusystem'); ?>">
+									<?php if ($is_paid) { ?>
 										<a target="_blank"
 											href="<?= admin_url('admin.php?page=add_admin_form_payments_content&section_tab=order_detail&order_id=' . $payment->order_id); ?>">
 											<span style="color: green"><?= __('View payment', 'edusystem') ?></span>
 										</a>
-									<?php } else { ?>
-										<span style="color: gray"><?= __('Pending', 'edusystem') ?></span>
-									<?php } ?>
+									<?php }?>
 								</td>
 							</tr>
 						<?php } ?>
@@ -306,6 +322,11 @@ include(plugin_dir_path(__FILE__) . 'topbar-payments.php');
 		</form>
 	</div>
 </div>
+
+<?php 
+	include(plugin_dir_path(__FILE__).'modal-status-payment-to-pending.php');
+	include(plugin_dir_path(__FILE__).'modal-new-quota.php');
+?>
 
 <script>
 	document.addEventListener('DOMContentLoaded', function () {

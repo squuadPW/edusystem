@@ -1539,6 +1539,10 @@ function view_access_classroom()
 {
     // Accede a las variables globales necesarias.
     global $current_user, $wpdb;
+    $roles = (array) $current_user->roles;
+    if (!in_array('student', $roles)) {
+        return;
+    }
 
     // Inicialización de variables. Se usa null para indicar un estado no encontrado/no determinado.
     $student = null;
@@ -1574,7 +1578,6 @@ function view_access_classroom()
     }
 
     // Si el usuario tiene el rol 'student', pero no tiene cursos asignados.
-    $roles = (array) $current_user->roles;
     if (in_array('student', $roles)) {
         // Validación de inscripción debe ir primero.
         $access = is_enrolled_in_courses($student->id);
@@ -1592,9 +1595,9 @@ function view_access_classroom()
         }
 
         // Bloqueo 2: Documentos rechazados (status_id < 2 y moodle_student_id existe).
-        elseif ($student->status_id < 2) {
+        elseif (are_required_documents_approved_deadline($student->id) === false) {
             $student_access = false;
-            $error_access = 'Some of your documents required for classroom access have been declined, please check the documents area for more information.';
+            $error_access = 'You are missing some of the documents required for access. Please refer to the documents section for more information.';
         }
 
         // Bloqueo 3: Acceso caducado por pagos.
@@ -1668,7 +1671,8 @@ function load_feed()
 add_filter('woocommerce_account_dashboard', 'trigger_open_elective_modal', 0);
 function trigger_open_elective_modal()
 {
-    if (!is_user_logged_in()) {
+    $site_mode = get_option('site_mode');
+    if (!is_user_logged_in() || $site_mode != 'SCHOOL') {
         return;
     }
 
