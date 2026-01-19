@@ -52,14 +52,12 @@
 
                                     <?php if (!$institute) { ?>
                                         <div style="font-weight:400;" class="space-offer">
-                                            <label for="program_id"><b><?= __('Program', 'edusystem'); ?></b></label><br>
+                                            <label for="hc"><b><?= __('Program', 'edusystem'); ?></b></label><br>
                                             <select name="program_id" required>
-                                                <option value="" selected><?= __('Assigns a program', 'edusystem'); ?></option>
-                                                <?php foreach ($programs as $program): ?>
-                                                    <option value="<?= $program->identificator; ?>" <?= ($pensum->program_id == $program->identificator) ? 'selected' : ''; ?>>
-                                                        <?= $program->name; ?> (<?= $program->description; ?>)
-                                                    </option>
-                                                <?php endforeach; ?>
+                                                <option value="" selected>Assigns a program</option>
+                                                <option value="aes" <?= ($pensum->program_id == 'aes') ? 'selected' : ''; ?>>
+                                                    <?= __('Dual diploma', 'edusystem'); ?>
+                                                </option>
                                             </select>
                                         </div>
                                     <?php } ?>

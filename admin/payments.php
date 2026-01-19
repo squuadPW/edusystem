@@ -610,10 +610,57 @@ function add_admin_form_payments_content()
                 $new_amount = 0;
                 $currency = get_woocommerce_currency();
 
-                foreach ($payments as $key => $payment) {
-                    $wpdb->update($table_student_payments, ['date_next_payment' => $date_payment[$key], 'amount' => $amount_payment[$key]], ['id' => $payment->id]);
+                foreach ( $payments as $key => $payment ) {
+
+                    $amount = $amount_payment[$key];
+                    $payment_amount = $payment->amount;
+
+                    $amount_credit = $amount - $payment_amount;
+
+                    $increased_portion = 0;
+                    if( $cuote_payment->amount > 0 ) {
+                        $increased_portion = $amount_credit / $payment_amount;
+                    }
+
+                    // Nuevo monto original total de la cuota
+                    $new_original_amount_product = $payment->original_amount_product * (1 + $increased_portion);
+
+                    $wpdb->update($table_student_payments, 
+                        [
+                            'date_next_payment' => $date_payment[$key], 
+                            'amount' => $amount,
+                            'original_amount_product' => $new_original_amount_product,
+                        ], 
+                        ['id' => $payment->id]
+                    );
+
+                    // Nuevo monto total del producto original de la cuota
+                    $new_total_amount = $payment->total_amount * (1 + $increased_portion);
+
+                    // Nuevo monto original total del producto original de la cuota
+                    $new_original_amount = $payment->original_amount * (1 + $increased_portion);
+
+                    // Nuevo monto de descuento del producto original
+                    $new_discount_amount = $new_original_amount - $new_total_amount;
+
+                    // Actualiza los totales generales de las cuotas enlazadas
+                    $wpdb->update(
+                        $table_student_payments,
+                        [
+                            'total_amount'    => (float) $new_total_amount,     // float: Nuevo monto total
+                            'original_amount' => (float) $new_original_amount,  // float: Nuevo monto original
+                            'discount_amount' => (float) $new_discount_amount,  // float: Nuevo monto de descuento
+                        ],
+                        [
+                            'student_id'   => (int) $payment->student_id,     // int: ID del estudiante
+                            'product_id'   => (int) $payment->product_id,     // int: ID del producto
+                            'variation_id' => (int) $payment->variation_id,   // int: ID de la variación
+                            'type_payment' => (int) $payment->type_payment,   // int: Tipo de pago
+                        ]
+                    );
+
                     $old_amount += $payment->amount;
-                    $new_amount += $amount_payment[$key];
+                    $new_amount += $amount;
                     $currency = $payment->currency;
                 }
 
