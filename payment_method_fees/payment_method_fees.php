@@ -294,7 +294,7 @@ function PMF_update_payment_method_fee( $order) {
     $order->save();
 }
 
-// actualiza el fee de la orden via ajax (solo para pruebas)
+ // actualiza el fee de la orden via ajax (solo para pruebas)
 add_action( 'wp_ajax_PMF_update_fee_order_pay', 'PMF_update_fee_order_pay' );
 add_action( 'wp_ajax_nopriv_PMF_update_fee_order_pay', 'PMF_update_fee_order_pay' );
 function PMF_update_fee_order_pay() {
@@ -328,7 +328,7 @@ function PMF_update_fee_order_pay() {
 
     // Elimina o actualiza el fee si ya existe
     foreach ( $order->get_items('fee') as $fee_item_id => $fee_item ) {
-        if( $fee_item->get_meta( '_payment_method_fee' ) != '' ) {
+        if( $fee_item->meta_exists( '_payment_method_fee' )) {
             $order->remove_item( $fee_item_id );
         }
     }
@@ -352,23 +352,19 @@ function PMF_update_fee_order_pay() {
     $order->calculate_totals();
     $order->save();
 
-
     // Obtener el fee del metodo de pago actualizado
-    $fee = null;
+    $fees = [];
     foreach ( $order->get_items('fee') as $fee_item_id => $fee_item ) {
-        
-        if ( $fee_item->get_meta( '_payment_method_fee' ) != '') {
-            $fee = [
-                'name'   => $fee_item->get_name(),
-                'amount' => wc_price($fee_item->get_amount(), [ 'currency' => $order->get_currency() ]),
-            ];
-            break;
-        }
+        $fees[] = [
+            'id'     => $fee_item_id,
+            'name'   => $fee_item->get_name(),
+            'amount' => wc_price($fee_item->get_amount(), [ 'currency' => $order->get_currency() ]),
+        ];
     }
 
     wp_send_json_success( array(
         'message' => __('Fee updated successfully','payment-method-fees'),
-        'fee' => $fee,
+        'fees' => $fees,
         'order_total'     => wc_price($order->get_total()),
         'payment_method'  => $gateway_title,
     ) );
@@ -376,15 +372,31 @@ function PMF_update_fee_order_pay() {
 
 // agregar clase a los totales de la orden
 add_filter( 'woocommerce_get_order_item_totals', function ( $total_rows, $order ) {
+    // Array para guardar las c[laves de los fees que tienen el meta _payment_method_fee
+    $payment_method_fee_keys = [];
 
+    foreach ( $order->get_fees() as $fee_id => $fee_item ) {
+        
+        $payment_method_fee = $fee_item->get_meta( '_payment_method_fee' );
+        if ( $payment_method_fee ) {
+            $key = 'fee_' . sanitize_title( $fee_item->get_name() );
+            $payment_method_fee_keys[] = $key;
+        }
+    }
+
+    // Iterar sobre las filas de totales
     foreach ( $total_rows as $key => $total ) {
+        
         $total_rows[$key]['id'] = $key;
         $total_rows[$key]['class'] = 'total_'.$key;
+
+        if ( in_array( $key, $payment_method_fee_keys ) ) {
+            $total_rows[$key]['class'] .= ' payment_method';
+        }
     }
 
     return $total_rows;
 }, 10, 2 );
-
 
 // añadir script en la pagina de pay order para actualizar el fee via ajax
 add_action( 'woocommerce_pay_order_before_submit',function () {
@@ -418,7 +430,7 @@ add_action( 'woocommerce_pay_order_before_submit',function () {
                             if(response.success){
                                 // Aquí llamas a tu función con los datos que devuelve el servidor
                                 actualizarTablaTotales(
-                                    response.data.fee, 
+                                    response.data.fees, 
                                     response.data.payment_method, 
                                     response.data.order_total
                                 );
@@ -436,17 +448,18 @@ add_action( 'woocommerce_pay_order_before_submit',function () {
                 }
             });
 
-            function actualizarTablaTotales(fee, metodo, order_total) {
+            function actualizarTablaTotales(fees, metodo, order_total) {
                 const tabla = document.querySelector("table.shop_table tfoot");
 
                 // Eliminar filas previas de fee y método de pago
                 tabla.querySelectorAll("tr[class*='fee']").forEach(tr => tr.remove());
                 tabla.querySelectorAll("tr[class*='payment_method']").forEach(tr => tr.remove());
-
+                
                 // Insertar fila de fee
-                if (fee) {
+                fees.forEach( fee => {
                     const feeRow = document.createElement("tr");
-                    feeRow.className = "fee_row";
+                    feeRow.id = `fee_${fee.id}`;
+                    feeRow.className = `fee_row total_fee_${fee.id}`;
                     feeRow.innerHTML = `
                         <th scope="row" colspan="2">${fee.name}:</th>
                         <td class="product-total">
@@ -454,13 +467,13 @@ add_action( 'woocommerce_pay_order_before_submit',function () {
                         </td>
                     `;
                     tabla.insertBefore(feeRow, tabla.lastElementChild);
-                }
+                });
 
                 // Insertar fila de método de pago
                 const metodoRow = document.createElement("tr");
                 metodoRow.className = "payment_method";
                 metodoRow.innerHTML = `
-                    <th scope="row" colspan="2">Payment method:</th>
+                    <th scope="row" colspan="2"><?= __('Payment Method','payment-method-fees') ?>:</th>
                     <td class="product-total">${metodo}</td>
                 `;
                 tabla.insertBefore(metodoRow, tabla.lastElementChild);
