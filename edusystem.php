@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 3.9.63
+Version: 3.9.64
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -210,6 +210,7 @@ function create_tables()
     $table_admission_fees = $wpdb->prefix . 'admission_fees';
     $table_student_balance = $wpdb->prefix . 'student_balance';
     $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
+    $table_grade_config = $wpdb->prefix . 'grade_config';
 
 
     // Para todas las tablas: Mueve la llamada a dbDelta() FUERA del if de existencia de tabla.
@@ -1340,6 +1341,51 @@ function create_tables()
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
+
+    // table_grade_config
+    dbDelta(
+        "CREATE TABLE " . $table_grade_config . " (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        min_score DECIMAL(5,2) NOT NULL,
+        literal_grade VARCHAR(5) NOT NULL,
+        calc_grade DECIMAL(3,2) NOT NULL,
+        sort_order INT(11) NOT NULL DEFAULT 0,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
+        UNIQUE KEY uk_min_score (min_score)
+        )$charset_collate;"
+    );
+
+    // Insert default grade configurations if table is empty
+    $grade_configs = [
+        ['min_score' => 94.00, 'literal_grade' => 'A', 'calc_grade' => 4.00, 'sort_order' => 1],
+        ['min_score' => 90.00, 'literal_grade' => 'A-', 'calc_grade' => 3.70, 'sort_order' => 2],
+        ['min_score' => 87.00, 'literal_grade' => 'B+', 'calc_grade' => 3.33, 'sort_order' => 3],
+        ['min_score' => 83.00, 'literal_grade' => 'B', 'calc_grade' => 3.00, 'sort_order' => 4],
+        ['min_score' => 80.00, 'literal_grade' => 'B-', 'calc_grade' => 2.70, 'sort_order' => 5],
+        ['min_score' => 76.00, 'literal_grade' => 'C+', 'calc_grade' => 2.30, 'sort_order' => 6],
+        ['min_score' => 73.00, 'literal_grade' => 'C', 'calc_grade' => 2.00, 'sort_order' => 7],
+        ['min_score' => 70.00, 'literal_grade' => 'C-', 'calc_grade' => 1.70, 'sort_order' => 8],
+        ['min_score' => 67.00, 'literal_grade' => 'D+', 'calc_grade' => 1.30, 'sort_order' => 9],
+        ['min_score' => 60.00, 'literal_grade' => 'D', 'calc_grade' => 1.00, 'sort_order' => 10],
+        ['min_score' => 0.00, 'literal_grade' => 'F', 'calc_grade' => 0.00, 'sort_order' => 11],
+    ];
+
+    foreach ($grade_configs as $config) {
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_grade_config WHERE min_score = %f",
+            $config['min_score']
+        ));
+
+        if (!$exists) {
+            $wpdb->insert(
+                $table_grade_config,
+                $config,
+                ['%f', '%s', '%f', '%d']
+            );
+        }
+    }
 
     $sql = "CREATE TABLE $table_expected_matrix_school (
         id mediumint(9) NOT NULL AUTO_INCREMENT,

@@ -1335,6 +1335,19 @@ function get_subject_details_optimized($subject_id)
     return $subject;
 }
 
+function get_grade_configs()
+{
+    global $wpdb;
+    static $configs = null;
+
+    if ($configs === null) {
+        $table_grade_config = $wpdb->prefix . 'grade_config';
+        $configs = $wpdb->get_results("SELECT * FROM {$table_grade_config} ORDER BY sort_order ASC", ARRAY_A);
+    }
+
+    return $configs;
+}
+
 function get_literal_note($calification)
 {
     if ($calification === null || $calification === '') {
@@ -1346,33 +1359,15 @@ function get_literal_note($calification)
     }
 
     $calification = (float) $calification;
-    $note = 'F';
+    $configs = get_grade_configs();
 
-    if ($calification >= 94) {
-        $note = 'A';
-    } elseif ($calification >= 90) {
-        $note = 'A-';
-    } elseif ($calification >= 87) {
-        $note = 'B+';
-    } elseif ($calification >= 83) {
-        $note = 'B';
-    } elseif ($calification >= 80) {
-        $note = 'B-';
-    } elseif ($calification >= 76) {
-        $note = 'C+';
-    } elseif ($calification >= 73) {
-        $note = 'C';
-    } elseif ($calification >= 70) {
-        $note = 'C-';
-    } elseif ($calification >= 67) {
-        $note = 'D+';
-    } elseif ($calification >= 60) {
-        $note = 'D';
-    } else {
-        $note = 'F';
+    foreach ($configs as $config) {
+        if ($calification >= (float) $config['min_score']) {
+            return $config['literal_grade'];
+        }
     }
 
-    return $note;
+    return 'F'; // Default if no match
 }
 
 function get_calc_note($calification)
@@ -1386,33 +1381,15 @@ function get_calc_note($calification)
     }
 
     $calification = (float) $calification;
-    $note = 0.00;
+    $configs = get_grade_configs();
 
-    if ($calification >= 94) {
-        $note = 4.00;
-    } elseif ($calification >= 90) {
-        $note = 3.70;
-    } elseif ($calification >= 87) {
-        $note = 3.33;
-    } elseif ($calification >= 83) {
-        $note = 3.00;
-    } elseif ($calification >= 80) {
-        $note = 2.70;
-    } elseif ($calification >= 76) {
-        $note = 2.30;
-    } elseif ($calification >= 73) {
-        $note = 2.00;
-    } elseif ($calification >= 70) {
-        $note = 1.70;
-    } elseif ($calification >= 67) {
-        $note = 1.30;
-    } elseif ($calification >= 60) {
-        $note = 1.00;
-    } else {
-        $note = 0.00;
+    foreach ($configs as $config) {
+        if ($calification >= (float) $config['min_score']) {
+            return number_format((float) $config['calc_grade'], 2, '.', '');
+        }
     }
 
-    return number_format($note, 2, '.', '');
+    return '0.00'; // Default if no match
 }
 
 function get_count_moodle_pending()

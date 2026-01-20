@@ -143,6 +143,12 @@
                     <label for="manager_automatically_inscriptions" <?= !in_array('manager_automatically_inscriptions', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Autoenrollment', 'edusystem'); ?></label>
                 </div>
                 <div class="capability-item indented">
+                    <input <?= !in_array('manager_configuration_notes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox"
+                        name="capabilities[]" value="manager_configuration_notes"
+                        id="manager_configuration_notes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_configuration_notes'])) ? 'checked' : ''; ?>>
+                    <label for="manager_configuration_notes" <?= !in_array('manager_configuration_notes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Configuration notes', 'edusystem'); ?></label>
+                </div>
+                <div class="capability-item indented">
                     <input <?= !in_array('manager_graduations_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_graduations_aes" id="manager_graduations_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_graduations_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_graduations_aes" <?= !in_array('manager_graduations_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Student graduations', 'edusystem'); ?></label>
