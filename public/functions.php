@@ -893,7 +893,7 @@ function redirect_to_my_account()
     $roles = $current_user->roles;
 
     if (in_array('parent', $roles) || in_array('student', $roles)) {
-        wp_redirect(home_url());
+        wp_redirect(get_permalink(get_option('woocommerce_myaccount_page_id')));
         exit();
     }
 }
