@@ -2515,6 +2515,18 @@ function update_price_product_cart_quota_rule()
         if ($quotas_quantity > 1 && !empty($offer_quote_coupon)) {
             WC()->cart->apply_coupon($offer_quote_coupon);
         }
+
+        if ($_SERVER['HTTP_HOST'] === 'portal.americanelite.school') {
+            if (isset($_COOKIE['institute_id']) && !empty($_COOKIE['institute_id']) && $_COOKIE['institute_id'] == 84) {
+                if ($quotas_quantity == 1) {
+                    WC()->cart->apply_coupon("100% registration fee");
+                }
+
+                if ($quotas_quantity > 1) {
+                    WC()->cart->apply_coupon("50% registration fee");
+                }
+            }
+        }
     }
 
     $cart = WC()->cart;
