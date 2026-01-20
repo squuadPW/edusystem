@@ -2468,4 +2468,7 @@ tr.child-order-row .view_details {
   display: flex;
   gap: 5px;
   flex-direction: column;
+}
+#modalNewQuota .modal-body .group-input select {
+  width: 100%;
 }/*# sourceMappingURL=style.css.map */

@@ -2773,6 +2773,10 @@ tr.child-order-row {
             display: flex;
             gap: 5px;
             flex-direction: column;
+
+            select {
+                width: 100%;
+            }
         }
     } 
 

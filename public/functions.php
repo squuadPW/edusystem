@@ -2077,9 +2077,9 @@ function are_required_documents_approved_deadline($student_id)
 
     // Contar documentos requeridos que NO están aprobados (status != 5)
     // y que actualmente deben ser entregados según la regla de deadlines:
-    //    max_date_upload IS NULL/empty OR DATE(max_date_upload) <= today
+    //    max_date_upload IS NULL OR DATE(max_date_upload) <= today
     $query = $wpdb->prepare(
-        "SELECT COUNT(*) FROM {$table_student_documents} WHERE student_id = %d AND is_required = 1 AND status != 5 AND (max_date_upload IS NULL OR max_date_upload = '' OR DATE(max_date_upload) <= %s)",
+        "SELECT COUNT(*) FROM {$table_student_documents} WHERE student_id = %d AND is_required = 1 AND status != 5 AND (max_date_upload IS NULL OR DATE(max_date_upload) <= %s)",
         $student_id,
         $today
     );
