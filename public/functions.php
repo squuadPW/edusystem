@@ -3805,6 +3805,12 @@ function custom_content_after_orders()
 
     $pending_orders = customer_pending_orders($current_user->ID);
 
+    // Get on-hold orders objects for the status column logic in the template
+    $on_hold_orders = wc_get_orders(array(
+        'customer_id' => $current_user->ID,
+        'status' => 'on-hold',
+    ));
+
     include(plugin_dir_path(__FILE__) . 'templates/next-payments.php');
 }
 
