@@ -60,7 +60,7 @@ if (!defined('ABSPATH')) {
             </tbody>
         </table>
         
-        <p>
+        <p style="text-align: center;">
             <button type="button" class="button" id="add-new-row"><?php _e('Add New Row', 'edusystem'); ?></button>
             <input type="submit" name="save_grade_configs" class="button button-primary" value="<?php _e('Save Changes', 'edusystem'); ?>" />
         </p>
