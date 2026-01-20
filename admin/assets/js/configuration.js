@@ -27,7 +27,7 @@ const formConfig = {
     inscriptions: {
         formId: "inscriptions",
         requiredFields: [],
-        hideSaveButton: true
+        hideSaveButton: false
     },
     notifications: {
         formId: "by_notifications",
