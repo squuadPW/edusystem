@@ -37,13 +37,13 @@ if (!function_exists('edusystem_get_student_classroom_access')) {
 
             if (function_exists('are_required_documents_approved_deadline') && are_required_documents_approved_deadline($student->id) === false) {
                 $result['access'] = false;
-                $result['error'] = 'You are missing some of the documents required for access. Please refer to the documents section for more information.';
+                $result['error'] = __('You are missing some of the documents required for access.', 'edusystem');
             }
 
             $today = date('Y-m-d');
             if (!empty($student->max_access_date) && $student->max_access_date < $today) {
                 $result['access'] = false;
-                $result['error'] = 'Classroom access has been removed because you have overdue payments. Please pay the outstanding fees in order to continue to have access to the classroom.';
+                $result['error'] = __('The student has lost access to the classroom due to late payments.', 'edusystem');
             }
 
             if (function_exists('expired_documents') && expired_documents($student->id)) {
