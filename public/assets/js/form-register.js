@@ -519,7 +519,10 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {}
     });
 
-    if (planIdShortcode && planIdShortcode.value) {
+    if (
+      (plan.value && plan.value !== "") ||
+      (planIdShortcode && planIdShortcode.value)
+    ) {
       plan.dispatchEvent(new Event("change"));
     }
   }
