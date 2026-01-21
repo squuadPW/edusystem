@@ -10,19 +10,19 @@ function add_admin_form_dynamic_link_content()
         $roles = (array) $current_user->roles;
         $is_manager = in_array('manager', $roles);
         $is_admin = in_array('administrator', $roles);
-        if (!$is_admin && !$is_manager) {
-            $manager_user_id = get_user_meta($current_user->ID, 'manager_user_id', true);
-            if (!empty($manager_user_id)) {
-                $all_managers = get_users_managers();
-                $managers = array_filter($all_managers, function ($m) use ($manager_user_id) {
-                    return $m->ID == $manager_user_id;
-                });
-            } else {
-                $managers = [];
-            }
-        } else {
+        // if (!$is_admin && !$is_manager) {
+        //     $manager_user_id = get_user_meta($current_user->ID, 'manager_user_id', true);
+        //     if (!empty($manager_user_id)) {
+        //         $all_managers = get_users_managers();
+        //         $managers = array_filter($all_managers, function ($m) use ($manager_user_id) {
+        //             return $m->ID == $manager_user_id;
+        //         });
+        //     } else {
+        //         $managers = [];
+        //     }
+        // } else {
             $managers = get_users_managers();
-        }
+        // }
         $dynamic_links_email_log = array();
 
         if ($_GET['section_tab'] == 'dynamic_link_details') {
