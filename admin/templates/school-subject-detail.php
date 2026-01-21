@@ -136,6 +136,7 @@
                                         <?php endif; ?>
                                     </div> -->
                                 </div>
+
                                 <div
                                     style="display: flex; justify-content: space-evenly; margin: 18px; flex-wrap: wrap;">
                                     
@@ -148,6 +149,16 @@
                                         
                                         <input type="number" step="0.01" min="0" name="price" value="<?= $subject->price ?? '' ?>" />
                                         <input type="hidden" name="currency" placeholder="Currency" value="<?= /* $subject->currency ?? */ get_woocommerce_currency(); ?>" style="width: 80px;" />
+                                    </div>
+
+                                    <div style="font-weight:400; text-align: center">
+                                        <label for="retake_limit">
+                                            <b><?= __('Registration limit for failing', 'edusystem'); ?></b>
+                                        </label>
+                                        
+                                        <br>
+
+                                        <input type="number" step="1" min="1" name="retake_limit" value="<?= $subject->retake_limit ?? '' ?>" />
                                     </div>
 
                                     <div style="font-weight:400; text-align: center">
@@ -215,6 +226,7 @@
                                         <?php endif; ?>
                                     </div> -->
                                 </div>
+                                
                             </div>
 
                             <?php if (isset($subject) && !empty($subject)): ?>
