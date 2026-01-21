@@ -914,6 +914,43 @@ document.addEventListener("DOMContentLoaded", function () {
         // Usamos el texto traducido que viene de WordPress
         document.getElementById("buttonsave").disabled = true;
         errorDiv.textContent = formRegisterStrings.passwordsDontMatch;
+      } else {
+        const existStudentEmail = document.getElementById("existstudentemail");
+        const existParentEmail = document.getElementById("existparentemail");
+        const existStudentId = document.getElementById("exisstudentid");
+        const sameEmailStudent = document.getElementById("sameemailstudent");
+        const sameEmailParent = document.getElementById("sameemailparent");
+        const dontBeAdult = document.getElementById("dontBeAdult");
+        const dont_allow_adult = document.getElementById("dont_allow_adult");
+
+        let canEnable = true;
+
+        if (dont_allow_adult && dont_allow_adult.value == 1) {
+          if (
+            (existStudentEmail && existStudentEmail.style.display !== "none") ||
+            (existStudentId && existStudentId.style.display !== "none") ||
+            (sameEmailStudent && sameEmailStudent.style.display !== "none") ||
+            (dontBeAdult && dontBeAdult.style.display !== "none") ||
+            (typeof validateIDs === "function" && !validateIDs())
+          ) {
+            canEnable = false;
+          }
+        } else {
+          if (
+            (existParentEmail && existParentEmail.style.display !== "none") ||
+            (existStudentEmail && existStudentEmail.style.display !== "none") ||
+            (existStudentId && existStudentId.style.display !== "none") ||
+            (sameEmailParent && sameEmailParent.style.display !== "none") ||
+            (sameEmailStudent && sameEmailStudent.style.display !== "none") ||
+            (typeof validateIDs === "function" && !validateIDs())
+          ) {
+            canEnable = false;
+          }
+        }
+
+        if (canEnable) {
+          document.getElementById("buttonsave").disabled = false;
+        }
       }
     }
   }
