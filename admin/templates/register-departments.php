@@ -188,11 +188,25 @@
                         value="withdraw_student" id="withdraw_student" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['withdraw_student'])) ? 'checked' : ''; ?>>
                     <label for="withdraw_student" <?= !in_array('withdraw_student', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Can withdraw student', 'edusystem'); ?></label>
                 </div>
+
                 <div class="capability-item indented">
+                    <input <?= !in_array('manager_school_subjects', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_school_subjects" id="manager_school_subjects" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_school_subjects'])) ? 'checked' : ''; ?>>
+                    <label for="manager_school_subjects" <?= !in_array('manager_school_subjects', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('School subjects', 'edusystem'); ?></label>
+                </div>
+
+                <div class="capability-item indented subindented">
                     <input <?= !in_array('manager_school_subjects_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_school_subjects_aes" id="manager_school_subjects_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_school_subjects_aes'])) ? 'checked' : ''; ?>>
-                    <label for="manager_school_subjects_aes" <?= !in_array('manager_school_subjects_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('School subjects', 'edusystem'); ?></label>
+                    <label for="manager_school_subjects_aes" <?= !in_array('manager_school_subjects_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('List of school subjects', 'edusystem'); ?></label>
                 </div>
+
+                <div class="capability-item indented subindented">
+                    <input <?= !in_array('manager_edit_school_subjects', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_edit_school_subjects" id="manager_edit_school_subjects" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_edit_school_subjects'])) ? 'checked' : ''; ?>>
+                    <label for="manager_edit_school_subjects" <?= !in_array('manager_edit_school_subjects', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Edit and create school subjects', 'edusystem'); ?></label>
+                </div>
+
                 <div class="capability-item indented">
                     <input <?= !in_array('manager_feed', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_feed" id="manager_feed" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_feed'])) ? 'checked' : ''; ?>>
@@ -222,6 +236,7 @@
                         value="manager_payments_read_aes" id="manager_payments_read_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payments_read_aes'])) ? 'checked' : ''; ?>>
                     <label for="manager_payments_read_aes" <?= !in_array('manager_payments_read_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?>><?= __('Only read payments', 'edusystem'); ?></label>
                 </div>
+                
                 <div class="capability-item">
                     <input <?= !in_array('manager_payments_aes', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_payments_aes" id="manager_payments_aes" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payments_aes'])) ? 'checked' : ''; ?>>
@@ -232,6 +247,12 @@
                     <input <?= !in_array('manager_payment_plans', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
                         value="manager_payment_plans" id="manager_payment_plans" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payment_plans'])) ? 'checked' : ''; ?>>
                     <label for="manager_payment_plans" <?= !in_array('manager_payment_plans', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Payment plans', 'edusystem'); ?></label>
+                </div>
+
+                <div class="capability-item indented">
+                    <input <?= !in_array('manager_payment_school_subjects', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?> type="checkbox" name="capabilities[]"
+                        value="manager_payment_school_subjects" id="manager_payment_school_subjects" <?= (isset($capabilities) && !empty($capabilities) && isset($capabilities['manager_payment_school_subjects'])) ? 'checked' : ''; ?>>
+                    <label for="manager_payment_school_subjects" <?= !in_array('manager_payment_school_subjects', $departments_subscription) ? 'style="font-style: italic; color: #8080808a; pointer-events: none;"' : '' ?>><?= __('Payment school subjects', 'edusystem'); ?></label>
                 </div>
 
                 <div class="capability-item indented">

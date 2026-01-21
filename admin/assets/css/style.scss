@@ -1387,6 +1387,10 @@ h2 {
 
 .capability-item.indented {
   margin-left: 20px; /* Applies indentation for sub-items */
+
+  &.subindented {
+    margin-left: 40px; /* Further indentation for deeper levels */
+  }
 }
 
 /* Styles for disabled items (matching your inline styles) */

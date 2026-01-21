@@ -28,6 +28,16 @@ function list_admin_form_department_content()
                 foreach ($capabilities as $capability) {
                     $cap[$capability] = true;
                 }
+
+                if (in_array('manager_payments_aes', $capabilities)) {
+                    $role->add_cap('manager_school_subjects_aes');
+                    $role->add_cap('manager_payment_school_subjects');
+                }
+
+                if (in_array('manager_school_subjects', $capabilities)) {
+                    $role->add_cap('manager_school_subjects_aes');
+                    $role->add_cap('manager_edit_school_subjects');
+                }
             }
             //update
             if (isset($_POST['department_id']) && !empty($_POST['department_id'])) {

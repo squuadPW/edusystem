@@ -31,7 +31,7 @@
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <div>
                                                 <input type="checkbox" name="is_active" id="is_active"
-                                                    <?= ($subject->is_active == 1) ? 'checked' : ''; ?>>
+                                                    <?= ($subject->is_active == 1) ? 'checked' : ''; ?> <?= current_user_can('manager_payments_aes') ? '' : 'readonly' ?> >
                                                 <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
                                             </div>
                                         <?php else: ?>
@@ -147,7 +147,7 @@
                                         
                                         <br>
                                         
-                                        <input type="number" step="0.01" min="0" name="price" value="<?= $subject->price ?? '' ?>" />
+                                        <input type="number" step="0.01" min="0" name="price" value="<?= $subject->price ?? '' ?>" <?= current_user_can('manager_payments_aes') ? '' : 'readonly' ?> />
                                         <input type="hidden" name="currency" placeholder="Currency" value="<?= /* $subject->currency ?? */ get_woocommerce_currency(); ?>" style="width: 80px;" />
                                     </div>
 
