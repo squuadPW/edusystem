@@ -45,7 +45,6 @@ foreach ($student_payments as $student_id => $payments) {
                     <td class="woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status" data-title="Status">
                         <?php 
                             $status_text = __('Pending payment', 'edusystem');
-                            error_log('Payment Status ID: ' . $payment->status_id);
                             if ($payment->status_id == 1) {
                                 $status_text = __('Paid', 'edusystem');
                             } else {

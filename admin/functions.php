@@ -992,11 +992,7 @@ function admin_notice($message, $type = 'success')
 
 function get_payments_plans_by_program()
 {
-    $program_id = isset($_POST['program_id']) ? sanitize_text_field(wp_unslash($_POST['program_id'])) : '';
-
-    if (empty($program_id)) {
-        wp_send_json_error(['message' => 'program_id is required']);
-    }
+    $program_id = sanitize_text_field(wp_unslash($_POST['program_id']));
 
     global $wpdb;
     $table_programs = $wpdb->prefix . 'programs';
@@ -1006,7 +1002,6 @@ function get_payments_plans_by_program()
         $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
         if ($plan) {
             $fees = get_fees_associated_plan_complete($plan->identificator);   
-            error_log('Fees for plan ' . $plan->identificator . ': ' . print_r($fees, true));
             $quote_rules = get_quotes_rules_associated_plan_complete($plan->identificator);   
             $payment_plans[] = ['plan' => $plan, 'fees' => $fees, 'quote_rules' => $quote_rules];
         }
