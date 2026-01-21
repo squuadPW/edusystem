@@ -65,7 +65,7 @@ function truncate_text($text, $max_length = 100)
         <?php } ?> -->
     </div>
 
-    <div class="status-student-datails" >
+    <!-- <div class="status-student-datails" >
         <?php
             
             $background = "#dfdedd";
@@ -106,8 +106,7 @@ function truncate_text($text, $max_length = 100)
         ?>
 
         <label style="background:<?=$background?>;color:<?=$color?>;" ><?=  __('The student','edusystem')." {$Status}" ?></label>
-    </div>
-
+    </div> -->
 
 
     <?php if (current_user_can('manager_statusbar_student')): ?>
