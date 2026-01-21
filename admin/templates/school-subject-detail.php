@@ -138,6 +138,18 @@
                                 </div>
                                 <div
                                     style="display: flex; justify-content: space-evenly; margin: 18px; flex-wrap: wrap;">
+                                    
+                                    <div style="font-weight:400; text-align: center">
+                                        <label for="description">
+                                            <b><?= __('Price', 'edusystem'); ?></b>
+                                        </label>
+                                        
+                                        <br>
+                                        
+                                        <input type="number" step="0.01" min="0" name="price" value="<?= $subject->price ?? '' ?>" />
+                                        <input type="hidden" name="currency" placeholder="Currency" value="<?= /* $subject->currency ?? */ get_woocommerce_currency(); ?>" style="width: 80px;" />
+                                    </div>
+
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
@@ -149,6 +161,7 @@
                                             <textarea name="description"></textarea>
                                         <?php endif; ?>
                                     </div>
+
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label for="hc"><b><?= __('HC', 'edusystem'); ?></b><span
