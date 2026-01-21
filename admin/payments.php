@@ -1088,6 +1088,46 @@ function add_admin_form_payments_content()
             // hook para extender las acciones de guardado 
             do_action( 'edusystem_save_payment_plan_details', $program_id );
 
+            // Create payment methods records for the plan
+            if ( class_exists('WC_Payment_Gateways') ) {
+                $payment_gateways = WC()->payment_gateways->payment_gateways();
+                $table_payment_methods = $wpdb->prefix . 'payment_methods_by_plan';
+
+                foreach ( $payment_gateways as $gateway ) {
+                    if ( 'yes' === $gateway->enabled ) {
+                        $method_id = $gateway->id;
+
+                        // Insert for fee_payment_complete = false
+                        $exists_false = $wpdb->get_var( $wpdb->prepare(
+                            "SELECT id FROM $table_payment_methods WHERE payment_plan_identificator = %s AND payment_method_identificator = %s AND fee_payment_complete = 0",
+                            $identificator, $method_id
+                        ));
+
+                        if ( !$exists_false ) {
+                            $wpdb->insert( $table_payment_methods, [
+                                'payment_plan_identificator'   => $identificator,
+                                'payment_method_identificator' => $method_id,
+                                'fee_payment_complete'         => 0
+                            ]);
+                        }
+
+                        // Insert for fee_payment_complete = true
+                        $exists_true = $wpdb->get_var( $wpdb->prepare(
+                            "SELECT id FROM $table_payment_methods WHERE payment_plan_identificator = %s AND payment_method_identificator = %s AND fee_payment_complete = 1",
+                            $identificator, $method_id
+                        ));
+
+                        if ( !$exists_true ) {
+                            $wpdb->insert( $table_payment_methods, [
+                                'payment_plan_identificator'   => $identificator,
+                                'payment_method_identificator' => $method_id,
+                                'fee_payment_complete'         => 1
+                            ]);
+                        }
+                    }
+                }
+            }
+
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details&program_id=' . $program_id));
             exit;
