@@ -28,25 +28,36 @@ function list_admin_form_department_content()
                 foreach ($capabilities as $capability) {
                     $cap[$capability] = true;
                 }
-
-                if (in_array('manager_payments_aes', $capabilities)) {
-                    $role->add_cap('manager_school_subjects_aes');
-                    $role->add_cap('manager_payment_school_subjects');
-                }
-
-                if (in_array('manager_school_subjects', $capabilities)) {
-                    $role->add_cap('manager_school_subjects_aes');
-                    $role->add_cap('manager_edit_school_subjects');
-                }
             }
-            //update
-            if (isset($_POST['department_id']) && !empty($_POST['department_id'])) {
+
+            if ( isset($department_id) && empty($department_id) ) {
+
+                if (wp_roles()->is_role($role_name)) {
+
+                    $message = __('Existing department.', 'edusystem');
+                    $departments_subscription = get_option('site_departments_subscription') ? json_decode(get_option('site_departments_subscription')) : [];
+                    include(plugin_dir_path(__FILE__) . 'templates/register-departments.php');
+                    exit;
+                }
+
+                $wpdb->insert($table_departments, [
+                    'name' => strtolower($name),
+                    'description' => $description,
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+
+                $department_id = $wpdb->insert_id;
+
+                $role = add_role($role_name, ucwords(strtolower($name)), $cap);
+
+                $message_success = __('Department created', 'edusystem');
+
+            } else if ( isset( $department_id ) && !empty( $department_id ) ) {
 
                 $role = get_role($role_name);
 
                 $current_capabilities = $role->capabilities;
                 if ($current_capabilities) {
-
                     foreach ($current_capabilities as $index => $current) {
 
                         $role->remove_cap($index);
@@ -57,58 +68,46 @@ function list_admin_form_department_content()
                     $role->add_cap($index);
                 }
 
-                $role->add_cap('edit_posts');
-                $role->add_cap('manage_options');
-                $role->add_cap('read');
-
-                if (in_array('manager_users_aes', $capabilities)) {
-                    $role->add_cap('create_users');
-                    $role->add_cap('delete_users');
-                    $role->add_cap('edit_users');
-                    $role->add_cap('list_users');
-                    $role->add_cap('promote_users');
-                    $role->add_cap('remove_users');
-                }
-
-                if (in_array('manager_media_aes', $capabilities)) {
-                    // Capacidades para subir y gestionar medios
-                    $role->add_cap('upload_files');
-                    $role->add_cap('edit_posts');
-                    $role->add_cap('delete_posts');
-                    $role->add_cap('edit_others_posts');
-                    $role->add_cap('delete_others_posts');
-                }
-
                 $wpdb->update($table_departments, ['description' => $description], ['id' => $department_id]);
 
                 $message_success = __('Department updated', 'edusystem');
-                setcookie('message', $message_success, time() + 3600, '/');
-                wp_redirect(admin_url('admin.php?page=add_admin_department_content&action=edit&department_id=' . $department_id));
-                exit;
+                
             }
 
-            //create
+            $role->add_cap('edit_posts');
+            $role->add_cap('manage_options');
+            $role->add_cap('read');
 
-            if (wp_roles()->is_role($role_name)) {
-
-                $message = __('Existing department.', 'edusystem');
-                $departments_subscription = get_option('site_departments_subscription') ? json_decode(get_option('site_departments_subscription')) : [];
-                include(plugin_dir_path(__FILE__) . 'templates/register-departments.php');
-                exit;
+            if (in_array('manager_users_aes', $capabilities)) {
+                $role->add_cap('create_users');
+                $role->add_cap('delete_users');
+                $role->add_cap('edit_users');
+                $role->add_cap('list_users');
+                $role->add_cap('promote_users');
+                $role->add_cap('remove_users');
             }
 
-            $wpdb->insert($table_departments, [
-                'name' => strtolower($name),
-                'description' => $description,
-                'created_at' => date('Y-m-d H:i:s')
-            ]);
+            if (in_array('manager_media_aes', $capabilities)) {
+                // Capacidades para subir y gestionar medios
+                $role->add_cap('upload_files');
+                $role->add_cap('edit_posts');
+                $role->add_cap('delete_posts');
+                $role->add_cap('edit_others_posts');
+                $role->add_cap('delete_others_posts');
+            }
 
-            $object_role = add_role($role_name, ucwords(strtolower($name)), $cap);
-            $object_role->add_cap('edit_posts');
-            $object_role->add_cap('manage_options');
-            $object_role->add_cap('read');
+            if (in_array('manager_payments_aes', $capabilities)) {
+                $role->add_cap('manager_school_subjects_aes');
+                $role->add_cap('manager_payment_school_subjects');
+            }
 
-            wp_redirect(admin_url('admin.php?page=add_admin_department_content'));
+            if (in_array('manager_school_subjects', $capabilities)) {
+                $role->add_cap('manager_school_subjects_aes');
+                $role->add_cap('manager_edit_school_subjects');
+            }
+
+            setcookie('message', $message_success, time() + 3600, '/');
+            wp_redirect(admin_url('admin.php?page=add_admin_department_content&action=edit&department_id=' . $department_id));
             exit;
 
 
