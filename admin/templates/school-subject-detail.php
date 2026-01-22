@@ -31,12 +31,12 @@
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <div>
                                                 <input type="checkbox" name="is_active" id="is_active"
-                                                    <?= ($subject->is_active == 1) ? 'checked' : ''; ?> <?= current_user_can('manager_payments_aes') ? '' : 'readonly' ?> >
+                                                    <?= ($subject->is_active == 1) ? 'checked' : ''; ?> <?= current_user_can('manager_edit_school_subjects') ? '' : 'style="pointer-events: none; opacity: 0.6;" ' ?>   >
                                                 <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
                                             </div>
                                         <?php else: ?>
                                             <div>
-                                                <input type="checkbox" name="is_active" id="is_active">
+                                                <input type="checkbox" name="is_active" id="is_active"> 
                                                 <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
                                             </div>
                                         <?php endif; ?>
@@ -45,7 +45,7 @@
                                         <input type="hidden" name="subject_id" id="subject_id"
                                             value="<?= $subject->id; ?>">
                                         <label for="hc"><b><?= __('Type', 'edusystem'); ?></b></label><br>
-                                        <select name="type">
+                                        <select name="type" <?= current_user_can('manager_edit_school_subjects') ? '' : 'style="pointer-events: none; opacity: 0.6;""' ?>  >
                                             <option value="" selected>Select a type</option>
                                             <option value="regular" <?= ($subject->type == 'regular') ? 'selected' : ''; ?>>Regular</option>
                                             <option value="elective" <?= ($subject->type == 'elective') ? 'selected' : ''; ?>>Elective</option>
@@ -75,7 +75,7 @@
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label for="name"><b><?= __('Subject', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
-                                            <input type="text" name="name" value="<?= ucwords($subject->name); ?>">
+                                            <input type="text" name="name" value="<?= ucwords($subject->name); ?>" <?= current_user_can('manager_edit_school_subjects') ? '' : 'readonly' ?>   >
                                         <?php else: ?>
                                             <label for="name"><b><?= __('Subject', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -87,7 +87,7 @@
                                             <label for="code_subject"><b><?= __('Subject codes', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="text" name="code_subject"
-                                                value="<?= ucwords($subject->code_subject); ?>">
+                                                value="<?= ucwords($subject->code_subject); ?>" <?= current_user_can('manager_edit_school_subjects') ? '' : 'readonly' ?>  >
                                         <?php else: ?>
                                             <label for="code_subject"><b><?= __('Subject codes', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -101,12 +101,12 @@
                                                 for="min_pass"><b><?= __('Minimum passing grade', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
                                             <input type="number" step="0.01" name="min_pass"
-                                                value="<?= ucwords($subject->min_pass); ?>" required>
+                                                value="<?= ucwords($subject->min_pass); ?>" required <?= current_user_can('manager_edit_school_subjects') ? '' : 'readonly' ?>  >
                                         <?php else: ?>
                                             <label
                                                 for="min_pass"><b><?= __('Minimum passing grade', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
-                                            <input type="number" step="0.01" name="min_pass" value="" required>
+                                            <input type="number" step="0.01" name="min_pass" value="" required >
                                         <?php endif; ?>
                                     </div>
                                     <!-- <div style="font-weight:400; text-align: center">
@@ -158,14 +158,14 @@
                                         
                                         <br>
 
-                                        <input type="number" step="1" min="1" name="retake_limit" value="<?= $subject->retake_limit ?? '' ?>" />
+                                        <input type="number" step="1" min="1" name="retake_limit" value="<?= $subject->retake_limit ?? '' ?>" <?= current_user_can('manager_edit_school_subjects') ? '' : 'readonly' ?> />
                                     </div>
 
                                     <div style="font-weight:400; text-align: center">
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label
                                                 for="description"><b><?= __('Description', 'edusystem'); ?></b></label><br>
-                                            <textarea name="description"><?= $subject->description; ?></textarea>
+                                            <textarea name="description" <?= current_user_can('manager_edit_school_subjects') ? '' : 'readonly' ?>  ><?= $subject->description; ?></textarea>
                                         <?php else: ?>
                                             <label for="description"><b><?= __('Description', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
@@ -177,7 +177,7 @@
                                         <?php if (isset($subject) && !empty($subject)): ?>
                                             <label for="hc"><b><?= __('HC', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
-                                            <input type="text" name="hc" value="<?= ucwords($subject->hc); ?>">
+                                            <input type="text" name="hc" value="<?= ucwords($subject->hc); ?>" <?= current_user_can('manager_edit_school_subjects') ? '' : 'readonly' ?>  >
                                         <?php else: ?>
                                             <label for="hc"><b><?= __('HC', 'edusystem'); ?></b><span
                                                     class="text-danger">*</span></label><br>
