@@ -67,7 +67,7 @@
                                                 <b><?= __('Price', 'edusystem'); ?></b>
                                                 <span class="text-danger">*</span>
                                             </label>
-                                            <input type="number" name="price" value="<?= $fee['price'] ?? 0.00 ?>" step="0.01" min="1"  onkeydown="return !['-', 'e'].includes(event.key)" required >
+                                            <input type="number" name="price" value="<?= $fee['price'] ?? 0.00 ?>" step="0.01" min="0"  onkeydown="return !['-', 'e'].includes(event.key)" required >
                                         </div>
                                     </div>
                                     
