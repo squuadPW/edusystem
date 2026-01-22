@@ -2523,17 +2523,17 @@ function update_price_product_cart_quota_rule()
                     WC()->cart->remove_coupon("100% registration fee");
                 }
 
-                if (WC()->cart->has_discount("50% registration fee")) {
-                    WC()->cart->remove_coupon("50% registration fee");
-                }
+                // if (WC()->cart->has_discount("50% registration fee")) {
+                //     WC()->cart->remove_coupon("50% registration fee");
+                // }
 
                 if ($quotas_quantity == 1) {
                     WC()->cart->apply_coupon("100% registration fee");
                 }
 
-                if ($quotas_quantity > 1) {
-                    WC()->cart->apply_coupon("50% registration fee");
-                }
+                // if ($quotas_quantity > 1) {
+                //     WC()->cart->apply_coupon("50% registration fee");
+                // }
             }
         }
     }
