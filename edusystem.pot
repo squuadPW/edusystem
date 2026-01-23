@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: EduSystem\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-15 19:47+0000\n"
+"POT-Creation-Date: 2026-01-23 18:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -16,7 +16,7 @@ msgstr ""
 "X-Loco-Version: 2.8.0; wp-6.8.2; php-8.3.14\n"
 "X-Domain: edusystem"
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2812
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2833
 msgid " applied successfully"
 msgstr ""
 
@@ -61,7 +61,7 @@ msgstr ""
 msgid "(You can pay it before starting classes in your account)"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:442
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:450
 msgid "100% Registration fee"
 msgstr ""
 
@@ -84,8 +84,8 @@ msgstr ""
 msgid "A period has been successfully created."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:515
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:516
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:521
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:522
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:117
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:121
 msgid "Academic"
@@ -99,7 +99,7 @@ msgstr ""
 msgid "Academic cut-off filter to be applied"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:524
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:530
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:131
 msgid "Academic offers"
 msgstr ""
@@ -131,12 +131,12 @@ msgstr ""
 msgid "Academic Period:"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:523
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:529
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:126
 msgid "Academic periods"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:525
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:531
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-projection-detail.php:9
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-projection-detail.php:78
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/connections-student.php:12
@@ -186,8 +186,8 @@ msgstr ""
 msgid "Account"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:592
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:333
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:599
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:339
 msgid "Accounts receivable"
 msgstr ""
 
@@ -195,8 +195,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/payments.php:165
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-projection-detail.php:199
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-projection-detail.php:238
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:148
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:222
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:151
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:225
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-payments-institutes.php:71
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-invoice-institutes.php:112
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-invoice-institutes.php:166
@@ -211,7 +211,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/documents.php:128
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/documents.php:181
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/teacher-documents.php:75
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/next-payments.php:27
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/next-payments.php:29
 msgid "Action"
 msgstr ""
 
@@ -232,8 +232,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/admission.php:456
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/admission.php:716
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/admission.php:1211
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:159
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:306
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:158
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:305
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:631
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:461
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:608
@@ -266,17 +266,18 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:973
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:1194
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/departments.php:191
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1934
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2258
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2517
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2646
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2785
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2917
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3098
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2008
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2332
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2591
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2720
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2859
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2991
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3172
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:223
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:371
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:517
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:246
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/configuration-notes-detail.php:21
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:664
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:696
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:779
@@ -301,8 +302,8 @@ msgstr ""
 msgid "Activate student elective"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1713
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1785
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1690
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1762
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/quotas-rules-payment-plans.php:58
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/quotas-rules-payment-plans.php:330
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/available-scholarship-detail.php:29
@@ -336,7 +337,7 @@ msgstr ""
 msgid "Active students.xlsx"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:99
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:97
 msgid "Add"
 msgstr ""
 
@@ -421,6 +422,10 @@ msgstr ""
 msgid "Add new plan"
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/configuration-notes-detail.php:64
+msgid "Add New Row"
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-offer-detail.php:5
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-all-students-institute.php:12
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-academic-offer.php:12
@@ -440,7 +445,7 @@ msgid "Add Payment link"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-pensum.php:24
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:140
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:138
 msgid "Add pensum"
 msgstr ""
 
@@ -462,6 +467,10 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/program-details.php:215
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-plans-details.php:282
 msgid "Add program"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-new-quota.php:42
+msgid "Add quota"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/quotas-rules-payment-plans.php:585
@@ -556,8 +565,8 @@ msgstr ""
 msgid "Admis."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:501
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:502
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:507
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:508
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/connections-student.php:24
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:55
 msgid "Admission"
@@ -568,7 +577,7 @@ msgstr ""
 msgid "Advanced Quota Rules"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1417
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1425
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others.php:65
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others-not-student.php:66
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register.php:132
@@ -681,7 +690,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/roles.php:25
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:3335
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:5890
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2513
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2587
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-billing-ranking.php:19
 msgid "Alliance"
 msgstr ""
@@ -710,11 +719,11 @@ msgstr ""
 msgid "Alliance:"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:564
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:571
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/institute-details.php:449
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/institute-details.php:464
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/send-email.php:25
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:288
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:294
 msgid "Alliances"
 msgstr ""
 
@@ -753,16 +762,17 @@ msgid ""
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1717
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2515
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2645
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2783
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2644
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2589
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2719
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2857
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2665
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/payments.php:195
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/expenses-payroll-detail.php:52
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-new-quota.php:19
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-accounts-receivables.php:57
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-accounts-receivables.php:81
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:142
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:199
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:145
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:202
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-invoice-institutes.php:142
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-sales.php:103
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-sales.php:135
@@ -803,7 +813,7 @@ msgstr ""
 msgid "Another student of legal age cannot register"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3268
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3340
 msgid "Apellido"
 msgstr ""
 
@@ -818,7 +828,7 @@ msgstr ""
 msgid "Applicant details"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2644
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2718
 msgid "Apply to"
 msgstr ""
 
@@ -868,8 +878,8 @@ msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliances.php:719
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/admission.php:451
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1715
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1787
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1692
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1764
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:372
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/document.php:723
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/documents.php:120
@@ -935,13 +945,13 @@ msgstr ""
 msgid "Are you sure you want to send this student to the admin manually?"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:117
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:176
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:243
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:120
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:179
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:246
 msgid "Are you sure?"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1418
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1426
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others.php:66
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others-not-student.php:67
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register.php:133
@@ -961,10 +971,6 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/califications.php:52
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/califications.php:69
 msgid "Assignment"
-msgstr ""
-
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:57
-msgid "Assigns a program"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-program-details.php:78
@@ -1001,13 +1007,13 @@ msgstr ""
 msgid "Auto-enroll"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:526
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:532
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:143
 msgid "Autoenrollment"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:531
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:164
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:538
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:170
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-available-scholarships.php:9
 msgid "Available scholarships"
 msgstr ""
@@ -1048,7 +1054,7 @@ msgstr ""
 msgid "Balance"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3321
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3393
 msgid "Balance Discount"
 msgstr ""
 
@@ -1078,11 +1084,11 @@ msgstr ""
 msgid "Billing country"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:594
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:601
 msgid "Billing Ranking"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:348
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:354
 msgid "Billing ranking"
 msgstr ""
 
@@ -1113,6 +1119,10 @@ msgstr ""
 msgid "By email"
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/configuration-notes-detail.php:20
+msgid "Calculated Grade"
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:473
 msgid "Calendar A (Jan - Dec)"
 msgstr ""
@@ -1133,7 +1143,7 @@ msgstr ""
 msgid "Cambios guardados exitosamente."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:184
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:190
 msgid "Can regenerate projection"
 msgstr ""
 
@@ -1141,12 +1151,12 @@ msgstr ""
 msgid "Can see status bar of student"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:189
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:195
 msgid "Can withdraw student"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2060
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2088
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2037
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2065
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/send-email.php:185
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-select-payment.php:26
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-download-moodle-notes.php:23
@@ -1185,7 +1195,7 @@ msgstr ""
 msgid "Careers"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1419
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1427
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others.php:67
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others-not-student.php:68
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register.php:134
@@ -1237,7 +1247,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:305
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:355
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-periods.php:237
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:84
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:83
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:377
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-offers.php:73
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/dynamic-links.php:77
@@ -1247,10 +1257,10 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:236
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:303
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:151
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:856
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1104
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1245
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1554
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:843
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1131
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1272
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1581
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:55
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:84
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:100
@@ -1261,7 +1271,7 @@ msgstr ""
 msgid "Choose a payment to confirm:"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1422
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1430
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others.php:70
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others-not-student.php:71
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register.php:137
@@ -1310,12 +1320,19 @@ msgstr ""
 msgid "Classroom"
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-access-helper.php:46
+msgid ""
+"Classroom access has been removed because you have overdue payments. Please "
+"pay the outstanding fees in order to continue to have access to the "
+"classroom."
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-access-helper.php:60
 msgid "Classroom access removed"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2050
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2078
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2027
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2055
 msgid "Clear"
 msgstr ""
 
@@ -1370,17 +1387,17 @@ msgstr ""
 msgid "College commissions & allies"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:595
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:246
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:264
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:343
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:602
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:252
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:270
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:349
 msgid "Comissions"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:569
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:570
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:298
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:302
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:576
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:577
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:304
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:308
 msgid "Communications"
 msgstr ""
 
@@ -1389,19 +1406,28 @@ msgstr ""
 msgid "Complete"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:213
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:216
 msgid "Completed"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/configuration-notes-detail.php:9
+msgid "Configuration Notes"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:533
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:149
+msgid "Configuration notes"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:112
 msgid "Configuration of certificates"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:358
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:364
 msgid "Configurations"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:373
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:379
 msgid "Configurations of the site"
 msgstr ""
 
@@ -1599,8 +1625,8 @@ msgstr ""
 msgid "Create program"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:413
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:455
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:419
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:461
 msgid "create users"
 msgstr ""
 
@@ -1622,7 +1648,7 @@ msgstr ""
 msgid "Created"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:280
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:283
 msgid "Created At"
 msgstr ""
 
@@ -1631,8 +1657,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:575
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:726
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-periods.php:404
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:158
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:305
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:157
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:304
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:460
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:607
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:746
@@ -1645,14 +1671,14 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:972
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:1193
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/departments.php:190
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2916
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3097
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2990
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3171
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:222
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:370
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:245
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:392
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/payments.php:378
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:258
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:261
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institutes/student-registered.php:80
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institutes/payments.php:106
 msgid "Created at"
@@ -1695,8 +1721,12 @@ msgstr ""
 msgid "Cuote"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:157
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:304
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-new-quota.php:24
+msgid "Currency"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:156
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:303
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/califications.php:5
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/teacher-courses.php:4
 msgid "Current"
@@ -1734,8 +1764,8 @@ msgstr ""
 msgid "Custom Input Information"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:610
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:378
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:617
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:384
 msgid "Custom inputs"
 msgstr ""
 
@@ -1787,8 +1817,8 @@ msgid "Database error. Please try again."
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1720
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1928
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2252
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2002
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2326
 #: /bitnami/wordpress/wp-content/plugins/edusystem/edusystem_log/Edusystem_Log_Table.php:24
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/dynamic-links-detail.php:223
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:48
@@ -1800,8 +1830,12 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:197
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:201
 msgid "Date new cuote"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-new-quota.php:35
+msgid "Date next payment"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others.php:9
@@ -1920,7 +1954,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/feed.php:126
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/grades-country.php:109
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates-emails.php:47
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2617
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2691
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:494
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/institute-details.php:20
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/quotas-rules-payment-plans.php:261
@@ -1964,8 +1998,8 @@ msgstr ""
 msgid "Delete subprogram"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:425
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:467
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:431
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:473
 msgid "Delete users"
 msgstr ""
 
@@ -1973,9 +2007,9 @@ msgstr ""
 msgid "Department updated"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:609
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:616
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-departments.php:4
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:367
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:373
 msgid "Departments"
 msgstr ""
 
@@ -1986,8 +2020,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-periods.php:402
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:872
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/departments.php:189
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2913
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3096
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2987
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3170
 #: /bitnami/wordpress/wp-content/plugins/edusystem/edusystem_log/Edusystem_Log_Table.php:22
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/institute-details.php:296
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/institute-details.php:300
@@ -1996,9 +2030,9 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/alliance-details.php:193
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/alliance-details.php:198
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-program-details.php:63
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:239
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:273
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:300
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:242
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:276
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:303
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/program-details.php:76
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:43
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/fee-details.php:76
@@ -2035,8 +2069,8 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:270
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:294
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:273
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:297
 msgid "Diff"
 msgstr ""
 
@@ -2304,6 +2338,10 @@ msgstr ""
 msgid "Download moodle notes"
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:59
+msgid "Dual diploma"
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliances.php:523
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:739
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:941
@@ -2317,8 +2355,8 @@ msgstr ""
 msgid "Edit Departments"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:419
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:461
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:425
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:467
 msgid "Edit users"
 msgstr ""
 
@@ -2349,13 +2387,13 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/edusystem_log/edusystem_log.php:130
 #: /bitnami/wordpress/wp-content/plugins/edusystem/edusystem_log/edusystem_log.php:141
 #: /bitnami/wordpress/wp-content/plugins/edusystem/edusystem_log/edusystem_log.php:142
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:499
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:503
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:505
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:509
 #: /bitnami/wordpress/wp-content/plugins/edusystem/edusystem_log/template/logs_table.php:29
 msgid "Edusystem Logs"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:747
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:755
 msgid "Either subject ID or subject code must be provided."
 msgstr ""
 
@@ -2465,12 +2503,12 @@ msgstr ""
 msgid "Email sent successfully."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:578
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:313
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:585
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:319
 msgid "Email to staff"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:307
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:313
 msgid "Email to students"
 msgstr ""
 
@@ -2560,7 +2598,7 @@ msgstr ""
 msgid "Enrollment of active students"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:179
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:185
 msgid "Enrollments"
 msgstr ""
 
@@ -2612,7 +2650,7 @@ msgstr ""
 msgid "Error trying to access Moodle."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3485
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3569
 msgid "Error updating payment"
 msgstr ""
 
@@ -2698,12 +2736,12 @@ msgstr ""
 msgid "Expected matrix"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:136
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:185
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:139
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:188
 msgid "Expected payment date"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:866
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:853
 msgid "Expense deleted successfully."
 msgstr ""
 
@@ -2749,7 +2787,7 @@ msgstr ""
 msgid "Export PDF"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3056
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3130
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/payments.php:163
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/institute-details.php:315
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/institute-details.php:321
@@ -2805,29 +2843,29 @@ msgid "Feed deleted."
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliances.php:522
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:435
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:436
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:469
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:470
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:551
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:551
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:441
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:442
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:475
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:476
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:558
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:558
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:738
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:940
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:1161
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3057
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3131
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:213
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-payments.php:24
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/dynamic-links-detail.php:120
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:402
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:501
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-payments-institutes.php:2
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:240
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:258
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:246
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:264
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-payment-alliance.php:3
 msgid "Fees"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1434
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1442
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:409
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:576
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/teacher-detail.php:75
@@ -3036,7 +3074,7 @@ msgstr ""
 msgid "Generate"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:110
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:113
 msgid "Generate graduation fee order"
 msgstr ""
 
@@ -3049,7 +3087,7 @@ msgstr ""
 msgid "Generate next agreed payment"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:111
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:114
 msgid "Generate next installment order"
 msgstr ""
 
@@ -3057,12 +3095,12 @@ msgstr ""
 msgid "Generate pending academic projections"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:109
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:112
 msgid "Generate registration fee order"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2052
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2080
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2029
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2057
 msgid "Generate signature automatically"
 msgstr ""
 
@@ -3128,6 +3166,10 @@ msgstr ""
 msgid "Grade"
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/configuration-notes.php:32
+msgid "Grade configurations saved successfully."
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/grades-country.php:132
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:830
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:996
@@ -3139,8 +3181,8 @@ msgstr ""
 msgid "Grades (separated by commas)"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:611
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:383
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:618
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:389
 msgid "Grades by Country"
 msgstr ""
 
@@ -3240,7 +3282,7 @@ msgstr ""
 msgid "High School"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1420
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1428
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others.php:68
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others-not-student.php:69
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register.php:135
@@ -3362,7 +3404,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:572
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:723
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:499
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2912
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2986
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-program-details.php:43
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/program-details.php:44
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-plans-details.php:44
@@ -3386,7 +3428,7 @@ msgid "Identifier is not in use."
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:307
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1248
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1275
 msgid "Identifier not found"
 msgstr ""
 
@@ -3412,7 +3454,7 @@ msgid ""
 "the virtual classroom."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:249
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:253
 msgid "if you wish"
 msgstr ""
 
@@ -3463,8 +3505,8 @@ msgstr ""
 msgid "Information"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1484
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1498
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1492
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1506
 msgid "information changed successfully."
 msgstr ""
 
@@ -3549,7 +3591,7 @@ msgstr ""
 msgid "Installments"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:303
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:302
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1773
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1916
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:2515
@@ -3564,14 +3606,14 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:5354
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:5631
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:6070
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2781
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2855
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/payments.php:377
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-students.php:57
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/enrollment-detail.php:82
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:269
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:288
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-billing-ranking.php:24
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:69
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:67
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/scholarship-detail.php:75
 msgid "Institute"
 msgstr ""
@@ -3619,12 +3661,12 @@ msgid "Institute:"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/roles.php:18
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:459
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:460
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:563
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:563
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:465
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:466
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:570
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:570
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/send-email.php:26
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:283
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:289
 msgid "Institutes"
 msgstr ""
 
@@ -3683,7 +3725,7 @@ msgid ""
 "jpge, .png, .web"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3457
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3530
 msgid "Invalid payment ID"
 msgstr ""
 
@@ -3700,7 +3742,7 @@ msgstr ""
 msgid "Invalid rector phone number format"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:760
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:768
 msgid "Invalid status provided. Must be \"current\" or \"history\"."
 msgstr ""
 
@@ -3708,10 +3750,10 @@ msgstr ""
 msgid "Invalid teacher ID provided."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:446
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:447
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:489
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:490
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:452
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:453
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:495
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:496
 msgid "Invoice"
 msgstr ""
 
@@ -3741,7 +3783,7 @@ msgstr ""
 msgid "Items"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1682
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1709
 msgid "Items could not be updated."
 msgstr ""
 
@@ -3749,7 +3791,7 @@ msgstr ""
 msgid "Items Subtotal"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1679
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1706
 msgid "Items updated successfully."
 msgstr ""
 
@@ -3859,9 +3901,13 @@ msgstr ""
 msgid "List of payments"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:407
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:449
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:413
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:455
 msgid "List users"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/configuration-notes-detail.php:19
+msgid "Literal Grade"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:22
@@ -3902,7 +3948,7 @@ msgstr ""
 msgid "Mails sent."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1433
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1441
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:408
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:573
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/teacher-detail.php:74
@@ -3934,7 +3980,7 @@ msgstr ""
 msgid "Manage payments"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:278
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:284
 msgid "Manage staff"
 msgstr ""
 
@@ -3943,7 +3989,7 @@ msgstr ""
 msgid "Manager"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:214
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:220
 msgid "Manager student matrix"
 msgstr ""
 
@@ -4040,8 +4086,8 @@ msgstr ""
 msgid "Me"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:388
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:392
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:394
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:398
 msgid "Media"
 msgstr ""
 
@@ -4113,6 +4159,10 @@ msgstr ""
 msgid "Middle text"
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/configuration-notes-detail.php:18
+msgid "Min Score"
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/school-subject-detail.php:101
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/school-subject-detail.php:107
 msgid "Minimum passing grade"
@@ -4127,8 +4177,8 @@ msgstr ""
 msgid "Modules"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2514
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2782
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2588
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2856
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/payments.php:194
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/quotas-rules-payment-plans.php:159
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/quotas-rules-payment-plans.php:250
@@ -4189,7 +4239,7 @@ msgstr ""
 msgid "Moodle URL"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2643
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2717
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-sales.php:102
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-sales.php:134
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-sales.php:175
@@ -4205,8 +4255,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1534
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1703
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1713
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:708
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:709
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:716
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:717
 msgid "N/A"
 msgstr ""
 
@@ -4218,8 +4268,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:424
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:573
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:724
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:155
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:302
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:154
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:301
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:871
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:500
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:542
@@ -4227,8 +4277,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:966
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:1187
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/departments.php:188
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2911
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3094
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2985
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3168
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:241
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/institute-details.php:41
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/institute-details.php:47
@@ -4352,7 +4402,7 @@ msgstr ""
 msgid "Names(s)"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1421
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1429
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others.php:69
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others-not-student.php:70
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register.php:136
@@ -4387,8 +4437,8 @@ msgstr ""
 msgid "New alliance registered"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:267
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:291
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:270
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:294
 msgid "New amount"
 msgstr ""
 
@@ -4409,7 +4459,7 @@ msgstr ""
 msgid "New Applicants"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:188
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:189
 msgid "New cuote"
 msgstr ""
 
@@ -4429,6 +4479,11 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/emails/function.php:42
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institutes/emails/function.php:42
 msgid "New Payment has been received"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-new-quota.php:5
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:102
+msgid "New quota"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:309
@@ -4475,7 +4530,7 @@ msgstr ""
 msgid "Next academic period"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2643
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2664
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/shortcodes/shortcodes.php:144
 msgid "Next date payment"
 msgstr ""
@@ -4503,6 +4558,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-delete-institute-alliance.php:17
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-delete-subprogram.php:17
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-scholarship.php:24
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-new-quota.php:43
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-delete-career.php:17
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-delete-department.php:16
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-alliance.php:19
@@ -4516,13 +4572,13 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-plans-details.php:259
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-delete-advanced-quota-rule.php:17
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-delete-period.php:18
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:280
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:284
 msgid "No"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1854
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1915
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1968
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1831
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1892
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1945
 msgid "No data to show."
 msgstr ""
 
@@ -4559,7 +4615,7 @@ msgstr ""
 msgid "No students found for auto-enrollment."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3267
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3339
 msgid "Nombre"
 msgstr ""
 
@@ -4642,8 +4698,8 @@ msgid ""
 "provide you, as soon as we have it you'll see it here"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:264
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:288
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:267
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:291
 msgid "Old amount"
 msgstr ""
 
@@ -4696,7 +4752,7 @@ msgstr ""
 msgid "Only pending payments"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:223
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:229
 msgid "Only read payments"
 msgstr ""
 
@@ -4724,7 +4780,11 @@ msgstr ""
 msgid "Optional"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3313
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/configuration-notes-detail.php:17
+msgid "Order"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3385
 msgid "Order automatically completed due to balance"
 msgstr ""
 
@@ -4771,6 +4831,10 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/custom-inputs.php:145
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/custom-inputs-detail.php:45
 msgid "Page"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/next-payments.php:49
+msgid "Paid"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:124
@@ -4884,9 +4948,9 @@ msgstr ""
 msgid "Passwords do not match"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2484
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2752
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/next-payments.php:45
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2558
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2826
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/next-payments.php:71
 msgid "Pay"
 msgstr ""
 
@@ -4896,11 +4960,11 @@ msgstr ""
 msgid "Pay %s's registration fee"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2642
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2663
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:260
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:276
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:133
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:172
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:136
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:175
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/shortcodes/shortcodes.php:144
 msgid "Payment"
 msgstr ""
@@ -4918,8 +4982,8 @@ msgstr ""
 msgid "Payment currency"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:139
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:195
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:142
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:198
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-comissions.php:144
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-comissions.php:199
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-comissions.php:292
@@ -4941,8 +5005,8 @@ msgid "payment has been approved"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1514
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1927
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2251
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2001
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2325
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:945
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/payments.php:158
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-payments-institutes.php:51
@@ -4962,9 +5026,9 @@ msgstr ""
 msgid "Payment ID"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:510
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:204
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:209
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:516
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:210
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:215
 msgid "Payment link"
 msgstr ""
 
@@ -4984,8 +5048,8 @@ msgstr ""
 msgid "Payment links"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1932
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2256
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2006
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2330
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:261
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:281
 msgid "Payment Method"
@@ -4997,7 +5061,7 @@ msgstr ""
 msgid "Payment method"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1114
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1141
 msgid "Payment method deleted successfully."
 msgstr ""
 
@@ -5009,7 +5073,7 @@ msgstr ""
 msgid "Payment method used"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:233
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:237
 msgid "Payment method used:"
 msgstr ""
 
@@ -5021,7 +5085,7 @@ msgstr ""
 msgid "Payment methods used"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3475
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3548
 msgid "Payment not found"
 msgstr ""
 
@@ -5046,17 +5110,17 @@ msgstr ""
 msgid "Payment plan of your interest"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:550
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:557
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-payments.php:28
 msgid "Payment Plans"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:234
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:252
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:240
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:258
 msgid "Payment plans"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3513
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3597
 msgid "Payment successfully updated to pending"
 msgstr ""
 
@@ -5073,16 +5137,16 @@ msgstr ""
 msgid "Payment type"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:539
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:540
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:549
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:549
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:546
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:547
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:556
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:556
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:820
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:990
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:393
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/connections-student.php:30
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:219
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:228
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:225
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:234
 msgid "Payments"
 msgstr ""
 
@@ -5094,7 +5158,7 @@ msgstr ""
 msgid "Payments for Review"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:253
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:256
 msgid "Payments log"
 msgstr ""
 
@@ -5105,14 +5169,19 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliances.php:718
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/admission.php:449
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institute.php:371
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:214
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:218
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:217
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:221
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-student-graduation.php:3
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-student-graduation.php:17
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/documents.php:125
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/documents.php:178
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/pending-documents.php:47
 msgid "Pending"
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/next-payments.php:56
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/next-payments.php:60
+msgid "Pending approval"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/teachers.php:300
@@ -5142,6 +5211,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:430
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-invoice-institutes.php:31
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-invoice-alliance.php:14
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/next-payments.php:47
 msgid "Pending payment"
 msgstr ""
 
@@ -5149,8 +5219,8 @@ msgstr ""
 msgid "Pending students to select electives"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:532
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:169
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:539
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:175
 msgid "Pensum"
 msgstr ""
 
@@ -5426,8 +5496,8 @@ msgid "Previous amount"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:502
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2915
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3095
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2989
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3169
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/program-details.php:65
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/program-details.php:135
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/program-details.php:181
@@ -5464,13 +5534,13 @@ msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:571
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/admission.php:713
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:156
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:155
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1629
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1653
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1716
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1772
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:533
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:533
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:540
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:540
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/dynamic-links.php:347
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-sales-product.php:48
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/available-scholarship-detail.php:53
@@ -5481,7 +5551,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-accounts-receivables.php:54
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-accounts-receivables.php:78
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:55
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:174
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:180
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-comissions.php:117
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-comissions.php:170
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-comissions.php:274
@@ -5565,8 +5635,8 @@ msgstr ""
 msgid "Prom grades"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:431
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:473
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:437
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:479
 msgid "Promote users"
 msgstr ""
 
@@ -5845,18 +5915,22 @@ msgstr ""
 msgid "Related mentions"
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/configuration-notes-detail.php:55
+msgid "Remove"
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:976
 msgid "Remove deadline"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:437
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:479
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:443
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:485
 msgid "Remove users"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:583
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:584
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:323
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:590
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:591
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:329
 msgid "Report"
 msgstr ""
 
@@ -5868,8 +5942,8 @@ msgstr ""
 msgid "Report electives.xlsx"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1716
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1788
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1693
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1765
 msgid "Reproved"
 msgstr ""
 
@@ -5907,10 +5981,10 @@ msgstr ""
 msgid "Request update"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:529
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:536
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:850
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:1005
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:153
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:159
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/my-requests.php:1
 msgid "Requests"
 msgstr ""
@@ -5930,7 +6004,7 @@ msgstr ""
 msgid "Required data is missing."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:509
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:515
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:64
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-documents.php:4
 msgid "Required Documents"
@@ -6004,8 +6078,8 @@ msgstr ""
 msgid "Sale priceTotal"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:593
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:338
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:600
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:344
 msgid "Sales by product"
 msgstr ""
 
@@ -6022,15 +6096,16 @@ msgid "Save and send email"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/moodle-setting.php:17
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/configuration-notes-detail.php:65
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/alliance-details.php:288
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:639
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:518
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:524
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/document_view.php:207
 msgid "Save Changes"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/staff-detail.php:179
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:243
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:246
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-projection-student-matrix.php:191
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/student-details.php:180
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/student-details.php:183
@@ -6058,7 +6133,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-period-detail.php:246
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-offer-detail.php:122
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-program-details.php:99
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:135
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:133
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/grades-country-detail.php:60
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/feed-detail.php:76
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/program-details.php:209
@@ -6109,9 +6184,9 @@ msgstr ""
 msgid "Scholarship Recipients"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:530
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:537
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-current-students.php:123
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:158
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:164
 msgid "Scholarship students"
 msgstr ""
 
@@ -6145,8 +6220,8 @@ msgstr ""
 msgid "School or Institution Phone"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:534
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:194
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:541
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:200
 msgid "School subjects"
 msgstr ""
 
@@ -6309,6 +6384,10 @@ msgstr ""
 msgid "Select a course"
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-new-quota.php:26
+msgid "select a currency"
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-students.php:26
 msgid "Select a grade"
 msgstr ""
@@ -6321,7 +6400,7 @@ msgstr ""
 msgid "Select a type"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:405
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:411
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/updating-student-documents.php:56
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/updating-student-documents.php:86
 msgid "select academic cut"
@@ -6449,7 +6528,7 @@ msgstr ""
 msgid "Select an option"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:297
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:303
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-documents.php:46
 msgid "Select career"
 msgstr ""
@@ -6482,7 +6561,7 @@ msgstr ""
 msgid "Select institute"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:298
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:304
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-documents.php:55
 msgid "Select mention"
 msgstr ""
@@ -6518,7 +6597,7 @@ msgstr ""
 msgid "Select term to filter"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:221
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:225
 msgid "Select the payment method used:"
 msgstr ""
 
@@ -6562,7 +6641,7 @@ msgstr ""
 msgid "Send Email"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:577
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:584
 msgid "Send email"
 msgstr ""
 
@@ -6586,6 +6665,10 @@ msgstr ""
 msgid "Send to admin"
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:191
+msgid "Send to balance"
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:50
 msgid "Send to virtual classroom"
 msgstr ""
@@ -6606,10 +6689,10 @@ msgstr ""
 msgid "Sent"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:600
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:601
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:607
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:608
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:608
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:615
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:615
 msgid "Settings"
 msgstr ""
 
@@ -6618,7 +6701,7 @@ msgstr ""
 msgid "Settings for %s"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:362
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:368
 msgid "Settings menu"
 msgstr ""
 
@@ -6626,20 +6709,20 @@ msgstr ""
 msgid "Share link"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2047
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2075
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2024
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2052
 msgid "SIGN HERE"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2038
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2015
 msgid "Signature of applicant:"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2102
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2079
 msgid "Signature of FGU Official:"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2066
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2043
 msgid "Signature of Parent/Legal Guardian:"
 msgstr ""
 
@@ -6679,8 +6762,8 @@ msgstr ""
 msgid "Split payment editing notice"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:508
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:512
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:514
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:518
 msgid "Split Payment Method"
 msgstr ""
 
@@ -6703,12 +6786,12 @@ msgstr ""
 msgid "SSN"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:554
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:555
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:561
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:562
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:562
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:269
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:273
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:569
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:569
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:275
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:279
 msgid "Staff"
 msgstr ""
 
@@ -6804,11 +6887,11 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-periods.php:403
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/admission.php:1210
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:501
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1933
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2257
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2512
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2780
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2914
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2007
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2331
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2586
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2854
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2988
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:369
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:244
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/payments.php:191
@@ -6824,8 +6907,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:267
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:305
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-details.php:469
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:145
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:210
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:148
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:213
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-projection-student-matrix.php:69
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/list-invoice-institutes.php:136
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/request-detail.php:49
@@ -6842,6 +6925,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/teacher-course-students.php:45
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/teacher-documents.php:38
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/teacher-documents.php:66
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/next-payments.php:27
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/emails/templates/request-documents-email.php:15
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/emails/templates/update-document-email.php:17
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/institutes/emails/templates/request-documents-email.php:15
@@ -6902,8 +6986,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:5624
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-graduation.php:67
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-graduation.php:194
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1930
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2254
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2004
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2328
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:221
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:368
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:389
@@ -6923,8 +7007,8 @@ msgstr ""
 msgid "Student"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:535
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:199
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:542
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:205
 msgid "Student banners"
 msgstr ""
 
@@ -6943,7 +7027,7 @@ msgid "Student created at %s"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-access-helper.php:28
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1577
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:1585
 msgid "Student data not found. Please contact support."
 msgstr ""
 
@@ -6957,7 +7041,7 @@ msgid "Student Details"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/student-details.php:22
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:311
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:314
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others.php:6
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register-others-not-student.php:7
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/form-register.php:42
@@ -7006,7 +7090,7 @@ msgstr ""
 msgid "Student grade"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:148
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:154
 msgid "Student graduations"
 msgstr ""
 
@@ -7070,14 +7154,14 @@ msgid ""
 "separate them with commas)"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:425
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:426
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:479
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:480
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:596
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:596
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:431
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:432
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:485
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:486
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:603
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:603
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/alliance/institutes-registered.php:215
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:353
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:359
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/teacher-course-students.php:1
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/teacher-courses.php:21
 #: /bitnami/wordpress/wp-content/plugins/edusystem/public/templates/teacher-courses.php:48
@@ -7149,7 +7233,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/enrollment-detail.php:141
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/enrollment-detail.php:153
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-offer-detail.php:36
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:83
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/pensum-details.php:81
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/academic-projection-student-matrix.php:68
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-download-moodle-notes.php:12
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/send-notification.php:29
@@ -7207,14 +7291,14 @@ msgid "Subprogram / Level"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:113
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:963
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:950
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/program-details.php:95
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-plans-details.php:98
 msgid "Subprograms"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:490
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:494
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:496
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:500
 msgid "Subscription"
 msgstr ""
 
@@ -7224,7 +7308,7 @@ msgstr ""
 msgid "Subtotal"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2589
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2566
 msgid "Successfully closed offer."
 msgstr ""
 
@@ -7249,7 +7333,7 @@ msgstr ""
 msgid "Successfully generated virtual classroom for the student."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2589
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:2566
 msgid "Successfully opened offer."
 msgstr ""
 
@@ -7257,8 +7341,8 @@ msgstr ""
 msgid "Successfully updated notes for the students."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:591
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:327
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:598
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:333
 msgid "Summary"
 msgstr ""
 
@@ -7296,8 +7380,8 @@ msgstr ""
 msgid "Switch"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:443
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:485
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:449
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:491
 msgid "Switch users"
 msgstr ""
 
@@ -7334,7 +7418,7 @@ msgstr ""
 msgid "Teacher or person responsible"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:679
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:687
 msgid "Teacher profile not found."
 msgstr ""
 
@@ -7344,8 +7428,8 @@ msgid ""
 "file type is "
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:565
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:293
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:572
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:299
 msgid "Teachers"
 msgstr ""
 
@@ -7353,7 +7437,7 @@ msgstr ""
 msgid "Template deleted."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:579
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:586
 msgid "Template emails"
 msgstr ""
 
@@ -7361,7 +7445,7 @@ msgstr ""
 msgid "Templates"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:318
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:324
 msgid "Templates emails"
 msgstr ""
 
@@ -7404,11 +7488,11 @@ msgstr ""
 msgid "The academic term in progress is"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1296
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1323
 msgid "The advanced quota rule has been successfully removed."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1298
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1325
 msgid "The advanced quota rule has not been deleted correctly."
 msgstr ""
 
@@ -7448,6 +7532,13 @@ msgstr ""
 msgid "The cut was not removed correctly."
 msgstr ""
 
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-access-helper.php:51
+msgid ""
+"The deadline for uploading some documents has expired, removing your access "
+"to the virtual classroom. We invite you to access your documents area for "
+"more information."
+msgstr ""
+
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/documents.php:81
 msgid "The document has been created successfully."
 msgstr ""
@@ -7460,11 +7551,11 @@ msgstr ""
 msgid "The document has been updated correctly."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1577
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1604
 msgid "The fee has been deleted successfully."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1580
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1607
 msgid "The fee has not been deleted correctly."
 msgstr ""
 
@@ -7510,12 +7601,12 @@ msgid "The product has been added successfully."
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:327
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1275
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1302
 msgid "The quota rule has been deleted successfully."
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:329
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1277
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1304
 msgid "The quota rule has not been deleted correctly."
 msgstr ""
 
@@ -7544,7 +7635,7 @@ msgstr ""
 msgid "The student %s encountered an error while logging into Moodle."
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:642
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/student.php:650
 #, php-format
 msgid "The student %s saw grades."
 msgstr ""
@@ -7572,23 +7663,23 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:165
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:379
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:434
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1373
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1442
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1400
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1469
 msgid "The subprogram contains enrolled students."
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-program.php:159
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:373
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:428
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1368
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1437
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1395
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1464
 msgid "The subprogram has been successfully removed."
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:375
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:430
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1370
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1439
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1397
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1466
 msgid "The subprogram was not removed correctly."
 msgstr ""
 
@@ -7692,7 +7783,7 @@ msgstr ""
 msgid "This SCHOLARSHIP applies to:"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:314
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:317
 msgid "This student does not exist"
 msgstr ""
 
@@ -7738,8 +7829,8 @@ msgid ""
 "steps:"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1712
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1784
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1689
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1761
 msgid "To begin"
 msgstr ""
 
@@ -7791,9 +7882,9 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1537
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1636
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/report.php:1660
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1931
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2255
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2671
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2005
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2329
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2692
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-sales-product.php:53
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-sales.php:220
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/report-comissions.php:237
@@ -7817,8 +7908,8 @@ msgstr ""
 msgid "Total cuotes"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2516
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2784
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2590
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2858
 msgid "Total Orders"
 msgstr ""
 
@@ -7849,7 +7940,7 @@ msgstr ""
 msgid "Transaction ID"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:237
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:241
 msgid "Transaction ID:"
 msgstr ""
 
@@ -7974,8 +8065,8 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1714
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1786
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1691
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:1763
 msgid "Unsubscribed"
 msgstr ""
 
@@ -8034,11 +8125,11 @@ msgstr ""
 msgid "Updated Document(s)"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2562
+#: /bitnami/wordpress/wp-content/plugins/edusystem/public/functions.php:2583
 msgid "Updated price"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:511
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/functions.php:517
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/updating-student-documents.php:19
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:69
 msgid "Updating student documents"
@@ -8082,8 +8173,8 @@ msgid "Upper text"
 msgstr ""
 
 #: /bitnami/wordpress/wp-content/plugins/edusystem/edusystem_log/Edusystem_Log_Table.php:21
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:261
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:284
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:264
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:287
 msgid "User"
 msgstr ""
 
@@ -8117,8 +8208,8 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:397
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:401
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:403
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/register-departments.php:407
 msgid "Users"
 msgstr ""
 
@@ -8170,8 +8261,8 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-periods.php:380
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/admission.php:421
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/admission.php:686
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:128
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:280
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:127
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/pensum.php:279
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/academic-projection.php:607
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:430
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/scholarships.php:577
@@ -8184,11 +8275,11 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/grades-country.php:108
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/program.php:476
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/staff.php:165
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1902
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2226
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2616
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2887
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3071
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:1976
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2300
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2690
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:2961
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/payments.php:3145
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:197
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:344
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/requests.php:493
@@ -8234,7 +8325,7 @@ msgstr ""
 msgid "View Notes"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:226
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/generate-advance-payment.php:229
 msgid "View payment"
 msgstr ""
 
@@ -8395,7 +8486,7 @@ msgstr ""
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/payment-plans-details.php:259
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-delete-advanced-quota-rule.php:16
 #: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-delete-period.php:17
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:277
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:281
 msgid "Yes"
 msgstr ""
 
@@ -8415,7 +8506,13 @@ msgstr ""
 msgid "yesterday"
 msgstr ""
 
-#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:247
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/student-access-helper.php:40
+msgid ""
+"You are missing some of the documents required for access. Please refer to "
+"the documents section for more information."
+msgstr ""
+
+#: /bitnami/wordpress/wp-content/plugins/edusystem/admin/templates/modal-status-payment.php:251
 msgid "You can add a description about the payment"
 msgstr ""
 
