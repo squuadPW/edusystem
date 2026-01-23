@@ -1248,10 +1248,12 @@ h2 {
   border-bottom: 1px solid #eee;
   padding-bottom: 5px;
 }
+.capability-group ul ul {
+  margin-left: 20px;
+  margin-top: 10px;
+}
 .capability-group .capability-item {
-  /* display: flex; // Aligns checkbox and label nicely 
-  align-items: center; */
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   padding: 3px 0;
 }
 .capability-group .capability-item [capability-disabled] {
@@ -1266,12 +1268,6 @@ h2 {
 .capability-group .capability-item label input[type=checkbox] {
   margin-right: 8px;
   flex-shrink: 0;
-}
-.capability-group .capability-item.indented {
-  margin-left: 20px; /* Applies indentation for sub-items */
-}
-.capability-group .capability-item.indented.subindented {
-  margin-left: 40px; /* Further indentation for deeper levels */
 }
 
 .group-inputs,

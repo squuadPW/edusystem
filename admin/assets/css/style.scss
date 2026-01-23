@@ -1367,11 +1367,14 @@ h2 {
         padding-bottom: 5px;
     }
 
+    ul ul {
+        margin-left: 20px;
+        margin-top: 10px;
+    }
+
     .capability-item {
         
-        /* display: flex; // Aligns checkbox and label nicely 
-        align-items: center; */
-        margin-bottom: 10px;
+        margin-bottom: 5px;
         padding: 3px 0;
 
         [capability-disabled] {
@@ -1389,15 +1392,6 @@ h2 {
                 flex-shrink: 0; 
             }
         }
-
-        &.indented {
-            margin-left: 20px; /* Applies indentation for sub-items */
-
-            &.subindented {
-                margin-left: 40px; /* Further indentation for deeper levels */
-            }
-        }
-
     }
 }
 

@@ -96,16 +96,6 @@ function list_admin_form_department_content()
                 $role->add_cap('delete_others_posts');
             }
 
-            if (in_array('manager_payments_aes', $capabilities)) {
-                $role->add_cap('manager_school_subjects_aes');
-                $role->add_cap('manager_payment_school_subjects');
-            }
-
-            if (in_array('manager_school_subjects', $capabilities)) {
-                $role->add_cap('manager_school_subjects_aes');
-                $role->add_cap('manager_edit_school_subjects');
-            }
-
             setcookie('message', $message_success, time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_department_content&action=edit&department_id=' . $department_id));
             exit;
