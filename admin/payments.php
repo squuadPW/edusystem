@@ -515,6 +515,27 @@ function add_admin_form_payments_content()
                     }
                     $new_order->add_product($product, 1);
 
+                    $data = [
+                        'status_id' => 0,
+                        'order_id' => $new_order->get_id(),
+                        'student_id' => $student->id,
+                        'product_id' => $product_id,
+                        'variation_id' => null,
+                        'currency' => $new_order->get_currency(),
+                        'amount' => $product->get_price(),
+                        'original_amount_product' => $product->get_price(),
+                        'total_amount' => $product->get_price(),
+                        'original_amount' => $product->get_price(),
+                        'discount_amount' => 0,
+                        'type_payment' => 2,
+                        'cuote' => 1,
+                        'num_cuotes' => 1,
+                        'date_payment' => null,
+                        'date_next_payment' => current_time('mysql', true),
+                    ];
+                    $wpdb->insert($table_student_payments, $data);
+                    $student_payment_id = $wpdb->insert_id;
+
                     if (empty($orders_customer)) {
                         $user_customer = get_user_by('id', $customer_id);
 
@@ -540,7 +561,7 @@ function add_admin_form_payments_content()
 
                         // Add additional metadata
                         $new_order->add_meta_data('old_order_primary', $order_old->get_id());
-                        $new_order->add_meta_data('cuote_payment', 1);
+                        $new_order->add_meta_data('cuote_payment', $student_payment_id);
                         $new_order->update_meta_data('_order_origin', 'Fee graduation - Admin');
 
                         // Copy billing address if exists
