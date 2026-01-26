@@ -1433,4 +1433,32 @@ body.logged-in .custom-logo-link {
 
 #quota-description-container {
   margin-bottom: 40px;
+}
+
+.seccion-dashboard {
+  background-color: #f7f7f7;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.seccion-dashboard .seccion-dashboard-header {
+  border-bottom: 1px solid #a9a9a9;
+  margin: 0 0 20px 0;
+}
+.seccion-dashboard .seccion-dashboard-header h4 {
+  font-size: 20px;
+  text-align: center;
+  padding-bottom: 10px;
+}
+.seccion-dashboard .list-failed-subjects li {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.seccion-dashboard .list-failed-subjects li .button-primary {
+  width: auto;
 }/*# sourceMappingURL=style.css.map */
