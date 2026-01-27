@@ -853,66 +853,61 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  let selectorAcademicPeriod = document.querySelector(
+  const selectorAcademicPeriod = document.querySelector(
     "select[name=academic_period]"
   );
-  let selectorCuts = document.querySelector("select[name=academic_period_cut]");
+  const selectorCuts = document.querySelector("select[name=academic_period_cut]");
 
-  // Obtenemos el valor inicial desde el atributo de datos
-  const initialCut = selectorCuts.dataset.initialcut;
-  const textoption = selectorCuts.dataset.textoption;
-
-  console.log(selectorAcademicPeriod)
   if (selectorAcademicPeriod && selectorCuts) {
-    selectorAcademicPeriod.addEventListener("change", function (e) {
-      changeSelectorAcademicPeriod(e.target.value);
-    });
+    const textoption = selectorCuts.dataset.textoption || "Out of term";
 
-    if (selectorAcademicPeriod.value) {
-      changeSelectorAcademicPeriod(selectorAcademicPeriod.value);
-    }
-
-    function changeSelectorAcademicPeriod(period) {
+    const loadCuts = (periodValue, selectedCut = "") => {
       const XHR = new XMLHttpRequest();
       XHR.open("POST", get_approved_by.url, true);
       XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       XHR.responseType = "json";
-      XHR.send("action=load_cuts_period&period=" + period);
+      XHR.send(
+        "action=load_cuts_period&period=" + encodeURIComponent(periodValue)
+      );
       XHR.onload = function () {
         if (this.readyState == "4" && XHR.status === 200) {
-          let cuts = this.response;
+          const cuts = this.response || [];
 
-          // Limpia el select de cortes
           selectorCuts.innerHTML = "";
 
-          // Agrega la opción por defecto 'Out of term' y la marca como seleccionada si corresponde
-          let defaultOption = document.createElement("option");
+          const defaultOption = document.createElement("option");
           defaultOption.value = "";
-          defaultOption.text = textoption ?? "Out of term";
-          // Lógica de selección para la opción por defecto
+          defaultOption.text = textoption;
           if (
-            initialCut === "nocut" ||
-            initialCut === "out" ||
-            initialCut === ""
+            selectedCut === "" ||
+            selectedCut === "out" ||
+            selectedCut === "nocut"
           ) {
             defaultOption.selected = true;
           }
           selectorCuts.appendChild(defaultOption);
 
-          // Agrega las nuevas opciones y las marca si coinciden
           cuts.forEach((cut) => {
-            let option = document.createElement("option");
+            const option = document.createElement("option");
             option.value = cut.cut;
             option.text = cut.cut;
-            // Lógica para seleccionar automáticamente
-            if (option.value === initialCut) {
+            if (selectedCut && option.value === selectedCut) {
               option.selected = true;
             }
             selectorCuts.appendChild(option);
           });
         }
       };
+    };
+
+    if (selectorAcademicPeriod.value) {
+      const initialCut = selectorCuts.dataset.initialCut || "";
+      loadCuts(selectorAcademicPeriod.value, initialCut);
     }
+
+    selectorAcademicPeriod.addEventListener("change", function (e) {
+      loadCuts(e.target.value, "");
+    });
   }
 });
 
