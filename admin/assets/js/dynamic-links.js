@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updatePaymentPlanDetails(selectedPlanId) {
       const detailsElement = document.getElementById(
-        "details-payment-plan-element"
+        "details-payment-plan-element",
       );
       const detailsContainer = document.getElementById("details-payment-plan");
 
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const planWrapper = currentPlansData.find(
-        (p) => (p.plan.identificator || p.plan.id) == selectedPlanId
+        (p) => (p.plan.identificator || p.plan.id) == selectedPlanId,
       );
 
       if (planWrapper) {
@@ -42,12 +42,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const currency = p.currency || "$";
 
         let html = `
-            <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
-                <p><strong>Name:</strong> ${p.name}</p>
-                <p><strong>Description:</strong> ${p.description}</p>
-                <p><strong>Regular Price:</strong> ${currency}${p.total_price}</p>
-            </div>
-        `;
+        <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+            <p><strong>Name:</strong> ${p.name}</p>
+            <p><strong>Description:</strong> ${p.description}</p>
+            <p><strong>Regular Price:</strong> ${currency}${p.total_price}</p>
+        </div>
+    `;
 
         if (fees.length > 0) {
           html += `<label><b>Fees</b></label>`;
@@ -64,44 +64,54 @@ document.addEventListener("DOMContentLoaded", function () {
             const qty = parseInt(quote.quotas_quantity);
             const freqVal = parseInt(quote.frequency_value);
 
-            // Lógica para etiquetas más limpias
-            let frequencyText =
+            const frequencyText =
               freqVal === 0 || qty === 1
                 ? "One-time payment"
                 : `Every ${freqVal} ${quote.type_frequency}${
                     freqVal > 1 ? "s" : ""
                   }`;
 
-            let installmentLabel =
+            const installmentLabel =
               qty === 1 ? "Single installment" : `${qty} Installments`;
 
+            // Lógica de validación para precios tachados
+            const initialSale = quote.initial_payment_sale ?? 0;
+            const initialOriginal = quote.initial_payment;
+            const showInitialStrikethrough = initialSale != initialOriginal;
+
+            const installmentSale = quote.quote_price_sale;
+            const installmentOriginal = quote.quote_price;
+            const showInstallmentStrikethrough =
+              installmentSale != installmentOriginal;
+
+            const finalSale = quote.final_payment_sale ?? 0;
+            const finalOriginal = quote.final_payment;
+            const showFinalStrikethrough = finalSale != finalOriginal;
+
             html += `
-                <div style="background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px; margin: 10px 0;">
-                    <div style="margin-bottom: 5px;"><strong>${
-                      quote.name
-                    }</strong> (${installmentLabel})</div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; font-size: 11px; line-height: 1.2;">
-                        <div><strong>Frequency:</strong> ${frequencyText}</div>
-                        <div><strong>Starts:</strong> ${
-                          quote.start_charging
-                        }</div>
-                        <div><strong>Initial:</strong> ${currency}${
-              quote.initial_payment_sale ?? 0
-            } <span style="text-decoration:line-through; color: #999;">${currency}${
-              quote.initial_payment
-            }</span></div>
-                        ${
-                          qty > 1
-                            ? `<div><strong>Installment:</strong> ${currency}${quote.quote_price_sale} <span style="text-decoration:line-through; color: #999;">${currency}${quote.quote_price}</span></div>`
-                            : ""
-                        }
-                        <div><strong>Final:</strong> ${currency}${
-              quote.final_payment_sale ?? 0
-            } <span style="text-decoration:line-through; color: #999;">${currency}${
-              quote.final_payment
-            }</span></div>
+            <div style="background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 4px; padding: 10px; margin: 10px 0;">
+                <div style="margin-bottom: 5px;"><strong>${quote.name}</strong> (${installmentLabel})</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; font-size: 11px; line-height: 1.2;">
+                    <div><strong>Frequency:</strong> ${frequencyText}</div>
+                    <div><strong>Starts:</strong> ${quote.start_charging}</div>
+                    <div>
+                        <strong>Initial:</strong> ${currency}${initialSale}
+                        ${showInitialStrikethrough ? `<span style="text-decoration:line-through; color: #999;">${currency}${initialOriginal}</span>` : ""}
                     </div>
-                </div>`;
+                    ${
+                      qty > 1
+                        ? `<div>
+                            <strong>Installment:</strong> ${currency}${installmentSale}
+                            ${showInstallmentStrikethrough ? `<span style="text-decoration:line-through; color: #999;">${currency}${installmentOriginal}</span>` : ""}
+                           </div>`
+                        : ""
+                    }
+                    <div>
+                        <strong>Final:</strong> ${currency}${finalSale}
+                        ${showFinalStrikethrough ? `<span style="text-decoration:line-through; color: #999;">${currency}${finalOriginal}</span>` : ""}
+                    </div>
+                </div>
+            </div>`;
           });
         }
 
@@ -125,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!selectedPlanId) return;
 
       const newSelectedPlan = currentPlansData.find(
-        (p) => (p.plan.identificator || p.plan.id) == selectedPlanId
+        (p) => (p.plan.identificator || p.plan.id) == selectedPlanId,
       );
 
       let selectedPlan = newSelectedPlan ? newSelectedPlan.plan : null;
@@ -162,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
           document.getElementById("scholarship-element").style.display = "none";
           document.getElementById("subprogram-element").style.display = "none";
           document.getElementById(
-            "details-payment-plan-element"
+            "details-payment-plan-element",
           ).style.display = "none";
           document.getElementById("details-payment-plan").innerHTML = "";
 
@@ -170,7 +180,7 @@ document.addEventListener("DOMContentLoaded", function () {
           xhr.open("POST", wp_ajax.url, true);
           xhr.setRequestHeader(
             "Content-Type",
-            "application/x-www-form-urlencoded"
+            "application/x-www-form-urlencoded",
           );
           xhr.onload = function () {
             if (xhr.status === 200) {
@@ -179,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
               currentPlansData = plans;
 
               var stateSelect = document.getElementById(
-                "payment-plan-identificator"
+                "payment-plan-identificator",
               );
               stateSelect.innerHTML =
                 '<option value="">Select an option</option>';
@@ -205,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
           };
           xhr.send(
-            "action=get_payments_plans_by_program&program_id=" + e.target.value
+            "action=get_payments_plans_by_program&program_id=" + e.target.value,
           );
         }, 50);
       });

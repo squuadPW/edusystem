@@ -127,7 +127,6 @@
                                                         $qty = (int)$quote->quotas_quantity;
                                                         $freq_val = (int)$quote->frequency_value;
 
-                                                        // Lógica para textos limpios
                                                         $freq_text = ($freq_val === 0 || $qty === 1)
                                                             ? __('One-time payment', 'edusystem')
                                                             : sprintf(__('Every %d %s%s', 'edusystem'), $freq_val, $quote->type_frequency, ($freq_val > 1 ? 's' : ''));
@@ -139,11 +138,29 @@
                                                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; font-size: 11px; line-height: 1.2;">
                                                                 <div><strong><?= __('Frequency:', 'edusystem') ?></strong> <?= $freq_text; ?></div>
                                                                 <div><strong><?= __('Starts:', 'edusystem') ?></strong> <?= esc_html($quote->start_charging); ?></div>
-                                                                <div><strong><?= __('Initial:', 'edusystem') ?></strong> <?= $currency . $quote->initial_payment_sale ?? 0 ?> <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->initial_payment ?></span></div>
+
+                                                                <div>
+                                                                    <strong><?= __('Initial:', 'edusystem') ?></strong> <?= $currency . ($quote->initial_payment_sale ?? 0) ?>
+                                                                    <?php if (isset($quote->initial_payment_sale) && $quote->initial_payment_sale != $quote->initial_payment): ?>
+                                                                        <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->initial_payment ?></span>
+                                                                    <?php endif; ?>
+                                                                </div>
+
                                                                 <?php if ($qty > 1): ?>
-                                                                    <div><strong><?= __('Installment:', 'edusystem') ?></strong> <?= $currency . $quote->quote_price_sale ?> <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->quote_price ?></span></div>
+                                                                    <div>
+                                                                        <strong><?= __('Installment:', 'edusystem') ?></strong> <?= $currency . $quote->quote_price_sale ?>
+                                                                        <?php if ($quote->quote_price_sale != $quote->quote_price): ?>
+                                                                            <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->quote_price ?></span>
+                                                                        <?php endif; ?>
+                                                                    </div>
                                                                 <?php endif; ?>
-                                                                <div><strong><?= __('Final:', 'edusystem') ?></strong> <?= $currency . $quote->final_payment_sale ?? 0 ?> <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->final_payment ?></span></div>
+
+                                                                <div>
+                                                                    <strong><?= __('Final:', 'edusystem') ?></strong> <?= $currency . ($quote->final_payment_sale ?? 0) ?>
+                                                                    <?php if (isset($quote->final_payment_sale) && $quote->final_payment_sale != $quote->final_payment): ?>
+                                                                        <span style="text-decoration:line-through; color: #999;"><?= $currency . $quote->final_payment ?></span>
+                                                                    <?php endif; ?>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     <?php endforeach; ?>
