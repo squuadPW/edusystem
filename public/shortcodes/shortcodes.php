@@ -158,104 +158,68 @@ add_shortcode('PROGRAM-QUOTAS', function () {
 
 });
 
-/* add_shortcode('buy_failed_subjects', function () {
-
-    $current_user_id = get_current_user_id();
-    if (!$current_user_id) return;
-
-    $student_id = get_user_meta($current_user_id, 'student_id', true);
-    if (!$student_id) return;
-
-    global $wpdb;
-    $table_inscriptions = "{$wpdb->prefix}student_period_inscriptions";
-    $table_subjects = "{$wpdb->prefix}school_subjects";
-
-    $results = $wpdb->get_results($wpdb->prepare(
-        "SELECT `sub`.id, `sub`.name, `sub`.price, `sub`.currency, `sub`.retake_limit, COUNT(`ins`.id) as total_reprobadas 
-        FROM {$table_inscriptions} `ins`
-        INNER JOIN {$table_subjects} `sub` ON `ins`.subject_id = `sub`.id 
-        WHERE `ins`.student_id = %d AND `ins`.status_id = 4 AND 
-            NOT EXISTS ( 
-                SELECT 1 FROM {$table_inscriptions} `t2`
-                WHERE `t2`.student_id = `ins`.student_id AND `t2`.subject_id = `ins`.subject_id AND `t2`.status_id = 3 
-            ) 
-        GROUP BY `ins`.subject_id
-        HAVING total_reprobadas >= COALESCE(`sub`.retake_limit, 0);", 
-        $student_id
-    ));
-
-    if ( !$results )  return; 
-
-    ob_start(); 
-    ?>
-        <div id="buy-failed-subjects-container" class="seccion-dashboard">
-
-            <div class="seccion-dashboard-header">
-                <h4><?= __('Buy failed subjects', 'edusystem'); ?></h4>
-            </div>
-            
-            <div>
-                <ul class="list-failed-subjects">
-                    <?php foreach ($results as $material): ?>
-                        <li>
-                            <span><?= esc_html($material->name); ?></span>
-                            <button class="button button-primary button-small"><?= __('Pay Remedial', 'edusystem'); ?></button>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-
-            </div>
-        </div>
-    <?php
-    return ob_get_clean();
-}); */
-
 add_shortcode('buy_failed_subjects', function () {
 
     $current_user_id = get_current_user_id();
     if (!$current_user_id) return;
 
-    $student_id = get_user_meta($current_user_id, 'student_id', true);
-    if (!$student_id) return;
+    $students = get_students_detail_partner($current_user_id);
+    if (!$students) return;
 
-    global $wpdb;
-    $table_inscriptions = "{$wpdb->prefix}student_period_inscriptions";
-    $table_subjects = "{$wpdb->prefix}school_subjects";
+    foreach ( $students as $student ) {
+        $student_id = $student->id;
 
-    $results = $wpdb->get_results($wpdb->prepare(
-        "SELECT `sub`.id, `sub`.name, `sub`.price, `sub`.currency, COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
-        FROM {$table_inscriptions} `ins`
-        INNER JOIN {$table_subjects} `sub` ON `sub`.id = `ins`.subject_id
-        WHERE `ins`.student_id = %d AND (`ins`.status_id = 3 OR `ins`.status_id = 4)
-        GROUP BY `sub`.id
-        HAVING total_reprobadas >= retake_limit AND SUM(`ins`.status_id = 3) = 0;", 
-        $student_id
-    ));
+        global $wpdb;
+        $table_inscriptions = "{$wpdb->prefix}student_period_inscriptions";
+        $table_subjects = "{$wpdb->prefix}school_subjects";
 
-    if ( !$results )  return; 
+        $results = $wpdb->get_results($wpdb->prepare(
+            "SELECT `sub`.id, `sub`.name, `sub`.price, `sub`.currency, COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
+            FROM {$table_inscriptions} `ins`
+            INNER JOIN {$table_subjects} `sub` ON `sub`.id = `ins`.subject_id
+            WHERE `ins`.student_id = %d AND (`ins`.status_id = 3 OR `ins`.status_id = 4)
+            GROUP BY `sub`.id
+            HAVING total_reprobadas >= retake_limit AND SUM(`ins`.status_id = 3) = 0;", 
+            $student_id
+        ));
 
-    ob_start(); 
-    ?>
-        <div id="buy-failed-subjects-container" class="seccion-dashboard">
+        if ( !$results )  return; 
 
-            <div class="seccion-dashboard-header">
-                <h4><?= __('Buy failed subjects', 'edusystem'); ?></h4>
+        ob_start(); 
+        ?>
+            <div id="buy-failed-subjects-container" class="seccion-dashboard">
+
+                <div class="seccion-dashboard-header">
+                    <h4><?= sprintf( __('Buy failed subjects by %s\'s', 'edusystem'), "{$student->name} {$student->last_name}" );?></h4>
+                </div>
+                
+                <div>
+                    <ul class="list-failed-subjects">
+                        <?php foreach ($results as $subject): ?>
+                            <li>
+                                <span><?= esc_html($subject->name); ?></span>
+
+                                <?php 
+                                    $add_to_cart_url = add_query_arg( 
+                                        array( 
+                                            'add-to-cart' => get_master_subject_product_id(), 
+                                            'subject_id' => $subject->id 
+                                        ), 
+                                        wc_get_checkout_url()
+                                    );
+
+                                ?>
+                                <a href="<?= esc_url($add_to_cart_url); ?>" class="button button-primary button-small"><?= __('Pay Remedial', 'edusystem'); ?></a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+
+                </div>
             </div>
-            
-            <div>
-                <ul class="list-failed-subjects">
-                    <?php foreach ($results as $subject): ?>
-                        <li>
-                            <span><?= esc_html($subject->name); ?></span>
-                            <a class="button button-primary button-small"><?= __('Pay Remedial', 'edusystem'); ?></a>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-
-            </div>
-        </div>
-    <?php
-    return ob_get_clean();
+        <?php
+        return ob_get_clean();
+    }
+    
 });
 
 
