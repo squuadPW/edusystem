@@ -1159,7 +1159,7 @@ function add_admin_form_payments_content()
             $program_id = isset($_POST['program_id']) ? sanitize_text_field($_POST['program_id']) : '';
             $program = get_program_details($program_id);
             $payment_method = isset($_POST['payment_method']) ? sanitize_text_field($_POST['payment_method']) : '';
-            $payment_method_identifier = isset($_POST['payment_method_identifier']) ? sanitize_text_field($_POST['payment_method_identifier']) : null;
+            $payment_method_identifier = isset($_POST['payment_method_identifier']) && !empty($_POST['payment_method_identifier']) ? sanitize_text_field($_POST['payment_method_identifier']) : null;
             $fee_inscription = !empty($_POST['fee_inscription']);
 
             $existing_record = $wpdb->get_var($wpdb->prepare(
