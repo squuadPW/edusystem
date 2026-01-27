@@ -149,6 +149,7 @@ function update_language() {
     load_plugin_textdomain( 'edusystem', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }
 
+register_activation_hook(__FILE__, 'create_tables');
 function create_tables()
 {
     global $wpdb;
@@ -1390,10 +1391,8 @@ function create_tables()
     }
 }
 
-register_activation_hook(__FILE__, 'create_tables');
-
 // crea el producto general y categoria "Subject" si no existe
-add_action('init', function () {
+register_activation_hook(__FILE__, function () {
     
     $meta_key   = 'master_subject_product';
     $meta_value = 'master_subject_product'; // Valor para identificarlo
@@ -1427,7 +1426,7 @@ add_action('init', function () {
     $product->set_category_ids([$category_id]);
     $product->update_meta_data($meta_key, $meta_value);
     $product->save();
-    
+
 });
 
 
