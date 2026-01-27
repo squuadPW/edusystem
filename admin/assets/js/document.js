@@ -859,16 +859,25 @@ document.addEventListener("DOMContentLoaded", function () {
   let selectorCuts = document.querySelector("select[name=academic_period_cut]");
 
   // Obtenemos el valor inicial desde el atributo de datos
-  const initialCut = selectorCuts.dataset.initialCut;
+  const initialCut = selectorCuts.dataset.initialcut;
   const textoption = selectorCuts.dataset.textoption;
 
+  console.log(selectorAcademicPeriod)
   if (selectorAcademicPeriod && selectorCuts) {
     selectorAcademicPeriod.addEventListener("change", function (e) {
+      changeSelectorAcademicPeriod(e.target.value);
+    });
+
+    if (selectorAcademicPeriod.value) {
+      changeSelectorAcademicPeriod(selectorAcademicPeriod.value);
+    }
+
+    function changeSelectorAcademicPeriod(period) {
       const XHR = new XMLHttpRequest();
       XHR.open("POST", get_approved_by.url, true);
       XHR.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       XHR.responseType = "json";
-      XHR.send("action=load_cuts_period&period=" + e.target.value);
+      XHR.send("action=load_cuts_period&period=" + period);
       XHR.onload = function () {
         if (this.readyState == "4" && XHR.status === 200) {
           let cuts = this.response;
@@ -903,7 +912,7 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         }
       };
-    });
+    }
   }
 });
 

@@ -4629,32 +4629,32 @@ function sc_set_order_pay_cookie_php() {
 add_action( 'init', 'sc_set_order_pay_cookie_php', 1 );
 
 function display_academic_info_email($order, $sent_to_admin, $plain_text, $email) {
-    // 1. Extraer el JSON de registration_data
     $registration_json = $order->get_meta('registration_data');
-    
-    // DEBUG LOG: Descomenta la línea de abajo para ver el JSON en tu debug.log
-    // error_log('Registration Data: ' . $registration_json);
 
     if (!$registration_json) return;
 
     $data = json_decode($registration_json, true);
-
-    // 2. Acceder a la información del programa dentro del array decodificado
-    // Nota: Según tu función de guardado, están bajo la llave 'program'
+    $program = $data['program']['program_id'] ?? null;
     $career = $data['program']['career_id'] ?? null;
     $mention = $data['program']['mention_id'] ?? null;
-    $institute = $data['program']['name_institute'] ?? null;
 
-    if ($career || $mention) {
+    if ($program || $career || $mention) {
         echo '<div style="margin: 15px 0; padding: 15px; border: 1px solid #e5e5e5; font-family: \'Helvetica Neue\', Helvetica, Roboto, Arial, sans-serif; background-color: #f9f9f9;">';
         echo '<strong style="display: block; margin-bottom: 8px; text-transform: uppercase; font-size: 12px; color: #333; letter-spacing: 0.5px;">';
         echo esc_html__('Academic Information', 'edusystem');
         echo '</strong>';
-        
+
+        if ($program) {
+            $program_data = get_program_details_by_identificator($program);
+            echo '<p style="margin: 0 0 4px 0; font-size: 14px; color: #555;">';
+            echo '<strong>' . esc_html__('Program:', 'edusystem') . '</strong> ' . esc_html($program_data->name);
+            echo '</p>';
+        }
+
         if ($career) {
             $career_data = get_career_details_by_identificator($career);
             echo '<p style="margin: 0 0 4px 0; font-size: 14px; color: #555;">';
-            echo '<strong>' . esc_html__('Program/Career:', 'edusystem') . '</strong> ' . esc_html($career_data->name);
+            echo '<strong>' . esc_html__('Career:', 'edusystem') . '</strong> ' . esc_html($career_data->name);
             echo '</p>';
         }
         
@@ -4662,12 +4662,6 @@ function display_academic_info_email($order, $sent_to_admin, $plain_text, $email
             $mention_data = get_mention_details_by_identificator($mention);
             echo '<p style="margin: 0 0 4px 0; font-size: 14px; color: #555;">';
             echo '<strong>' . esc_html__('Mention:', 'edusystem') . '</strong> ' . esc_html($mention_data->data);
-            echo '</p>';
-        }
-
-        if ($institute) {
-            echo '<p style="margin: 0; font-size: 14px; color: #555;">';
-            echo '<strong>' . esc_html__('Institute:', 'edusystem') . '</strong> ' . esc_html($institute);
             echo '</p>';
         }
         
