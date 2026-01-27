@@ -660,6 +660,9 @@ function create_tables()
         `is_open` tinyint(1) NOT NULL DEFAULT 0,
         `code_subject` text NOT NULL,
         `name` text NOT NULL,
+        `price` double NOT NULL,
+        `currency` text NOT NULL,
+        `product_id` int(11) DEFAULT NULL,
         `description` text NOT NULL,
         `min_pass` double NOT NULL,
         `max_students` int(11) NOT NULL DEFAULT 25,
@@ -669,6 +672,7 @@ function create_tables()
         `teacher_id` int(11) DEFAULT NULL,
         `type` text DEFAULT NULL,
         `is_elective` tinyint(1) NOT NULL DEFAULT 0,
+        `retake_limit` int(11) DEFAULT NULL,
         `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
         PRIMARY KEY (id))$charset_collate;"
     );

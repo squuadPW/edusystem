@@ -638,7 +638,10 @@ function add_cap_to_administrator()
     $role->add_cap('manager_scholarship_aes');
     $role->add_cap('manager_availables_scholarship_aes');
     $role->add_cap('manager_academic_periods_aes');
+    $role->add_cap('manager_school_subjects');
     $role->add_cap('manager_school_subjects_aes');
+    $role->add_cap('manager_edit_school_subjects');
+    $role->add_cap('manager_payment_school_subjects');
     $role->add_cap('manager_academic_projection_aes');
     $role->add_cap('manager_automatically_inscriptions');
     $role->add_cap('manager_configuration_notes');

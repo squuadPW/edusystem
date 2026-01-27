@@ -49,6 +49,7 @@
         action="<?= admin_url('admin.php?page=add_admin_form_configuration_options_content&action=save_options'); ?>"
         enctype="multipart/form-data">
         <input type="hidden" name="type">
+
         <div class="form-group" id="by_admission">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label for="documents-ok"><?= __('Days elapsed to display documents in green (less than)'); ?></label> <br>
@@ -71,6 +72,7 @@
               value="<?php echo get_option('documents_red') ?>" required>
           </div>
         </div>
+
         <div id="by_administration" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label
@@ -171,6 +173,7 @@
             <label for="auto-approve-institute"><?= __('Auto approve institute'); ?></label>
           </div>
         </div>
+
         <div id="by_moodle" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label for="email_coordination"><?= __('Moodle URL', 'edusystem'); ?></label> <br>
@@ -196,6 +199,7 @@
             </select>
           </div>
         </div>
+
         <div id="by_crm" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label for="crm_url"><?= __('CRM URL (example: https://crm.example.com/api/v1/)', 'edusystem'); ?></label>
@@ -209,6 +213,7 @@
               value="<?= get_option('crm_token'); ?>" required>
           </div>
         </div>
+
         <div id="by_offers" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label for="offer_complete"><?= __('Coupon registration fee in complete payment', 'edusystem'); ?></label>
@@ -249,6 +254,7 @@
             ?>">
           </div>
         </div>
+
         <div id="by_notifications" style="display: none">
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label for="email_coordination"><?= __('Email academic coordination'); ?></label> <br>
@@ -276,32 +282,50 @@
               value="<?php echo get_option('email_admission') ?>">
           </div>
         </div>
-        <div id="inscriptions" style="display: none">
-          <div style="text-align: center;">
-            <!-- <div>
-              <a style="margin: 5px; text-wrap: auto;"
-                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=clear_electives') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Deactivate the elective selector and mark that they have not seen electives during this period <br>that they were not due (this will advance them in the screening).', 'edusystem'); ?>
-              </a>
-            </div>
-            <div>
-              <a style="margin: 5px"
-                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projections') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Generate pending academic projections', 'edusystem'); ?>
-              </a>
-            </div> -->
 
-            <div>
-              <a style="margin: 5px"
-                href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_student_payments_record') ?>"
-                class="button button-outline-primary" onclick="return confirm('Are you sure?');">
-                <?= __('Generate student payments records', 'edusystem'); ?>
-              </a>
+        <div id="inscriptions" style="display: none">
+
+            <div style="text-align: center;" > 
+                <!-- <div>
+                    <a style="margin: 5px; text-wrap: auto;"
+                        href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=clear_electives') ?>"
+                        class="button button-outline-primary" onclick="return confirm('Are you sure?');">
+                        <?= __('Deactivate the elective selector and mark that they have not seen electives during this period <br>that they were not due (this will advance them in the screening).', 'edusystem'); ?>
+                    </a>
+                </div>
+
+                <div>
+                    <a style="margin: 5px"
+                        href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_academic_projections') ?>"
+                        class="button button-outline-primary" onclick="return confirm('Are you sure?');">
+                        <?= __('Generate pending academic projections', 'edusystem'); ?>
+                    </a>
+                </div> -->
+               
+                <div>
+                    <a style="margin: 5px"
+                        href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_student_payments_record') ?>"
+                        class="button button-outline-primary" onclick="return confirm('Are you sure?');">
+                        <?= __('Generate student payments records', 'edusystem'); ?>
+                    </a>
+                </div>
+
             </div>
-          </div>
+
+            <div >
+                <div class="form-group" style="padding: 0px 10px 10px 10px;" >
+                    <label for="default_price_electives"><?= __('Default price for electives'); ?></label> <br>
+                    <input type="number" name="default_price_electives" min="0" value="<?= get_option('default_price_electives') ?? 0 ?>">
+                </div>
+
+                <div class="form-group" style="padding: 0px 10px 10px 10px;" >
+                    <label for="default_price_regular_courses"><?= __('Default price for regular courses'); ?></label> <br>
+                    <input type="number" name="default_price_regular_courses" min="0" value="<?= get_option('default_price_regular_courses') ?? 0?>">
+                </div>
+            </div>
+            
         </div>
+
         <div id="by_design" style="display: none">
           <div class="logo-upload-section">
             <div class="form-group">
@@ -323,9 +347,11 @@
             </div>
           </div>
         </div>
+
         <div class="form-group" id="save-configuration" style="text-align: center">
           <button type="submit" class="btn btn-primary"><?= __('Save settings', 'edusystem'); ?></button>
         </div>
+
       </form>
     </div>
   </div>

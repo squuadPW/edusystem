@@ -34,6 +34,9 @@ function add_admin_form_school_subjects_content()
             $matrix_position = $_POST['matrix_position'];
             $max_students = $_POST['max_students'];
             $teacher_id = $_POST['teacher_id'];
+            $price = $_POST['price'] ?? 0;
+            $currency = $_POST['currency'] ?? get_woocommerce_currency();
+            $retake_limit = $_POST['retake_limit'] ?? null;
 
             //update
             if (isset($subject_id) && !empty($subject_id)) {
@@ -41,6 +44,8 @@ function add_admin_form_school_subjects_content()
                     'name' => $name,
                     'code_subject' => $code_subject,
                     'description' => $description,
+                    'price' => $price,
+                    'currency' => $currency,
                     'min_pass' => $min_pass,
                     'matrix_position' => $matrix_position,
                     'max_students' => $max_students,
@@ -49,13 +54,16 @@ function add_admin_form_school_subjects_content()
                     'teacher_id' => $teacher_id,
                     'type' => $type,
                     'is_active' => $is_active == 'on' ? 1 : 0,
-                    'is_open' => $is_open == 'on' ? 1 : 0
+                    'is_open' => $is_open == 'on' ? 1 : 0,
+                    'retake_limit' => $retake_limit 
                 ], ['id' => $subject_id]);
             } else {
                 $wpdb->insert($table, [
                     'name' => $name,
                     'code_subject' => $code_subject,
                     'description' => $description,
+                    'price' => $price,
+                    'currency' => $currency,
                     'min_pass' => $min_pass,
                     'matrix_position' => $matrix_position,
                     'max_students' => $max_students,
@@ -64,7 +72,8 @@ function add_admin_form_school_subjects_content()
                     'teacher_id' => $teacher_id,
                     'type' => $type,
                     'is_active' => $is_active == 'on' ? 1 : 0,
-                    'is_open' => $is_open == 'on' ? 1 : 0
+                    'is_open' => $is_open == 'on' ? 1 : 0,
+                    'retake_limit' => $retake_limit
                 ]);
             }
 
