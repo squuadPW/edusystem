@@ -10,7 +10,7 @@
     ?>
 
     <div style="display:flex;width:100%;">
-        <a class="button button-outline-primary" href="<?= admin_url("/admin.php?page=add_admin_form_payments_plans_content" ) ?? $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
+        <a class="button button-outline-primary" href="<?= admin_url("/admin.php?page=add_admin_form_payments_plans_content") ?? $_SERVER['HTTP_REFERER']; ?>"><?= __('Back') ?></a>
     </div>
 
     <div id="dashboard-widgets" class="metabox-holder admin-add-offer container-programs" style="width: 70%">
@@ -34,7 +34,7 @@
 
                                     <div style="font-weight:400; text-align: center; margin-bottom: 10px;">
                                         <div>
-                                            <input style="width: auto !important;" type="checkbox" name="is_active" id="is_active" <?= ( !isset( $program->is_active ) || $program->is_active == 1 ) ? 'checked' : ''; ?>>
+                                            <input style="width: auto !important;" type="checkbox" name="is_active" id="is_active" <?= (!isset($program->is_active) || $program->is_active == 1) ? 'checked' : ''; ?>>
                                             <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
                                         </div>
                                     </div>
@@ -44,14 +44,14 @@
                                             <b><?= __('Identificator', 'edusystem'); ?></b>
                                             <span class="text-danger">*</span>
                                         </label>
-                                        
+
                                         <br>
 
                                         <div>
-                                            <input type="text" name="identificator" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_program_identificator_exists_js(this)" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?> >
-                                            <span id="error-identificator" class="input-error" ></span>
+                                            <input type="text" name="identificator" oninput="validate_input(this, '^[A-Z0-9-]*$', true),check_program_identificator_exists_js(this)" value="<?= $program->identificator; ?>" <?= $program->identificator ? 'readonly' : 'required' ?>>
+                                            <span id="error-identificator" class="input-error"></span>
                                         </div>
-                                        
+
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
@@ -73,7 +73,7 @@
                                     </div>
 
                                     <!-- manda el id del programa -->
-                                    <?php do_action( 'edusystem_after_payment_plan_fields', $program->id   ); ?>
+                                    <?php do_action('edusystem_after_payment_plan_fields', $program->id); ?>
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="description"><b><?= __('Description', 'edusystem'); ?></b><span
@@ -81,10 +81,10 @@
                                         <textarea style="width: 100%" name="description" id="description" rows="4"><?= $program->description; ?></textarea>
                                     </div>
 
-                                    <?php if( $program ): ?>
-                                        <div class="container-button" >
-                                            <a href="<?= admin_url("/admin.php?page=add_admin_form_payments_plans_content&section_tab=quotas_rules_programs&program_id=$program->id&identificator=$program->identificator" ) ?>" class="button button-primary" >
-                                                <?=__('Quotas', 'edusystem')?>
+                                    <?php if ($program): ?>
+                                        <div class="container-button">
+                                            <a href="<?= admin_url("/admin.php?page=add_admin_form_payments_plans_content&section_tab=quotas_rules_programs&program_id=$program->id&identificator=$program->identificator") ?>" class="button button-primary">
+                                                <?= __('Quotas', 'edusystem') ?>
                                             </a>
                                         </div>
                                     <?php endif; ?>
@@ -93,34 +93,34 @@
 
                                 <br>
 
-                                <div id="subprograms-container" >
-                                    <h3 class="title" >
+                                <div id="subprograms-container">
+                                    <h3 class="title">
                                         <b><?= __('Subprograms', 'edusystem'); ?></b>
                                     </h3>
 
-                                    <?php  
-                                        $subprograms = json_decode( $program->subprogram ?? '{}', true ); 
-                                        $i = 1; 
+                                    <?php
+                                    $subprograms = json_decode($program->subprogram ?? '{}', true);
+                                    $i = 1;
                                     ?>
-                                    <div id="subprograms" data-subprogram_count="<?= count( $subprograms ) ?? 0  ?>" >
+                                    <div id="subprograms" data-subprogram_count="<?= count($subprograms) ?? 0  ?>">
 
-                                        <?php foreach ( $subprograms AS $subprogram_id => $subprogram ) :?>
-                                            
-                                            <div class="subprogram" >
-                                                
-                                                <input type="hidden" name="subprogram[<?= $i ?>][id]" value="<?= $subprogram_id ?>" >
-                                                <input type="hidden" name="subprogram[<?= $i ?>][product_id]" value="<?= $subprogram['product_id'] ?>" >
+                                        <?php foreach ($subprograms as $subprogram_id => $subprogram) : ?>
 
-                                                <div class="id" ><?=  $subprogram['product_id'] ?></div>
+                                            <div class="subprogram">
 
-                                                <div class="group-input" >
+                                                <input type="hidden" name="subprogram[<?= $i ?>][id]" value="<?= $subprogram_id ?>">
+                                                <input type="hidden" name="subprogram[<?= $i ?>][product_id]" value="<?= $subprogram['product_id'] ?>">
+
+                                                <div class="id"><?= $subprogram['product_id'] ?></div>
+
+                                                <div class="group-input">
 
                                                     <div class="space-offer active">
                                                         <label for="">
                                                             <b><?= __('Active', 'edusystem'); ?></b>
                                                         </label>
-                                                        <br/>
-                                                        <input type="checkbox" name="subprogram[<?= $i ?>][is_active]" value="<?= $subprogram['is_active'] ? 1 : ''; ?>" <?= ( $subprogram['is_active']) ? 'checked' : ''; ?> >
+                                                        <br />
+                                                        <input type="checkbox" name="subprogram[<?= $i ?>][is_active]" value="<?= $subprogram['is_active'] ? 1 : ''; ?>" <?= ($subprogram['is_active']) ? 'checked' : ''; ?>>
                                                     </div>
 
                                                     <div class="space-offer name">
@@ -152,30 +152,31 @@
                                                     <textarea style="width: 100%" name="subprogram[<?= $i ?>][description]" rows="2" ><?= $subprogram['description'] ?? ''; ?></textarea>
                                                 </div>
 
-                                                <div class="container-button" >
-                                                    <button type="button" class="button button-secodary" data-subprogram_id="<?= "{$program->identificator}_{$subprogram_id}" ?>" onclick="modal_delete_subprogram_js(this)" ><?=__('Delete', 'edusystem')?></button>
+                                                <div class="container-button">
+                                                    <button type="button" class="button button-secodary" data-subprogram_id="<?= "{$program->identificator}_{$subprogram_id}" ?>" onclick="modal_delete_subprogram_js(this)"><?= __('Delete', 'edusystem') ?></button>
 
-                                                    <?php if( $program ): ?>
-                                                        <a href="<?= admin_url("/admin.php?page=add_admin_form_payments_plans_content&section_tab=quotas_rules_programs&program_id=$program->id&identificator={$program->identificator}_{$subprogram_id}" ) ?>" class="button button-primary" >
-                                                            <?=__('Quotes', 'edusystem')?>
+                                                    <?php if ($program): ?>
+                                                        <a href="<?= admin_url("/admin.php?page=add_admin_form_payments_plans_content&section_tab=quotas_rules_programs&program_id=$program->id&identificator={$program->identificator}_{$subprogram_id}") ?>" class="button button-primary">
+                                                            <?= __('Quotes', 'edusystem') ?>
                                                         </a>
                                                     <?php endif; ?>
                                                 </div>
 
                                             </div>
 
-                                        <?php $i ++; endforeach; ?>
+                                        <?php $i++;
+                                        endforeach; ?>
 
-                                        <div id="template-subprogram" class="subprogram"  >
-                                            
-                                            <div class="group-input" >
+                                        <div id="template-subprogram" class="subprogram">
+
+                                            <div class="group-input">
 
                                                 <div class="space-offer">
                                                     <label for="subprogram[][is_active]">
                                                         <b><?= __('Active', 'edusystem'); ?></b>
                                                     </label>
-                                                    <br/>
-                                                    <input type="checkbox" name="subprogram[][is_active]" class="input-is_active" disabled checked >
+                                                    <br />
+                                                    <input type="checkbox" name="subprogram[][is_active]" class="input-is_active" disabled checked>
                                                 </div>
 
                                                 <div class="space-offer name">
@@ -200,23 +201,23 @@
 
                                             <div class="space-offer">
                                                 <label for="subprogram[][description]">
-                                                        <b><?= __('Description', 'edusystem'); ?></b>
-                                                        <span class="text-danger">*</span>
+                                                    <b><?= __('Description', 'edusystem'); ?></b>
+                                                    <span class="text-danger">*</span>
                                                 </label>
 
-                                                <textarea style="width: 100%" name="subprogram[][description]" rows="2" disabled  ></textarea>
+                                                <textarea style="width: 100%" name="subprogram[][description]" rows="2" disabled></textarea>
                                             </div>
 
-                                            <div class="container-button" >
-                                                <button type="button" class="button button-secodary remove-rule-button" ><?=__('Delete', 'edusystem')?></button>
+                                            <div class="container-button">
+                                                <button type="button" class="button button-secodary remove-rule-button"><?= __('Delete', 'edusystem') ?></button>
                                             </div>
 
                                         </div>
 
                                     </div>
-                                    
-                                    <div >
-                                        <button id="add-subprograms" type="button" class="button button-secondary" ><?=__('Add subprograms', 'edusystem')?></button>
+
+                                    <div>
+                                        <button id="add-subprograms" type="button" class="button button-secondary"><?= __('Add subprograms', 'edusystem') ?></button>
                                     </div>
 
                                 </div>
@@ -227,6 +228,11 @@
                                         style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
                                         <b><?= __('Payment methods availables', 'edusystem'); ?></b>
                                     </h3>
+
+                                    <div style="display:flex;width:100%;justify-content:center;margin:10px;">
+                                        <a href="<?= admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details_payment_method&program_id=' . $program->id); ?>"
+                                            class="button button-outline-primary"><?= __('Add payment method', 'edusystem'); ?></a>
+                                    </div>
 
                                     <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
                                         <thead>
@@ -248,7 +254,7 @@
                                         <tbody>
                                             <?php foreach ($final_payment_methods as $key => $method) { ?>
                                                 <tr>
-                                                    <td  class="column-primary" data-colname="<?= __('Payment method', 'edusystem'); ?>">
+                                                    <td class="column-primary" data-colname="<?= __('Payment method', 'edusystem'); ?>">
                                                         <?= $method['woocommerce_title'] ?>
                                                         <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                                                     </td>
@@ -291,6 +297,4 @@
     </div>
 </div>
 
-<?php include(plugin_dir_path(__FILE__).'modal-delete-subprogram.php'); ?>
-
-
+<?php include(plugin_dir_path(__FILE__) . 'modal-delete-subprogram.php'); ?>
