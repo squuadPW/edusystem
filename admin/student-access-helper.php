@@ -37,18 +37,18 @@ if (!function_exists('edusystem_get_student_classroom_access')) {
 
             if (function_exists('are_required_documents_approved_deadline') && are_required_documents_approved_deadline($student->id) === false) {
                 $result['access'] = false;
-                $result['error'] = __('You are missing some of the documents required for access. Please refer to the documents section for more information.', 'edusystem');
+                $result['error'] = __('Missing required documents. Check the documents section for details.', 'edusystem');
             }
 
             $today = date('Y-m-d');
             if (!empty($student->max_access_date) && $student->max_access_date < $today) {
                 $result['access'] = false;
-                $result['error'] = __('Classroom access has been removed because you have overdue payments. Please pay the outstanding fees in order to continue to have access to the classroom.', 'edusystem');
+                $result['error'] = __('Access removed due to overdue payments. Pay fees to restore access.', 'edusystem');
             }
 
             if (function_exists('expired_documents') && expired_documents($student->id)) {
                 $result['access'] = false;
-                $result['error'] = __('The deadline for uploading some documents has expired, removing your access to the virtual classroom. We invite you to access your documents area for more information.', 'edusystem');
+                $result['error'] = __('Document deadline expired. Access revoked. Check the documents section for details.', 'edusystem');
             }
         }
 
