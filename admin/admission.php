@@ -944,6 +944,15 @@ function get_student_detail_partner($partner_id)
     return $data;
 }
 
+function get_students_detail_partner($partner_id)
+{
+
+    global $wpdb;
+    $table_students = $wpdb->prefix . 'students';
+    $data = $wpdb->get_results("SELECT * FROM {$table_students} WHERE partner_id='{$partner_id}'");
+    return $data;
+}
+
 function update_status_documents()
 {
     try {

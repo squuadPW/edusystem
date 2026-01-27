@@ -68,7 +68,7 @@
 
                                         <br>
 
-                                        <input type="number" name="total_price" value="<?= $program->total_price; ?>"
+                                        <input type="number" name="total_price" min="0" step="0.01" value="<?= $program->total_price; ?>"
                                             required>
                                     </div>
 
@@ -78,7 +78,7 @@
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="description"><b><?= __('Description', 'edusystem'); ?></b><span
                                                 class="text-danger">*</span></label><br>
-                                        <textarea style="width: 100%" name="description" id="description" rows="4" required><?= $program->description; ?></textarea>
+                                        <textarea style="width: 100%" name="description" id="description" rows="4"><?= $program->description; ?></textarea>
                                     </div>
 
                                     <?php if ($program): ?>
@@ -139,7 +139,7 @@
                                                             <span class="text-danger">*</span>
                                                         </label>
 
-                                                        <input type="number" name="subprogram[<?= $i ?>][price]" value="<?= $subprogram['price']; ?>" required>
+                                                        <input type="number" name="subprogram[<?= $i ?>][price]" min="0" step="0.01" value="<?= $subprogram['price']; ?>" required>
                                                     </div>
                                                 </div>
 
@@ -149,7 +149,7 @@
                                                         <span class="text-danger">*</span>
                                                     </label>
 
-                                                    <textarea style="width: 100%" name="subprogram[<?= $i ?>][description]" rows="2" required><?= $subprogram['description'] ?? ''; ?></textarea>
+                                                    <textarea style="width: 100%" name="subprogram[<?= $i ?>][description]" rows="2" ><?= $subprogram['description'] ?? ''; ?></textarea>
                                                 </div>
 
                                                 <div class="container-button">
@@ -195,7 +195,7 @@
                                                         <span class="text-danger">*</span>
                                                     </label>
 
-                                                    <input type="number" name="subprogram[][price]" class="input-price" disabled required>
+                                                    <input type="number" name="subprogram[][price]" min="0" step="0.01" class="input-price" disabled required>
                                                 </div>
                                             </div>
 

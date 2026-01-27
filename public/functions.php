@@ -15,6 +15,7 @@ require plugin_dir_path(__FILE__) . 'moodle.php';
 require plugin_dir_path(__FILE__) . 'automatically_enrollment.php';
 require plugin_dir_path(__FILE__) . 'escala/rest.php';
 require plugin_dir_path(__FILE__) . 'document-request.php';
+require plugin_dir_path(__FILE__) . 'subject.php';
 
 function form_plugin_scripts()
 {

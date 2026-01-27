@@ -1240,7 +1240,6 @@ h2 {
   border-radius: 5px;
   background-color: #fff;
 }
-
 .capability-group h3 {
   margin-top: 0;
   margin-bottom: 15px;
@@ -1249,34 +1248,26 @@ h2 {
   border-bottom: 1px solid #eee;
   padding-bottom: 5px;
 }
-
-.capability-item {
-  display: flex; /* Aligns checkbox and label nicely */
-  align-items: center;
-  margin-bottom: 10px;
+.capability-group ul ul {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+.capability-group .capability-item {
+  margin-bottom: 5px;
   padding: 3px 0;
 }
-
-.capability-item input[type=checkbox] {
-  margin-right: 8px; /* Space between checkbox and label */
-  flex-shrink: 0; /* Prevent checkbox from shrinking */
-}
-
-.capability-item label {
-  cursor: pointer;
-  line-height: 1.5;
-}
-
-.capability-item.indented {
-  margin-left: 20px; /* Applies indentation for sub-items */
-}
-
-/* Styles for disabled items (matching your inline styles) */
-.capability-item input[type=checkbox][style*="pointer-events: none"],
-.capability-item label[style*="pointer-events: none"] {
+.capability-group .capability-item [capability-disabled] {
   font-style: italic;
   color: rgba(128, 128, 128, 0.5411764706);
   pointer-events: none;
+}
+.capability-group .capability-item label {
+  cursor: pointer;
+  line-height: 1.5;
+}
+.capability-group .capability-item label input[type=checkbox] {
+  margin-right: 8px;
+  flex-shrink: 0;
 }
 
 .group-inputs,

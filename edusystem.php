@@ -660,6 +660,9 @@ function create_tables()
         `is_open` tinyint(1) NOT NULL DEFAULT 0,
         `code_subject` text NOT NULL,
         `name` text NOT NULL,
+        `price` double NOT NULL,
+        `currency` text NOT NULL,
+        `product_id` int(11) DEFAULT NULL,
         `description` text NOT NULL,
         `min_pass` double NOT NULL,
         `max_students` int(11) NOT NULL DEFAULT 25,
@@ -669,6 +672,7 @@ function create_tables()
         `teacher_id` int(11) DEFAULT NULL,
         `type` text DEFAULT NULL,
         `is_elective` tinyint(1) NOT NULL DEFAULT 0,
+        `retake_limit` int(11) DEFAULT NULL,
         `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
         PRIMARY KEY (id))$charset_collate;"
     );
@@ -1432,46 +1436,6 @@ function create_tables()
         }
     }
 }
-
-// crea el producto general y categoria "Subject" si no existe
-register_activation_hook(__FILE__, function () {
-    
-    $meta_key   = 'master_subject_product';
-    $meta_value = 'master_subject_product'; // Valor para identificarlo
-    $cat_name   = 'Subject';
-
-    // verifica si el producto existe
-    $query = new WP_Query([
-        'post_type'  => 'product',
-        'meta_query' => [
-            [
-                'key'   => $meta_key,
-                'value' => $meta_value,
-            ]
-        ]
-    ]);
-    if ( $query->have_posts() ) return; 
-
-    // crea la categoria si no existe y obtiene su ID
-    $category = term_exists($cat_name, 'product_cat');
-    if ( !$category ) $category = wp_insert_term($cat_name, 'product_cat');
-    
-    $category_id = is_array($category) ? $category['term_id'] : $category;
-
-    // crea el producto
-    $product = new WC_Product_Simple();
-    $product->set_name($cat_name);
-    $product->set_status('publish');
-    $product->set_catalog_visibility('hidden'); 
-    $product->set_price('0');
-    $product->set_regular_price('0');
-    $product->set_category_ids([$category_id]);
-    $product->update_meta_data($meta_key, $meta_value);
-    $product->save();
-
-});
-
-
 
 
 
