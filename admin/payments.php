@@ -1152,6 +1152,37 @@ function add_admin_form_payments_content()
             setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details&program_id=' . $program_id));
             exit;
+        } else if ($_GET['action'] == 'save_program_details_payment_method') {
+            global $wpdb;
+            $payment_methods_by_plan = $wpdb->prefix . 'payment_methods_by_plan';
+
+            $program_id = isset($_POST['program_id']) ? sanitize_text_field($_POST['program_id']) : '';
+            $program = get_program_details($program_id);
+            $payment_method = isset($_POST['payment_method']) ? sanitize_text_field($_POST['payment_method']) : '';
+            $payment_method_identifier = isset($_POST['payment_method_identifier']) ? sanitize_text_field($_POST['payment_method_identifier']) : null;
+            $fee_inscription = !empty($_POST['fee_inscription']);
+
+            $existing_record = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM $payment_methods_by_plan WHERE payment_plan_identificator = %s AND payment_method_identificator = %s AND account_identificator = %s",
+                $program->identificator,
+                $payment_method,
+                $payment_method_identifier
+            ));
+
+            if ($existing_record == 0) {
+                $wpdb->insert($payment_methods_by_plan, [
+                    'payment_plan_identificator' => $program->identificator,
+                    'payment_method_identificator' => $payment_method,
+                    'account_identificator' => $payment_method_identifier,
+                    'fee_payment_complete' => $fee_inscription
+                ]);
+                setcookie('message', __('Changes saved successfully.', 'edusystem'), time() + 10, '/');
+            } else {
+                setcookie('message-error', __('This configuration already exists.', 'edusystem'), time() + 10, '/');
+            }
+
+            wp_redirect(admin_url('admin.php?page=add_admin_form_payments_plans_content&section_tab=program_details&program_id=' . $program_id));
+            exit;
         } else if ($_GET['action'] == 'delete_payment_method') {
             global $wpdb;
             $payment_methods_by_plan = $wpdb->prefix . 'payment_methods_by_plan';
@@ -1853,7 +1884,18 @@ function add_admin_form_payments_content()
             $id_expense = intval($_GET['id_expense']);
             $expense = get_expense_detail($id_expense);
             include(plugin_dir_path(__FILE__) . 'templates/expenses-payroll-detail.php');
-        } else if ($_GET['section_tab'] == 'program_details') {
+        } else if ($_GET['section_tab'] == 'program_details_payment_method') {
+            $program_id = $_GET['program_id'];
+            $program = get_program_details($program_id);
+
+            if (function_exists('WC') && WC()->payment_gateways) {
+                $available_gateways = WC()->payment_gateways->payment_gateways();
+            } else {
+                $available_gateways = array();
+            }
+
+            include(plugin_dir_path(__FILE__) . 'templates/payment-plans-details-payment-method.php');
+        }  else if ($_GET['section_tab'] == 'program_details') {
             global $wpdb;
             $final_payment_methods = array();
 
