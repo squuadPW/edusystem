@@ -1823,7 +1823,6 @@ function get_institute_by_student(?int $student_id = null)
     return (int) $institute_id ?? null;
 }
 
-
 //  llama el shortcode de comprar materias reprobadas
 add_action('woocommerce_account_dashboard', function () {
 
