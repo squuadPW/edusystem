@@ -391,13 +391,18 @@ function add_admin_form_academic_projection_content()
                             "SELECT * FROM {$table_student_period_inscriptions} 
                             WHERE student_id = %d 
                             AND code_subject = %s 
-                            AND status_id = %d",
+                            AND status_id = %d
+                            /* AND code_period = %s
+                            AND cut_period = %s */",
                             $student_id,
                             $code_subject,
-                            $status_id
+                            $status_id/* ,
+                            $period,
+                            $cut */
                         );
                         $exist = $wpdb->get_row($query);
                         if (!isset($exist)) {
+
                             $wpdb->insert($table_student_period_inscriptions, [
                                 'status_id' => $status_id,
                                 'student_id' => $projection->student_id,
@@ -409,7 +414,10 @@ function add_admin_form_academic_projection_content()
                                 'type' => $subject->type
                             ]);
                             update_expected_matrix_after_enrollment($projection->student_id, $projection_obj[$key]->subject_id, $period, $cut);
-                        }
+                        } /* else {
+                            continue; // Saltamos al siguiente elemento del bucle
+                        } */
+
                     } else {
                         $wpdb->update($table_student_period_inscriptions, [
                             'status_id' => $status_id,
