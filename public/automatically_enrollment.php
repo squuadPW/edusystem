@@ -475,7 +475,8 @@ function generate_projection_student($student_id, $force = false)
             'calification' => $is_completed ? $inscription->calification : "",
             'code_subject' => $subject_details->code_subject,
             'is_completed' => $is_completed, // Solo Aprobada
-            'welcome_email' => $is_completed || $is_this_cut // True si está Approved/Active
+            'welcome_email' => $is_completed || $is_this_cut, // True si está Approved/Active
+            'assigned_slots' => $subject_details->retake_limit ?? 0,
         ];
     }
 
@@ -501,7 +502,8 @@ function generate_projection_student($student_id, $force = false)
                 'is_completed' => $inscription->status_id == 3 ? true : false,
                 'this_cut' => $inscription->status_id == 1 ? true : false,
                 'welcome_email' => true,
-                'type' => 'elective'
+                'type' => 'elective',
+                'assigned_slots' => $subject->retake_limit ?? 0,
             ];
         }
     }

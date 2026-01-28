@@ -357,21 +357,9 @@ function add_admin_form_academic_projection_content()
                 }
 
                 $status_id = $is_this_cut ? 1 : ($calification_value >= $subject->min_pass ? 3 : 4);
-                if ($status_id != 4) {
-                    $projection_obj[$key]->is_completed = $is_completed;
-                    $projection_obj[$key]->this_cut = $is_this_cut;
-                    $projection_obj[$key]->code_period = $period;
-                    $projection_obj[$key]->cut = $cut;
-                    $projection_obj[$key]->calification = $calification_value;
-                } else {
-                    $projection_obj[$key]->is_completed = false;
-                    $projection_obj[$key]->this_cut = false;
-                    $projection_obj[$key]->code_period = '';
-                    $projection_obj[$key]->cut = '';
-                    $projection_obj[$key]->calification = '';
-                }
 
                 if ($is_completed) {
+
                     $student_id = intval($projection->student_id); // Asegúrate de que sea un entero
                     $code_subject = $wpdb->esc_like($projection_obj[$key]->code_subject); // Escapa la cadena
 
@@ -387,22 +375,29 @@ function add_admin_form_academic_projection_content()
 
                     $exist = $wpdb->get_row($query);
                     if (!isset($exist)) {
+                        
+                        $subject_count = $wpdb->get_var( $wpdb->prepare(
+                            "SELECT COUNT(*) FROM {$table_student_period_inscriptions} 
+                            WHERE student_id = %d AND 
+                                subject_id = %d",
+                            $student_id,
+                            $subject->id
+                        ));
+                        
                         $query = $wpdb->prepare(
                             "SELECT * FROM {$table_student_period_inscriptions} 
                             WHERE student_id = %d 
                             AND code_subject = %s 
-                            AND status_id = %d
-                            /* AND code_period = %s
-                            AND cut_period = %s */",
+                            AND code_period = %s
+                            AND cut_period = %s",
                             $student_id,
                             $code_subject,
-                            $status_id/* ,
                             $period,
-                            $cut */
+                            $cut
                         );
                         $exist = $wpdb->get_row($query);
                         if (!isset($exist)) {
-
+                            
                             $wpdb->insert($table_student_period_inscriptions, [
                                 'status_id' => $status_id,
                                 'student_id' => $projection->student_id,
@@ -414,9 +409,9 @@ function add_admin_form_academic_projection_content()
                                 'type' => $subject->type
                             ]);
                             update_expected_matrix_after_enrollment($projection->student_id, $projection_obj[$key]->subject_id, $period, $cut);
-                        } /* else {
-                            continue; // Saltamos al siguiente elemento del bucle
-                        } */
+                        } else {
+                            continue;
+                        }
 
                     } else {
                         $wpdb->update($table_student_period_inscriptions, [
@@ -435,6 +430,21 @@ function add_admin_form_academic_projection_content()
                     if ($is_this_cut) {
                         $count_enroll++;
                     }
+                }
+
+                // Actualizar el objeto de proyección académica
+                if ($status_id != 4) {
+                    $projection_obj[$key]->is_completed = $is_completed;
+                    $projection_obj[$key]->this_cut = $is_this_cut;
+                    $projection_obj[$key]->code_period = $period;
+                    $projection_obj[$key]->cut = $cut;
+                    $projection_obj[$key]->calification = $calification_value;
+                } else {
+                    $projection_obj[$key]->is_completed = false;
+                    $projection_obj[$key]->this_cut = false;
+                    $projection_obj[$key]->code_period = '';
+                    $projection_obj[$key]->cut = '';
+                    $projection_obj[$key]->calification = '';
                 }
 
                 // Verificamos si status_id es 4 y si is_elective existe y es true
