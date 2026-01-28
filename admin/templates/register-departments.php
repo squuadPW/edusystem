@@ -524,7 +524,7 @@
 
         // determina si el checkbox debe estar marcado
         $checked = ( isset($capabilities) && !empty($capabilities) && isset($capabilities[$cap_key]) ) ?? false;
-        $checked_attribute = $checked && $disabled ? 'checked' : '';
+        $checked_attribute = $checked && !$disabled ? 'checked' : '';
 
         // atributo data-activates para indicar qué checkboxes activa
         $activates_attribute = !empty($activates) ? 'data-activates="' . implode(',', $activates) . '"' : '';
