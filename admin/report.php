@@ -3863,7 +3863,7 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
             'u.user_email AS parent_email',
             'um_first.meta_value AS parent_first_name',
             'um_last.meta_value AS parent_last_name',
-            "(SELECT GROUP_CONCAT(document_id) FROM {$table_student_documents} AS d WHERE d.student_id = s.id AND {$pending_logic}) AS pending_document_ids"
+            "(SELECT GROUP_CONCAT(document_id SEPARATOR ', ') FROM {$table_student_documents} AS d WHERE d.student_id = s.id AND {$pending_logic}) AS pending_document_ids"
         ];
 
         $where_sql = !empty($conditions) ? "WHERE " . implode(" AND ", $conditions) : "";
