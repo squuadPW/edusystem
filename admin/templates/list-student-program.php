@@ -15,20 +15,22 @@
 		?>
 
 		<div style="text-align:start;">
-			<?php
-			$tab = isset($_GET['section_tab']) && $_GET['section_tab'] ? $_GET['section_tab'] : 'programs';
-			$labels = [
-				'programs' => __('Programs', 'edusystem'),
-				'careers'  => __('Careers', 'edusystem'),
-				'mentions' => __('Mentions', 'edusystem'),
-			];
-			$label = isset($labels[$tab]) ? $labels[$tab] : ucfirst($tab);
+			<h1>
+				<?php
+				$tab = isset($_GET['section_tab']) && $_GET['section_tab'] ? $_GET['section_tab'] : 'programs';
+				$labels = [
+					'programs' => __('Programs', 'edusystem'),
+					'careers'  => __('Careers', 'edusystem'),
+					'mentions' => __('Mentions', 'edusystem'),
+				];
+				$label = isset($labels[$tab]) ? $labels[$tab] : ucfirst($tab);
 
-			printf(
-				esc_html__('All %s', 'edusystem'),
-				esc_html($label)
-			);
-			?>
+				printf(
+					esc_html__('All %s', 'edusystem'),
+					esc_html($label)
+				);
+				?>
+			</h1>
 		</div>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 			<a href="<?= admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=program_details&from=' . (isset($_GET['section_tab']) ? $_GET['section_tab'] : 'programs')); ?>"
