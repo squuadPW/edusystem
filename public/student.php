@@ -1545,102 +1545,43 @@ add_action('woocommerce_account_dashboard', 'view_access_classroom', 1);
 
 function view_access_classroom()
 {
-    // Accede a las variables globales necesarias.
     global $current_user, $wpdb;
     $roles = (array) $current_user->roles;
+    
     if (!in_array('student', $roles)) {
         return;
     }
 
-    // Inicialización de variables. Se usa null para indicar un estado no encontrado/no determinado.
-    $student = null;
-    $student_access = true;
-    $error_access = '';
-
-    // El prefijo de la tabla se define una sola vez.
-    $table_students = $wpdb->prefix . 'students';
-
-    // 1. Obtención eficiente de datos del estudiante
-    // Se usa get_user_meta una vez, aprovechando la caché.
     $student_id_meta = get_user_meta($current_user->ID, 'student_id', true);
-
-    // Consulta única a la DB para encontrar al estudiante por student_id O partner_id.
-    // Uso de wpdb::prepare para seguridad.
-    $query = $wpdb->prepare(
-        "SELECT * FROM {$table_students} WHERE id = %d OR partner_id = %d LIMIT 1",
+    
+    $student_query = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$wpdb->prefix}students WHERE id = %d OR partner_id = %d LIMIT 1",
         $student_id_meta,
         $current_user->ID
-    );
+    ));
 
-    $student = $wpdb->get_row($query);
-
-    // 2. Lógica de denegación de acceso (Guard Clauses)
-    // El acceso por defecto es true, y se deniega si alguna condición no se cumple.
-
-    // Si el objeto $student no se encuentra en la tabla, el acceso es denegado implícitamente
-    // ya que no hay un ID de Moodle para verificar.
-    if (!$student) {
-        $student_access = false;
-        // Se podría agregar un mensaje de error específico si se desea.
-        $error_access = __('Student data not found. Please contact support.', 'edusystem');
+    if (!function_exists('edusystem_get_student_classroom_access')) {
+        require_once dirname(plugin_dir_path(__FILE__)) . '/admin/student-access-helper.php';
     }
 
-    // Si el usuario tiene el rol 'student', pero no tiene cursos asignados.
-    if (in_array('student', $roles)) {
-        // Validación de inscripción debe ir primero.
-        $access = is_enrolled_in_courses($student->id);
-        if (count($access) === 0) {
-            // No deniega el acceso total, pero influye en el botón (lógica en la plantilla).
-            // Mantenemos $student_access en true para que muestre el dashboard, pero sin acceso al botón.
-        }
-    }
+    $access_data = edusystem_get_student_classroom_access($student_query);
+    
+    $student        = $access_data['student_data'];
+    $student_access = $access_data['access'];
+    $error_access   = $access_data['error'];
 
-    // Se verifica si el estudiante existe antes de intentar acceder a sus propiedades.
     if ($student) {
-        // Bloqueo 1: No tiene ID de Moodle asignado.
-        if (empty($student->moodle_student_id)) {
-            $student_access = false;
-        }
-
-        // Bloqueo 2: Documentos rechazados (status_id < 2 y moodle_student_id existe).
-        elseif (are_required_documents_approved_deadline($student->id) === false) {
-            $student_access = false;
-            $error_access = 'You are missing some of the documents required for access. Please refer to the documents section for more information.';
-        }
-
-        // Bloqueo 3: Acceso caducado por pagos.
-        $today = date('Y-m-d');
-        if (!empty($student->max_access_date) && $student->max_access_date < $today) {
-            $student_access = false;
-            $error_access = 'Classroom access has been removed because you have overdue payments. Please pay the outstanding fees in order to continue to have access to the classroom.';
-        }
-
-        // Bloqueo 4: Documentos expirados.
-        // Asumimos que expired_documents() es una función auxiliar eficiente.
-        if (expired_documents($student->id)) {
-            $student_access = false;
-            $error_access = 'The deadline for uploading some documents has expired, removing your access to the virtual classroom. We invite you to access your documents area for more information.';
-        }
+        $access = is_enrolled_in_courses($student->id);
     }
 
-
-    // 3. Obtención y filtrado de materias (solo si es necesario)
     $subjects_coursing = [];
     $show_table_subjects_coursing = get_option('show_table_subjects_coursing');
 
-    // Solo se ejecuta la lógica si la opción está activa y el estudiante existe.
     if ($show_table_subjects_coursing && $student) {
-        // Asumimos que get_projection_by_student() es eficiente.
         $projection = get_projection_by_student($student->id);
-
         if ($projection) {
-            // Se usa true para array asociativo en lugar de json_decode,
-            // pero mantendremos la estructura original de objetos para consistencia con tu código.
             $projection_obj = json_decode($projection->projection);
-
-            // Verificación para asegurar que es un array/objeto iterable.
             if (is_array($projection_obj) || is_object($projection_obj)) {
-                // array_filter con FLAG_USE_BOTH para mayor eficiencia si el array es muy grande.
                 $subjects_coursing = array_values(array_filter((array)$projection_obj, function ($item) {
                     return isset($item->this_cut) && $item->this_cut === true;
                 }));
@@ -1648,10 +1589,8 @@ function view_access_classroom()
         }
     }
 
-    // 4. Variables adicionales y carga de la plantilla
     $admin_virtual_access = get_option('virtual_access');
 
-    // Uso de plugin_dir_path(__FILE__) es correcto para rutas relativas.
     include(plugin_dir_path(__FILE__) . 'templates/student-access-classroom.php');
 }
 
