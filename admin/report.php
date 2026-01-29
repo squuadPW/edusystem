@@ -3850,37 +3850,34 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
             }
         }
 
-        $pending_docs_subquery = "
-        SELECT 1 FROM {$table_student_documents} AS d 
-        WHERE d.student_id = s.id 
-        AND (
+        $pending_logic = "(
             (d.attachment_id = 0 AND (d.is_required = 1 OR d.max_date_upload IS NOT NULL))
             OR 
-            (d.attachment_id = 1 AND d.status IN (3, 6))
-        )
-    ";
-        $conditions[] = "EXISTS ($pending_docs_subquery)";
+            (d.attachment_id != 0 AND d.status IN (3, 6))
+        )";
+
+        $conditions[] = "EXISTS (SELECT 1 FROM {$table_student_documents} AS d WHERE d.student_id = s.id AND {$pending_logic})";
 
         $select_cols = [
             's.*',
             'u.user_email AS parent_email',
             'um_first.meta_value AS parent_first_name',
             'um_last.meta_value AS parent_last_name',
-            "(SELECT GROUP_CONCAT(document_id) FROM {$table_student_documents} WHERE student_id = s.id AND ((attachment_id = 0 AND (is_required = 1 OR max_date_upload IS NOT NULL)) OR (attachment_id = 1 AND status IN (3, 6)))) AS pending_document_ids"
+            "(SELECT GROUP_CONCAT(document_id) FROM {$table_student_documents} AS d WHERE d.student_id = s.id AND {$pending_logic}) AS pending_document_ids"
         ];
 
         $where_sql = !empty($conditions) ? "WHERE " . implode(" AND ", $conditions) : "";
 
         $query = "
-        SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $select_cols) . "
-        FROM {$table_students} AS s
-        LEFT JOIN {$table_users} AS u ON s.partner_id = u.ID
-        LEFT JOIN {$table_usermeta} AS um_first ON u.ID = um_first.user_id AND um_first.meta_key = 'first_name'
-        LEFT JOIN {$table_usermeta} AS um_last ON u.ID = um_last.user_id AND um_last.meta_key = 'last_name'
-        $where_sql
-        ORDER BY s.id DESC 
-        LIMIT %d OFFSET %d
-    ";
+            SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $select_cols) . "
+            FROM {$table_students} AS s
+            LEFT JOIN {$table_users} AS u ON s.partner_id = u.ID
+            LEFT JOIN {$table_usermeta} AS um_first ON u.ID = um_first.user_id AND um_first.meta_key = 'first_name'
+            LEFT JOIN {$table_usermeta} AS um_last ON u.ID = um_last.user_id AND um_last.meta_key = 'last_name'
+            $where_sql
+            ORDER BY s.id DESC 
+            LIMIT %d OFFSET %d
+        ";
 
         $params[] = $per_page;
         $params[] = $offset;
