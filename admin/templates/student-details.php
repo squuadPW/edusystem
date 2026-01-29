@@ -14,6 +14,9 @@ function truncate_text($text, $max_length = 100)
     }
     return $text;
 }
+// Fecha según configuración de idioma: español -> d/m/Y, por defecto -> m/d/Y
+$date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
+$datetime_format = $date_format . ' H:i:s';
 ?>
 
 <div class="wrap">
@@ -365,7 +368,7 @@ function truncate_text($text, $max_length = 100)
                                             <label
                                                 for="birth_date"><b><?= esc_html__('Birth date', 'edusystem') ?></b></label><br>
                                             <input type="text" id="birth_date" name="birth_date"
-                                                value="<?php echo date('m/d/Y', strtotime($student->birth_date)); ?>"
+                                                value="<?php echo date($date_format, strtotime($student->birth_date)); ?>"
                                                 required style="width:100%; background-color: white;" class="birth_date"
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
@@ -673,9 +676,9 @@ function truncate_text($text, $max_length = 100)
                         $updated_at_timestamp = strtotime($document->updated_at);
 
                         // Convert the timestamp to the local system time with the desired format
-                        $document->created_at = wp_date('m/d/Y H:i:s', $created_at_timestamp);
-                        $document->upload_at = wp_date('m/d/Y H:i:s', $upload_at_timestamp);
-                        $document->updated_at = wp_date('m/d/Y H:i:s', $updated_at_timestamp);
+                        $document->created_at = wp_date($datetime_format, $created_at_timestamp);
+                        $document->upload_at = wp_date($datetime_format, $upload_at_timestamp);
+                        $document->updated_at = wp_date($datetime_format, $updated_at_timestamp);
                         ?>
                         <tr id="<?= 'tr_document_' . $document->id; ?>">
                             <td class="column-primary" data-colname="<?= esc_html__('Document', 'edusystem'); ?>">
@@ -684,7 +687,7 @@ function truncate_text($text, $max_length = 100)
                                     <span class="text-danger">*</span>
                                 <?php endif; ?>
                                 <?php if ($document->max_date_upload): ?>
-                                    <span class="deadline">- <?= esc_html__('Deadline', 'edusystem') ?>: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
+                                    <span class="deadline">- <?= esc_html__('Deadline', 'edusystem') ?>: <?= date($date_format, strtotime($document->max_date_upload)) ?></span>
                                 <?php endif; ?>
                                 <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
                             </td>
@@ -1030,7 +1033,7 @@ function truncate_text($text, $max_length = 100)
             $timestamp = strtotime($student->created_at);
 
             // Formatear la fecha/hora en el formato deseado
-            $formatted_date = wp_date('m/d/Y H:i:s', $timestamp);
+            $formatted_date = wp_date($datetime_format, $timestamp);
 
             // Usar sprintf para incrustar la fecha formateada en la cadena traducible
             $translated_text = sprintf(

@@ -4,6 +4,8 @@ global $wpdb;
 $current_user = wp_get_current_user();
 $table_students = $wpdb->prefix . 'students';
 $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
+// Fecha según configuración de idioma: español -> d/m/Y, por defecto -> m/d/Y
+$date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
 ?>
 
 <?php if (!$student->moodle_password) { ?>
@@ -89,7 +91,7 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
 
                                     <?= $name; ?>
                                     <?php if ($document->max_date_upload): ?>
-                                        <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
+                                        <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>: <?= date($date_format, strtotime($document->max_date_upload)) ?></span>
                                     <?php endif; ?>
 
                                     <span class="help-tooltip"
@@ -149,10 +151,10 @@ $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$curren
                                     <?php $name = $document->document_id; ?>
 
                                         <strong><?= $name; ?></strong>
-                                    <?php if ($document->max_date_upload): ?>
+                                        <?php if ($document->max_date_upload): ?>
                                             <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>:
-                                            <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
-                                    <?php endif; ?>
+                                            <?= date($date_format, strtotime($document->max_date_upload)) ?></span>
+                                        <?php endif; ?>
                                     </td>
                                     <?php
                                     $status = get_status_document($document->status);
