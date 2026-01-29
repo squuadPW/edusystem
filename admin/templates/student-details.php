@@ -45,11 +45,11 @@ function truncate_text($text, $max_length = 100)
                 onclick="return confirm('<?= __('Are you sure you want to regenerate academic projections?', 'edusystem') ?>');"><?= __('Re-generate projection', 'edusystem'); ?></a>
         <?php } ?>
         <a style="margin-left: 5px;"
-            href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_virtual_classroom&student_id=') . $student->id ?>"
+            href="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=generate_virtual_classroom&student_id=') . $student->id ?>"
             class="button button-outline-primary"
             onclick="return confirm('<?= __('Are you sure you want to create a virtual classroom for this student?', 'edusystem') ?>');"><?= __('Send to virtual classroom', 'edusystem'); ?></a>
         <a style="margin-left: 5px;"
-            href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=generate_admin&student_id=') . $student->id ?>"
+            href="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=generate_admin&student_id=') . $student->id ?>"
             class="button button-outline-primary"
             onclick="return confirm('<?= __('Are you sure you want to send this student to the admin manually?', 'edusystem') ?>');"><?= __('Send to admin', 'edusystem'); ?></a>
         <button style="margin-left: 5px;" data-id="<?= $student->id; ?>" id="button-export-xlsx"
