@@ -70,51 +70,51 @@ $datetime_format = $date_format . ' H:i:s';
 
     <!-- <div class="status-student-datails" >
         <?php
-            
-            $background = "#dfdedd";
-            $color = "#black";
 
-            switch ($student->status_id):
-                case 0:
-                    $Status = esc_html__('is pending payment','edusystem');
-                    break;
+        $background = "#dfdedd";
+        $color = "#black";
 
-                case 1:
-                    $Status = esc_html__('payment has been approved','edusystem');  
-                    $background = "#ffc107";
-                    $color = "black";
-                    break;
-                    
-                case 2:
-                    $Status = esc_html__('documents have been approved','edusystem'); 
-                    $background = "#2271b1";
-                    $color = "white";
-                    break;
-                    
-                case 3:
-                    $Status = esc_html__('has administrative clearance','edusystem');
-                    $background = "#4caf50";
-                    $color = "white";  
-                    break;
-                    
-                case 6:
-                    $Status = esc_html__('has been withdrawn','edusystem');
-                    break;
-                
-                default:
-                    $Status = esc_html__('has an unknown status','edusystem');
-                    $background = "#f44336";
-                    $color = "white";
-            endswitch;
+        switch ($student->status_id):
+            case 0:
+                $Status = esc_html__('is pending payment', 'edusystem');
+                break;
+
+            case 1:
+                $Status = esc_html__('payment has been approved', 'edusystem');
+                $background = "#ffc107";
+                $color = "black";
+                break;
+
+            case 2:
+                $Status = esc_html__('documents have been approved', 'edusystem');
+                $background = "#2271b1";
+                $color = "white";
+                break;
+
+            case 3:
+                $Status = esc_html__('has administrative clearance', 'edusystem');
+                $background = "#4caf50";
+                $color = "white";
+                break;
+
+            case 6:
+                $Status = esc_html__('has been withdrawn', 'edusystem');
+                break;
+
+            default:
+                $Status = esc_html__('has an unknown status', 'edusystem');
+                $background = "#f44336";
+                $color = "white";
+        endswitch;
         ?>
 
-        <label style="background:<?=$background?>;color:<?=$color?>;" ><?=  esc_html__('The student','edusystem')." {$Status}" ?></label>
+        <label style="background:<?= $background ?>;color:<?= $color ?>;" ><?= esc_html__('The student', 'edusystem') . " {$Status}" ?></label>
     </div> -->
 
 
     <?php if (current_user_can('manager_statusbar_student')): ?>
         <!-- <h2 style="margin-bottom:15px; text-align: center;"><?= __('Status student', 'edusystem'); ?></h2> -->
-            <div id="notice-status" class="notice-custom notice-info" style="display:none;">
+        <div id="notice-status" class="notice-custom notice-info" style="display:none;">
             <p><?= esc_html__('Status change successfully', 'edusystem') ?></p>
         </div>
         <div id="product-status-container" class="status-grid-wrapper">
@@ -155,11 +155,11 @@ $datetime_format = $date_format . ' H:i:s';
                 </div>
             </div>
         </div>
-                <?php if ($student->status_id < 5 && ($fee_payment_ready && $product_ready && $fee_graduation_ready && $documents_ready && $academic_ready)) { ?>
+        <?php if ($student->status_id < 5 && ($fee_payment_ready && $product_ready && $fee_graduation_ready && $documents_ready && $academic_ready)) { ?>
             <form method="post"
                 action="<?= admin_url('admin.php?page=add_admin_form_admission_content&action=update_status_student&status_id=5&student_id=' . $student->id); ?>">
                 <p style="text-align: center">
-                            <input type="submit" value="<?= esc_html__('Graduate student', 'edusystem') ?>" class="button button-primary">
+                    <input type="submit" value="<?= esc_html__('Graduate student', 'edusystem') ?>" class="button button-primary">
                 </p>
             </form>
         <?php } ?>
@@ -209,9 +209,9 @@ $datetime_format = $date_format . ' H:i:s';
                                                 <?php echo esc_html($statusText); ?>
                                             </span>
                                             <?php if (!empty($access_info['error'])): ?>
-                                                <p class="moodle-access-error" style="color:#b71c1c;text-align:center;margin-top:8px;padding:0 12px;"><?php echo esc_html($access_info['error']); ?></p>
-                                            <?php endif; ?>
-                                        </p>
+                                        <p class="moodle-access-error" style="color:#b71c1c;text-align:center;margin-top:8px;padding:0 12px;"><?php echo esc_html($access_info['error']); ?></p>
+                                    <?php endif; ?>
+                                    </p>
                                     </tr>
                                     <tr>
                                         <?php if ($hide_grade_student !== 'on') { ?>
@@ -707,7 +707,7 @@ $datetime_format = $date_format . ' H:i:s';
                                         <a target="_blank"
                                             onclick='watchDetails(<?= htmlspecialchars(json_encode($document), ENT_QUOTES) ?>)'
                                             style="color: #737983; border-color: #737983;">
-                                                <button type="button" class="button button-primary-outline other-buttons-document">
+                                            <button type="button" class="button button-primary-outline other-buttons-document">
                                                 <?= esc_html__('View detail', 'edusystem') ?>
                                             </button>
                                         </a>
@@ -773,7 +773,7 @@ $datetime_format = $date_format . ' H:i:s';
         <table class="wp-list-table widefat fixed striped documents-table" style="margin-top:20px;">
             <thead>
                 <tr>
-                        <th scope="col" class="manage-column column-primary column-document" style="width: 30%">
+                    <th scope="col" class="manage-column column-primary column-document" style="width: 30%">
                         <?= esc_html__('Document', 'edusystem') ?>
                     </th>
                     <th scope="col" class="manage-column column-actions" style="width: 60%">
@@ -1026,27 +1026,28 @@ $datetime_format = $date_format . ' H:i:s';
                 onclick="return confirm('<?= esc_html__('Are you sure you want to expel the student?', 'edusystem') ?>');"><?= sprintf(esc_html__('Withdraw student from %s', 'edusystem'), get_bloginfo('name')); ?></a>
         </div>
     <?php } ?>
-    <div style="text-align: center;">
-        <p>
-            <?php
-            // Obtener el timestamp en formato Unix para wp_date, si $student->created_at es una cadena de fecha/hora.
-            $timestamp = strtotime($student->created_at);
-
-            // Formatear la fecha/hora en el formato deseado
-            $formatted_date = wp_date($datetime_format, $timestamp);
-
-            // Usar sprintf para incrustar la fecha formateada en la cadena traducible
-            $translated_text = sprintf(
-                /* translators: %s: The creation date and time of the student (e.g., 12/31/2025 14:30:00) */
-                __('Student created at %s', 'edusystem'),
-                $formatted_date
-            );
-
-            echo $translated_text;
-            ?>
-        </p>
-    </div>
 <?php } ?>
+
+<div style="text-align: center;">
+    <p>
+        <?php
+        // Obtener el timestamp en formato Unix para wp_date, si $student->created_at es una cadena de fecha/hora.
+        $timestamp = strtotime($student->created_at);
+
+        // Formatear la fecha/hora en el formato deseado
+        $formatted_date = wp_date($datetime_format, $timestamp);
+
+        // Usar sprintf para incrustar la fecha formateada en la cadena traducible
+        $translated_text = sprintf(
+            /* translators: %s: The creation date and time of the student (e.g., 12/31/2025 14:30:00) */
+            __('Student created at %s', 'edusystem'),
+            $formatted_date
+        );
+
+        echo $translated_text;
+        ?>
+    </p>
+</div>
 
 <script>
     function toggleDateInput() {
