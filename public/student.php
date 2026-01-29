@@ -1711,6 +1711,10 @@ function trigger_open_elective_modal()
         return;
     }
 
+    if (!$student->moodle_student_id) {
+        return;
+    }
+
     // // Si el campo 'elective' no existe o es 1, no es necesario cargar el modal.
     // if (!isset($student->elective) || (int) $student->elective !== 0) {
     //     return;
