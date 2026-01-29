@@ -167,13 +167,14 @@ add_shortcode('buy_failed_subjects', function () {
     if (!$students) return;
 
     foreach ( $students as $student ) {
+        
         $student_id = $student->id;
 
         global $wpdb;
         $table_inscriptions = "{$wpdb->prefix}student_period_inscriptions";
         $table_subjects = "{$wpdb->prefix}school_subjects";
 
-        $results = $wpdb->get_results($wpdb->prepare(
+        $subjects_failed = $wpdb->get_results($wpdb->prepare(
             "SELECT `sub`.id, `sub`.name, `sub`.price, `sub`.currency, COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
             FROM {$table_inscriptions} `ins`
             INNER JOIN {$table_subjects} `sub` ON `sub`.id = `ins`.subject_id
@@ -183,7 +184,23 @@ add_shortcode('buy_failed_subjects', function () {
             $student_id
         ));
 
-        if ( !$results )  return; 
+        if ( !$subjects_failed )  return; 
+
+        $load = load_current_cut_enrollment();
+        $code = $load['code'];
+        $cut = $load['cut'];
+
+        $subjects_remedial = [];
+        foreach ( $subjects_failed as $subject ) {
+            
+            // verifica que la materia tiene ofertas actuales
+            $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
+            if (!$offer_available_to_enroll) continue;
+            
+            array_push($subjects_remedial, $subject);
+        }
+        
+        if ( !$subjects_remedial )  return; 
 
         ob_start(); 
         ?>
@@ -195,7 +212,7 @@ add_shortcode('buy_failed_subjects', function () {
                 
                 <div>
                     <ul class="list-failed-subjects">
-                        <?php foreach ($results as $subject): ?>
+                        <?php foreach ($subjects_remedial as $subject): ?>
                             <li>
                                 <span><?= esc_html($subject->name); ?></span>
 
