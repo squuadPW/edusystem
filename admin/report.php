@@ -3853,7 +3853,7 @@ class TT_Pending_Documents_List_Table extends WP_List_Table
         $pending_logic = "(
             (d.attachment_id = 0 AND (d.is_required = 1 OR d.max_date_upload IS NOT NULL))
             OR 
-            (d.attachment_id != 0 AND d.status IN (3, 6))
+            (d.attachment_id != 0 AND d.status IN (3, 6) AND (d.is_required = 1 OR d.max_date_upload IS NOT NULL))
         )";
 
         $conditions[] = "EXISTS (SELECT 1 FROM {$table_student_documents} AS d WHERE d.student_id = s.id AND {$pending_logic})";
@@ -6288,7 +6288,7 @@ function get_students_pending_documents_count()
         AND (
             (d.attachment_id = 0 AND (d.is_required = 1 OR d.max_date_upload IS NOT NULL))
             OR 
-            (d.attachment_id != 0 AND d.status IN (3, 6))
+            (d.attachment_id != 0 AND d.status IN (3, 6) AND (d.is_required = 1 OR d.max_date_upload IS NOT NULL))
         )",
         $table_students,
         $table_student_documents
