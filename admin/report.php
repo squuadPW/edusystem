@@ -6277,24 +6277,23 @@ function get_students_pending_documents_count()
 {
     global $wpdb;
 
-    // Obtener los nombres de las tablas con prefijo
     $table_students = $wpdb->prefix . 'students';
     $table_student_documents = $wpdb->prefix . 'student_documents';
 
-    // La consulta optimizada usa un JOIN y una subconsulta para contar
-    // a los estudiantes que tienen al menos un documento pendiente.
     $query = $wpdb->prepare(
         "SELECT COUNT(DISTINCT s.id)
         FROM %i AS s
         INNER JOIN %i AS d ON s.id = d.student_id
         WHERE s.status_id NOT IN (5, 6)
-        AND d.attachment_id = 0
-        AND (d.is_required = 1 OR d.max_date_upload IS NOT NULL)",
+        AND (
+            (d.attachment_id = 0 AND (d.is_required = 1 OR d.max_date_upload IS NOT NULL))
+            OR 
+            (d.attachment_id != 0 AND d.status IN (3, 6))
+        )",
         $table_students,
         $table_student_documents
     );
 
-    // Ejecutar la consulta y devolver el conteo directamente
     $count = $wpdb->get_var($query);
 
     return (int) $count;
