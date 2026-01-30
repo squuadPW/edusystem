@@ -242,6 +242,26 @@ function add_admin_form_admission_content()
                 wp_redirect(admin_url('/admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=' . $student_id));
                 exit;
             }
+
+            if (isset($_GET['action']) && $_GET['action'] == 'generate_virtual_classroom') {
+                $student_id = $_GET['student_id'];
+                sync_student_with_moodle($student_id);
+
+                setcookie('message', __('Successfully generated virtual classroom for the student.', 'edusystem'), time() + 3600, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
+                exit;
+            } 
+            
+            if (isset($_GET['action']) && $_GET['action'] == 'generate_admin') {
+                $student_id = $_GET['student_id'];
+                if (has_action('portal_create_user_external')) {
+                    do_action('portal_create_user_external', $student_id);
+                }
+
+                setcookie('message', __('Successfully generated admin for the student.', 'edusystem'), time() + 3600, '/');
+                wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
+                exit;
+            } 
         }
 
         if (isset($_GET['section_tab']) && !empty($_GET['section_tab'])) {

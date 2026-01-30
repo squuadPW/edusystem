@@ -15,11 +15,41 @@
 		?>
 
 		<div style="text-align:start;">
-			<h1 class="wp-heading-line"><?= __('All ' . (isset($_GET['section_tab']) ? ucfirst($_GET['section_tab']) : 'programs'), 'edusystem'); ?></h1>
+			<h1>
+				<?php
+				$tab = isset($_GET['section_tab']) && $_GET['section_tab'] ? $_GET['section_tab'] : 'programs';
+				$labels = [
+					'programs' => __('Programs', 'edusystem'),
+					'careers'  => __('Careers', 'edusystem'),
+					'mentions' => __('Mentions', 'edusystem'),
+				];
+				$label = isset($labels[$tab]) ? $labels[$tab] : ucfirst($tab);
+
+				printf(
+					esc_html__('All %s', 'edusystem'),
+					esc_html($label)
+				);
+				?>
+			</h1>
 		</div>
 		<div style="display:flex;width:100%;justify-content:end;margin-bottom:10px;">
 			<a href="<?= admin_url('admin.php?page=add_admin_form_student_program_content&section_tab=program_details&from=' . (isset($_GET['section_tab']) ? $_GET['section_tab'] : 'programs')); ?>"
-				class="button button-outline-primary"><?= __('Add ' . (isset($_GET['section_tab']) ? ucfirst($_GET['section_tab']) : 'programs'), 'edusystem'); ?></a>
+				class="button button-outline-primary">
+				<?php
+				$tab = isset($_GET['section_tab']) && $_GET['section_tab'] ? $_GET['section_tab'] : 'programs';
+				$labels = [
+					'programs' => __('Program', 'edusystem'),
+					'careers'  => __('Career', 'edusystem'),
+					'mentions' => __('Mention', 'edusystem'),
+				];
+				$label = isset($labels[$tab]) ? $labels[$tab] : ucfirst($tab);
+
+				printf(
+					esc_html__('Add %s', 'edusystem'),
+					esc_html($label)
+				);
+				?>
+			</a>
 		</div>
 		<form action="" id="post-filter" method="post">
 			<input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />

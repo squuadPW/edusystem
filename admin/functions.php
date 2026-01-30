@@ -1399,7 +1399,7 @@ function get_replacements_variables($student, $code_period = null, $cut_period =
         ],
         'table_inscriptions' => [
             'value' => function () use ($student) {
-                return table_inscriptions_html(get_inscriptions_by_student($student->id, 'regular'));
+                return table_inscriptions_html(get_inscriptions_by_student($student->id));
             },
             'wrap' => false,
         ],
@@ -1549,7 +1549,7 @@ function wp_add_widgets_edusof()
         if (current_user_can('manager_payments_aes')) {
             wp_add_dashboard_widget(
                 'wp_widget_pending_payments', // Unique ID for your widget
-                'Payments Status', // Title displayed in the widget
+                esc_html__('Payments status', 'edusystem'), // Title displayed in the widget
                 'wp_widget_pending_payments_callback' // Callback function for content
             );
         }
@@ -1558,7 +1558,7 @@ function wp_add_widgets_edusof()
         if (current_user_can('manager_admission_aes')) {
             wp_add_dashboard_widget(
                 'wp_widget_documents_review', // Unique ID for your widget
-                'Admission Status', // Title displayed in the widget
+                esc_html__('Admission status', 'edusystem'), // Title displayed in the widget
                 'wp_widget_documents_review_callback' // Callback function for content
             );
         }
@@ -1567,7 +1567,7 @@ function wp_add_widgets_edusof()
         if (current_user_can('manager_requests_aes')) {
             wp_add_dashboard_widget(
                 'wp_widget_requests_review', // Unique ID for your widget
-                'Requests Status', // Title displayed in the widget
+                esc_html__('Requests status', 'edusystem'), // Title displayed in the widget
                 'wp_widget_requests_review_callback' // Callback function for content
             );
         }

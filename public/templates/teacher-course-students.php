@@ -37,7 +37,7 @@
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-inscription-date"
                         data-title="<?= __('Inscription date', 'edusystem'); ?>">
                         <?php
-                            echo date('m/d/Y', strtotime($row->inscription_at));
+                            echo date((strpos(get_locale(), 'es') === 0 ? 'd/m/Y' : 'm/d/Y'), strtotime($row->inscription_at));
                         ?>
                     </td>
                     <?php if($_GET['status'] == 'history') { ?>

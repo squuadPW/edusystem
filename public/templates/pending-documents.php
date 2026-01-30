@@ -38,7 +38,7 @@
                                             <?php $name = $document->document_id; ?>
                                             • <?= $name; ?>
                                             <?php if ($document->max_date_upload): ?>
-                                                <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>: <?= date('m/d/Y', strtotime($document->max_date_upload)) ?></span>
+                                                <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>: <?= date((strpos(get_locale(), 'es') === 0 ? 'd/m/Y' : 'm/d/Y'), strtotime($document->max_date_upload)) ?></span>
                                             <?php endif; ?>
                                         </a>
                                     </span>

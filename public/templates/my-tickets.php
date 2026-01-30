@@ -20,7 +20,7 @@
                 <tr class="woocommerce-orders-table__row woocommerce-orders-table__row--status-completed order">
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                         data-title="<?= __('Ticket ID', 'edusystem'); ?>">
-                        <a href="https://support.americanelite.school/view.php" target="blank"
+                        <a href="<?= get_option('ticket_status') ?? '#' ?>" target="blank"
                             style="text-decoration: underline !important; color: #002fbd;"><?= $row->ticket_id; ?></a>
                     </td>
                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-status"
