@@ -2690,7 +2690,7 @@ function check_course_registration_limit() {
         $student_id
     ));
 
-        if ( !$subjects_failed )  return; 
+    if ( !$subjects_failed )  return; 
 
     foreach( $subjects AS $subject ) {
 
