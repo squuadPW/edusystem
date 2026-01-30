@@ -69,7 +69,7 @@ $roles = $current_user->roles;
                             </tbody>
                         </table>
 
-                        <form method="post"
+                        <form method="post" id="academic_projection_form"
                             action="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=save_academic_projection'); ?>">
 
                             <div>
@@ -82,12 +82,32 @@ $roles = $current_user->roles;
                                 <input type="hidden" name="current_period" value="<?= $current_period ?>">
                                 <input type="hidden" name="current_cut" value="<?= $current_cut ?>">
 
+                                <?php 
+
+                                    global $wpdb;
+                                    $table_inscriptions = "{$wpdb->prefix}student_period_inscriptions";
+                                    $table_subjects = "{$wpdb->prefix}school_subjects";
+
+                                    $restricted_subjects = $wpdb->get_results($wpdb->prepare(
+                                        "SELECT `sub`.id, `sub`.name, `sub`.code_subject, COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
+                                        FROM {$table_inscriptions} `ins`
+                                        INNER JOIN {$table_subjects} `sub` ON `sub`.id = `ins`.subject_id
+                                        WHERE `ins`.student_id = %d AND (`ins`.status_id = 3 OR `ins`.status_id = 4)
+                                        GROUP BY `sub`.id
+                                        HAVING total_reprobadas >= retake_limit AND SUM(`ins`.status_id = 3) = 0;", 
+                                        (int) $projection->student_id
+                                    )); 
+                                ?>
+
+                                <input type="hidden" id="restricted_subjects" value='<?= json_encode($restricted_subjects) ?>'>
+
                                 <?php foreach (json_decode($projection->projection) as $key => $projection_for) { ?>
                                     <?php if (($projection_for->type == 'equivalence' && get_option('show_equivalence_projection')) || $projection_for->type != 'equivalence') { ?>
                                         <div id="row[<?= $key ?>]" <?= ($projection_for->this_cut) ? 'class="current-period row-projection"' : 'class="row-projection"'; ?>>
                                             <div style="flex: 1; padding: 5px; align-content: center;">
+
                                                 <?php if ($projection_for->type != 'equivalence') { ?>
-                                                    <input type="checkbox" name="completed[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'checked style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
+                                                    <input type="checkbox" name="completed[<?= $key ?>]" data-subject_id="<?= $projection_for->subject_id ?>" <?php echo $projection_for->is_completed ? 'checked style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                                     <input type="hidden" name="this_cut[<?= $key ?>]"
                                                         value="<?= $projection_for->this_cut ? true : false ?>">
                                                 <?php } ?>
@@ -264,3 +284,7 @@ $roles = $current_user->roles;
         </div>
     </div>
 </div>
+
+<?php 
+	include(plugin_dir_path(__FILE__).'modal-force-enrollment-subjects.php');
+?>

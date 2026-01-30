@@ -357,9 +357,21 @@ function add_admin_form_academic_projection_content()
                 }
 
                 $status_id = $is_this_cut ? 1 : ($calification_value >= $subject->min_pass ? 3 : 4);
+                if ($status_id != 4) {
+                    $projection_obj[$key]->is_completed = $is_completed;
+                    $projection_obj[$key]->this_cut = $is_this_cut;
+                    $projection_obj[$key]->code_period = $period;
+                    $projection_obj[$key]->cut = $cut;
+                    $projection_obj[$key]->calification = $calification_value;
+                } else {
+                    $projection_obj[$key]->is_completed = false;
+                    $projection_obj[$key]->this_cut = false;
+                    $projection_obj[$key]->code_period = '';
+                    $projection_obj[$key]->cut = '';
+                    $projection_obj[$key]->calification = '';
+                }
 
                 if ($is_completed) {
-
                     $student_id = intval($projection->student_id); // Asegúrate de que sea un entero
                     $code_subject = $wpdb->esc_like($projection_obj[$key]->code_subject); // Escapa la cadena
 
@@ -375,15 +387,6 @@ function add_admin_form_academic_projection_content()
 
                     $exist = $wpdb->get_row($query);
                     if (!isset($exist)) {
-                        
-                        $subject_count = $wpdb->get_var( $wpdb->prepare(
-                            "SELECT COUNT(*) FROM {$table_student_period_inscriptions} 
-                            WHERE student_id = %d AND 
-                                subject_id = %d",
-                            $student_id,
-                            $subject->id
-                        ));
-                        
                         $query = $wpdb->prepare(
                             "SELECT * FROM {$table_student_period_inscriptions} 
                             WHERE student_id = %d 
@@ -397,7 +400,6 @@ function add_admin_form_academic_projection_content()
                         );
                         $exist = $wpdb->get_row($query);
                         if (!isset($exist)) {
-                            
                             $wpdb->insert($table_student_period_inscriptions, [
                                 'status_id' => $status_id,
                                 'student_id' => $projection->student_id,
@@ -409,10 +411,7 @@ function add_admin_form_academic_projection_content()
                                 'type' => $subject->type
                             ]);
                             update_expected_matrix_after_enrollment($projection->student_id, $projection_obj[$key]->subject_id, $period, $cut);
-                        } else {
-                            continue;
                         }
-
                     } else {
                         $wpdb->update($table_student_period_inscriptions, [
                             'status_id' => $status_id,
@@ -430,21 +429,6 @@ function add_admin_form_academic_projection_content()
                     if ($is_this_cut) {
                         $count_enroll++;
                     }
-                }
-
-                // Actualizar el objeto de proyección académica
-                if ($status_id != 4) {
-                    $projection_obj[$key]->is_completed = $is_completed;
-                    $projection_obj[$key]->this_cut = $is_this_cut;
-                    $projection_obj[$key]->code_period = $period;
-                    $projection_obj[$key]->cut = $cut;
-                    $projection_obj[$key]->calification = $calification_value;
-                } else {
-                    $projection_obj[$key]->is_completed = false;
-                    $projection_obj[$key]->this_cut = false;
-                    $projection_obj[$key]->code_period = '';
-                    $projection_obj[$key]->cut = '';
-                    $projection_obj[$key]->calification = '';
                 }
 
                 // Verificamos si status_id es 4 y si is_elective existe y es true
@@ -1460,19 +1444,19 @@ function table_notes_html($student_id, $projection)
 {
     // Usar la sintaxis de Heredoc para un HTML más limpio y legible
     $html = <<<HTML
-    <table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7;' id="tablenotcustom">
-        <thead>
-            <tr>
-                <th style='width: 70px;'>CODE</th>
-                <th>COURSE</th>
-                <th style='width: 40px;'>CH</th>
-                <th style='width: 40px;'>0-100</th>
-                <th style='width: 40px;'>0-4</th>
-                <th style='width: 150px;'>PERIOD</th>
-            </tr>
-        </thead>
-        <tbody>
-    HTML;
+<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7;' id="tablenotcustom">
+    <thead>
+        <tr>
+            <th style='width: 70px;'>CODE</th>
+            <th>COURSE</th>
+            <th style='width: 40px;'>CH</th>
+            <th style='width: 40px;'>0-100</th>
+            <th style='width: 40px;'>0-4</th>
+            <th style='width: 150px;'>PERIOD</th>
+        </tr>
+    </thead>
+    <tbody>
+HTML;
 
     // Decodificar la proyección una sola vez
     $projections = json_decode($projection->projection);
@@ -1596,40 +1580,40 @@ function get_payment_method_table_html($student): string
     // Start output buffering to capture the HTML.
     ob_start();
 
-    ?>
-        <table style="width: 50%; border-collapse: collapse; margin: 0 auto">
-            <thead>
-                <tr style="background-color: #dcdcdc">
-                    <th colspan="2" style="
-                            border: 1px solid black;
-                            padding: 8px;
-                            text-align: center;
-                        ">
-                        <?php echo esc_html(__('METHOD OF PAYMENT', 'text-domain')); ?>
-                    </th>
+?>
+    <table style="width: 50%; border-collapse: collapse; margin: 0 auto">
+        <thead>
+            <tr style="background-color: #dcdcdc">
+                <th colspan="2" style="
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: center;
+                    ">
+                    <?php echo esc_html(__('METHOD OF PAYMENT', 'text-domain')); ?>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            foreach ($payment_methods as $index => $method_name):
+                $is_selected = ($is_valid_selection && $index === $selected_method_index);
+                $mark_content = $is_selected ? 'X' : '';
+                $mark_style = 'border: 1px solid black; padding: 8px; text-align: center;';
+                if ($is_selected) {
+                    $mark_style .= ' font-weight: bold;';
+                }
+            ?>
+                <tr>
+                    <td style="border: 1px solid black; padding: 8px; width: 80%">
+                        <?php echo esc_html($method_name); ?>
+                    </td>
+                    <td style="<?php echo $mark_style; ?>">
+                        <?php echo $mark_content; ?>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                <?php
-                foreach ($payment_methods as $index => $method_name):
-                    $is_selected = ($is_valid_selection && $index === $selected_method_index);
-                    $mark_content = $is_selected ? 'X' : '';
-                    $mark_style = 'border: 1px solid black; padding: 8px; text-align: center;';
-                    if ($is_selected) {
-                        $mark_style .= ' font-weight: bold;';
-                    }
-                ?>
-                    <tr>
-                        <td style="border: 1px solid black; padding: 8px; width: 80%">
-                            <?php echo esc_html($method_name); ?>
-                        </td>
-                        <td style="<?php echo $mark_style; ?>">
-                            <?php echo $mark_content; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
     <?php
 
     // Capture the buffer content and return it as a string.
@@ -1725,17 +1709,17 @@ function table_inscriptions_html($inscriptions)
 
     // Inicio de la plantilla HTML usando Heredoc para mejor legibilidad
     $html = <<<HTML
-    <table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7;" id="tablenotcustom">
-        <thead>
-            <tr>
-                <th scope="col" class="manage-column" style="width: 90px;">Status</th>
-                <th scope="col" class="manage-column">Subject - Code</th>
-                <th scope="col" class="manage-column" style="width: 80px;">Period - cut</th>
-                <th scope="col" class="manage-column" style="width: 80px;">Calification</th>
-            </tr>
-        </thead>
-        <tbody>
-    HTML;
+<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7;" id="tablenotcustom">
+    <thead>
+        <tr>
+            <th scope="col" class="manage-column" style="width: 90px;">Status</th>
+            <th scope="col" class="manage-column">Subject - Code</th>
+            <th scope="col" class="manage-column" style="width: 80px;">Period - cut</th>
+            <th scope="col" class="manage-column" style="width: 80px;">Calification</th>
+        </tr>
+    </thead>
+    <tbody>
+HTML;
 
     foreach ($processed_inscriptions as $inscription) {
         $subject = $subject_details_cache[$inscription->code_subject];
@@ -1765,9 +1749,9 @@ function table_inscriptions_html($inscriptions)
     }
 
     $html .= <<<HTML
-        </tbody>
-    </table>
-    HTML;
+    </tbody>
+</table>
+HTML;
 
     return $html;
 }
@@ -1794,16 +1778,16 @@ function table_notes_period_html($inscriptions)
 
     // Inicio de la plantilla HTML usando Heredoc para mejor legibilidad
     $html = <<<HTML
-    <table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7;" id="tablenotcustom">
-        <thead>
-            <tr>
-                <th scope="col" class="manage-column">Subject - Code</th>
-                <th scope="col" class="manage-column">Calification</th>
-                <th scope="col" class="manage-column">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-    HTML;
+<table class="wp-list-table widefat fixed posts striped" style="margin-top: 20px; border: 1px dashed #c3c4c7;" id="tablenotcustom">
+    <thead>
+        <tr>
+            <th scope="col" class="manage-column">Subject - Code</th>
+            <th scope="col" class="manage-column">Calification</th>
+            <th scope="col" class="manage-column">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+HTML;
 
     foreach ($inscriptions as $inscription) {
         $subject = $subject_details_cache[$inscription->code_subject];
@@ -1830,9 +1814,9 @@ function table_notes_period_html($inscriptions)
     }
 
     $html .= <<<HTML
-        </tbody>
-    </table>
-    HTML;
+    </tbody>
+</table>
+HTML;
 
     return $html;
 }
@@ -1867,14 +1851,14 @@ function table_notes_summary_html($projection)
 
     // Usar la sintaxis de Heredoc para una plantilla HTML más limpia y segura
     $html = <<<HTML
-    <table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7;' id="tablenotcustom">
-        <tbody>
-            <tr><td colspan='12'>Total Quality Points: %s</td></tr>
-            <tr><td colspan='12'>Earned CH: %s</td></tr>
-            <tr><td colspan='12'>GPA: %s</td></tr>
-        </tbody>
-    </table>
-    HTML;
+<table class='wp-list-table widefat fixed posts striped' style='margin-top: 20px; border: 1px dashed #c3c4c7;' id="tablenotcustom">
+    <tbody>
+        <tr><td colspan='12'>Total Quality Points: %s</td></tr>
+        <tr><td colspan='12'>Earned CH: %s</td></tr>
+        <tr><td colspan='12'>GPA: %s</td></tr>
+    </tbody>
+</table>
+HTML;
 
     // Sanear y formatear los datos antes de inyectarlos en el HTML
     return sprintf(
@@ -1993,7 +1977,7 @@ function get_language_selected_html(string|null $selected_lang_index): string
         endforeach;
         ?>
     </p>
-    <?php
+<?php
 
     // 4. Capturar el contenido del buffer y devolverlo como un string
     return ob_get_clean();
@@ -2025,66 +2009,66 @@ function get_signature_section($student): string
         $show_parent_info = 0;
     }
     ob_start();
-    ?>
-        <input type="hidden" name="auto_signature_student" value="0">
-        <div class="signatures_squares">
+?>
+    <input type="hidden" name="auto_signature_student" value="0">
+    <div class="signatures_squares">
+        <div class="signature_square_field">
+            <div>
+                <div style="padding: 8px; text-align: center"><strong><?= __('Signature of applicant:', 'edusystem') ?></strong>
+                    <br> <?= $student_full_name ?>
+                </div>
+            </div>
+            <div style="position: relative; padding: 8px;" id="signature-pad-student">
+                <canvas id="signature-student" width="100%" height="200"
+                    style="border: 1px solid gray; margin: auto !important; background-color: #ffff005c"></canvas>
+                <div id="sign-here-student"
+                    style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
+                    <span><?= __('SIGN HERE', 'edusystem'); ?></span>
+                </div>
+            </div>
+            <button id="clear-student" style="width: 100%;"><?= __('Clear', 'edusystem'); ?></button>
+            <button id="generate-signature-student" style="width: 100%;"
+                onclick="autoSignature('signature-pad-student', 'signature-text-student', 'generate-signature-student', 'clear-student')"><?= __('Generate signature automatically', 'edusystem') ?></button>
+            <div style="position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none"
+                id="signature-text-student">
+                <div style="bottom: 0; position: absolute; text-align: center; width: 100%;">
+                    <?= $student_short_name ?>
+                </div>
+            </div>
+            <button id="clear-student-signature"
+                style="width: 100%; display: none"><?= __('Cancel', 'edusystem') ?></button>
+        </div>
+        <?php if ($show_parent_info == 1) { ?>
+            <input type="hidden" name="auto_signature_parent" value="0">
             <div class="signature_square_field">
                 <div>
-                    <div style="padding: 8px; text-align: center"><strong><?= __('Signature of applicant:', 'edusystem') ?></strong>
-                        <br> <?= $student_full_name ?>
+                    <div style="padding: 8px; text-align: center"><strong><?= __('Signature of Parent/Legal Guardian:', 'edusystem') ?></strong>
+                        <br> <?= $parent_full_name ?>
                     </div>
                 </div>
-                <div style="position: relative; padding: 8px;" id="signature-pad-student">
-                    <canvas id="signature-student" width="100%" height="200"
-                        style="border: 1px solid gray; margin: auto !important; background-color: #ffff005c"></canvas>
-                    <div id="sign-here-student"
+                <div style="position: relative; padding: 8px;" id="signature-pad-parent">
+                    <canvas id="signature-parent" width="100%" height="200"
+                        style="border: 1px solid gray; margin: auto !important;  background-color: #ffff005c"></canvas>
+                    <div id="sign-here-parent"
                         style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
-                        <span><?= __('SIGN HERE', 'edusystem'); ?></span>
+                        <span><?= __('SIGN HERE', 'edusystem') ?></span>
                     </div>
                 </div>
-                <button id="clear-student" style="width: 100%;"><?= __('Clear', 'edusystem'); ?></button>
-                <button id="generate-signature-student" style="width: 100%;"
-                    onclick="autoSignature('signature-pad-student', 'signature-text-student', 'generate-signature-student', 'clear-student')"><?= __('Generate signature automatically', 'edusystem') ?></button>
-                <div style="position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none"
-                    id="signature-text-student">
+                <button id="clear-parent" style="width: 100%;"><?= __('Clear', 'edusystem') ?></button>
+                <button id="generate-signature-parent" style="width: 100%;"
+                    onclick="autoSignature('signature-pad-parent', 'signature-text-parent', 'generate-signature-parent', 'clear-parent')"><?= __('Generate signature automatically', 'edusystem') ?></button>
+                <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none"
+                    id="signature-text-parent">
                     <div style="bottom: 0; position: absolute; text-align: center; width: 100%;">
-                        <?= $student_short_name ?>
+                        <?= $parent_full_name ?>
                     </div>
                 </div>
-                <button id="clear-student-signature"
+                <button id="clear-parent-signature"
                     style="width: 100%; display: none"><?= __('Cancel', 'edusystem') ?></button>
             </div>
-            <?php if ($show_parent_info == 1) { ?>
-                <input type="hidden" name="auto_signature_parent" value="0">
-                <div class="signature_square_field">
-                    <div>
-                        <div style="padding: 8px; text-align: center"><strong><?= __('Signature of Parent/Legal Guardian:', 'edusystem') ?></strong>
-                            <br> <?= $parent_full_name ?>
-                        </div>
-                    </div>
-                    <div style="position: relative; padding: 8px;" id="signature-pad-parent">
-                        <canvas id="signature-parent" width="100%" height="200"
-                            style="border: 1px solid gray; margin: auto !important;  background-color: #ffff005c"></canvas>
-                        <div id="sign-here-parent"
-                            style="pointer-events: none;position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; padding: 10px; color: #4f4e4e7a; font-size: 20px;">
-                            <span><?= __('SIGN HERE', 'edusystem') ?></span>
-                        </div>
-                    </div>
-                    <button id="clear-parent" style="width: 100%;"><?= __('Clear', 'edusystem') ?></button>
-                    <button id="generate-signature-parent" style="width: 100%;"
-                        onclick="autoSignature('signature-pad-parent', 'signature-text-parent', 'generate-signature-parent', 'clear-parent')"><?= __('Generate signature automatically', 'edusystem') ?></button>
-                    <div style="    position: relative; padding: 8px; text-align: center; width: 70%; margin: 8px auto; border-bottom: 1px solid gray; font-family: Great Vibes, cursive; font-size: 28px; display: block; height: 120px; display: none"
-                        id="signature-text-parent">
-                        <div style="bottom: 0; position: absolute; text-align: center; width: 100%;">
-                            <?= $parent_full_name ?>
-                        </div>
-                    </div>
-                    <button id="clear-parent-signature"
-                        style="width: 100%; display: none"><?= __('Cancel', 'edusystem') ?></button>
-                </div>
-            <?php } ?>
-        </div>
-    <?php
+        <?php } ?>
+    </div>
+<?php
 
     return ob_get_clean();
 }
@@ -2092,12 +2076,12 @@ function get_signature_section($student): string
 function get_signature_section_fgu($student): string
 {
     ob_start();
-    ?>
-        <div>
-            <div style="padding: 8px; text-align: center"><strong><?= __('Signature of FGU Official:', 'edusystem') ?></strong></div>
-            <img style="width: 160px; margin: 25px auto;" src="http://portal.floridaglobal.university/wp-content/uploads/2025/11/signature-admission-fgu.png" alt="">
-        </div>
-    <?php
+?>
+    <div>
+        <div style="padding: 8px; text-align: center"><strong><?= __('Signature of FGU Official:', 'edusystem') ?></strong></div>
+        <img style="width: 160px; margin: 25px auto;" src="http://portal.floridaglobal.university/wp-content/uploads/2025/11/signature-admission-fgu.png" alt="">
+    </div>
+<?php
 
     return ob_get_clean();
 }
@@ -2154,113 +2138,113 @@ function get_payment_plan_table(int $student_id): string
 
     ob_start();
 
-    ?>
-        <table style="width: 100%; border-collapse: collapse; margin: 0 !important">
-            <thead>
-                <tr style="background-color: #dcdcdc">
-                    <th style="
-                            border: 1px solid black;
-                            padding: 8px;
-                            text-align: left;
-                            width: 40%;
-                        "></th>
-                    <th style="
-                            border: 1px solid black;
-                            padding: 8px;
-                            text-align: center;
-                            width: 30%;
-                        ">
-                        <strong>Undergraduate Program:</strong>
-                    </th>
-                    <th style="
-                            border: 1px solid black;
-                            padding: 8px;
-                            text-align: center;
-                            width: 30%;
-                        ">
-                        <strong>Graduate Program:</strong>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="border: 1px solid black; padding: 8px">
-                        Tuition
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'undergraduated' ? wc_price($tuition_price) : '-' ?></strong>
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'graduated' ? wc_price($tuition_price) : '-' ?></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid black; padding: 8px">
-                        Application for Admission Fee (non-refundable)
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'undergraduated' ? wc_price($registration_fee_price) : '-' ?></strong>
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'graduated' ? wc_price($registration_fee_price) : '-' ?></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid black; padding: 8px">
-                        Technology Fee
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong>-</strong>
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong>-</strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid black; padding: 8px">Library Fee</td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong>-</strong>
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong>-</strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid black; padding: 8px">
-                        Graduation Fee
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'undergraduated' ? wc_price($graduation_fee_price) : '-' ?></strong>
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'graduated' ? wc_price($graduation_fee_price) : '-' ?></strong>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="border: 1px solid black; padding: 8px">
-                        Adendum (Scholarship)
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'undergraduated' ? wc_price($adendum_scholarship_price) : '-' ?></strong>
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'graduated' ? wc_price($adendum_scholarship_price) : '-' ?></strong>
-                    </td>
-                </tr>
-                <tr style="font-weight: bold; background-color: #f0f0f0">
-                    <td style="border: 1px solid black; padding: 8px">
-                        <strong>Total:</strong>
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'undergraduated' ? wc_price($undergraduate_program_total) : '-' ?></strong>
-                    </td>
-                    <td style="border: 1px solid black; padding: 8px; text-align: center">
-                        <strong><?= $program->type === 'graduated' ? wc_price($undergraduate_program_total) : '-' ?></strong>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    <?php
+?>
+    <table style="width: 100%; border-collapse: collapse; margin: 0 !important">
+        <thead>
+            <tr style="background-color: #dcdcdc">
+                <th style="
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: left;
+                        width: 40%;
+                    "></th>
+                <th style="
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: center;
+                        width: 30%;
+                    ">
+                    <strong>Undergraduate Program:</strong>
+                </th>
+                <th style="
+                        border: 1px solid black;
+                        padding: 8px;
+                        text-align: center;
+                        width: 30%;
+                    ">
+                    <strong>Graduate Program:</strong>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Tuition
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($tuition_price) : '-' ?></strong>
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'graduated' ? wc_price($tuition_price) : '-' ?></strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Application for Admission Fee (non-refundable)
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($registration_fee_price) : '-' ?></strong>
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'graduated' ? wc_price($registration_fee_price) : '-' ?></strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Technology Fee
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong>-</strong>
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong>-</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">Library Fee</td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong>-</strong>
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong>-</strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Graduation Fee
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($graduation_fee_price) : '-' ?></strong>
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'graduated' ? wc_price($graduation_fee_price) : '-' ?></strong>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid black; padding: 8px">
+                    Adendum (Scholarship)
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($adendum_scholarship_price) : '-' ?></strong>
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'graduated' ? wc_price($adendum_scholarship_price) : '-' ?></strong>
+                </td>
+            </tr>
+            <tr style="font-weight: bold; background-color: #f0f0f0">
+                <td style="border: 1px solid black; padding: 8px">
+                    <strong>Total:</strong>
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'undergraduated' ? wc_price($undergraduate_program_total) : '-' ?></strong>
+                </td>
+                <td style="border: 1px solid black; padding: 8px; text-align: center">
+                    <strong><?= $program->type === 'graduated' ? wc_price($undergraduate_program_total) : '-' ?></strong>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+<?php
 
     return ob_get_clean();
 }
@@ -2272,147 +2256,147 @@ function get_educational_background_information_table(int $student_id, $form_fil
     $type = $program->type;
 
     ob_start();
-    ?>
-        <?php if ($type == 'undergraduated') { ?>
-            <div style="
-                padding: 8px 15px;
-                font-weight: bold;
-                border: 1px solid gray;
-                border-top: none;
-                background-color: #f0f0f0;
-            ">
-                HIGH SCHOOL
-            </div>
-            <table style="width: 100%; border-collapse: collapse; margin: 0 !important">
-                <thead style="background-color: #dcdcdc">
-                    <tr>
-                        <th style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    width: 50%;
-                    ">
-                            Name of Secondary School/ City/ Country:
-                        </th>
-                        <th style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    width: 30%;
-                    ">
-                            Major:
-                        </th>
-                        <th style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    width: 20%;
-                    ">
-                            Degree awarded (year):
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="border: 1px solid black; padding: 8px; vertical-align: top">
-                            <div style="font-weight: bold">Name:</div>
-                            <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['institution'] : 'N/A' ?>
-                            <div style="font-weight: bold; margin-top: 20px">
-                                City & Country:
-                            </div>
-                            <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['city'] . ' / ' . $form_filled['step_3']['institution_country_residence'] : 'N/A' ?>
-                        </td>
-                        <td style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    vertical-align: middle;
-                    ">
-                            <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['title_obtained'] : 'N/A' ?>
-                        </td>
-                        <td style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    vertical-align: middle;
-                    ">
-                            <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['graduation_year'] : 'N/A' ?>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        <?php } ?>
+?>
+    <?php if ($type == 'undergraduated') { ?>
+        <div style="
+            padding: 8px 15px;
+            font-weight: bold;
+            border: 1px solid gray;
+            border-top: none;
+            background-color: #f0f0f0;
+        ">
+            HIGH SCHOOL
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin: 0 !important">
+            <thead style="background-color: #dcdcdc">
+                <tr>
+                    <th style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                width: 50%;
+                ">
+                        Name of Secondary School/ City/ Country:
+                    </th>
+                    <th style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                width: 30%;
+                ">
+                        Major:
+                    </th>
+                    <th style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                width: 20%;
+                ">
+                        Degree awarded (year):
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid black; padding: 8px; vertical-align: top">
+                        <div style="font-weight: bold">Name:</div>
+                        <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['institution'] : 'N/A' ?>
+                        <div style="font-weight: bold; margin-top: 20px">
+                            City & Country:
+                        </div>
+                        <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['city'] . ' / ' . $form_filled['step_3']['institution_country_residence'] : 'N/A' ?>
+                    </td>
+                    <td style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                vertical-align: middle;
+                ">
+                        <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['title_obtained'] : 'N/A' ?>
+                    </td>
+                    <td style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                vertical-align: middle;
+                ">
+                        <?= ($form_filled && $type == 'undergraduated') ? $form_filled['step_3']['graduation_year'] : 'N/A' ?>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    <?php } ?>
 
-        <?php if ($type == 'graduated') { ?>
-            <div style="
-                padding: 8px 15px;
-                font-weight: bold;
-                border: 1px solid gray;
-                border-top: none;
-                background-color: #f0f0f0;
-            ">
-                COLLEGES & UNIVERSITIES
-            </div>
-            <table style="width: 100%; border-collapse: collapse; margin: 0 !important">
-                <thead style="background-color: #dcdcdc">
-                    <tr>
-                        <th style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    width: 50%;
-                    ">
-                            Name of Secondary School/ City/ Country:
-                        </th>
-                        <th style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    width: 30%;
-                    ">
-                            Major:
-                        </th>
-                        <th style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    width: 20%;
-                    ">
-                            Degree awarded (year):
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="border: 1px solid black; padding: 8px; vertical-align: top">
-                            <div style="font-weight: bold">Name:</div>
-                            <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['institution'] : 'N/A' ?>
-                            <div style="font-weight: bold; margin-top: 20px">
-                                City & Country:
-                            </div>
-                            <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['city'] . ' / ' . $form_filled['step_3']['institution_country_residence'] : 'N/A' ?>
-                        </td>
-                        <td style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    vertical-align: middle;
-                    ">
-                            <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['title_obtained'] : 'N/A' ?>
-                        </td>
-                        <td style="
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    vertical-align: middle;
-                    ">
-                            <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['graduation_year'] : 'N/A' ?>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        <?php } ?>
-    <?php
+    <?php if ($type == 'graduated') { ?>
+        <div style="
+            padding: 8px 15px;
+            font-weight: bold;
+            border: 1px solid gray;
+            border-top: none;
+            background-color: #f0f0f0;
+        ">
+            COLLEGES & UNIVERSITIES
+        </div>
+        <table style="width: 100%; border-collapse: collapse; margin: 0 !important">
+            <thead style="background-color: #dcdcdc">
+                <tr>
+                    <th style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                width: 50%;
+                ">
+                        Name of Secondary School/ City/ Country:
+                    </th>
+                    <th style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                width: 30%;
+                ">
+                        Major:
+                    </th>
+                    <th style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                width: 20%;
+                ">
+                        Degree awarded (year):
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid black; padding: 8px; vertical-align: top">
+                        <div style="font-weight: bold">Name:</div>
+                        <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['institution'] : 'N/A' ?>
+                        <div style="font-weight: bold; margin-top: 20px">
+                            City & Country:
+                        </div>
+                        <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['city'] . ' / ' . $form_filled['step_3']['institution_country_residence'] : 'N/A' ?>
+                    </td>
+                    <td style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                vertical-align: middle;
+                ">
+                        <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['title_obtained'] : 'N/A' ?>
+                    </td>
+                    <td style="
+                border: 1px solid black;
+                padding: 8px;
+                text-align: center;
+                vertical-align: middle;
+                ">
+                        <?= ($form_filled && $type == 'graduated') ? $form_filled['step_3']['graduation_year'] : 'N/A' ?>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    <?php } ?>
+<?php
     return ob_get_clean();
 }
 
@@ -2423,98 +2407,98 @@ function get_admission_requirements_table(int $student_id): string
     $type = $program->type;
 
     ob_start();
-    ?>
-        <section>
-            <div style="padding: 8px; border: 1px solid gray; border-top: none">
-                <strong style="display: block; margin-bottom: 10px">Admission Requirements:</strong>
-                <strong style="display: block; margin-bottom: 5px"><?= ucfirst($type) ?>:</strong>
-                <?php if ($type === 'undergraduated') { ?>
-                    <ul style="list-style-type: none; padding-left: 0; margin-top: 0">
-                        <li style="margin-bottom: 5px">
-                            1. GOVERNMENT PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER'S
-                            LICENSE OR IDENTITY CARD)
-                        </li>
-                        <li style="margin-bottom: 5px">
-                            2. ORIGINAL UNDERGRADUATE DEGREE FROM A STATE LICENSED, OR A
-                            GOVERNMENT RECOGNIZED U.S COLLEGE OR UNIVERSITY, OR AN EQUIVALENT
-                            DEGREE FROM COLLEGE OR UNIVERSITY OUTSIDE OF THE UNITED STATES
-                        </li>
-                        <li style="margin-bottom: 5px">
-                            3. ORIGINAL HIGH SCHOOL DIPLOMA, GED, OR PROOF OF SECONDARY
-                            EDUCATION
-                        </li>
-                        <li style="margin-bottom: 5px">
-                            4. OFFICIAL TRANSCRIPTS ORIGINAL HIGH SCHOOL GED
-                        </li>
-                        <li style="margin-bottom: 5px">
-                            5. TRANSLATION OR EQUIVALENT HIGH SCHOOL OR GED BY RECOGNIZED
-                            INSTITUTION
-                        </li>
-                        <li style="margin-bottom: 5px">6. STUDENT APPLICATION</li>
-                        <li style="margin-bottom: 5px">
-                            7. PAYMENT RECEIVED (Application Fee)
-                        </li>
-                        <li style="margin-bottom: 5px">8. ONLINE REQUIREMENTS</li>
-                        <li style="margin-bottom: 5px">
-                            9. MISSING DOCUMENT COMMITMENT LETTER
-                        </li>
-                        <li style="margin-bottom: 5px">10. SCHOLARSHIP REQUEST FORM</li>
-                        <li style="margin-bottom: 5px">
-                            11. CERTIFICATION LETTER (AGREEMENT) (_____________________)
-                        </li>
-                        <li style="margin-bottom: 5px">12. RECORD OF CLOSING OF FILE</li>
-                        <li style="margin-bottom: 5px">13. ENROLLMENT</li>
-                        <li style="margin-bottom: 5px">14. ACCEPTANCE LETTER SPANISH</li>
-                        <li style="margin-bottom: 5px">15. ACCEPTANCE LETTER</li>
-                        <li style="margin-bottom: 5px">
-                            16. ASSOCIATE DEGREE DIPLOMA (TSU OR TECHNICAL) FROM A NATIONAL OR
-                            FOREIGN HIGHER EDUCATION INSTITUTION
-                        </li>
-                        <li style="margin-bottom: 5px">
-                            17. REPORT OF OFFICIAL GRADES OF THE COURSES APPROVED IN A NATIONAL
-                            OR FOREIGN HIGHER EDUCATION INSTITUTION.
-                        </li>
-                        <li style="margin-bottom: 5px">18. ACADEMIC TITLE - SCAN PAPER</li>
-                        <li style="margin-bottom: 5px">19. PASSPORT OR PASSPORT PHOTO</li>
-                    </ul>
-                <?php } else { ?>
-                    <ul style="list-style-type: none; padding-left: 0; margin-top: 0">
-                        <li style="margin-bottom: 5px">
-                            1. GOVERNMENT PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER'S LICENSE OR IDENTITY CARD)
-                        </li>
-                        <li style="margin-bottom: 5px">
-                            2. ORIGINAL UNDERGRADUATE DEGREE FROM A STATE LICENSED, OR A GOVERNMENT RECOGNIZED U.S COLLEGE OR
-                            UNIVERSITY, OR AN EQUIVALENT DEGREE FROM COLLEGE OR UNIVERSITY OUTSIDE OF THE UNITED STATES
-                        </li>
-                        <li style="margin-bottom: 5px">
-                            3. OFFICIAL TRANSCRIPTS ORIGINAL HIGH SCHOOL GED OR UNDERGRADUATE DIPLOMA
-                        </li>
-                        <li style="margin-bottom: 5px">
-                            4. TRASLATION OR EQUIVALENT HIGH SCHOOL OR UNDERGRADUATE DEGREE BY RECOGNIZED INSTITUTION
-                        </li>
-                        <li style="margin-bottom: 5px">
-                            5. STUDENT APPLICATION
-                        </li>
-                        <li style="margin-bottom: 5px">6. PAYMENT RECEIVED (Application Fee)</li>
-                        <li style="margin-bottom: 5px">
-                            7. ONLINE REQUERIMENTS
-                        </li>
-                        <li style="margin-bottom: 5px">8. MISSING DOCUMENT COMMITMENT LETTER</li>
-                        <li style="margin-bottom: 5px">9. SCHOLARSHIP REQUEST FORM</li>
-                        <li style="margin-bottom: 5px">
-                            10. CERTIFICATION LETTER (AGREEMENT) (_____________________)
-                        </li>
-                        <li style="margin-bottom: 5px">11. ENROLLMENT</li>
-                        <li style="margin-bottom: 5px">12. ACCEPTANCE LETTER</li>
-                        <li style="margin-bottom: 5px">13. ACCEPTANCE LETTER SPANISH</li>
-                        <li style="margin-bottom: 5px">14. RECORD OF CLOSING OF FILE</li>
-                        <li style="margin-bottom: 5px">15. ACADEMIC TITLE - SCAN PAPER</li>
-                        <li style="margin-bottom: 5px">16. PASSPORT OR PASSPORT PHOTO</li>
-                    </ul>
-                <?php } ?>
-            </div>
-        </section>
-    <?php
+?>
+    <section>
+        <div style="padding: 8px; border: 1px solid gray; border-top: none">
+            <strong style="display: block; margin-bottom: 10px">Admission Requirements:</strong>
+            <strong style="display: block; margin-bottom: 5px"><?= ucfirst($type) ?>:</strong>
+            <?php if ($type === 'undergraduated') { ?>
+                <ul style="list-style-type: none; padding-left: 0; margin-top: 0">
+                    <li style="margin-bottom: 5px">
+                        1. GOVERNMENT PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER'S
+                        LICENSE OR IDENTITY CARD)
+                    </li>
+                    <li style="margin-bottom: 5px">
+                        2. ORIGINAL UNDERGRADUATE DEGREE FROM A STATE LICENSED, OR A
+                        GOVERNMENT RECOGNIZED U.S COLLEGE OR UNIVERSITY, OR AN EQUIVALENT
+                        DEGREE FROM COLLEGE OR UNIVERSITY OUTSIDE OF THE UNITED STATES
+                    </li>
+                    <li style="margin-bottom: 5px">
+                        3. ORIGINAL HIGH SCHOOL DIPLOMA, GED, OR PROOF OF SECONDARY
+                        EDUCATION
+                    </li>
+                    <li style="margin-bottom: 5px">
+                        4. OFFICIAL TRANSCRIPTS ORIGINAL HIGH SCHOOL GED
+                    </li>
+                    <li style="margin-bottom: 5px">
+                        5. TRANSLATION OR EQUIVALENT HIGH SCHOOL OR GED BY RECOGNIZED
+                        INSTITUTION
+                    </li>
+                    <li style="margin-bottom: 5px">6. STUDENT APPLICATION</li>
+                    <li style="margin-bottom: 5px">
+                        7. PAYMENT RECEIVED (Application Fee)
+                    </li>
+                    <li style="margin-bottom: 5px">8. ONLINE REQUIREMENTS</li>
+                    <li style="margin-bottom: 5px">
+                        9. MISSING DOCUMENT COMMITMENT LETTER
+                    </li>
+                    <li style="margin-bottom: 5px">10. SCHOLARSHIP REQUEST FORM</li>
+                    <li style="margin-bottom: 5px">
+                        11. CERTIFICATION LETTER (AGREEMENT) (_____________________)
+                    </li>
+                    <li style="margin-bottom: 5px">12. RECORD OF CLOSING OF FILE</li>
+                    <li style="margin-bottom: 5px">13. ENROLLMENT</li>
+                    <li style="margin-bottom: 5px">14. ACCEPTANCE LETTER SPANISH</li>
+                    <li style="margin-bottom: 5px">15. ACCEPTANCE LETTER</li>
+                    <li style="margin-bottom: 5px">
+                        16. ASSOCIATE DEGREE DIPLOMA (TSU OR TECHNICAL) FROM A NATIONAL OR
+                        FOREIGN HIGHER EDUCATION INSTITUTION
+                    </li>
+                    <li style="margin-bottom: 5px">
+                        17. REPORT OF OFFICIAL GRADES OF THE COURSES APPROVED IN A NATIONAL
+                        OR FOREIGN HIGHER EDUCATION INSTITUTION.
+                    </li>
+                    <li style="margin-bottom: 5px">18. ACADEMIC TITLE - SCAN PAPER</li>
+                    <li style="margin-bottom: 5px">19. PASSPORT OR PASSPORT PHOTO</li>
+                </ul>
+            <?php } else { ?>
+                <ul style="list-style-type: none; padding-left: 0; margin-top: 0">
+                    <li style="margin-bottom: 5px">
+                        1. GOVERNMENT PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER'S LICENSE OR IDENTITY CARD)
+                    </li>
+                    <li style="margin-bottom: 5px">
+                        2. ORIGINAL UNDERGRADUATE DEGREE FROM A STATE LICENSED, OR A GOVERNMENT RECOGNIZED U.S COLLEGE OR
+                        UNIVERSITY, OR AN EQUIVALENT DEGREE FROM COLLEGE OR UNIVERSITY OUTSIDE OF THE UNITED STATES
+                    </li>
+                    <li style="margin-bottom: 5px">
+                        3. OFFICIAL TRANSCRIPTS ORIGINAL HIGH SCHOOL GED OR UNDERGRADUATE DIPLOMA
+                    </li>
+                    <li style="margin-bottom: 5px">
+                        4. TRASLATION OR EQUIVALENT HIGH SCHOOL OR UNDERGRADUATE DEGREE BY RECOGNIZED INSTITUTION
+                    </li>
+                    <li style="margin-bottom: 5px">
+                        5. STUDENT APPLICATION
+                    </li>
+                    <li style="margin-bottom: 5px">6. PAYMENT RECEIVED (Application Fee)</li>
+                    <li style="margin-bottom: 5px">
+                        7. ONLINE REQUERIMENTS
+                    </li>
+                    <li style="margin-bottom: 5px">8. MISSING DOCUMENT COMMITMENT LETTER</li>
+                    <li style="margin-bottom: 5px">9. SCHOLARSHIP REQUEST FORM</li>
+                    <li style="margin-bottom: 5px">
+                        10. CERTIFICATION LETTER (AGREEMENT) (_____________________)
+                    </li>
+                    <li style="margin-bottom: 5px">11. ENROLLMENT</li>
+                    <li style="margin-bottom: 5px">12. ACCEPTANCE LETTER</li>
+                    <li style="margin-bottom: 5px">13. ACCEPTANCE LETTER SPANISH</li>
+                    <li style="margin-bottom: 5px">14. RECORD OF CLOSING OF FILE</li>
+                    <li style="margin-bottom: 5px">15. ACADEMIC TITLE - SCAN PAPER</li>
+                    <li style="margin-bottom: 5px">16. PASSPORT OR PASSPORT PHOTO</li>
+                </ul>
+            <?php } ?>
+        </div>
+    </section>
+<?php
     return ob_get_clean();
 }
 
@@ -2589,6 +2573,7 @@ function get_close_academic_offer()
 
 add_action('wp_ajax_nopriv_close_academic_offer', 'get_close_academic_offer');
 add_action('wp_ajax_close_academic_offer', 'get_close_academic_offer');
+
 function get_subjects_enrolled_table($student_id, $spanish = false): string
 {
     global $wpdb;
@@ -2669,51 +2654,3 @@ function get_subjects_enrolled_table($student_id, $spanish = false): string
 
     return ob_get_clean();
 }
-
-
-add_action('wp_ajax_nopriv_close_academic_offer', 'get_close_academic_offer');
-add_action('wp_ajax_close_academic_offer', 'get_close_academic_offer');
-function check_course_registration_limit() {
-    
-            
-    $student_id = $_POST['student_id'];
-    $subjects = json_decode($_POST['subjects'] ?? '{}');
-    
-    global $wpdb;
-    $subjects_failed = $wpdb->get_results($wpdb->prepare(
-        "SELECT `sub`.id, `sub`.name, `sub`.code_subject, `sub`.price, `sub`.currency, COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
-        FROM {$wpdb->prefix}student_period_inscriptions `ins`
-        INNER JOIN {$wpdb->prefix}school_subjects `sub` ON `sub`.id = `ins`.subject_id
-        WHERE `ins`.student_id = %d AND (`ins`.status_id = 3 OR `ins`.status_id = 4)
-        GROUP BY `sub`.id
-        HAVING total_reprobadas >= retake_limit AND SUM(`ins`.status_id = 3) = 0;", 
-        $student_id
-    ));
-
-        if ( !$subjects_failed )  return; 
-
-    foreach( $subjects AS $subject ) {
-
-        
-
-        
-
-        $load = load_current_cut_enrollment();
-        $code = $load['code'];
-        $cut = $load['cut'];
-
-        $subjects_remedial = [];
-        foreach ( $subjects_failed as $subject ) {
-            
-            // verifica que la materia tiene ofertas actuales
-            $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
-            if (!$offer_available_to_enroll) continue;
-            
-            array_push($subjects_remedial, $subject);
-        }
-        
-        if ( !$subjects_remedial )  return; 
-    }
-    
-}
-

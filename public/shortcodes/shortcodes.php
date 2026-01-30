@@ -175,7 +175,7 @@ add_shortcode('buy_failed_subjects', function () {
         $table_subjects = "{$wpdb->prefix}school_subjects";
 
         $subjects_failed = $wpdb->get_results($wpdb->prepare(
-            "SELECT `sub`.id, `sub`.name, `sub`.price, `sub`.currency, COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
+            "SELECT `sub`.id, `sub`.name, `sub`.code_subject, `sub`.price, `sub`.currency, COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
             FROM {$table_inscriptions} `ins`
             INNER JOIN {$table_subjects} `sub` ON `sub`.id = `ins`.subject_id
             WHERE `ins`.student_id = %d AND (`ins`.status_id = 3 OR `ins`.status_id = 4)
