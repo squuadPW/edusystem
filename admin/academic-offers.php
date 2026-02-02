@@ -445,18 +445,18 @@ function available_inscription_subject($student_id, $subject_id)
         return 'active_or_approved';
     }
 
-    $count_status_4 = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table_student_period_inscriptions} 
-            WHERE student_id = %d 
-            AND subject_id = %d 
-            AND status_id = 4",
-            $student_id,
-            $subject_id
-        )
-    );
+    $count_status_4 = $wpdb->get_results($wpdb->prepare(
+        "SELECT COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
+        FROM {$table_student_period_inscriptions} `ins`
+        INNER JOIN {$table_subjects} `sub` ON `sub`.id = `ins`.subject_id
+        WHERE `ins`.student_id = %d AND `ins`.subject_id = %d AND `ins`.status_id = 4 
+        GROUP BY `sub`.id
+        HAVING total_reprobadas >= retake_limit", 
+        $student_id,
+        $subject_id
+    ));
 
-    if ($count_status_4 >= 2) {
+    if ( $count_status_4 ) {
         return 'max_retries_reached';
     }
 
