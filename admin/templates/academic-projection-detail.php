@@ -78,6 +78,8 @@ $roles = $current_user->roles;
                                     <b><?= __('Academic projection', 'edusystem'); ?></b>
                                 </h3>
 
+                                <div><?php //available_inscription_subject(258, 1) ?></div>
+
                                 <input type="hidden" name="projection_id" value="<?= $projection->id ?>">
                                 <input type="hidden" name="current_period" value="<?= $current_period ?>">
                                 <input type="hidden" name="current_cut" value="<?= $current_cut ?>">

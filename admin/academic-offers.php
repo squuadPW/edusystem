@@ -445,19 +445,47 @@ function available_inscription_subject($student_id, $subject_id)
         return 'active_or_approved';
     }
 
-    $count_status_4 = $wpdb->get_var(
-        $wpdb->prepare(
-            "SELECT COUNT(*) FROM {$table_student_period_inscriptions} 
-            WHERE student_id = %d 
-            AND subject_id = %d 
-            AND status_id = 4",
-            $student_id,
-            $subject_id
-        )
-    );
+    /* $count_status_4 = $wpdb->get_results($wpdb->prepare(
+        "SELECT COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
+        FROM {$table_student_period_inscriptions} `ins`
+        INNER JOIN {$table_subjects} `sub` ON `sub`.id = `ins`.subject_id
+        WHERE `ins`.student_id = %d AND `ins`.subject_id = %d AND `ins`.status_id = 4 
+        GROUP BY `sub`.id
+        HAVING total_reprobadas >= retake_limit", 
+        $student_id,
+        $subject_id
+    )); */
 
-    if ($count_status_4 >= 2) {
-        return 'max_retries_reached';
+    $count_status_4 = $wpdb->get_results($wpdb->prepare(
+        "SELECT COUNT(id)
+        FROM {$table_student_period_inscriptions}
+        WHERE student_id = %d AND subject_id = %d AND status_id = 4 ",
+        $student_id,
+        $subject_id
+    ));
+
+    if ( $count_status_4 ) {
+
+        $academic_projection = $wpdb->get_var($wpdb->prepare(
+            "SELECT projection FROM `{$wpdb->prefix}student_academic_projection` WHERE student_id = %d ",
+            $student_id
+        ));
+
+        if ( $academic_projection ) {
+
+            $assigned_slots = 0; 
+            
+            foreach ( json_decode($academic_projection) as $item ) {
+
+                if ( $item->subject_id == $subject_id ) {
+                    
+                    $assigned_slots = $item->assigned_slots ?? 0;
+                    break; 
+                }
+            }
+
+            if( $count_status_4 >= $assigned_slots ) return 'max_retries_reached';
+        }
     }
 
     return true;
