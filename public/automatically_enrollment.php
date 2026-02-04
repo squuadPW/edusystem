@@ -515,16 +515,31 @@ function generate_projection_student($student_id, $force = false)
         try {
             // Actualizar estudiante y eliminar proyecciones existentes en una sola transacción
             $wpdb->update($table_students, ['elective' => 0, 'terms_available' => $terms_available], ['id' => $student_id]);
-            $wpdb->delete($table_student_academic_projection, ['student_id' => $student_id]);
 
-            // Insertar nueva proyección (terms_available now stored on student)
-            $result = $wpdb->insert($table_student_academic_projection, [
-                'student_id' => $student_id,
-                'projection' => json_encode($projection),
-                'matrix' => $calculated_matrix
-            ]);
+            $exists = $wpdb->get_var( $wpdb->prepare(
+                "SELECT COUNT(*) FROM $table_student_academic_projection WHERE student_id = %d",
+                $student_id
+            ));
 
-            if ($result === false) {
+            if ( $exists ) {
+                // Actualizar proyección existente
+                $result = $wpdb->update( $table_student_academic_projection,
+                    [
+                        'projection' => json_encode($projection),
+                        'matrix'     => $calculated_matrix,
+                    ],
+                    ['student_id' => $student_id],
+                );
+            } else {
+                // Insertar nueva proyección sino existe (terms_available now stored on student)
+                $result = $wpdb->insert($table_student_academic_projection, [
+                    'student_id' => $student_id,
+                    'projection' => json_encode($projection),
+                    'matrix' => $calculated_matrix
+                ]);
+            }
+
+            if ( $result === false ) {
                 throw new Exception('Error al insertar la proyección');
             }
 
