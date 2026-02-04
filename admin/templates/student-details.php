@@ -442,7 +442,7 @@ $datetime_format = $date_format . ' H:i:s';
                                         <td colspan="3">
                                             <label for="expected_graduation_date"><b><?= esc_html__('Expected graduation from high school', 'edusystem') ?></b></label><br>
                                             <input type="text" placeholder="MM/YYYY" id="expected_graduation_date" name="expected_graduation_date"
-                                                value="<?php echo $student->expected_graduation_date; ?>" style="width:100%;" required
+                                                value="<?php echo $student->expected_graduation_date; ?>" style="width:100%;"
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td colspan="3">
