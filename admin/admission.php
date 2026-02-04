@@ -495,6 +495,10 @@ class TT_document_review_List_Table extends WP_List_Table
         $period = sanitize_text_field($_GET['academic_period'] ?? '');
         $date_selected = sanitize_text_field($_GET['date_selected'] ?? '');
         $cut = sanitize_text_field($_GET['academic_period_cut'] ?? '');
+        $classroom_access = sanitize_text_field($_GET['classroom_access'] ?? '');
+        $apply_classroom_filter = !empty($classroom_access);
+        $classroom_access = sanitize_text_field($_GET['classroom_access'] ?? '');
+        $apply_classroom_filter = !empty($classroom_access);
 
         $conditions = [];
         $params = [];
@@ -573,17 +577,42 @@ class TT_document_review_List_Table extends WP_List_Table
         LEFT JOIN {$table_student_documents} AS b ON b.student_id = a.id
         {$where_sql}
         GROUP BY a.id
-        ORDER BY review_pending_documents DESC, a.updated_at DESC
-        LIMIT %d OFFSET %d
-    ";
+        ORDER BY review_pending_documents DESC, a.updated_at DESC";
 
-        // Add LIMIT and OFFSET parameters
-        $params[] = $per_page;
-        $params[] = $offset;
+        if (!$apply_classroom_filter) {
+            $query .= "\n        LIMIT %d OFFSET %d";
+            // Add LIMIT and OFFSET parameters
+            $params[] = $per_page;
+            $params[] = $offset;
+        }
 
         // Execute the query
         $data = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
-        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+
+        if ($apply_classroom_filter) {
+            if (!function_exists('edusystem_get_student_classroom_access')) {
+                require_once plugin_dir_path(__FILE__) . 'student-access-helper.php';
+            }
+
+            $status_map = [
+                'full_access' => __('Full access to classroom', 'edusystem'),
+                'without_classroom' => __('Without classroom', 'edusystem'),
+                'classroom_removed' => __('Classroom access removed', 'edusystem'),
+            ];
+
+            $expected_status = $status_map[$classroom_access] ?? '';
+            if (!empty($expected_status)) {
+                $data = array_values(array_filter($data, function ($student) use ($expected_status) {
+                    $access_info = edusystem_get_student_classroom_access($student);
+                    return isset($access_info['status_text']) && $access_info['status_text'] === $expected_status;
+                }));
+            }
+
+            $total_count = count($data);
+            $data = array_slice($data, $offset, $per_page);
+        } else {
+            $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        }
 
         return ['data' => $data, 'total_count' => $total_count];
     }
@@ -827,7 +856,7 @@ class TT_all_student_List_Table extends WP_List_Table
         // IMPORTANT: The GROUP BY a.id, ORDER BY, and the pagination LIMIT/OFFSET are the primary causes of slowness
         // when dealing with large datasets and non-indexed WHERE clauses (like LIKE %...%).
         // The use of SUM(CASE) is good, but the query still has to process ALL rows before GROUP BY and then ORDER.
-        $query = $wpdb->prepare("
+        $query = "
         SELECT SQL_CALC_FOUND_ROWS
             a.*,
             SUM(CASE WHEN b.status = 0 THEN 1 ELSE 0 END) AS count_pending_documents,
@@ -838,13 +867,41 @@ class TT_all_student_List_Table extends WP_List_Table
         LEFT JOIN {$table_student_documents} AS b ON b.student_id = a.id
         {$where_sql}
         GROUP BY a.id
-        ORDER BY review_pending_documents DESC, a.updated_at DESC
-        LIMIT %d OFFSET %d
-    ", array_merge($params, [$per_page, $offset])); // Merge all parameters and add LIMIT/OFFSET
+        ORDER BY review_pending_documents DESC, a.updated_at DESC";
+
+        if (!$apply_classroom_filter) {
+            $query .= "\n        LIMIT %d OFFSET %d";
+            $params[] = $per_page;
+            $params[] = $offset;
+        }
 
         // Execute the query
-        $data = $wpdb->get_results($query, "ARRAY_A");
-        $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        $data = $wpdb->get_results($wpdb->prepare($query, $params), "ARRAY_A");
+
+        if ($apply_classroom_filter) {
+            if (!function_exists('edusystem_get_student_classroom_access')) {
+                require_once plugin_dir_path(__FILE__) . 'student-access-helper.php';
+            }
+
+            $status_map = [
+                'full_access' => __('Full access to classroom', 'edusystem'),
+                'without_classroom' => __('Without classroom', 'edusystem'),
+                'classroom_removed' => __('Classroom access removed', 'edusystem'),
+            ];
+
+            $expected_status = $status_map[$classroom_access] ?? '';
+            if (!empty($expected_status)) {
+                $data = array_values(array_filter($data, function ($student) use ($expected_status) {
+                    $access_info = edusystem_get_student_classroom_access($student);
+                    return isset($access_info['status_text']) && $access_info['status_text'] === $expected_status;
+                }));
+            }
+
+            $total_count = count($data);
+            $data = array_slice($data, $offset, $per_page);
+        } else {
+            $total_count = $wpdb->get_var("SELECT FOUND_ROWS()");
+        }
 
         return ['data' => $data, 'total_count' => $total_count];
     }
