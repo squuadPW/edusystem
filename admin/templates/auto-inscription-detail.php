@@ -183,7 +183,31 @@
         <div class="es-header">
             <div>
                 <div class="es-title"><?= __('EduSystem Autoenrollment', 'edusystem'); ?></div>
-                <div class="es-sub"><?= sprintf(esc_html__('Period: %s — Term: %s', 'edusystem'), esc_html($code), esc_html($cut)); ?></div>
+                <form id="filter-form" method="get" style="display: flex; gap: 10px; margin-top: 8px; align-items: center;">
+                    <input type="hidden" name="page" value="<?= esc_attr($_REQUEST['page']) ?>" />
+                    
+                    <select name="academic_period" id="academic_period" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #d1d5db;">
+                        <option value=""><?= esc_html__('Select Period', 'edusystem'); ?></option>
+                        <?php foreach ($periods as $p) : ?>
+                            <option value="<?= esc_attr($p->code); ?>" <?= $code == $p->code ? 'selected' : ''; ?>>
+                                <?= esc_html($p->name); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <select name="academic_period_cut" id="academic_period_cut" style="padding: 4px 8px; border-radius: 6px; border: 1px solid #d1d5db;" data-textoption="<?= esc_html__('Select Term', 'edusystem') ?>">
+                        <option value=""><?= esc_html__('Select Term', 'edusystem'); ?></option>
+                        <?php foreach ($periods_cuts as $c) : ?>
+                            <option value="<?= esc_attr($c->cut); ?>" <?= $cut == $c->cut ? 'selected' : ''; ?>>
+                                <?= esc_html($c->cut); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <button type="submit" class="es-btn secondary" style="padding: 4px 12px; font-size: 13px;">
+                        <?= esc_html__('Filter', 'edusystem'); ?>
+                    </button>
+                </form>
             </div>
 
             <div class="es-actions">

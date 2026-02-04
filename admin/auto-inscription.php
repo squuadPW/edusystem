@@ -4,9 +4,26 @@ function add_admin_form_auto_inscription_content()
 {
     global $wpdb;
     $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
-    $load = load_current_cut_enrollment();
-    $code = $load['code'];
-    $cut = $load['cut'];
+    $table_academic_periods = $wpdb->prefix . 'academic_periods';
+    $table_academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+
+    // 1. Fetch all periods for the first selector
+    $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at ASC");
+
+    // 2. Determine initial Code/Cut (from GET or default)
+    if (isset($_GET['academic_period']) && isset($_GET['academic_period_cut'])) {
+        $code = sanitize_text_field($_GET['academic_period']);
+        $cut  = sanitize_text_field($_GET['academic_period_cut']);
+    } else {
+        $load = load_current_cut_enrollment();
+        $code = $load['code'];
+        $cut  = $load['cut'];
+    }
+
+    // 3. Fetch cuts for the selected (or default) period
+    $periods_cuts = $wpdb->get_results(
+        $wpdb->prepare("SELECT * FROM {$table_academic_periods_cut} WHERE code = %s ORDER BY created_at ASC", $code)
+    );
 
     $raw_expected_rows = $wpdb->get_results($wpdb->prepare(
         "SELECT * FROM {$table_student_expected_matrix} WHERE academic_period = %s AND academic_period_cut = %s AND status = %s ORDER BY term_index ASC, term_position ASC",
@@ -67,9 +84,16 @@ function auto_enroll_students_bulk_callback()
 {
     global $wpdb;
     $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
-    $load = load_current_cut_enrollment();
-    $code = $load['code'];
-    $cut = $load['cut'];
+    
+    if (isset($_POST['academic_period']) && !empty($_POST['academic_period']) && 
+        isset($_POST['academic_period_cut']) && !empty($_POST['academic_period_cut'])) {
+        $code = sanitize_text_field($_POST['academic_period']);
+        $cut = sanitize_text_field($_POST['academic_period_cut']);
+    } else {
+        $load = load_current_cut_enrollment();
+        $code = $load['code'];
+        $cut = $load['cut'];
+    }
 
     $expected_rows = $wpdb->get_results($wpdb->prepare(
         "SELECT * FROM {$table_student_expected_matrix} WHERE academic_period = %s AND academic_period_cut = %s AND status = %s ORDER BY term_index ASC, term_position ASC",
