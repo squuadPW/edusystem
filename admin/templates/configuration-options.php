@@ -121,6 +121,10 @@
             </select>
           </div>
           <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="multiple-accounts" name="multiple_accounts" <?php echo get_option('multiple_accounts') == 'on' ? 'checked' : '' ?>>
+            <label for="multiple-accounts"><?= __('Does the site have different fees for programs and other services?'); ?></label>
+          </div>
+          <div class="form-group" style="padding: 10px">
             <input type="checkbox" id="virtual-access" name="virtual_access" <?php echo get_option('virtual_access') == 'on' ? 'checked' : '' ?>>
             <label for="virtual-access"><?= __('Show button for virtual classroom'); ?></label>
           </div>

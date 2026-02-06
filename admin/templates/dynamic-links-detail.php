@@ -3,6 +3,29 @@
     window.selectedSubprogramId = "<?= isset($dynamic_link->subprogram_identificator) ? $dynamic_link->subprogram_identificator : ''; ?>";
 </script>
 
+<?php if (!$multiple_accounts) { ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modeSelect = document.getElementById("accounts-mode");
+            const feeWrapper = document.getElementById("fee_payment_completed_wrapper");
+            const sameAccountHidden = document.getElementById("same_account_hidden");
+
+            if (!modeSelect || !feeWrapper || !sameAccountHidden) {
+                return;
+            }
+
+            const toggleFeeMode = () => {
+                const isSeparate = modeSelect.value === "separate";
+                feeWrapper.style.display = isSeparate ? "block" : "none";
+                sameAccountHidden.disabled = isSeparate;
+            };
+
+            toggleFeeMode();
+            modeSelect.addEventListener("change", toggleFeeMode);
+        });
+    </script>
+<?php } ?>
+
 <div class="wrap">
     <?php if (isset($dynamic_link) && !empty($dynamic_link)): ?>
         <h2 style="margin-bottom:15px;"><?= __('Payment link Details', 'edusystem'); ?></h2>
@@ -205,10 +228,43 @@
                                         <?php endif; ?>
                                     </div>
 
-                                    <div style="font-weight:400;" class="space-offer">
-                                        <input type="checkbox" id="fee_payment_completed" style="width: auto !important;" name="fee_payment_completed" value="1" <?= (isset($dynamic_link) && $dynamic_link->fee_payment_completed == 1) ? 'checked' : ''; ?>>
-                                        <label for="fee_payment_completed"><b><?= __('Payment Fee Complete', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
-                                    </div>
+                                    <?php
+                                    $accounts_mode = 'together';
+                                    if (isset($dynamic_link) && !empty($dynamic_link)) {
+                                        if (isset($dynamic_link->same_account)) {
+                                            $accounts_mode = (int) $dynamic_link->same_account === 1 ? 'together' : 'separate';
+                                        } elseif (isset($dynamic_link->fee_payment_completed) && (int) $dynamic_link->fee_payment_completed === 1) {
+                                            $accounts_mode = 'separate';
+                                        }
+                                    }
+                                    ?>
+
+                                    <?php if (!$multiple_accounts) { ?>
+                                        <div style="font-weight:400;" class="space-offer">
+                                            <label for="accounts-mode"><b><?= __('Program and fee setup', 'edusystem'); ?></b><span class="required">*</span></label>
+                                            <select name="accounts_mode" id="accounts-mode" autocomplete="off" required>
+                                                <option value="together" <?= $accounts_mode === 'together' ? 'selected' : ''; ?>>
+                                                    <?= __('Program and fee together', 'edusystem'); ?>
+                                                </option>
+                                                <option value="separate" <?= $accounts_mode === 'separate' ? 'selected' : ''; ?>>
+                                                    <?= __('Program and fee separated', 'edusystem'); ?>
+                                                </option>
+                                            </select>
+                                        </div>
+                                    <?php } ?>
+
+                                    <?php if ($multiple_accounts) { ?>
+                                        <div style="font-weight:400;" class="space-offer">
+                                            <input type="checkbox" id="fee_payment_completed" style="width: auto !important;" name="fee_payment_completed" value="1" <?= (isset($dynamic_link) && $dynamic_link->fee_payment_completed == 1) ? 'checked' : ''; ?>>
+                                            <label for="fee_payment_completed"><b><?= __('Payment Fee Complete', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        </div>
+                                    <?php } else { ?>
+                                        <input type="hidden" name="same_account" id="same_account_hidden" value="1">
+                                        <div style="font-weight:400; display:none;" class="space-offer" id="fee_payment_completed_wrapper">
+                                            <input type="checkbox" id="fee_payment_completed" style="width: auto !important;" name="fee_payment_completed" value="1" <?= (isset($dynamic_link) && $dynamic_link->fee_payment_completed == 1) ? 'checked' : ''; ?>>
+                                            <label for="fee_payment_completed"><b><?= __('Payment Fee Complete', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        </div>
+                                    <?php } ?>
                                 </div>
                             </div>
 

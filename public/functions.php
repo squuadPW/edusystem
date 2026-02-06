@@ -269,8 +269,9 @@ function form_asp_psp_optimized($atts)
         $plan = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
-        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 0 ? 'true' : false;
-        $fixed_fee_inscription = 'true';
+        $same_account = $dynamic_link_data->same_account;
+        $separate_program_fee = $same_account ? false : ($dynamic_link_data->fee_payment_completed == 0 ? 'true' : false);
+        $fixed_fee_inscription = $same_account ? false : 'true';
 
         $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
         $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
@@ -401,8 +402,9 @@ function student_registration_form_optimized($atts)
         $plan = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
-        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 0 ? 'true' : false;
-        $fixed_fee_inscription = 'true';
+        $same_account = $dynamic_link_data->same_account;
+        $separate_program_fee = $same_account ? false : ($dynamic_link_data->fee_payment_completed == 0 ? 'true' : false);
+        $fixed_fee_inscription = $same_account ? false : 'true';
 
         $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator, $fee_payment_completed);
         $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
@@ -2548,6 +2550,16 @@ function update_price_product_cart_quota_rule()
                 // }
             }
         }
+    }
+
+    // Remove 'offer_complete' coupon if it's applied
+    if (WC()->cart->has_discount($cookie_offer_complete)) {
+        WC()->cart->remove_coupon($cookie_offer_complete);
+    }
+
+    // Remove 'offer_quote' coupon if it's applied
+    if (WC()->cart->has_discount($cookie_offer_quote)) {
+        WC()->cart->remove_coupon($cookie_offer_quote);
     }
 
     if ($quotas_quantity == 1 && !empty($cookie_offer_complete)) {

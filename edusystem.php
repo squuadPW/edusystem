@@ -525,6 +525,7 @@ function create_tables()
         payment_plan_identificator TEXT NULL,
         transfer_cr BOOLEAN NOT NULL DEFAULT 0,
         fee_payment_completed BOOLEAN NOT NULL DEFAULT 0,
+        same_account BOOLEAN NOT NULL DEFAULT 0,
         manager_id INT(11) NULL,
         created_by INT(11) NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
