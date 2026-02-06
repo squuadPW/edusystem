@@ -7,9 +7,11 @@ function list_admin_institutes_student_registered_content()
 
         if ($_GET['action'] == 'student-details') {
 
-            global $current_user;
+            global $current_user, $wpdb;
             $roles = $current_user->roles;
             $student = get_student_detail($_GET['student_id']);
+            $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+            $inscriptions = $wpdb->get_results("SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = {$student->id} AND code_subject IS NOT NULL AND code_subject <> '' ORDER BY code_period ASC, cut_period ASC");
             $partner = get_userdata($student->partner_id);
             include(plugin_dir_path(__FILE__) . '../templates/student-details.php');
         }

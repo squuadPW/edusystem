@@ -1081,6 +1081,8 @@ function status_order_completed($order, $order_id, $customer_id)
 
     // Asegura que el usuario de WordPress para el estudiante exista.
     create_user_student($student_id);
+    send_notification_staff_particular('New student', 'We would like to inform you that a new student has enrolled.', 0);
+    send_notification_staff_particular('New student', 'We would like to inform you that a new student has enrolled.', 4);
 
     // 3. Itera sobre los artículos para actualizar o crear registros de pago.
     foreach ($order->get_items() as $item) {
