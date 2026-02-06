@@ -242,7 +242,7 @@
             <div class="subtitle text-align-center"><?= __('Degree details', 'edusystem'); ?></div>
         </div>
 
-        <?php if (!isset($program) || empty($program)) { ?>
+        <?php if (!isset($program) || $program === '') { ?>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">
                 <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span
                         class="required">*</span></label>

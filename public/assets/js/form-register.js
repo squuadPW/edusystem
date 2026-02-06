@@ -319,10 +319,6 @@ document.addEventListener("DOMContentLoaded", function () {
       } catch (error) {}
     });
 
-    if (programIdShortcode && programIdShortcode.value !== "" && !program.value) {
-      program.value = programIdShortcode.value;
-    }
-
     if (
       (program.value && program.value !== "") ||
       (programIdShortcode && programIdShortcode.value !== "")
