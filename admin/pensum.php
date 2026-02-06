@@ -448,9 +448,9 @@ function only_pensum_regular($program_id)
             // Crear un objeto stdClass para el payload
             $payload = new stdClass();
             $payload->subject = $subject->name;
-            $payload->subject_id = $subject->id;
+            $payload->subject_id = (int) $subject->id;
             $payload->type = $subject->type;
-            $payload->hc = $subject->hc;
+            $payload->hc = (int) $subject->hc;
 
             // Agregar el payload al array de subjects
             array_push($subjects, $payload);
