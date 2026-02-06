@@ -263,6 +263,8 @@ function form_asp_psp_optimized($atts)
         $last_name = $dynamic_link_data->last_name;
         $email = $dynamic_link_data->email;
         $program = $dynamic_link_data->program_identificator;
+        $coupon_complete = $dynamic_link_data->coupon_complete;
+        $coupon_credit = $dynamic_link_data->coupon_credit;
         $subprogram = $dynamic_link_data->subprogram_identificator ?? null;
         $plan = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
@@ -393,6 +395,8 @@ function student_registration_form_optimized($atts)
         $last_name = $dynamic_link_data->last_name;
         $email = $dynamic_link_data->email;
         $program = $dynamic_link_data->program_identificator;
+        $coupon_complete = $dynamic_link_data->coupon_complete;
+        $coupon_credit = $dynamic_link_data->coupon_credit;
         $subprogram = $dynamic_link_data->subprogram_identificator ?? null;
         $plan = $dynamic_link_data->payment_plan_identificator;
         $manager_user_id = $dynamic_link_data->manager_id;
@@ -2247,28 +2251,27 @@ function woocommerce_update_cart()
         }
     }
 
+    $offer_complete = strtolower(get_option('offer_complete'));
+    $offer_quote = strtolower(get_option('offer_quote'));
+    $cookie_offer_complete = isset($_COOKIE['coupon_complete']) ? strtolower($_COOKIE['coupon_complete']) : '';
+    $cookie_offer_quote = isset($_COOKIE['coupon_credit']) ? strtolower($_COOKIE['coupon_credit']) : '';
+
     if ($variation != 'Complete') {
-        $applied_coupons = array_diff($applied_coupons, array(strtolower(get_option('offer_complete'))));
+        $applied_coupons = array_diff($applied_coupons, array_filter([$offer_complete, $cookie_offer_complete]));
 
-        $offer_quote = strtolower(get_option('offer_quote'));
-
-        if (!empty($offer_quote)) {
-            if (in_array($offer_quote, $applied_coupons)) {
-                // Si existe, lo eliminamos
-                $applied_coupons = array_diff($applied_coupons, [$offer_quote]);
+        foreach (array_filter([$offer_quote, $cookie_offer_quote]) as $coupon_to_add) {
+            if (!in_array($coupon_to_add, $applied_coupons, true)) {
+                array_push($applied_coupons, $coupon_to_add);
             }
-
-            // Agregamos el valor al array
-            array_push($applied_coupons, $offer_quote);
         }
     } else {
         if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-            if (!empty(get_option('offer_complete'))) {
-                $applied_coupons = array_diff($applied_coupons, array(strtolower(get_option('offer_quote'))));
-            }
+            $applied_coupons = array_diff($applied_coupons, array_filter([$offer_quote, $cookie_offer_quote]));
 
-            if (!empty(get_option('offer_complete'))) {
-                array_push($applied_coupons, strtolower(get_option('offer_complete')));
+            foreach (array_filter([$offer_complete, $cookie_offer_complete]) as $coupon_to_add) {
+                if (!in_array($coupon_to_add, $applied_coupons, true)) {
+                    array_push($applied_coupons, $coupon_to_add);
+                }
             }
         }
     }
@@ -2276,7 +2279,11 @@ function woocommerce_update_cart()
     // Aplicar los cupones restantes en la matriz $applied_coupons
     foreach ($applied_coupons as $key => $coupon) {
 
-        if ($coupon == strtolower(get_option('offer_complete')) || $coupon == strtolower(get_option('offer_quote'))) {
+        if ($coupon == $cookie_offer_complete || $coupon == $cookie_offer_quote) {
+            if (isset($coupon) && !empty($coupon)) {
+                $woocommerce->cart->apply_coupon($coupon);
+            }
+        } elseif ($coupon == $offer_complete || $coupon == $offer_quote) {
             $max_date_timestamp = get_option('max_date_offer');
             if ($max_date_timestamp >= current_time('timestamp')) {
                 if (isset($coupon) && !empty($coupon)) {
@@ -2495,6 +2502,8 @@ function update_price_product_cart_quota_rule()
         !empty($_COOKIE[$cookie_name]) &&
         $_COOKIE[$cookie_name] !== 'true'
     );
+    $cookie_offer_complete = $_COOKIE['coupon_complete'] ?? '';
+    $cookie_offer_quote = $_COOKIE['coupon_credit'] ?? '';
 
     if (($cookie_does_not_exist || $cookie_exists_and_condition_met)) {
         // Get the coupon codes to potentially remove
@@ -2539,6 +2548,14 @@ function update_price_product_cart_quota_rule()
                 // }
             }
         }
+    }
+
+    if ($quotas_quantity == 1 && !empty($cookie_offer_complete)) {
+        WC()->cart->apply_coupon($cookie_offer_complete);
+    }
+
+    if ($quotas_quantity > 1 && !empty($cookie_offer_quote)) {
+        WC()->cart->apply_coupon($cookie_offer_quote);
     }
 
     $cart = WC()->cart;

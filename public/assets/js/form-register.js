@@ -317,7 +317,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (
       (program.value && program.value !== "") ||
-      (programIdShortcode && programIdShortcode.value)
+      (programIdShortcode && programIdShortcode.value !== "")
     ) {
       program.dispatchEvent(new Event("change"));
     }

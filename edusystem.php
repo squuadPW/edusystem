@@ -518,6 +518,8 @@ function create_tables()
         name TEXT NULL,
         last_name TEXT NULL,
         email TEXT NULL,
+        coupon_complete TEXT NULL,
+        coupon_credit TEXT NULL,
         program_identificator TEXT NOT NULL,
         subprogram_identificator INT NULL,
         payment_plan_identificator TEXT NULL,
