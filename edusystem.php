@@ -2023,7 +2023,8 @@ add_action( 'woocommerce_account_dashboard', function () {
                 <?php //test_generate_projection_student(258,true) ?>
                 
                 <?php 
-                    generate_expectation_matrix( 258 )
+                    // generate_expectation_matrix( 258 );
+                    generate_academic_projection_student( 258 )
                 ?>
             </pre>
         </div>
@@ -2529,80 +2530,47 @@ function generate_academic_projection_student( $student_id ) {
     $program_data = get_program_data_student($student_id);
     $program = $program_data['program'][0];
 
+    // Obtener el pensum activo para el programa (matriz completa)
+    $pensum = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_pensum} WHERE `type`='program' AND `status` = 1 AND program_id = %s", $program->identificator));
+    if (!$pensum) return false;
+
+    // ontiene las materias del pensum
+    $pensum_matrix = json_decode( $pensum->matrix );
+    if ( empty($pensum_matrix) ) return false;
+
     // Obtener inscripciones del estudiante
     $inscriptions = get_inscriptions_by_student($student_id);
     $inscriptions_by_code = [];
     $elective_inscriptions = [];
 
-    // Se procesan todas las inscripciones del estudiante y se elige la de mayor precedencia (3=Aprobada, luego 1=Activa, luego 4=Reprobada) para cada 'code_subject'.
+    // Se procesan todas las inscripciones del estudiante y se alamacenan las aprovadas y activas
     if ( !empty($inscriptions) ) {
 
         foreach ( $inscriptions as $inscription ) {
 
-            // Obtener los detalles de la materia
-            $subject = $inscription->subject_id && $inscription->subject_id != '' ? get_subject_details($inscription->subject_id) : get_subject_details_code($inscription->code_subject);
+            $status_id = (int) $inscription->status_id;
 
-            if ( $subject && $subject->type === 'elective' ) {
+            if ( $inscription->type === 'elective' && ( $status_id == 1 || $status_id == 3 ) ) {
                 
                 // Las electivas se mantienen separadas para el procesamiento posterior de solo las completadas.
                 $elective_inscriptions[] = $inscription;
 
-            } else {
+            } else if ( $status_id == 1 || $status_id == 3  ) {
 
                 $code = $inscription->code_subject;
-                $status_id = (int) $inscription->status_id;
-
-                if ( isset($inscriptions_by_code[$code]) && ( $status_id == 1 || $status_id == 3 ) ) {
-
-                    $existing_status = (int) $inscriptions_by_code[$code]->status_id;
-
-                    // Priorizar estado Aprobado (3) sobre cualquier otro.
-                    if ( $existing_status === 3 ) continue; 
-
-                    // Si el nuevo estado es Aprobado (3), sobrescribir inmediatamente.
-                    if ( $status_id === 3 ) {
-                        $inscriptions_by_code[$code] = $inscription;
-                        continue;
-                    }
-
-                    // Si el estado existente es Activo (1) y el nuevo es Reprobado (4), mantener Activo (1).
-                    if ($existing_status === 1 && $status_id === 4) continue;
-
-                    // Si el nuevo estado es Activo (1) y el existente es Reprobado (4) o To begin (0), sobrescribir con Activo (1).
-                    if ($status_id === 1 && ($existing_status === 4 || $existing_status === 0)) {
-                        $inscriptions_by_code[$code] = $inscription;
-                        continue;
-                    }
-
-                    // Si ambos son Reprobado (4), To begin (0), o si el nuevo estado es mejor que el existente, tomar el nuevo.
-                    if ($status_id > $existing_status && $status_id !== 2) {
-                        $inscriptions_by_code[$code] = $inscription;
-                    }
-                    
-                } else if ( $status_id == 1 || $status_id == 3  ) { // Si no existe entrada, simplemente agregar, siempre que no sea Unsubscribed (2)
-                    $inscriptions_by_code[$code] = $inscription;
-                }
+                $inscriptions_by_code[$code] = $inscription;
             }
         }
     }
 
-    // Obtener el pensum activo para el programa (matriz completa)
-    $pensum = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_pensum} WHERE `type`='program' AND `status` = 1 AND program_id = %s", $program->identificator));
-    if (!$pensum) return false;
-
-    $pensum_matrix = json_decode( $pensum->matrix );
-    if ( empty($pensum_matrix) ) return false;
-
     // Generar proyección base usando la matriz COMPLETA del pensum (incluye regulares y otros tipos)
     $projection = [];
-    foreach ( $pensum_matrix as $m ) {
+    foreach ( $pensum_matrix as $subject_matrix ) {
 
-        // $m contiene elementos con 'id', 'name', 'code_subject', 'type', etc. (según cómo se guardó la matriz)
-        $subject_details = get_subject_details($m->id);
-        if (!$subject_details) continue;
+        $subject = get_subject_details($inscription->subject_id) ?? get_subject_details_code($inscription->code_subject);
+        if ( !$subject ) continue;
 
-
-        $inscription = $inscriptions_by_code[$subject_details->code_subject] ?? null;
+        $inscription = $inscriptions_by_code[ $subject->code_subject ] ?? null;
         $status_id = $inscription ? (int) $inscription->status_id : null;
 
         // Determinar si la materia está 'completada' (solo si está APROBADA = 3)
@@ -2612,33 +2580,28 @@ function generate_academic_projection_student( $student_id ) {
         $is_this_cut = ($status_id === 1);
 
         $projection[] = [
-            'hc' => isset($m->hc) ? $m->hc : (isset($subject_details->hc) ? $subject_details->hc : ''),
-            // La información de corte solo se llena si está Aprobada (3) o Activa (1).
+            'hc' => $subject->hc ?? 0,
             'cut' => $is_completed || $is_this_cut ? $inscription->cut_period : "",
-            'type' => isset($m->type) ? strtolower($m->type) : strtolower($subject_details->type),
-            'subject' => $subject_details->name,
-            'this_cut' => $is_this_cut, // Solo Activa
-            'subject_id' => (string) $subject_details->id,
+            'type' => $subject->type,
+            'subject_id' => (int) $subject->id,
+            'subject' => $subject->name,
+            'this_cut' => $is_this_cut,
             'code_period' => $is_completed || $is_this_cut ? $inscription->code_period : "",
-            // La calificación solo se llena si está Aprobada (3).
             'calification' => $is_completed ? $inscription->calification : "",
-            'code_subject' => $subject_details->code_subject,
-            'is_completed' => $is_completed, // Solo Aprobada
+            'code_subject' => $subject->code_subject,
+            'is_completed' => $is_completed, 
             'welcome_email' => $is_completed || $is_this_cut, // True si está Approved/Active
-            'assigned_slots' => $subject_details->retake_limit ?? 0,
+            'assigned_slots' => $subject->retake_limit ?? 0,
         ];
     }
 
     // Agregar materias electivas a la proyección
     foreach ( $elective_inscriptions as $inscription ) {
 
-        // abandonar si es reprobada
-        if ((int) $inscription->status_id === 4) continue;
+        $subject = get_subject_details($inscription->subject_id) ?? get_subject_details_code($inscription->code_subject);
+        if ( !$subject ) continue;
 
-        // Obtener detalles de la materia electiva
-        $subject = $inscription->subject_id && $inscription->subject_id != '' ? get_subject_details($inscription->subject_id) : get_subject_details_code($inscription->code_subject);
-
-        if ($subject) {
+        if ( $subject ) {
 
             $projection[] = [
                 'code_subject' => $subject->code_subject,
@@ -2656,6 +2619,9 @@ function generate_academic_projection_student( $student_id ) {
             ];
         }
     }
+
+    var_dump( $projection );
+    return false;
 
     // Store terms_available on student record (projection no longer holds it)
     if (!is_null($terms_available)) {
@@ -2932,4 +2898,5 @@ function generate_expectation_matrix( $student_id ) {
 
 */
  
+
  
