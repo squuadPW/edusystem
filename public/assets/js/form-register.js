@@ -247,7 +247,11 @@ document.addEventListener("DOMContentLoaded", function () {
         careerElement.required = false;
       }
 
-      if (!programIdentificator) {
+      if (
+        programIdentificator === "" ||
+        programIdentificator === null ||
+        programIdentificator === undefined
+      ) {
         return;
       }
 
@@ -314,6 +318,10 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("buttonsave").disabled = false;
       } catch (error) {}
     });
+
+    if (programIdShortcode && programIdShortcode.value !== "" && !program.value) {
+      program.value = programIdShortcode.value;
+    }
 
     if (
       (program.value && program.value !== "") ||
