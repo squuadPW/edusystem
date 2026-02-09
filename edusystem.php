@@ -2567,7 +2567,7 @@ function generate_academic_projection_student( $student_id ) {
     $projection = [];
     foreach ( $pensum_matrix as $subject_matrix ) {
 
-        $subject = get_subject_details($inscription->subject_id) ?? get_subject_details_code($inscription->code_subject);
+        $subject = get_subject_details( (int) $subject_matrix->id) ?? get_subject_details_code($subject_matrix->code_subject);
         if ( !$subject ) continue;
 
         $inscription = $inscriptions_by_code[ $subject->code_subject ] ?? null;
@@ -2597,6 +2597,8 @@ function generate_academic_projection_student( $student_id ) {
 
     // Agregar materias electivas a la proyección
     foreach ( $elective_inscriptions as $inscription ) {
+
+        var_dump($inscription);
 
         $subject = get_subject_details($inscription->subject_id) ?? get_subject_details_code($inscription->code_subject);
         if ( !$subject ) continue;
