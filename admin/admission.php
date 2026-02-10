@@ -1157,6 +1157,9 @@ function handle_status_specific_actions($status_id, $student_id, $document, $use
 
     if ($status_id == 5) {
         handle_document_approval($student_id, $document);
+        if (has_action('portal_update_user_external')) {
+            do_action('portal_update_user_external', $student_id);
+        }
     }
 
     if ($status_id == 6) {
