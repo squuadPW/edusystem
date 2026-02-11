@@ -172,6 +172,8 @@ function show_report_current_students()
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
         } else if ($_GET['section_tab'] == 'scholarships') {
+            $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
+            $scholarships_availables = $wpdb->get_results("SELECT * FROM {$table_scholarships_availables} ORDER BY id DESC");
             $list_students = new TT_Scholarships_List_Table;
             $list_students->prepare_items();
             include(plugin_dir_path(__FILE__) . 'templates/report-current-students.php');
@@ -5338,6 +5340,7 @@ class TT_Scholarships_List_Table extends WP_List_Table
         $institute = sanitize_text_field($_POST['institute'] ?? '');
         $academic_period_student = sanitize_text_field($_POST['academic_period'] ?? '');
         $academic_period_cut_student = sanitize_text_field($_POST['academic_period_cut'] ?? '');
+        $scholarship_id = sanitize_text_field($_POST['scholarship_id'] ?? '');
 
         // 1. Student status condition
         $conditions[] = "s.status_id != %d";
@@ -5363,6 +5366,11 @@ class TT_Scholarships_List_Table extends WP_List_Table
         if (!empty($academic_period_cut_student)) {
             $conditions[] = "s.initial_cut = %s";
             $params[] = $academic_period_cut_student;
+        }
+        
+        if (!empty($scholarship_id)) {
+            $conditions[] = "sas.scholarship_id = %d";
+            $params[] = (int) $scholarship_id;
         }
 
         // 4. Smart search condition

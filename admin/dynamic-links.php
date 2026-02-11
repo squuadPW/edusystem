@@ -29,6 +29,7 @@ function add_admin_form_dynamic_link_content()
             $table_dynamic_links_email_log = $wpdb->prefix . 'dynamic_links_email_log';
             $dynamic_link_id = $_GET['dynamic_link_id'];
             $dynamic_link = get_dynamic_link_detail($dynamic_link_id);
+            $multiple_accounts = get_option('multiple_accounts');
             if ($dynamic_link) {
                 $table_programs = $wpdb->prefix . 'programs';
                 $associateds = get_associated_plans_by_program_id($dynamic_link->program_identificator);
@@ -61,6 +62,8 @@ function add_admin_form_dynamic_link_content()
             $name = sanitize_text_field($_POST['name']);
             $last_name = sanitize_text_field($_POST['last_name']);
             $email = sanitize_email($_POST['email']); // Mejor usar sanitize_email
+            $coupon_complete = sanitize_text_field($_POST['coupon_complete'] ?? '');
+            $coupon_credit = sanitize_text_field($_POST['coupon_credit'] ?? '');
             $program_identificator = sanitize_text_field($_POST['program_identificator']);
             $subprogram_identificator = $_POST['subprogram_id'] ? intval($_POST['subprogram_id']) : null;
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
@@ -70,6 +73,14 @@ function add_admin_form_dynamic_link_content()
             $created_by = $current_user->ID;
             $transfer_cr = $_POST['transfer_cr'] ?? 0;
             $fee_payment_completed = $_POST['fee_payment_completed'] ?? 0;
+            $same_account = $_POST['same_account'] ?? 0;
+            $accounts_mode = isset($_POST['accounts_mode']) ? sanitize_text_field($_POST['accounts_mode']) : null;
+            if ($accounts_mode !== null) {
+                $same_account = $accounts_mode === 'together' ? 1 : 0;
+            }
+            if ($same_account) {
+                $fee_payment_completed = 0;
+            }
 
             // << CAMBIO 1: Declaramos la variable $link aquí, pero no le asignamos valor aún.
             $link = '';
@@ -90,11 +101,14 @@ function add_admin_form_dynamic_link_content()
                     'name' => $name,
                     'last_name' => $last_name,
                     'email' => $email,
+                    'coupon_complete' => $coupon_complete,
+                    'coupon_credit' => $coupon_credit,
                     'program_identificator' => $program_identificator,
                     'subprogram_identificator' => $subprogram_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
                     'transfer_cr' => $transfer_cr,
                     'fee_payment_completed' => $fee_payment_completed,
+                    'same_account' => $same_account,
                     'manager_id' => $manager_id,
                     'created_by' => $created_by,
                 ], ['id' => $dynamic_link_id]);
@@ -114,11 +128,14 @@ function add_admin_form_dynamic_link_content()
                     'name' => $name,
                     'last_name' => $last_name,
                     'email' => $email,
+                    'coupon_complete' => $coupon_complete,
+                    'coupon_credit' => $coupon_credit,
                     'program_identificator' => $program_identificator,
                     'subprogram_identificator' => $subprogram_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
                     'transfer_cr' => $transfer_cr,
                     'fee_payment_completed' => $fee_payment_completed,
+                    'same_account' => $same_account,
                     'manager_id' => $manager_id,
                     'created_by' => $created_by,
                 ]);

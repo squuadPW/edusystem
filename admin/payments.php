@@ -2152,8 +2152,94 @@ class TT_payment_pending_List_Table extends WP_List_Table
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
-        $search_term = sanitize_text_field($_POST['s'] ?? ''); // Get search term safely
+        $search_term = sanitize_text_field($_REQUEST['s'] ?? ''); // Get search term safely
+        $order_id_filter = absint($_REQUEST['order_id'] ?? 0);
+        $payment_method_filter = sanitize_text_field($_REQUEST['payment_method'] ?? '');
+        $payment_type_filter = sanitize_text_field($_REQUEST['payment_type'] ?? '');
+        $date_from = sanitize_text_field($_REQUEST['date_from'] ?? '');
+        $date_to = sanitize_text_field($_REQUEST['date_to'] ?? '');
         $table_students = $wpdb->prefix . 'students';
+
+        if (!empty($order_id_filter)) {
+            $order = wc_get_order($order_id_filter);
+            if (!$order) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            $allowed_statuses = array('pending', 'processing', 'on-hold', 'split-payment');
+            if (!in_array($order->get_status(), $allowed_statuses, true)) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            if (!empty($payment_method_filter) && $order->get_payment_method() !== $payment_method_filter) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            if (!empty($date_from) || !empty($date_to)) {
+                $order_date = $order->get_date_created();
+                if (!$order_date) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+                $order_date_str = $order_date->date('Y-m-d');
+                if (!empty($date_from) && $order_date_str < $date_from) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+                if (!empty($date_to) && $order_date_str > $date_to) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+            }
+
+            if (!empty($payment_type_filter)) {
+                $has_split = (bool) $order->get_meta('split_payment_method', true);
+                if ($payment_type_filter === 'split' && !$has_split) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+                if ($payment_type_filter === 'normal' && $has_split) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+            }
+
+            if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
+                $from_webinar = $order->get_meta('from_webinar', true);
+                if ((int) $from_webinar !== 1) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+            }
+
+            if ($order->get_meta('split_payment_main_order', true)) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            $student = get_student_detail($order->get_meta('student_id'));
+            $student_full_name = '';
+            if ($student) {
+                $student_full_name = student_names_lastnames_helper($student->id);
+            }
+
+            $billing_first_name = $order->get_billing_first_name();
+            $billing_last_name = $order->get_billing_last_name();
+            $partner_name = trim($billing_last_name . ', ' . $billing_first_name);
+            $split_payment_method = $order->get_meta('split_payment_method', true);
+
+            $split_meta = $order->get_meta('split_payment_method');
+            $split_payments = [];
+            if (!empty($split_meta)) {
+                $split_payments = $split_meta;
+            }
+
+            $orders_array[] = [
+                'payment_id' => $order->get_id(),
+                'date' => $order->get_date_created() ? $order->get_date_created()->format('m/d/Y H:i:s') : '',
+                'partner_name' => $partner_name,
+                'student_name' => $student_full_name,
+                'total' => wc_price($order->get_total(), ['currency' => $order->get_currency()]),
+                'status' => ($order->get_status() === 'pending') ? __('Payment pending', 'your-text-domain') : wc_get_order_status_name($order->get_status()),
+                'payment_method' => $order->get_payment_method_title() ? $order->get_payment_method_title() : ($split_payment_method ? 'Split payment' : 'N/A'),
+                'split_payments' => $split_payments,
+            ];
+
+            return ['data' => $orders_array, 'total_count' => 1];
+        }
 
         // Initialize args for wc_get_orders
         $args = [
@@ -2163,6 +2249,28 @@ class TT_payment_pending_List_Table extends WP_List_Table
             'orderby' => 'date',
             'order' => 'DESC',
         ];
+
+        if (!empty($order_id_filter)) {
+            $args['include'] = [$order_id_filter];
+            $args['offset'] = 0;
+            $args['limit'] = 1;
+        }
+
+        if (!empty($payment_method_filter)) {
+            $args['payment_method'] = $payment_method_filter;
+        }
+
+        if (!empty($date_from) || !empty($date_to)) {
+            $date_range = '';
+            if (!empty($date_from) && !empty($date_to)) {
+                $date_range = $date_from . '...' . $date_to;
+            } elseif (!empty($date_from)) {
+                $date_range = $date_from . '...';
+            } else {
+                $date_range = '...' . $date_to;
+            }
+            $args['date_created'] = $date_range;
+        }
 
         $meta_query = [];
 
@@ -2180,6 +2288,20 @@ class TT_payment_pending_List_Table extends WP_List_Table
                 'compare' => '=',
                 'type' => 'NUMERIC' // Ensure proper comparison for numeric value
             ];
+        }
+
+        if (!empty($payment_type_filter)) {
+            if ($payment_type_filter === 'split') {
+                $meta_query[] = [
+                    'key'     => 'split_payment_method',
+                    'compare' => 'EXISTS'
+                ];
+            } elseif ($payment_type_filter === 'normal') {
+                $meta_query[] = [
+                    'key'     => 'split_payment_method',
+                    'compare' => 'NOT EXISTS'
+                ];
+            }
         }
 
         // 2. Smart Search for Students and then filter orders by student_id
@@ -2227,6 +2349,7 @@ class TT_payment_pending_List_Table extends WP_List_Table
                 return ['data' => [], 'total_count' => 0];
             }
         }
+
 
         // Add meta_query to the main args if not empty
         if (!empty($meta_query)) {
@@ -2413,17 +2536,118 @@ class TT_all_payments_List_Table extends WP_List_Table
         $pagenum = isset($_GET['paged']) ? absint($_GET['paged']) : 1;
         $offset = (($pagenum - 1) * $per_page);
 
-        $search_term = sanitize_text_field($_POST['s'] ?? ''); // Get search term safely
+        $search_term = sanitize_text_field($_REQUEST['s'] ?? ''); // Get search term safely
+        $order_id_filter = absint($_REQUEST['order_id'] ?? 0);
+        $payment_method_filter = sanitize_text_field($_REQUEST['payment_method'] ?? '');
+        $payment_type_filter = sanitize_text_field($_REQUEST['payment_type'] ?? '');
+        $date_from = sanitize_text_field($_REQUEST['date_from'] ?? '');
+        $date_to = sanitize_text_field($_REQUEST['date_to'] ?? '');
         $table_students = $wpdb->prefix . 'students';
+
+        if (!empty($order_id_filter)) {
+            $order = wc_get_order($order_id_filter);
+            if (!$order) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            $allowed_statuses = array('pending', 'completed', 'cancelled', 'processing', 'on-hold', 'split-payment');
+            if (!in_array($order->get_status(), $allowed_statuses, true)) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            if (!empty($payment_method_filter) && $order->get_payment_method() !== $payment_method_filter) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            if (!empty($date_from) || !empty($date_to)) {
+                $order_date = $order->get_date_created();
+                if (!$order_date) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+                $order_date_str = $order_date->date('Y-m-d');
+                if (!empty($date_from) && $order_date_str < $date_from) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+                if (!empty($date_to) && $order_date_str > $date_to) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+            }
+
+            if (!empty($payment_type_filter)) {
+                $has_split = (bool) $order->get_meta('split_payment_method', true);
+                if ($payment_type_filter === 'split' && !$has_split) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+                if ($payment_type_filter === 'normal' && $has_split) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+            }
+
+            if (in_array('webinar-aliance', $roles) || in_array('webinaraaliance', $roles)) {
+                $from_webinar = $order->get_meta('from_webinar', true);
+                if ((int) $from_webinar !== 1) {
+                    return ['data' => [], 'total_count' => 0];
+                }
+            }
+
+            if ($order->get_meta('split_payment_main_order', true)) {
+                return ['data' => [], 'total_count' => 0];
+            }
+
+            $student = get_student_detail($order->get_meta('student_id'));
+            $student_full_name = '';
+            if ($student) {
+                $student_full_name = student_names_lastnames_helper($student->id);
+            }
+
+            $billing_first_name = $order->get_billing_first_name();
+            $billing_last_name = $order->get_billing_last_name();
+            $partner_name = trim($billing_last_name . ', ' . $billing_first_name);
+            $split_payment_method = $order->get_meta('split_payment_method', true);
+
+            $orders_array[] = [
+                'payment_id' => $order->get_id(),
+                'date' => $order->get_date_created() ? $order->get_date_created()->format('m/d/Y H:i:s') : '',
+                'partner_name' => $partner_name,
+                'student_name' => $student_full_name,
+                'total' => wc_price($order->get_total(), ['currency' => $order->get_currency()]),
+                'status' => wc_get_order_status_name($order->get_status()),
+                'payment_method' => $order->get_payment_method_title() ? $order->get_payment_method_title() : ($split_payment_method ? 'Split payment' : 'N/A'),
+            ];
+
+            return ['data' => $orders_array, 'total_count' => 1];
+        }
 
         // Initialize args for wc_get_orders
         $args = [
             'limit' => $per_page,
             'offset' => $offset,
-            'status' => array('wc-pending', 'wc-completed', 'wc-cancelled', 'wc-processing', 'wc-on-hold'), // All relevant statuses
+            'status' => array('wc-pending', 'wc-completed', 'wc-cancelled', 'wc-processing', 'wc-on-hold', 'split-payment'), // All relevant statuses
             'orderby' => 'date',
             'order' => 'DESC',
         ];
+
+        if (!empty($order_id_filter)) {
+            $args['include'] = [$order_id_filter];
+            $args['offset'] = 0;
+            $args['limit'] = 1;
+        }
+
+        if (!empty($payment_method_filter)) {
+            $args['payment_method'] = $payment_method_filter;
+        }
+
+        if (!empty($date_from) || !empty($date_to)) {
+            $date_range = '';
+            if (!empty($date_from) && !empty($date_to)) {
+                $date_range = $date_from . '...' . $date_to;
+            } elseif (!empty($date_from)) {
+                $date_range = $date_from . '...';
+            } else {
+                $date_range = '...' . $date_to;
+            }
+            $args['date_created'] = $date_range;
+        }
 
         $meta_query = [];
 
@@ -2442,6 +2666,20 @@ class TT_all_payments_List_Table extends WP_List_Table
                 'compare' => '=',
                 'type' => 'NUMERIC' // Ensure proper comparison for numeric value
             ];
+        }
+
+        if (!empty($payment_type_filter)) {
+            if ($payment_type_filter === 'split') {
+                $meta_query[] = [
+                    'key'     => 'split_payment_method',
+                    'compare' => 'EXISTS'
+                ];
+            } elseif ($payment_type_filter === 'normal') {
+                $meta_query[] = [
+                    'key'     => 'split_payment_method',
+                    'compare' => 'NOT EXISTS'
+                ];
+            }
         }
 
         // 2. Smart Search for Students and then filter orders by student_id
@@ -2489,6 +2727,7 @@ class TT_all_payments_List_Table extends WP_List_Table
                 return ['data' => [], 'total_count' => 0];
             }
         }
+
 
         // Add meta_query to the main args if not empty
         if (!empty($meta_query)) {

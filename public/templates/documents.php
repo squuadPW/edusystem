@@ -110,7 +110,7 @@ $date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
                                     $status = get_status_document($document->status);
                                     $style = '';
                                     switch ($status) {
-                                        case __('Sent', 'edusystem'):
+                                        case __('Under review', 'edusystem'):
                                         case __('Processing', 'edusystem'):
                                             $style = 'color: blue';
                                             break;
@@ -160,7 +160,7 @@ $date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
                                     $status = get_status_document($document->status);
                                     $style = '';
                                     switch ($status) {
-                                        case __('Sent', 'edusystem'):
+                                        case __('Under review', 'edusystem'):
                                         case __('Processing', 'edusystem'):
                                             $style = 'color: blue';
                                             break;

@@ -442,7 +442,7 @@ $datetime_format = $date_format . ' H:i:s';
                                         <td colspan="3">
                                             <label for="expected_graduation_date"><b><?= esc_html__('Expected graduation from high school', 'edusystem') ?></b></label><br>
                                             <input type="text" placeholder="MM/YYYY" id="expected_graduation_date" name="expected_graduation_date"
-                                                value="<?php echo $student->expected_graduation_date; ?>" style="width:100%;" required
+                                                value="<?php echo $student->expected_graduation_date; ?>" style="width:100%;"
                                                 <?php echo in_array('institutes', $roles) ? 'disabled' : '' ?>>
                                         </td>
                                         <td colspan="3">
@@ -985,6 +985,83 @@ $datetime_format = $date_format . ' H:i:s';
         </div>
     </form>
 </div>
+
+<?php if (in_array('institutes', $roles) && !empty($inscriptions)): ?>
+    <div>
+        <h3
+            style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
+            <b><?= __('Inscriptions', 'edusystem'); ?></b>
+        </h3>
+
+        <table class="wp-list-table widefat fixed striped posts" style="margin-top:20px;">
+            <thead>
+                <tr>
+                    <th scope="col" class="manage-column column-primary column-subject-code-header" style="width: 40%;">
+                        <?= __('Subject - Code', 'edusystem'); ?>
+                    </th>
+                    <th scope="col" class="manage-column column-period-cut-header">
+                        <?= __('Period - cut', 'edusystem'); ?>
+                    </th>
+                    <th scope="col" class="manage-column column-calification-header">
+                        <?= __('Calification', 'edusystem'); ?>
+                    </th>
+                    <th scope="col" class="manage-column column-status-header">
+                        <?= __('Status', 'edusystem'); ?>
+                    </th>
+                    <th scope="col" class="manage-column column-action-header" style="text-align: end">
+                        <?= __('Action', 'edusystem'); ?>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($inscriptions as $key => $inscription) { ?>
+                    <tr>
+                        <td class="column-primary" data-colname="<?= __('Subject - Code', 'edusystem'); ?>">
+                            <?php $subject = get_subject_details_code($inscription->code_subject); ?>
+                            <?php echo $subject ? ($subject->name . ' - ' . $subject->code_subject) : 'N/A'; ?>
+                            <button type='button' class='toggle-row'><span class='screen-reader-text'></span></button>
+                        </td>
+                        <td data-colname="<?= __('Period - cut', 'edusystem'); ?>">
+                            <?php echo $inscription->code_period . ' - ' . $inscription->cut_period; ?>
+                        </td>
+                        <td data-colname="<?= __('Calification', 'edusystem'); ?>">
+                            <?php echo $inscription->status_id != 0 && $inscription->status_id != 1 ? get_literal_note($inscription->calification) : '-'; ?>
+                        </td>
+                        <td data-colname="<?= __('Status', 'edusystem'); ?>">
+                            <?php
+                            switch ($inscription->status_id) {
+                                case 0:
+                                    echo '<div style="color: gray; font-weight: 600">' . strtoupper('To begin') . '</div>';
+                                    break;
+                                case 1:
+                                    echo '<div style="color: blue; font-weight: 600">' . strtoupper('Active') . '</div>';
+                                    break;
+                                case 2:
+                                    echo '<div style="color: red; font-weight: 600">' . strtoupper('Unsubscribed') . '</div>';
+                                    break;
+                                case 3:
+                                    echo '<div style="color: green; font-weight: 600">' . strtoupper('Approved') . '</div>';
+                                    break;
+                                case 4:
+                                    echo '<div style="color: red; font-weight: 600">' . strtoupper('Reproved') . '</div>';
+                                    break;
+                            }
+                            ?>
+                        </td>
+                        <td data-colname="<?= __('Action', 'edusystem'); ?>" style="text-align: end">
+                            <?php if (current_user_can('manager_enrollments_aes')) { ?>
+                                <a href="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=delete_inscription&inscription_id=' . $inscription->id . '&projection_id=' . $projection->id); ?>"
+                                    class="button button-danger"
+                                    onclick="return confirm('Are you sure?');"><span
+                                        class='dashicons dashicons-trash'></span> </a>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+<?php endif; ?>
 
 <?php if (!empty($documents_certificates)) { ?>
     <div id='documentcertificate-modal' class='modal' style='display:none'>

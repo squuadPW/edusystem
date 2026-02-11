@@ -129,6 +129,8 @@ function save_student()
         $country = isset($_POST['country']) ? $_POST['country'] : null;
         $city = isset($_POST['city']) ? strtolower($_POST['city']) : null;
         $program = isset($_POST['program']) ? $_POST['program'] : null;
+        $coupon_complete = isset($_POST['coupon_complete']) ? $_POST['coupon_complete'] : null;
+        $coupon_credit = isset($_POST['coupon_credit']) ? $_POST['coupon_credit'] : null;
         $career = isset($_POST['career']) ? $_POST['career'] : null;
         $mention = isset($_POST['mention']) ? $_POST['mention'] : null;
         $plan = isset($_POST['plan']) ? $_POST['plan'] : null;
@@ -182,6 +184,8 @@ function save_student()
         setcookie('billing_country', $country, time() + 864000, '/');
         setcookie('initial_grade', $grade, time() + 864000, '/');
         setcookie('program_id', $program, time() + 864000, '/');
+        setcookie('coupon_complete', $coupon_complete, time() + 864000, '/');
+        setcookie('coupon_credit', $coupon_credit, time() + 864000, '/');
         setcookie('career_id', $career, time() + 864000, '/');
         setcookie('mention_id', $mention, time() + 864000, '/');
         setcookie('plan_id', $plan, time() + 864000, '/');
@@ -241,7 +245,7 @@ function save_student()
                     setcookie('gender_parent', $gender, time() + 864000, '/');
                 }
 
-                redirect_to_checkout($from_webinar, $is_scholarship ? $id_document : false, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id);
+                redirect_to_checkout($from_webinar, $is_scholarship ? $id_document : false, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id, $coupon_complete);
                 // wp_redirect(home_url('/select-payment'));
                 break;
 
@@ -307,7 +311,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id);
+                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id, $coupon_complete);
                 // wp_redirect(home_url('/select-payment'));
                 break;
 
@@ -323,7 +327,7 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
-                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id);
+                redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id, $coupon_complete);
                 // wp_redirect(home_url('/select-payment'));
                 break;
         }
@@ -363,7 +367,7 @@ function save_student()
         setcookie('billing_postcode', ucwords($billing_postcode), time() + 864000, '/');
 
         // Redirigir al checkout
-        redirect_to_checkout(false, false, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id);
+        redirect_to_checkout(false, false, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id, $coupon_complete);
     }
 
     if (isset($_GET['action']) && $_GET['action'] === 'pay_graduation_fee') {
@@ -391,7 +395,7 @@ function save_student()
     }
 }
 
-function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $return_url = false, $product_id = false, $coupon_code = false, $fixed_fee_inscription = false, $fees = [], $fee_payment_completed = null, $institute_id = null)
+function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $return_url = false, $product_id = false, $coupon_code = false, $fixed_fee_inscription = false, $fees = [], $fee_payment_completed = null, $institute_id = null, $coupon_complete = null)
 {
     global $woocommerce;
     $woocommerce->cart->empty_cart();
@@ -419,6 +423,12 @@ function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $r
             // Aplicar cupón si NO ha expirado
             if (!$fixed_fee_inscription) {
                 $woocommerce->cart->apply_coupon(get_option('offer_complete'));
+            }
+        }
+
+        if (!empty($coupon_complete)) {
+            if (!$fixed_fee_inscription) {
+                $woocommerce->cart->apply_coupon($coupon_complete);
             }
         }
 

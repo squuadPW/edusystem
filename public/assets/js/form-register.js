@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirm_password");
   const errorDiv = document.getElementById("password-error");
+  const registerForm = document.querySelector("form.form-aes");
 
     const attachPasswordToggle = (inputEl) => {
     if (!inputEl) return;
@@ -60,8 +61,10 @@ document.addEventListener("DOMContentLoaded", function () {
     inputEl.insertAdjacentElement("afterend", toggleBtn);
   };
 
-  attachPasswordToggle(passwordInput);
-  attachPasswordToggle(confirmPasswordInput);
+  if (registerForm) {
+    attachPasswordToggle(passwordInput);
+    attachPasswordToggle(confirmPasswordInput);
+  }
 
   const mesAnio = document.getElementById('expected_graduation_date');
   if (mesAnio) {
@@ -247,7 +250,11 @@ document.addEventListener("DOMContentLoaded", function () {
         careerElement.required = false;
       }
 
-      if (!programIdentificator) {
+      if (
+        programIdentificator === "" ||
+        programIdentificator === null ||
+        programIdentificator === undefined
+      ) {
         return;
       }
 
@@ -317,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (
       (program.value && program.value !== "") ||
-      (programIdShortcode && programIdShortcode.value)
+      (programIdShortcode && programIdShortcode.value !== "")
     ) {
       program.dispatchEvent(new Event("change"));
     }
