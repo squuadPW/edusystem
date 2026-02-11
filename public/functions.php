@@ -2544,6 +2544,8 @@ function update_price_product_cart_quota_rule()
     );
     $cookie_offer_complete = $_COOKIE['coupon_complete'] ?? '';
     $cookie_offer_quote = $_COOKIE['coupon_credit'] ?? '';
+    $is_multi_quota_for_offers = ($quotas_quantity > 1) || ((float) $initial_payment_sale > 0);
+    $is_single_quota_for_offers = !$is_multi_quota_for_offers;
 
     if (($cookie_does_not_exist || $cookie_exists_and_condition_met)) {
         // Get the coupon codes to potentially remove
@@ -2560,11 +2562,11 @@ function update_price_product_cart_quota_rule()
             WC()->cart->remove_coupon($offer_quote_coupon);
         }
 
-        if ($quotas_quantity == 1 && !empty($offer_complete_coupon)) {
+        if ($is_single_quota_for_offers && !empty($offer_complete_coupon)) {
             WC()->cart->apply_coupon($offer_complete_coupon);
         }
 
-        if ($quotas_quantity > 1 && !empty($offer_quote_coupon)) {
+        if ($is_multi_quota_for_offers && !empty($offer_quote_coupon)) {
             WC()->cart->apply_coupon($offer_quote_coupon);
         }
 
@@ -2574,18 +2576,9 @@ function update_price_product_cart_quota_rule()
                 if (WC()->cart->has_discount("100% registration fee")) {
                     WC()->cart->remove_coupon("100% registration fee");
                 }
-
-                // if (WC()->cart->has_discount("50% registration fee")) {
-                //     WC()->cart->remove_coupon("50% registration fee");
-                // }
-
                 if ($quotas_quantity == 1) {
                     WC()->cart->apply_coupon("100% registration fee");
                 }
-
-                // if ($quotas_quantity > 1) {
-                //     WC()->cart->apply_coupon("50% registration fee");
-                // }
             }
         }
     }
@@ -2600,11 +2593,11 @@ function update_price_product_cart_quota_rule()
         WC()->cart->remove_coupon($cookie_offer_quote);
     }
 
-    if ($quotas_quantity == 1 && !empty($cookie_offer_complete)) {
+    if ($is_single_quota_for_offers && !empty($cookie_offer_complete)) {
         WC()->cart->apply_coupon($cookie_offer_complete);
     }
 
-    if ($quotas_quantity > 1 && !empty($cookie_offer_quote)) {
+    if ($is_multi_quota_for_offers && !empty($cookie_offer_quote)) {
         WC()->cart->apply_coupon($cookie_offer_quote);
     }
 
