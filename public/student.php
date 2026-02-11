@@ -1019,7 +1019,7 @@ function insert_register_documents( $student_id )
 
     // Obtencion de los documentos por el programa, carrera o mencion
     $documents = $wpdb->get_results( $wpdb->prepare(
-        "SELECT `d`.id, `d`.name, `d`.is_visible, `d`.type_file, `d`.id_requisito,
+        "SELECT `d`.id, `d`.name, `d`.is_visible, `d`.type_file, `d`.id_requisito,`d`.deadline
             CASE
                 WHEN `d`.is_required = 1 THEN 1
                 WHEN `d`.is_required = 0 THEN
@@ -1105,6 +1105,7 @@ function insert_register_documents( $student_id )
         $type_file = $document->type_file;
         $id_requisito = $document->id_requisito;
         $doc_id = $document->id;
+        $deadline = $document->deadline;
 
         // debes poner la condicion de mayor de menor de edad
         if ($is_legal_age && $document_name == 'ID OR CI OF THE PARENTS' && false) {
@@ -1120,6 +1121,7 @@ function insert_register_documents( $student_id )
             'is_visible' => $is_visible,
             'type_file' => $type_file,
             'id_requisito' => $id_requisito,
+            'max_date_upload' => $deadline,
             'status' => 0,
             'created_at' => current_time('mysql'),
         ]);
