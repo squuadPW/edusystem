@@ -1087,8 +1087,40 @@ function status_order_completed($order, $order_id, $customer_id)
 
     // Asegura que el usuario de WordPress para el estudiante exista.
     create_user_student($student_id);
-    send_notification_staff_particular(__('New student', 'edusystem'), __('We would like to inform you that a new student has enrolled.', 'edusystem'), 0);
-    send_notification_staff_particular(__('New student', 'edusystem'), __('We would like to inform you that a new student has enrolled.', 'edusystem'), 4);
+    $student = get_student_detail($student_id);
+    $student = is_object($student) ? $student : (object) [];
+    $not_available = __('Not available', 'edusystem');
+    $student_document = isset($student->id_document) ? trim((string) $student->id_document) : '';
+    $student_full_name = function_exists('student_names_lastnames_helper')
+        ? trim((string) student_names_lastnames_helper($student_id))
+        : '';
+
+    $program_name = function_exists('get_name_program_student') ? trim((string) get_name_program_student($student_id)) : '';
+    $career_name = '';
+    if (function_exists('get_program_data_student')) {
+        $program_data_student = get_program_data_student($student_id);
+        $career_items = $program_data_student['career'] ?? [];
+        if (!empty($career_items)) {
+            $career_names = [];
+            foreach ($career_items as $career_item) {
+                if (is_object($career_item) && !empty($career_item->name)) {
+                    $career_names[] = $career_item->name;
+                }
+            }
+            $career_name = implode(', ', array_unique($career_names));
+        }
+    }
+
+    $notification_message = sprintf(
+        __('A new student has enrolled. Name: %1$s. ID: %2$s. Program: %3$s. Career: %4$s.', 'edusystem'),
+        $student_full_name !== '' ? $student_full_name : $not_available,
+        $student_document !== '' ? $student_document : $not_available,
+        $program_name !== '' ? $program_name : $not_available,
+        $career_name !== '' ? $career_name : $not_available
+    );
+
+    send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 0);
+    send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 4);
 
     // 3. Itera sobre los artículos para actualizar o crear registros de pago.
     foreach ($order->get_items() as $item) {
