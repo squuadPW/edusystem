@@ -1136,6 +1136,7 @@ function create_tables()
             is_required INT(11) NOT NULL,
             is_visible BOOLEAN NOT NULL DEFAULT 1,
             id_requisito TEXT NOT NULL,
+            deadline DATE NULL,
             updated_at DATETIME NULL,
             created_at DATETIME NOT NULL,
             PRIMARY KEY (id))$charset_collate;"
@@ -1233,6 +1234,7 @@ function create_tables()
             is_required INT(11) NOT NULL,
             is_visible BOOLEAN NOT NULL DEFAULT 1,
             id_requisito TEXT NOT NULL,
+            deadline DATE NULL,
             updated_at DATETIME NULL,
             created_at DATETIME NOT NULL,
             PRIMARY KEY (id))$charset_collate;"

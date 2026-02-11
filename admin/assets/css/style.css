@@ -2249,7 +2249,8 @@ tr.child-order-row .view_details {
   flex-direction: column;
   gap: 8px;
 }
-#document_view #form_document input[type=text] {
+#document_view #form_document input[type=text],
+#document_view #form_document input[type=date] {
   width: 100%;
 }
 #document_view #form_document input[type=checkbox] {

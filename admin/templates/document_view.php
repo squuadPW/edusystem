@@ -10,6 +10,7 @@
         $is_required   = $document->is_required == 1 ? 'checked' : '';
         $type_file     = $document->type_file ?? '';
         $id_requisito  = $document->id_requisito ?? '';
+        $deadline      = $document->deadline ?? '';
         $academic_department = !empty($document->academic_department) 
                                     ? json_decode($document->academic_department, true) 
                                     : [];
@@ -23,6 +24,7 @@
             $is_required   = $form_data['is_required']  ?? $is_required;
             $type_file     = $form_data['type_file']    ?? $type_file;
             $id_requisito  = $form_data['id_requisito'] ?? $id_requisito;
+            $deadline      = $form_data['deadline']     ?? $deadline;
 
             $academic_department = $form_data['academic_scope'] ?? $academic_department;  
         }
@@ -85,6 +87,16 @@
                                     <input type="text" 
                                         name="id_requisito" 
                                         value="<?= esc_attr($id_requisito); ?>"
+                                    >
+                                </label>
+                            </div>
+
+                            <div>
+                                <label for="deadline">
+                                    <b><?= __('Deadline','edusystem'); ?></b>
+                                    <input type="date" 
+                                        name="deadline" 
+                                        value="<?= $deadline ?>"
                                     >
                                 </label>
                             </div>

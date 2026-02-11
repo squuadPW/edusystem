@@ -2510,7 +2510,8 @@ tr.child-order-row {
             gap: 8px;
         }
 
-        input[type="text"] {
+        input[type="text"],
+        input[type="date"] {
             width: 100%;
         }
 
