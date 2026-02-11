@@ -62,6 +62,8 @@ function add_admin_form_dynamic_link_content()
             $name = sanitize_text_field($_POST['name']);
             $last_name = sanitize_text_field($_POST['last_name']);
             $email = sanitize_email($_POST['email']); // Mejor usar sanitize_email
+            $coupon_complete = sanitize_text_field($_POST['coupon_complete'] ?? '');
+            $coupon_credit = sanitize_text_field($_POST['coupon_credit'] ?? '');
             $program_identificator = sanitize_text_field($_POST['program_identificator']);
             $subprogram_identificator = $_POST['subprogram_id'] ? intval($_POST['subprogram_id']) : null;
             $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
@@ -99,6 +101,8 @@ function add_admin_form_dynamic_link_content()
                     'name' => $name,
                     'last_name' => $last_name,
                     'email' => $email,
+                    'coupon_complete' => $coupon_complete,
+                    'coupon_credit' => $coupon_credit,
                     'program_identificator' => $program_identificator,
                     'subprogram_identificator' => $subprogram_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,
@@ -124,6 +128,8 @@ function add_admin_form_dynamic_link_content()
                     'name' => $name,
                     'last_name' => $last_name,
                     'email' => $email,
+                    'coupon_complete' => $coupon_complete,
+                    'coupon_credit' => $coupon_credit,
                     'program_identificator' => $program_identificator,
                     'subprogram_identificator' => $subprogram_identificator,
                     'payment_plan_identificator' => $payment_plan_identificator,

@@ -176,6 +176,10 @@
             <input type="checkbox" id="auto-approve-institute" name="auto_approve_institute" <?php echo get_option('auto_approve_institute') == 'on' ? 'checked' : '' ?>>
             <label for="auto-approve-institute"><?= __('Auto approve institute'); ?></label>
           </div>
+          <div class="form-group" style="padding: 10px">
+            <input type="checkbox" id="hide-fee-checkbox-checkout" name="hide_fee_checkbox_checkout" <?php echo get_option('hide_fee_checkbox_checkout') == 'on' ? 'checked' : '' ?>>
+            <label for="hide-fee-checkbox-checkout"><?= __('Hide checkbox to remove the checkout registration fee'); ?></label>
+          </div>
         </div>
 
         <div id="by_moodle" style="display: none">

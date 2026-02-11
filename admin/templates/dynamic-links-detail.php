@@ -228,6 +228,16 @@
                                         <?php endif; ?>
                                     </div>
 
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="coupon_complete"><b><?= __('Coupon complete', 'edusystem'); ?></b></label><br>
+                                        <input type="text" name="coupon_complete" value="<?= esc_attr($dynamic_link->coupon_complete ?? ''); ?>">
+                                    </div>
+
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="coupon_credit"><b><?= __('Coupon credit', 'edusystem'); ?></b></label><br>
+                                        <input type="text" name="coupon_credit" value="<?= esc_attr($dynamic_link->coupon_credit ?? ''); ?>">
+                                    </div>
+
                                     <?php
                                     $accounts_mode = 'together';
                                     if (isset($dynamic_link) && !empty($dynamic_link)) {
