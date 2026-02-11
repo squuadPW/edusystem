@@ -194,8 +194,11 @@ function form_asp_psp_optimized($atts)
     $is_school_mode = get_option('site_mode') === 'SCHOOL';
     $atts = shortcode_atts(
         array(
+            'token_dynamic_link' => '',
             'connected_account' => '',
             'coupon_code' => '',
+            'coupon_complete' => '',
+            'coupon_credit' => '',
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
             'zelle_account' => '',
@@ -232,7 +235,7 @@ function form_asp_psp_optimized($atts)
     // 4. Lógica de "Payment Link" con validaciones y salidas tempranas (Guard Clauses).
     if ($dynamic_link) {
         // Valida que el token exista y no esté vacío.
-        if (empty($_GET['token'])) {
+        if (!$_GET['token'] && !$token_dynamic_link) {
             $error_message = __('Error: Payment link token is missing.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
@@ -243,7 +246,7 @@ function form_asp_psp_optimized($atts)
         }
 
         // Sanitiza el token antes de usarlo.
-        $token = sanitize_text_field($_GET['token']);
+        $token = $token_dynamic_link ? $token_dynamic_link : sanitize_text_field($_GET['token']);
         $dynamic_link_data = get_dynamic_link_detail_by_link($token);
 
         if (!$dynamic_link_data) {
@@ -327,8 +330,11 @@ function student_registration_form_optimized($atts)
     $is_school_mode = get_option('site_mode') === 'SCHOOL';
     $atts = shortcode_atts(
         array(
+            'token_dynamic_link' => '',
             'connected_account' => '',
             'coupon_code' => '',
+            'coupon_complete' => '',
+            'coupon_credit' => '',
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
             'zelle_account' => '',
@@ -365,7 +371,7 @@ function student_registration_form_optimized($atts)
     // 4. Lógica de "Payment Link" con validaciones y salidas tempranas (Guard Clauses).
     if ($dynamic_link) {
         // Valida que el token exista y no esté vacío.
-        if (empty($_GET['token'])) {
+        if (!$_GET['token'] && !$token_dynamic_link) {
             $error_message = __('Error: Payment link token is missing.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
@@ -376,7 +382,7 @@ function student_registration_form_optimized($atts)
         }
 
         // Sanitiza el token antes de usarlo.
-        $token = sanitize_text_field($_GET['token']);
+        $token = $token_dynamic_link ? $token_dynamic_link : sanitize_text_field($_GET['token']);
         $dynamic_link_data = get_dynamic_link_detail_by_link($token);
 
         if (!$dynamic_link_data) {
