@@ -2540,9 +2540,12 @@ function generate_academic_projection_student( $student_id ) {
 
     // Obtener inscripciones del estudiante
     $inscriptions = get_inscriptions_by_student($student_id);
+
+    // recuento de las veces que se inscribio esa materia
+    $attempts_count = array_count_values(array_column($inscriptions, 'subject_id'));
     $inscriptions_by_code = [];
     $elective_inscriptions = [];
-
+    
     // Se procesan todas las inscripciones del estudiante y se alamacenan las aprovadas y activas
     if ( !empty($inscriptions) ) {
 
@@ -2591,14 +2594,13 @@ function generate_academic_projection_student( $student_id ) {
             'code_subject' => $subject->code_subject,
             'is_completed' => $is_completed, 
             'welcome_email' => $is_completed || $is_this_cut, // True si está Approved/Active
-            'assigned_slots' => $subject->retake_limit ?? 0,
+            'assigned_slots' => (int) $subject->retake_limit ?? 0,
+            'attempts_count' => (int) $attempts_count[$subject->id] ?? 0,
         ];
     }
 
     // Agregar materias electivas a la proyección
     foreach ( $elective_inscriptions as $inscription ) {
-
-        var_dump($inscription);
 
         $subject = get_subject_details($inscription->subject_id) ?? get_subject_details_code($inscription->code_subject);
         if ( !$subject ) continue;
@@ -2618,14 +2620,37 @@ function generate_academic_projection_student( $student_id ) {
                 'welcome_email' => true,
                 'type' => 'elective',
                 'assigned_slots' => $subject->retake_limit ?? 0,
+                'attempts_count' => $attempts_count[$subject->id] ?? 0,
             ];
         }
     }
 
-    var_dump( $projection );
+    $exists = $wpdb->get_var( $wpdb->prepare(
+        "SELECT COUNT(*) FROM $table_student_academic_projection WHERE student_id = %d",
+        $student_id
+    ));
+
+    if ( $exists ) {
+        // Actualizar proyección existente
+        $result = $wpdb->update( $table_student_academic_projection,
+            [ 'projection' => json_encode($projection), ],
+            ['student_id' => $student_id],
+        );
+
+    } else {
+        // Insertar nueva proyección sino existe
+        $result = $wpdb->insert($table_student_academic_projection, [
+            'student_id' => $student_id,
+            'projection' => json_encode($projection)
+        ]);
+    }
+
+    // Genera la matris esperada del estudiante y inserta los registro en DB
+    generate_expectation_matrix( $student, $projection, $pensum );
+
     return false;
 
-    // Store terms_available on student record (projection no longer holds it)
+    
     if (!is_null($terms_available)) {
         $wpdb->update($table_students, ['terms_available' => $terms_available], ['id' => $student_id]);
     }
@@ -2700,7 +2725,6 @@ function generate_academic_projection_student( $student_id ) {
         }
     }
 
-
     if ($result !== false) {
 
         // If we have a detailed matrix, persist it into `student_expected_matrix`.
@@ -2745,23 +2769,24 @@ function generate_academic_projection_student( $student_id ) {
     return false;
 }
 
-// $hc es unidades de credito que tiene el estudiante actualmente
-function generate_expectation_matrix( $student_id ) {
+/* 
+    $student es un llamado a objeto de la tabla studen
+    $projection es la proyeccion del studiante
+    $pensum trae el pensum correspondiente al estudiante
+*/
+function generate_expectation_matrix( $student, $projection, $pensum ) {
+
+    if ( !$student || !$projection || !$pensum ) return false;
 
     global $wpdb;
     $table_academic_periods_cut = "{$wpdb->prefix}academic_periods_cut";
     $table_expected_matrix = "{$wpdb->prefix}expected_matrix";
-    $table_students = "{$wpdb->prefix}students";
-    $table_pensum = $wpdb->prefix . 'pensum';
 
-    $student = $wpdb->get_row($wpdb->prepare(
-        "SELECT id, expected_graduation_date, academic_period, initial_cut 
-        FROM `{$table_students}` WHERE id = %d ",
-        $student_id
-    ));
-    if ( !$student ) return false;
+    // lista de materias del pensum
+    $pensum_matrix = json_decode( $pensum->matrix );
+    if ( empty($pensum_matrix) ) return false;
 
-    // fecha de inicio del studiante
+    // fecha de registro del estudiante
     $period = get_period_cut_details_code($student->academic_period, $student->initial_cut);
     $registration_date = new DateTime($period->start_date);
 
@@ -2772,24 +2797,11 @@ function generate_expectation_matrix( $student_id ) {
         ORDER BY start_date ASC LIMIT 20",
         $registration_date->format('Y-m-d')
     ));
-
-    // Obtener pensum del programa y proyección actual
-    $program_data = get_program_data_student($student_id);
-    $program = $program_data['program'][0];
-
-    // Obtener el pensum activo para el programa
-    $pensum = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_pensum} WHERE `type`='program' AND `status` = 1 AND program_id = %s", $program->identificator));
-    if (!$pensum) return false;
-
-    // lista de materias del pensum
-    $pensum_matrix = json_decode( $pensum->matrix );
-    if ( empty($pensum_matrix) ) return false;
     
     // lista de materias regulares a ver segun el pensum
-    $subject_pensum = only_pensum_regular($program->identificator);
-    $subjects = $subject_pensum;
+    $subjects = only_pensum_regular($pensum->program_id);
 
-    // obtiene la configuracion por el periodo actual
+    // obtiene la matrix de configuracion de acuerdo se necesite
     if( !empty($student->expected_graduation_date) ) {
 
         // Convertir expected_graduation_date de MM/YYYY a fecha
@@ -2822,83 +2834,128 @@ function generate_expectation_matrix( $student_id ) {
         ));
     }
 
+    // matrix de configuracion
     $matrix_config = json_decode( $matrix_config_json );
 
-    // Obtener inscripciones del estudiante y clasificar por estado
-    /* $inscriptions = get_inscriptions_by_student($student_id);
-    $completed_subjects = [];
-    $enrolled_subjects = [];
+    // periodo y corte actual
+    $current_period_cut = load_current_cut_enrollment();
+    $current_period = $current_period_cut['code'];
+    $current_cut = $current_period_cut['cut'];
 
-    if (!empty($inscriptions)) {
-        foreach ($inscriptions as $inscription) {
-            if ($inscription->status_id == 3) {
-                $completed_subjects[] = $inscription->subject_id;
-            } elseif ($inscription->status_id == 1) {
-                // Aunque no se usan directamente en el loop principal, se mantienen por si se necesitan.
-                $enrolled_subjects[] = $inscription->subject_id; 
-            }
+    // verifica si el studiante tiene pagos pendientes
+    $pending_payments = get_payments($student->id) == 2 ? true : false;
+
+    /* var_dump($projection);
+    return; */
+
+    $projection_data = []; 
+    foreach ( $projection as $subject ) {
+        if ($subject['type'] == 'regular') {
+            $projection_data[$subject['subject_id']] = $subject;
         }
-    } */
+    }
 
     $accumulated_hc = 0;
     $matrix = [];
     foreach( $matrix_config as $key => $matrix_config_data ) {
 
-        // Obtener datos del período futuro
+        // Obtener datos del período que deberia o debio cursar la asignatura
         $period_index = $key - 1;
-        $period_data = ($period_index < count($future_periods)) ? $future_periods[$period_index] : null;
+        $period_data = ( $period_index < count($future_periods) ) ? $future_periods[$period_index] : null;
+        
+        $registered_hc = 0; // registra la cantidad de HC()
 
-        $registered_hc = 0;
-        foreach ( $subjects as $id => $subject ) {
+        // Convertimos los valores a enteros para una comparación numérica limpia
+        $data_code = (int)$period_data->code;
+        $curr_code = (int)$current_period;
 
-            if( 
-                $accumulated_hc < $matrix_config_data->max_HC_student && 
-                $accumulated_hc <= $matrix_config_data->term_HC && 
-                $registered_hc < $matrix_config_data->max_HC
+        /* puede mejorar si consulta si alguna de las materias 
+            que esta en la lista de asignaturas pendientes se 
+            encuentra aprobada y alli inserta  
+        */
+        foreach ( $projection_data as $subject ) {
+                
+            if ( 
+                ( $subject['is_completed'] === true || $subject['this_cut'] === true ) && 
+                $subject['code_period'] === $period_data->code && 
+                $subject['cut'] === $period_data->cut
             ) {
 
-                // inscribe materia
+                $status = $subject['is_completed'] ? 'aprobada' : 'activa';
+                    
                 $matrix[$key][] = [
-                    'subject' => $subject->subject,
-                    'subject_id' => $subject->subject_id,
-                    'code_period' => $period_data ? $period_data->code : '', 
-                    'cut' => $period_data ? $period_data->cut : '', 
+                    'subject' => $subject['subject'],
+                    'subject_id' => (int) $subject['subject_id'],
+                    'code_period' => $period_data->code,
+                    'cut' => $period_data->cut,
                     'type' => 'R',
+                    'status' => $status
                 ];
-
-                $subject_hc = $subject->hc;
+                    
+                $subject_hc = (int) $subject['hc'];
                 $registered_hc += $subject_hc;
                 $accumulated_hc += $subject_hc;
-
-                unset($subjects[$id]);
-
-            } 
+                    
+                // elimina la asignatura de la lista de asignaturas que estan pendientes
+                $subjects = array_filter($subjects, function($item) use ( $subject ) {
+                    return $item->subject_id !== (int) $subject['subject_id'];
+                });
+            }
         }
+
+        // valida que el periodo y corte corresppndiente en $period_data es menor que el actual
+        if ( ( $data_code === $curr_code && $period_data->cut >= $current_cut ) || $data_code > $curr_code ) {
+            
+            foreach ( $subjects as $i => $subject ) {
+
+                if( 
+                    $accumulated_hc < $matrix_config_data->max_HC_student && 
+                    $accumulated_hc <= $matrix_config_data->term_HC && 
+                    $registered_hc < $matrix_config_data->max_HC
+                ) { 
+
+                    $subject_projection = $projection_data[$subject->subject_id] ?? null;
+                    if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] > $subject_projection['assigned_slots']) {
+                        
+                        $subject_move = $subjects[$i];
+                        unset($subjects[$i]);
+
+                        $subject_move->status = 'blocked'; // si es array usa ['status']
+                        $subjects[] = $subject_move;
+
+                        continue;
+                    }
+
+                    $status = $subject->status ?? ($pending_payments ? 'blocked' : 'pendiente');
+
+                    // inscribe materia
+                    $matrix[$key][] = [
+                        'subject' => $subject->subject,
+                        'subject_id' => $subject->subject_id,
+                        'code_period' => $period_data ? $period_data->code : '', 
+                        'cut' => $period_data ? $period_data->cut : '', 
+                        'type' => 'R',
+                        'status' => $status
+                    ];
+
+                    $subject_hc = $subject->hc;
+                    $registered_hc += $subject_hc;
+                    $accumulated_hc += $subject_hc;
+
+                    unset($subjects[$i]);
+
+                } 
+            }
+        }
+  
     }
 
-    echo "<h1>terminos actuales del estudiante {$terms_available}</h1>";
     var_dump($matrix);
 }
 
 
  /* persist_expected_matrix($student_id, $detailed_matrix) */
 
-/* 
-{
-        "hc": "1",
-        "cut": "",
-        "type": "equivalence",
-        "subject": "PHYSICAL EDUCATION PERSONAL HEALTH",
-        "this_cut": false,
-        "subject_id": "66",
-        "code_period": "",
-        "calification": "",
-        "code_subject": "PEH1215",
-        "is_completed": false,
-        "welcome_email": false
-    },
-
-*/
  
 
  
