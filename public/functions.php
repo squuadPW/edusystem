@@ -221,6 +221,7 @@ function form_asp_psp_optimized($atts)
             'dynamic_link' => false,
             'use_ethnicity' => true,
             'fee_payment_completed' => false,
+            'second_surname_required' => false
         ),
         $atts,
         'form_asp_psp'
@@ -357,6 +358,7 @@ function student_registration_form_optimized($atts)
             'dynamic_link' => false,
             'use_ethnicity' => true,
             'fee_payment_completed' => false,
+            'second_surname_required' => false
         ),
         $atts,
         'student_registration_form'
