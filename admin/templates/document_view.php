@@ -5,12 +5,13 @@
     <?php
         include(plugin_dir_path(__FILE__) . 'cookie-message.php');
         
-        $document_id   = $document->id ?? 0;
-        $document_name = $document->name ?? ''; ;
-        $is_required   = $document->is_required == 1 ? 'checked' : '';
-        $type_file     = $document->type_file ?? '';
-        $id_requisito  = $document->id_requisito ?? '';
-        $deadline      = $document->deadline ?? '';
+        $document_id         = $document->id ?? 0;
+        $document_name       = $document->name ?? ''; ;
+        $is_required         = $document->is_required == 1 ? 'checked' : '';
+        $type_file           = $document->type_file ?? '';
+        $id_requisito        = $document->id_requisito ?? '';
+        $day_deadline        = $document->day_deadline ?? '';
+        $deadline_condition  = $document->deadline_condition ?? '';
         $academic_department = !empty($document->academic_department) 
                                     ? json_decode($document->academic_department, true) 
                                     : [];
@@ -19,14 +20,14 @@
         if ( isset($_COOKIE['form_data']) ) {
             $form_data = json_decode(stripslashes($_COOKIE['form_data']), true);
 
-            $document_id   = $form_data['document_id']  ?? $document_id;
-            $document_name = $form_data['name']         ?? $document_name;
-            $is_required   = $form_data['is_required']  ?? $is_required;
-            $type_file     = $form_data['type_file']    ?? $type_file;
-            $id_requisito  = $form_data['id_requisito'] ?? $id_requisito;
-            $deadline      = $form_data['deadline']     ?? $deadline;
-
-            $academic_department = $form_data['academic_scope'] ?? $academic_department;  
+            $document_id         = $form_data['document_id']        ?? $document_id;
+            $document_name       = $form_data['name']               ?? $document_name;
+            $is_required         = $form_data['is_required']        ?? $is_required;
+            $type_file           = $form_data['type_file']          ?? $type_file;
+            $id_requisito        = $form_data['id_requisito']       ?? $id_requisito;
+            $day_deadline        = $form_data['day_deadline']       ?? $day_deadline;
+            $deadline_condition  = $form_data['deadline_condition'] ?? $deadline;
+            $academic_department = $form_data['academic_scope']     ?? $academic_department;  
         }
     ?>
 
@@ -96,18 +97,18 @@
 
                                 <div class="group-input" >
                                     <div class="group-input" >
-                                        <label for="deadline">
+                                        <label for="day_deadline">
                                             <b><?= __('Days','edusystem'); ?></b>
-                                            <input type="number" name="day_deadline" min=0 />
+                                            <input type="number" name="day_deadline" min=0 value="<?= $day_deadline ?>" />
                                         </label>
                                     </div>
                                     <div class="group-input" >
-                                        <label for="deadline">
+                                        <label for="deadline_condition">
                                             <b><?= __('After','edusystem'); ?></b>
                                             <select name="deadline_condition" >
-                                                <option value=''><?= __('Select option','edusystem');?></option>
-                                                <option value='registration'><?= __('Registration') ?></option>
-                                                <option value='start_classes'><?= __('Start of classes') ?></option>
+                                                <option value='' <?= $deadline_condition == '' ? 'selected' : '' ?> ><?= __('Select option','edusystem');?></option>
+                                                <option value='registration' <?= $deadline_condition == 'registration' ? 'selected' : '' ?> ><?= __('Registration') ?></option>
+                                                <option value='start_classes' <?= $deadline_condition == 'start_classes' ? 'selected' : '' ?>><?= __('Start of classes') ?></option>
                                             </select>
                                         </label>
                                     </div>

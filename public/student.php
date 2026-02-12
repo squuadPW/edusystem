@@ -1019,7 +1019,7 @@ function insert_register_documents( $student_id )
 
     // Obtencion de los documentos por el programa, carrera o mencion
     $documents = $wpdb->get_results( $wpdb->prepare(
-        "SELECT `d`.id, `d`.name, `d`.is_visible, `d`.type_file, `d`.id_requisito, `d`.deadline,
+        "SELECT `d`.id, `d`.name, `d`.is_visible, `d`.type_file, `d`.id_requisito, `d`.day_deadline, `d`.deadline_condition,
             CASE
                 WHEN `d`.is_required = 1 THEN 1
                 WHEN `d`.is_required = 0 THEN
@@ -1105,13 +1105,28 @@ function insert_register_documents( $student_id )
         $type_file = $document->type_file;
         $id_requisito = $document->id_requisito;
         $doc_id = $document->id;
-        $deadline = $document->deadline ?? null;
+        $day_deadline = $document->day_deadline;
+        $deadline_condition = $document->deadline_condition;
+
 
         // debes poner la condicion de mayor de menor de edad
         if ($is_legal_age && $document_name == 'ID OR CI OF THE PARENTS' && false) {
             $is_required = 0;
             $is_visible = 0;
-        }        
+        }    
+        
+        if( $day_deadline && $deadline_condition ) {
+            
+            
+            if( $deadline_condition == "start_classes" ) {
+
+            } else if ( $deadline_condition == "registration" ) {
+                
+                $date = current_datetime(); 
+                $date->modify("+$day_deadline days");
+                $deadline = $date->format('Y-m-d');
+            } 
+        }
 
         $wpdb->insert($table_student_documents, [
             'student_id' => $student_id,
@@ -1171,6 +1186,19 @@ function insert_register_documents( $student_id )
         ]);
     }
 }
+
+/* add_action( 'woocommerce_account_dashboard', function () {
+    ?>
+        <div style="background-color: #f7f7f7; padding: 20px; border-radius: 5px; border: 1px solid #ddd;">
+            <pre>
+                
+                <?php 
+                    insert_register_documents( 351 );
+                ?>
+            </pre>
+        </div>
+    <?php
+}); */
 
 // respalda la funcion
 /* function insert_register_documents($student_id, $grade_id)
