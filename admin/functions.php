@@ -1301,6 +1301,7 @@ function daily_cuote_pendings()
                 'We invite you to log in to our platform as soon as possible so you can see your pending payments.'
             );
         }
+    }
 
     exit;
 }
