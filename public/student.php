@@ -1616,10 +1616,16 @@ function load_feed()
     $feeds = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_feed} WHERE max_date IS NULL OR max_date >= %s", $today));
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
 
-    $orders = wc_get_orders(array(
-        'status' => 'pending',
-        'customer_id' => $current_user->ID,
-    ));
+    $table_student_payments = $wpdb->prefix . 'student_payments';
+    $payments = [];
+    if($student) {
+        $payments = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()",
+                (int) $student->id
+            )
+        );
+    }
 
     // VERIFICAR FEE DE INSCRIPCION
     include(plugin_dir_path(__FILE__) . 'templates/feed-student.php');
