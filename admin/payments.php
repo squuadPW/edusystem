@@ -3625,110 +3625,37 @@ function generate_quote_public_callback()
     }
 
     try {
-        $order = wc_create_order(['customer_id' => $customer_id]);
-
-        // currency
-        $order->set_currency($payment_row->currency ?? get_woocommerce_currency());
-
-        // Force custom price via arguments
-        $item_id = $order->add_product($product, 1, [
-            'subtotal' => $payment_row->amount,
-            'total'    => $payment_row->amount
-        ]);
-
-        if (!$item_id) {
-            throw new Exception('Error adding product to order.');
+        if (!class_exists('WooCommerce') || !WC()->cart) {
+            throw new Exception('WooCommerce cart not available.');
         }
 
-        $customer = new WC_Customer($customer_id);
+        WC()->cart->empty_cart();
 
-        // Efficient fallback logic using Elvis operator
-        $first_name = $customer->get_billing_first_name() ?: $customer->get_first_name() ?: __('Nombre', 'edusystem');
-        $last_name  = $customer->get_billing_last_name() ?: $customer->get_last_name() ?: __('Apellido', 'edusystem');
-
-        $address_data = [
-            'first_name' => $first_name,
-            'last_name'  => $last_name,
-            'company'    => $customer->get_billing_company(),
-            'email'      => $customer->get_billing_email() ?: $customer->get_email(),
-            'phone'      => $customer->get_billing_phone(),
-            'address_1'  => $customer->get_billing_address_1(),
-            'address_2'  => $customer->get_billing_address_2(),
-            'city'       => $customer->get_billing_city(),
-            'state'      => $customer->get_billing_state(),
-            'postcode'   => $customer->get_billing_postcode(),
-            'country'    => $customer->get_billing_country()
+        $cart_item_data = [
+            'custom_price' => (float) $payment_row->amount,
+            'custom_price_regular' => (float) $payment_row->amount,
+            'cuote_payment' => (int) $payment_row->id,
+            'student_id' => (int) $payment_row->student_id,
+            'institute_id' => (int) $payment_row->institute_id,
         ];
 
-        $order->set_billing_address($address_data);
+        $variation_id = $payment_row->variation_id ? (int) $payment_row->variation_id : 0;
+        $cart_item_key = WC()->cart->add_to_cart(
+            (int) $payment_row->product_id,
+            1,
+            $variation_id,
+            [],
+            $cart_item_data
+        );
 
-        // Inherit shipping from billing unless specific shipping exists
-        $shipping_data = array_merge($address_data, [
-            'first_name' => $customer->get_shipping_first_name() ?: $first_name,
-            'last_name'  => $customer->get_shipping_last_name() ?: $last_name,
-            'address_1'  => $customer->get_shipping_address_1() ?: $address_data['address_1'],
-            // Map other specific shipping fields if needed, otherwise they default to empty or billing logic above
-        ]);
-
-        $order->set_shipping_address($shipping_data);
-
-        // balance
-        $table_student_balance = $wpdb->prefix . 'student_balance';
-        $student_balance = $wpdb->get_row($wpdb->prepare(
-            "SELECT id, balance FROM $table_student_balance WHERE student_id = %d AND currency = %s",
-            $payment_row->student_id,
-            $order->get_currency()
-        ));
-
-        if ($student_balance && $student_balance->balance > 0) {
-            $balance = $student_balance->balance ?? 0;
-            $balance_id = $student_balance->id ?? 0;
-
-            $discount_amount = 0;
-            if ($balance >= $payment_row->amount) {
-                $discount_amount = $payment_row->amount;
-                $balance = $balance - $payment_row->amount;
-
-                $order->update_status('completed', __('Order automatically completed due to balance', 'edusystem'));
-            } else {
-                $discount_amount = $balance;
-                $balance = 0;
-            }
-
-            // Añadir un descuento por el balance actual
-            $discount = new WC_Order_Item_Fee();
-            $discount->set_name(__('Balance Discount', 'edusystem'));
-            $discount->set_amount(-$discount_amount);
-            $discount->set_total(-$discount_amount);
-            $discount->add_meta_data('balance_discount', $discount_amount, true);
-
-            // Añadir el ítem de descuento a la orden
-            $order->add_item($discount);
-
-            // Actualizar el balance del estudiante a 0
-            $wpdb->update(
-                $table_student_balance,
-                ['balance' => $balance],
-                ['id' => $balance_id],
-                ['%f'],
-                ['%d']
-            );
+        if (!$cart_item_key) {
+            throw new Exception('Error adding product to cart.');
         }
 
-        $order->update_meta_data('cuote_payment', $payment_row->id);
-        $order->update_meta_data('student_id', $payment_row->student_id);
-        $order->update_meta_data('institute_id', $payment_row->institute_id);
+        WC()->cart->calculate_totals();
 
-        $order->calculate_totals();
-        $order->save();
-
-        if ($order->get_status() == 'completed') {
-            $checkout_url = wc_get_page_permalink('myaccount');
-            wp_send_json_success(['url' => $checkout_url]);
-        } else {
-            $checkout_url = $order->get_checkout_payment_url();
-            wp_send_json_success(['url' => $checkout_url]);
-        }
+        $checkout_url = wc_get_checkout_url();
+        wp_send_json_success(['url' => $checkout_url]);
     } catch (Exception $e) {
         wp_send_json_error(['message' => $e->getMessage()]);
     }
