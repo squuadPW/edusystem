@@ -2244,13 +2244,21 @@ tr.child-order-row .view_details {
   text-align: center;
   border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
 }
-#document_view #form_document > div {
+#document_view #form_document > .group-input {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
+#document_view #form_document > .group-input .group-input {
+  flex: 1;
+}
+#document_view #form_document > .group-input .group-input label {
+  width: 100%;
+}
 #document_view #form_document input[type=text],
-#document_view #form_document input[type=date] {
+#document_view #form_document input[type=number],
+#document_view #form_document select {
   width: 100%;
 }
 #document_view #form_document input[type=checkbox] {

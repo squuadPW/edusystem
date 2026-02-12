@@ -47,7 +47,7 @@
                                 <b><?= __('Document Information', 'edusystem'); ?></b>
                             </h3>
 
-                            <div>
+                            <div class="group-input" >
                                 <label for="input_id">
                                     <b><?= __('Name','edusystem'); ?></b>
 
@@ -57,7 +57,7 @@
                                 
                             </div>
                             
-                            <div>
+                            <div class="group-input" >
                                 <label for="is_required">
                                     <input name="is_required" type="checkbox" <?= $is_required ?> >
                                     
@@ -65,7 +65,7 @@
                                 </label>
                             </div>
 
-                            <div>
+                            <div class="group-input" >
                                 <label for="type_file">
                                     <b><?= __('Accepted File Types','edusystem'); ?></b>
                                     <input 
@@ -81,7 +81,7 @@
                                 </p>
                             </div>
 
-                            <div>
+                            <div class="group-input" >
                                 <label for="id_requisito">
                                     <b><?= __('Code admin','edusystem'); ?></b>
                                     <input type="text" 
@@ -91,14 +91,27 @@
                                 </label>
                             </div>
 
-                            <div>
-                                <label for="deadline">
-                                    <b><?= __('Deadline','edusystem'); ?></b>
-                                    <input type="date" 
-                                        name="deadline" 
-                                        value="<?= $deadline ?>"
-                                    >
-                                </label>
+                            <div class="group-input" >
+                                <b><?= __('Deadline','edusystem'); ?></b>
+
+                                <div class="group-input" >
+                                    <div class="group-input" >
+                                        <label for="deadline">
+                                            <b><?= __('Days','edusystem'); ?></b>
+                                            <input type="number" name="day_deadline" min=0 />
+                                        </label>
+                                    </div>
+                                    <div class="group-input" >
+                                        <label for="deadline">
+                                            <b><?= __('After','edusystem'); ?></b>
+                                            <select name="deadline_condition" >
+                                                <option value=''><?= __('Select option','edusystem');?></option>
+                                                <option value='registration'><?= __('Registration') ?></option>
+                                                <option value='start_classes'><?= __('Start of classes') ?></option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                             <div>

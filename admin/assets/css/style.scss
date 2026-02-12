@@ -2504,14 +2504,24 @@ tr.child-order-row {
         }
 
         // Bloques de campo
-        > div {
+        > .group-input {
+            width: 100%;
             display: flex;
             flex-direction: column;
             gap: 8px;
+
+            .group-input {
+                flex: 1;
+
+                label {
+                    width: 100%;
+                }
+            }
         }
 
         input[type="text"],
-        input[type="date"] {
+        input[type="number"],
+        select  {
             width: 100%;
         }
 
