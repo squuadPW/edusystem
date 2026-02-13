@@ -19,29 +19,41 @@ document.addEventListener("DOMContentLoaded", function () {
     let timeout;
     let currentPlansData = window.initialPlansData || [];
 
-    function updatePaymentPlanDetails(selectedPlanId) {
+    function getSelectedValues(selectEl) {
+      if (!selectEl) return [];
+      return Array.from(selectEl.selectedOptions || []).map(
+        (option) => option.value,
+      );
+    }
+
+    function updatePaymentPlanDetails(selectedPlanIds) {
       const detailsElement = document.getElementById(
         "details-payment-plan-element",
       );
       const detailsContainer = document.getElementById("details-payment-plan");
 
-      if (!selectedPlanId) {
+      if (!selectedPlanIds || selectedPlanIds.length === 0) {
         detailsElement.style.display = "none";
         detailsContainer.innerHTML = "";
         return;
       }
+      let html = "";
 
-      const planWrapper = currentPlansData.find(
-        (p) => (p.plan.identificator || p.plan.id) == selectedPlanId,
-      );
+      selectedPlanIds.forEach((selectedPlanId) => {
+        const planWrapper = currentPlansData.find(
+          (p) => (p.plan.identificator || p.plan.id) == selectedPlanId,
+        );
 
-      if (planWrapper) {
+        if (!planWrapper) {
+          return;
+        }
+
         const p = planWrapper.plan;
         const fees = planWrapper.fees || [];
         const quotes = planWrapper.quote_rules || [];
         const currency = p.currency || "$";
 
-        let html = `
+        html += `
             <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
                 <p><strong>Name:</strong> ${p.name}</p>
                 <p><strong>Description:</strong> ${p.description}</p>
@@ -132,15 +144,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>`;
           });
         }
+      });
 
-        detailsContainer.innerHTML = html;
-        detailsElement.style.display = "block";
-      }
+      detailsContainer.innerHTML = html;
+      detailsElement.style.display = "block";
     }
 
     function updateSubprograms() {
       const planSelect = document.getElementById("payment-plan-identificator");
-      const selectedPlanId = planSelect.value;
+      const selectedPlanIds = getSelectedValues(planSelect);
       const subprogramElement = document.getElementById("subprogram-element");
       const subprogramSelect = document.getElementById("subprogram-id");
       const selectedSubprogramId = window.selectedSubprogramId || "";
@@ -148,12 +160,14 @@ document.addEventListener("DOMContentLoaded", function () {
       subprogramSelect.innerHTML = '<option value="">Select an option</option>';
       subprogramElement.style.display = "none";
 
-      updatePaymentPlanDetails(selectedPlanId);
+      updatePaymentPlanDetails(selectedPlanIds);
 
-      if (!selectedPlanId) return;
+      if (!selectedPlanIds || selectedPlanIds.length !== 1) {
+        return;
+      }
 
       const newSelectedPlan = currentPlansData.find(
-        (p) => (p.plan.identificator || p.plan.id) == selectedPlanId,
+        (p) => (p.plan.identificator || p.plan.id) == selectedPlanIds[0],
       );
 
       let selectedPlan = newSelectedPlan ? newSelectedPlan.plan : null;
@@ -178,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    if (document.getElementById("payment-plan-identificator").value) {
+    if (getSelectedValues(document.getElementById("payment-plan-identificator")).length) {
       updateSubprograms();
     }
 
@@ -187,12 +201,21 @@ document.addEventListener("DOMContentLoaded", function () {
       .addEventListener("change", function (e) {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
+          const selectedProgramIds = getSelectedValues(e.target);
           document.getElementById("scholarship-element").style.display = "none";
           document.getElementById("subprogram-element").style.display = "none";
           document.getElementById(
             "details-payment-plan-element",
           ).style.display = "none";
           document.getElementById("details-payment-plan").innerHTML = "";
+
+          if (!selectedProgramIds.length) {
+            const stateSelect = document.getElementById(
+              "payment-plan-identificator",
+            );
+            stateSelect.innerHTML = "";
+            return;
+          }
 
           var xhr = new XMLHttpRequest();
           xhr.open("POST", wp_ajax.url, true);
@@ -203,17 +226,52 @@ document.addEventListener("DOMContentLoaded", function () {
           xhr.onload = function () {
             if (xhr.status === 200) {
               var raw = JSON.parse(xhr.responseText);
-              var plans = raw.data?.plans || raw.data || raw;
-              currentPlansData = plans;
+              var groups = raw.data?.groups || raw.data || [];
+              var flatPlans = raw.data?.plans || [];
+
+              if (Array.isArray(groups) && groups.length > 0) {
+                currentPlansData = groups.flatMap((group) => group.plans || []);
+              } else {
+                currentPlansData = flatPlans.length ? flatPlans : [];
+              }
 
               var stateSelect = document.getElementById(
                 "payment-plan-identificator",
               );
-              stateSelect.innerHTML =
-                '<option value="">Select an option</option>';
+              stateSelect.innerHTML = "";
 
-              if (Array.isArray(plans)) {
-                plans.forEach((plak) => {
+              if (Array.isArray(groups) && groups.length > 0) {
+                groups.forEach((group) => {
+                  const label = group.program
+                    ? `${group.program.name || "Program"}${
+                        group.program.description
+                          ? " (" + group.program.description + ")"
+                          : ""
+                      }`
+                    : "Program";
+                  const optgroup = document.createElement("optgroup");
+                  optgroup.label = label;
+
+                  (group.plans || []).forEach((plak) => {
+                    let p = plak.plan ? plak.plan : plak;
+                    var option = document.createElement("option");
+                    option.value = p.identificator || p.id;
+                    option.text = `${p.name || "Plan"}${
+                      p.description ? " (" + p.description + ")" : ""
+                    } - ${
+                      p.total_price
+                        ? `${p.currency ? p.currency : "$"}${p.total_price}`
+                        : ""
+                    }`;
+                    optgroup.appendChild(option);
+                  });
+
+                  if (optgroup.children.length > 0) {
+                    stateSelect.appendChild(optgroup);
+                  }
+                });
+              } else if (Array.isArray(flatPlans)) {
+                flatPlans.forEach((plak) => {
                   let p = plak.plan ? plak.plan : plak;
                   var option = document.createElement("option");
                   option.value = p.identificator || p.id;
@@ -226,14 +284,17 @@ document.addEventListener("DOMContentLoaded", function () {
                   }`;
                   stateSelect.appendChild(option);
                 });
-                if (plans.length > 0)
-                  document.getElementById("scholarship-element").style.display =
-                    "block";
+              }
+
+              if (stateSelect.options.length > 0) {
+                document.getElementById("scholarship-element").style.display =
+                  "block";
               }
             }
           };
           xhr.send(
-            "action=get_payments_plans_by_program&program_id=" + e.target.value,
+            "action=get_payments_plans_by_program&program_id=" +
+              encodeURIComponent(selectedProgramIds.join(",")),
           );
         }, 50);
       });

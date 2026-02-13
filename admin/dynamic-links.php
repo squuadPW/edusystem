@@ -30,17 +30,40 @@ function add_admin_form_dynamic_link_content()
             $dynamic_link_id = $_GET['dynamic_link_id'];
             $dynamic_link = get_dynamic_link_detail($dynamic_link_id);
             $multiple_accounts = get_option('multiple_accounts');
+            $payment_plans_grouped = [];
             if ($dynamic_link) {
                 $table_programs = $wpdb->prefix . 'programs';
-                $associateds = get_associated_plans_by_program_id($dynamic_link->program_identificator);
-                foreach ($associateds as $key => $plan) {
-                    $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
-                    if ($plan) {
-                        $plan->subprograms = json_decode($plan->subprograms_json);
-                        $fees = get_fees_associated_plan_complete($plan->identificator);   
-                        $quote_rules = get_quotes_rules_associated_plan_complete($plan->identificator);   
-                        $payment_plans[] = ['plan' => $plan, 'fees' => $fees, 'quote_rules' => $quote_rules];
+                $program_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_link->program_identificator)));
+
+                foreach ($program_ids as $program_id) {
+                    $associateds = get_associated_plans_by_program_id($program_id);
+                    $group_plans = [];
+
+                    foreach ($associateds as $plan) {
+                        $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
+                        if ($plan) {
+                            $plan->subprograms = json_decode($plan->subprograms_json);
+                            $fees = get_fees_associated_plan_complete($plan->identificator);
+                            $quote_rules = get_quotes_rules_associated_plan_complete($plan->identificator);
+                            $entry = ['plan' => $plan, 'fees' => $fees, 'quote_rules' => $quote_rules];
+                            $payment_plans[] = $entry;
+                            $group_plans[] = $entry;
+                        }
                     }
+
+                    $program_info = get_student_program_details_by_identificator($program_id);
+                    $payment_plans_grouped[] = [
+                        'program' => $program_info ? [
+                            'identificator' => $program_info->identificator,
+                            'name' => $program_info->name,
+                            'description' => $program_info->description,
+                        ] : [
+                            'identificator' => $program_id,
+                            'name' => $program_id,
+                            'description' => '',
+                        ],
+                        'plans' => $group_plans,
+                    ];
                 }
             }
             $dynamic_links_email_log = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_dynamic_links_email_log} WHERE dynamic_link_id=%d ORDER BY id DESC", $dynamic_link_id));
@@ -48,6 +71,7 @@ function add_admin_form_dynamic_link_content()
         }
 
         if ($_GET['section_tab'] == 'add_dynamic_link') {
+            $payment_plans_grouped = [];
             include(plugin_dir_path(__FILE__) . 'templates/dynamic-links-detail.php');
         }
     } else {
@@ -64,9 +88,21 @@ function add_admin_form_dynamic_link_content()
             $email = sanitize_email($_POST['email']); // Mejor usar sanitize_email
             $coupon_complete = sanitize_text_field($_POST['coupon_complete'] ?? '');
             $coupon_credit = sanitize_text_field($_POST['coupon_credit'] ?? '');
-            $program_identificator = sanitize_text_field($_POST['program_identificator']);
+            $program_identificator_raw = $_POST['program_identificator'] ?? [];
+            if (is_array($program_identificator_raw)) {
+                $program_identificator_values = array_filter(array_map('sanitize_text_field', $program_identificator_raw));
+                $program_identificator = implode(',', $program_identificator_values);
+            } else {
+                $program_identificator = sanitize_text_field($program_identificator_raw);
+            }
             $subprogram_identificator = $_POST['subprogram_id'] ? intval($_POST['subprogram_id']) : null;
-            $payment_plan_identificator = sanitize_text_field($_POST['payment_plan_identificator']);
+            $payment_plan_identificator_raw = $_POST['payment_plan_identificator'] ?? [];
+            if (is_array($payment_plan_identificator_raw)) {
+                $payment_plan_identificator_values = array_filter(array_map('sanitize_text_field', $payment_plan_identificator_raw));
+                $payment_plan_identificator = implode(',', $payment_plan_identificator_values);
+            } else {
+                $payment_plan_identificator = sanitize_text_field($payment_plan_identificator_raw);
+            }
             $save_and_send_email = sanitize_text_field($_POST['save_and_send_email']);
             $manager_id = intval($_POST['manager_id']); // Sanitizar como entero
             $current_user = wp_get_current_user();
@@ -429,15 +465,17 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
             $identificator_values = [];
 
             if (isset($found_identificators['program_identificator']) && !empty($found_identificators['program_identificator'])) {
-                $placeholders = implode(', ', array_fill(0, count($found_identificators['program_identificator']), '%s'));
-                $identificator_conditions[] = "`program_identificator` IN ({$placeholders})";
-                $identificator_values = array_merge($identificator_values, $found_identificators['program_identificator']);
+                foreach ($found_identificators['program_identificator'] as $program_identificator) {
+                    $identificator_conditions[] = "FIND_IN_SET(%s, `program_identificator`)";
+                    $identificator_values[] = $program_identificator;
+                }
             }
 
             if (isset($found_identificators['payment_plan_identificator']) && !empty($found_identificators['payment_plan_identificator'])) {
-                $placeholders = implode(', ', array_fill(0, count($found_identificators['payment_plan_identificator']), '%s'));
-                $identificator_conditions[] = "`payment_plan_identificator` IN ({$placeholders})";
-                $identificator_values = array_merge($identificator_values, $found_identificators['payment_plan_identificator']);
+                foreach ($found_identificators['payment_plan_identificator'] as $plan_identificator) {
+                    $identificator_conditions[] = "FIND_IN_SET(%s, `payment_plan_identificator`)";
+                    $identificator_values[] = $plan_identificator;
+                }
             }
 
             // Combine all search conditions (Direct OR External Identificators)
@@ -500,14 +538,30 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
         $dynamic_links_array = [];
         if ($dynamic_links) {
             foreach ($dynamic_links as $dynamic_links_val) {
-                $payment_plan = get_program_details_by_identificator($dynamic_links_val['payment_plan_identificator']);
-                $program = get_student_program_details_by_identificator($dynamic_links_val['program_identificator']);
+                $program_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_links_val['program_identificator'])));
+                $plan_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_links_val['payment_plan_identificator'])));
+
+                $program_names = [];
+                foreach ($program_ids as $program_id) {
+                    $program_item = get_student_program_details_by_identificator($program_id);
+                    $program_names[] = $program_item && isset($program_item->name) ? $program_item->name : $program_id;
+                }
+
+                $payment_plan_names = [];
+                foreach ($plan_ids as $plan_id) {
+                    $plan_item = get_program_details_by_identificator($plan_id);
+                    $payment_plan_names[] = $plan_item && isset($plan_item->name)
+                        ? $plan_item->name . ' (' . $plan_item->description . ')'
+                        : $plan_id;
+                }
                 $created_by_user = get_user_by('id', $dynamic_links_val['created_by']);
 
                 // Check if objects are returned before trying to access properties
-                $program_name = $program && isset($program->name) ? $program->name : 'N/A';
-                $student_name_desc = $dynamic_links_val['name'] ? $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name'] : ($program && isset($program->description) ? $program->description : 'N/A');
-                $payment_plan_detail = $payment_plan && isset($payment_plan->name) ? $payment_plan->name . ' (' . $payment_plan->description . ')' : 'N/A';
+                $program_name = !empty($program_names) ? implode(', ', $program_names) : 'N/A';
+                $student_name_desc = $dynamic_links_val['name']
+                    ? $dynamic_links_val['name'] . ' ' . $dynamic_links_val['last_name']
+                    : (!empty($program_names) ? implode(', ', $program_names) : 'N/A');
+                $payment_plan_detail = !empty($payment_plan_names) ? implode(', ', $payment_plan_names) : 'N/A';
                 $created_by_name = $created_by_user ? $created_by_user->first_name . ' ' . $created_by_user->last_name : 'Unknown User';
 
                 $dynamic_links_array[] = [

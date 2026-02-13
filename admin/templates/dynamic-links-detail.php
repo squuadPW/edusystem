@@ -1,6 +1,18 @@
+<?php
+$selected_programs = [];
+$selected_plans = [];
+if (isset($dynamic_link) && !empty($dynamic_link)) {
+    $selected_programs = array_filter(array_map('trim', explode(',', (string) $dynamic_link->program_identificator)));
+    $selected_plans = array_filter(array_map('trim', explode(',', (string) $dynamic_link->payment_plan_identificator)));
+}
+$selected_plan_for_details = count($selected_plans) === 1 ? $selected_plans[0] : '';
+?>
+
 <script>
     window.initialPlansData = <?= json_encode($payment_plans); ?>;
     window.selectedSubprogramId = "<?= isset($dynamic_link->subprogram_identificator) ? $dynamic_link->subprogram_identificator : ''; ?>";
+    window.selectedProgramIds = <?= json_encode(array_values($selected_programs)); ?>;
+    window.selectedPlanIds = <?= json_encode(array_values($selected_plans)); ?>;
 </script>
 
 <?php if (!$multiple_accounts) { ?>
@@ -102,21 +114,32 @@
                                 <div style="margin: 18px;">
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="program_identificator"><b><?= __('Program', 'edusystem'); ?></b><span class="required">*</span></label>
-                                        <select name="program_identificator" id="program-identificator" autocomplete="off" required>
-                                            <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                                        <select name="program_identificator[]" id="program-identificator" autocomplete="off" multiple required>
                                             <?php foreach ($programs as $program): ?>
-                                                <option value="<?= $program->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->description; ?>)</option>
+                                                <?php $is_selected = in_array($program->identificator, $selected_programs, true); ?>
+                                                <option value="<?= $program->identificator; ?>" <?= $is_selected ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->description; ?>)</option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
 
                                     <div style="font-weight:400; <?= empty($payment_plans) ? 'display: none;' : ''; ?>" class="space-offer" id="scholarship-element">
                                         <label for="payment_plan_identificator"><b><?= __('Scholarship', 'edusystem'); ?></b><span class="required">*</span></label>
-                                        <select name="payment_plan_identificator" id="payment-plan-identificator" autocomplete="off" required>
-                                            <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                                            <?php foreach ($payment_plans as $payment_plan): ?>
-                                                <option value="<?= $payment_plan['plan']->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan['plan']->identificator) ? 'selected' : ''; ?>><?= $payment_plan['plan']->name; ?> (<?= $payment_plan['plan']->description; ?>) - <?= $payment_plan['plan']->total_price ? ($payment_plan['plan']->currency ? $payment_plan['plan']->currency : "$") . "" . $payment_plan['plan']->total_price : "0"; ?></option>
-                                            <?php endforeach; ?>
+                                        <select name="payment_plan_identificator[]" id="payment-plan-identificator" autocomplete="off" multiple required>
+                                            <?php if (!empty($payment_plans_grouped)): ?>
+                                                <?php foreach ($payment_plans_grouped as $group): ?>
+                                                    <optgroup label="<?= esc_attr($group['program']['name'] ?? __('Program', 'edusystem')); ?>">
+                                                        <?php foreach ($group['plans'] as $payment_plan): ?>
+                                                            <?php $is_selected = in_array($payment_plan['plan']->identificator, $selected_plans, true); ?>
+                                                            <option value="<?= $payment_plan['plan']->identificator; ?>" <?= $is_selected ? 'selected' : ''; ?>><?= $payment_plan['plan']->name; ?> (<?= $payment_plan['plan']->description; ?>) - <?= $payment_plan['plan']->total_price ? ($payment_plan['plan']->currency ? $payment_plan['plan']->currency : "$") . "" . $payment_plan['plan']->total_price : "0"; ?></option>
+                                                        <?php endforeach; ?>
+                                                    </optgroup>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <?php foreach ($payment_plans as $payment_plan): ?>
+                                                    <?php $is_selected = in_array($payment_plan['plan']->identificator, $selected_plans, true); ?>
+                                                    <option value="<?= $payment_plan['plan']->identificator; ?>" <?= $is_selected ? 'selected' : ''; ?>><?= $payment_plan['plan']->name; ?> (<?= $payment_plan['plan']->description; ?>) - <?= $payment_plan['plan']->total_price ? ($payment_plan['plan']->currency ? $payment_plan['plan']->currency : "$") . "" . $payment_plan['plan']->total_price : "0"; ?></option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
                                         </select>
                                     </div>
 
@@ -131,7 +154,7 @@
                                         <label for="details-payment-plan"><b><?= __('Details', 'edusystem'); ?></b></label>
                                         <div id="details-payment-plan">
                                             <?php foreach ($payment_plans as $payment_plan): ?>
-                                                <?php if ($payment_plan['plan']->identificator == $dynamic_link->payment_plan_identificator) {
+                                                <?php if ($payment_plan['plan']->identificator == $selected_plan_for_details) {
                                                     $currency = $payment_plan['plan']->currency ? $payment_plan['plan']->currency : get_woocommerce_currency_symbol();
                                                 ?>
                                                     <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">

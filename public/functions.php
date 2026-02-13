@@ -206,6 +206,8 @@ function form_asp_psp_optimized($atts)
             'register_psp' => false,
             'hidden_payment_methods' => '',
             'fixed_fee_inscription' => false,
+            'allowed_programs' => '',
+            'allowed_plans' => '',
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
@@ -266,23 +268,36 @@ function form_asp_psp_optimized($atts)
         $name = $dynamic_link_data->name;
         $last_name = $dynamic_link_data->last_name;
         $email = $dynamic_link_data->email;
-        $program = $dynamic_link_data->program_identificator;
+        $program_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_link_data->program_identificator)));
+        $plan_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_link_data->payment_plan_identificator)));
+        $allowed_programs = implode(',', $program_ids);
+        $allowed_plans = implode(',', $plan_ids);
+
+        $program = count($program_ids) === 1 ? $program_ids[0] : '';
         $coupon_complete = $dynamic_link_data->coupon_complete;
         $coupon_credit = $dynamic_link_data->coupon_credit;
-        $subprogram = $dynamic_link_data->subprogram_identificator ?? null;
-        $plan = $dynamic_link_data->payment_plan_identificator;
+        $subprogram = count($plan_ids) === 1 ? ($dynamic_link_data->subprogram_identificator ?? null) : null;
+        $plan = count($plan_ids) === 1 ? $plan_ids[0] : '';
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
         $same_account = $dynamic_link_data->same_account;
         $separate_program_fee = $same_account ? false : ($dynamic_link_data->fee_payment_completed == 0 ? 'true' : false);
         $fixed_fee_inscription = $same_account ? false : 'true';
 
-        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
-        $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
-        $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
-        $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
-        $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
-        $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
+        if (count($plan_ids) === 1) {
+            $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($plan_ids[0]);
+            $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
+            $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
+            $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
+            $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
+            $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
+        } else {
+            $hidden_payment_methods = '';
+            $connected_account = '';
+            $flywire_portal_code = '';
+            $zelle_account = '';
+            $bank_transfer_account = '';
+        }
     }
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del payment link).
@@ -343,6 +358,8 @@ function student_registration_form_optimized($atts)
             'register_psp' => false,
             'hidden_payment_methods' => '',
             'fixed_fee_inscription' => false,
+            'allowed_programs' => '',
+            'allowed_plans' => '',
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
@@ -403,23 +420,36 @@ function student_registration_form_optimized($atts)
         $name = $dynamic_link_data->name;
         $last_name = $dynamic_link_data->last_name;
         $email = $dynamic_link_data->email;
-        $program = $dynamic_link_data->program_identificator;
+        $program_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_link_data->program_identificator)));
+        $plan_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_link_data->payment_plan_identificator)));
+        $allowed_programs = implode(',', $program_ids);
+        $allowed_plans = implode(',', $plan_ids);
+
+        $program = count($program_ids) === 1 ? $program_ids[0] : '';
         $coupon_complete = $dynamic_link_data->coupon_complete;
         $coupon_credit = $dynamic_link_data->coupon_credit;
-        $subprogram = $dynamic_link_data->subprogram_identificator ?? null;
-        $plan = $dynamic_link_data->payment_plan_identificator;
+        $subprogram = count($plan_ids) === 1 ? ($dynamic_link_data->subprogram_identificator ?? null) : null;
+        $plan = count($plan_ids) === 1 ? $plan_ids[0] : '';
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
         $same_account = $dynamic_link_data->same_account;
         $separate_program_fee = $same_account ? false : ($dynamic_link_data->fee_payment_completed == 0 ? 'true' : false);
         $fixed_fee_inscription = $same_account ? false : 'true';
 
-        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator, $fee_payment_completed);
-        $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
-        $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
-        $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
-        $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
-        $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
+        if (count($plan_ids) === 1) {
+            $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($plan_ids[0], $fee_payment_completed);
+            $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
+            $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
+            $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
+            $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
+            $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
+        } else {
+            $hidden_payment_methods = '';
+            $connected_account = '';
+            $flywire_portal_code = '';
+            $zelle_account = '';
+            $bank_transfer_account = '';
+        }
     }
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del payment link).
@@ -4585,6 +4615,31 @@ function load_data_program_callback()
     $payment_plans = get_associated_all_plans_by_program_id($program_identificator);
 
     wp_send_json_success(array('careers' => $careers, 'payment_plans' => $payment_plans));
+    exit;
+}
+
+add_action('wp_ajax_get_hidden_payment_methods_by_plan', 'get_hidden_payment_methods_by_plan_callback');
+add_action('wp_ajax_nopriv_get_hidden_payment_methods_by_plan', 'get_hidden_payment_methods_by_plan_callback');
+
+function get_hidden_payment_methods_by_plan_callback()
+{
+    $plan_id = isset($_GET['plan_id']) ? sanitize_text_field($_GET['plan_id']) : '';
+    $fee_payment_completed = isset($_GET['fee_payment_completed']) ? intval($_GET['fee_payment_completed']) : 0;
+
+    if (empty($plan_id)) {
+        wp_send_json_success([
+            'hidden_methods' => [],
+            'hidden_methods_csv' => '',
+            'connected_account' => '',
+            'flywire_portal_code' => '',
+            'zelle_account' => '',
+            'bank_transfer_account' => '',
+        ]);
+        exit;
+    }
+
+    $data = get_hidden_payment_methods_by_plan($plan_id, $fee_payment_completed);
+    wp_send_json_success($data);
     exit;
 }
 

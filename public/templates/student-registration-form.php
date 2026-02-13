@@ -34,6 +34,8 @@
     <input type="hidden" name="career_shortcode" id="career_shortcode" value="<?= $career ?>">
     <input type="hidden" name="mention_shortcode" id="mention_shortcode" value="<?= $mention ?>">
     <input type="hidden" name="plan_shortcode" id="plan_shortcode" value="<?= $plan ?>">
+    <input type="hidden" name="allowed_programs" id="allowed_programs" value="<?= $allowed_programs ?? '' ?>">
+    <input type="hidden" name="allowed_plans" id="allowed_plans" value="<?= $allowed_plans ?? '' ?>">
     <input type="hidden" id="product_id_input" name="product_id">
     <input type="hidden" name="current_lang" id="current_lang" value="<?= $current_lang ?>">
     <input type="hidden" name="separate_program_fee" id="separate_program_fee" value="<?= $separate_program_fee ?? '' ?>">

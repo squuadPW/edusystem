@@ -999,21 +999,50 @@ function admin_notice($message, $type = 'success')
 function get_payments_plans_by_program()
 {
     $program_id = sanitize_text_field(wp_unslash($_POST['program_id']));
+    $program_ids = array_filter(array_map('trim', explode(',', (string) $program_id)));
 
     global $wpdb;
     $table_programs = $wpdb->prefix . 'programs';
     $payment_plans = [];
-    $associateds = get_associated_plans_by_program_id($program_id);
-    foreach ($associateds as $key => $plan) {
-        $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
-        if ($plan) {
-            $fees = get_fees_associated_plan_complete($plan->identificator);   
-            $quote_rules = get_quotes_rules_associated_plan_complete($plan->identificator);   
-            $payment_plans[] = ['plan' => $plan, 'fees' => $fees, 'quote_rules' => $quote_rules];
+    $groups = [];
+
+    foreach ($program_ids as $single_program_id) {
+        $associateds = get_associated_plans_by_program_id($single_program_id);
+        $group_plans = [];
+
+        foreach ($associateds as $plan) {
+            $plan = $wpdb->get_row("SELECT * FROM {$table_programs} WHERE identificator='{$plan}'");
+            if ($plan) {
+                $fees = get_fees_associated_plan_complete($plan->identificator);
+                $quote_rules = get_quotes_rules_associated_plan_complete($plan->identificator);
+                $entry = ['plan' => $plan, 'fees' => $fees, 'quote_rules' => $quote_rules];
+                $payment_plans[] = $entry;
+                $group_plans[] = $entry;
+            }
         }
+
+        $program_info = function_exists('get_student_program_details_by_identificator')
+            ? get_student_program_details_by_identificator($single_program_id)
+            : null;
+
+        $groups[] = [
+            'program' => $program_info ? [
+                'identificator' => $program_info->identificator,
+                'name' => $program_info->name,
+                'description' => $program_info->description,
+            ] : [
+                'identificator' => $single_program_id,
+                'name' => $single_program_id,
+                'description' => '',
+            ],
+            'plans' => $group_plans,
+        ];
     }
 
-    wp_send_json_success(['plans' => $payment_plans]);
+    wp_send_json_success([
+        'groups' => $groups,
+        'plans' => $payment_plans,
+    ]);
 }
 
 add_action('wp_ajax_get_payments_plans_by_program', 'get_payments_plans_by_program');
