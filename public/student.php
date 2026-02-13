@@ -1095,7 +1095,7 @@ function insert_register_documents( $student_id )
     foreach ( $documents as $document ) {
         
         $document_name = $document->name;
-        if (is_null($document_name)) continue;
+        if ( is_null($document_name) ) continue;
 
         // valida si el documento existe por el nombre
         if (in_array( $document_name, $existing_docs_names, true)) continue;
@@ -1105,9 +1105,8 @@ function insert_register_documents( $student_id )
         $type_file = $document->type_file;
         $id_requisito = $document->id_requisito;
         $doc_id = $document->id;
-        $day_deadline = $document->day_deadline;
+        $day_deadline = (int) $document->day_deadline;
         $deadline_condition = $document->deadline_condition;
-
 
         // debes poner la condicion de mayor de menor de edad
         if ($is_legal_age && $document_name == 'ID OR CI OF THE PARENTS' && false) {
@@ -1117,15 +1116,18 @@ function insert_register_documents( $student_id )
         
         if( $day_deadline && $deadline_condition ) {
             
-            
             if( $deadline_condition == "start_classes" ) {
+
+                $period_cut = get_period_cut_details_code( $student->academic_period, $student->initial_cut );
+                $date = new DateTime( $period_cut->start_date );
 
             } else if ( $deadline_condition == "registration" ) {
                 
-                $date = current_datetime(); 
-                $date->modify("+$day_deadline days");
-                $deadline = $date->format('Y-m-d');
+                 $date = new DateTime();
             } 
+
+            $date->modify("+$day_deadline days");
+            $deadline = $date->format('Y-m-d');
         }
 
         $wpdb->insert($table_student_documents, [
@@ -1186,137 +1188,6 @@ function insert_register_documents( $student_id )
         ]);
     }
 }
-
-/* add_action( 'woocommerce_account_dashboard', function () {
-    ?>
-        <div style="background-color: #f7f7f7; padding: 20px; border-radius: 5px; border: 1px solid #ddd;">
-            <pre>
-                
-                <?php 
-                    insert_register_documents( 351 );
-                ?>
-            </pre>
-        </div>
-    <?php
-}); */
-
-// respalda la funcion
-/* function insert_register_documents($student_id, $grade_id)
-{
-    global $wpdb;
-
-    $student = get_student_detail($student_id);
-    if (!$student) {
-        return;
-    }
-
-    $birthDate = new DateTime($student->birth_date);
-    $is_legal_age = ($birthDate->diff(new DateTime())->y >= 18);
-
-    $table_student_documents = $wpdb->prefix . 'student_documents';
-    $table_documents = $wpdb->prefix . 'documents';
-    $table_documents_certificates = $wpdb->prefix . 'documents_certificates';
-
-    // 1. OBTENCIÓN DE DOCUMENTOS PARA EL GRADO
-    $documents_for_grade = $wpdb->get_results(
-        $wpdb->prepare("SELECT * FROM {$table_documents} WHERE grade_id = %d", $grade_id)
-    );
-
-    if (empty($documents_for_grade)) {
-        return;
-    }
-
-    // 2. VALIDACIÓN DE DUPLICADOS PARA DOCUMENTOS DEL GRADO (Usando 'name' como identificador)
-    $document_names_for_grade = wp_list_pluck($documents_for_grade, 'name');
-
-    // Si no hay nombres, salimos (aunque ya validamos $documents_for_grade)
-    if (empty($document_names_for_grade)) {
-        return;
-    }
-
-    $placeholders_grade = implode(', ', array_fill(0, count($document_names_for_grade), '%s'));
-
-    // Obtenemos los 'document_id' (que son los nombres) ya existentes
-    $query_params_grade = array_merge([$student_id], $document_names_for_grade);
-    $existing_docs_names = $wpdb->get_col(
-        $wpdb->prepare(
-            "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders_grade})",
-            ...$query_params_grade
-        )
-    );
-
-    // 3. INSERCIÓN DE DOCUMENTOS FALTANTES DEL GRADO
-    foreach ($documents_for_grade as $document) {
-        // Usar la columna 'name' como el document_id
-        $document_id_to_insert = $document->name;
-
-        // Si el documento ya existe (validación de existencia con el nombre), lo saltamos.
-        if (in_array($document_id_to_insert, $existing_docs_names, true)) {
-            continue;
-        }
-
-        // Si el nombre del documento es NULL por alguna razón, lo saltamos para evitar el error.
-        if (is_null($document_id_to_insert)) {
-            continue;
-        }
-
-        $is_required = $document->is_required;
-        $is_visible = $document->is_visible;
-
-        if ($is_legal_age && $document->name === 'ID OR CI OF THE PARENTS') {
-            $is_required = 0;
-            $is_visible = 0;
-        }
-
-        $wpdb->insert($table_student_documents, [
-            'student_id' => $student_id,
-            'document_id' => $document_id_to_insert, // CORREGIDO: Usamos $document->name
-            'is_required' => $is_required,
-            'is_visible' => $is_visible,
-            'status' => 0,
-            'created_at' => current_time('mysql'),
-        ]);
-    }
-
-    // 4. OBTENCIÓN DE DOCUMENTOS AUTOMÁTICOS
-    $automatic_docs = $wpdb->get_results(
-        $wpdb->prepare("SELECT * FROM {$table_documents_certificates} WHERE `type` = %s and `status` = %d", 'automatic', 1)
-    );
-
-    // 5. VALIDACIÓN DE DUPLICADOS PARA DOCUMENTOS AUTOMÁTICOS
-    $automatic_doc_identifiers = wp_list_pluck($automatic_docs, 'document_identificator');
-    if (!empty($automatic_doc_identifiers)) {
-        $placeholders_auto = implode(', ', array_fill(0, count($automatic_doc_identifiers), '%s'));
-        $query_params_auto = array_merge([$student_id], $automatic_doc_identifiers);
-
-        $existing_auto_doc_ids = $wpdb->get_col(
-            $wpdb->prepare(
-                "SELECT document_id FROM {$table_student_documents} WHERE student_id = %d AND document_id IN ({$placeholders_auto})",
-                ...$query_params_auto
-            )
-        );
-    } else {
-        $existing_auto_doc_ids = [];
-    }
-
-    // 6. INSERCIÓN DE DOCUMENTOS AUTOMÁTICOS FALTANTES
-    foreach ($automatic_docs as $doc) {
-        $document_id_to_insert = $doc->document_identificator;
-
-        if (in_array($document_id_to_insert, $existing_auto_doc_ids, true)) {
-            continue;
-        }
-
-        $wpdb->insert($table_student_documents, [
-            'student_id' => $student_id,
-            'document_id' => $document_id_to_insert,
-            'is_required' => $doc->is_required,
-            'is_visible' => $doc->is_visible,
-            'status' => 0,
-            'created_at' => current_time('mysql'),
-        ]);
-    }
-} */
 
 function get_documents($student_id)
 {

@@ -15,7 +15,6 @@ function show_admission_documents()
             $day_deadline = isset($_POST['day_deadline']) ? sanitize_text_field($_POST['day_deadline']) : null;
             $deadline_condition = isset($_POST['deadline_condition']) ? sanitize_text_field($_POST['deadline_condition']) : null;
 
-
             $type_file = isset($_POST['type_file']) ? sanitize_text_field($_POST['type_file']) : '';
             $type_file_array = array_filter(array_map('trim', explode(',', $type_file)));
 
