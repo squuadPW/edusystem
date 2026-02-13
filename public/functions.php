@@ -194,8 +194,11 @@ function form_asp_psp_optimized($atts)
     $is_school_mode = get_option('site_mode') === 'SCHOOL';
     $atts = shortcode_atts(
         array(
+            'token_dynamic_link' => '',
             'connected_account' => '',
             'coupon_code' => '',
+            'coupon_complete' => '',
+            'coupon_credit' => '',
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
             'zelle_account' => '',
@@ -218,6 +221,7 @@ function form_asp_psp_optimized($atts)
             'dynamic_link' => false,
             'use_ethnicity' => true,
             'fee_payment_completed' => false,
+            'second_surname_required' => false
         ),
         $atts,
         'form_asp_psp'
@@ -232,7 +236,7 @@ function form_asp_psp_optimized($atts)
     // 4. Lógica de "Payment Link" con validaciones y salidas tempranas (Guard Clauses).
     if ($dynamic_link) {
         // Valida que el token exista y no esté vacío.
-        if (empty($_GET['token'])) {
+        if (!$_GET['token'] && !$token_dynamic_link) {
             $error_message = __('Error: Payment link token is missing.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
@@ -243,7 +247,7 @@ function form_asp_psp_optimized($atts)
         }
 
         // Sanitiza el token antes de usarlo.
-        $token = sanitize_text_field($_GET['token']);
+        $token = $token_dynamic_link ? $token_dynamic_link : sanitize_text_field($_GET['token']);
         $dynamic_link_data = get_dynamic_link_detail_by_link($token);
 
         if (!$dynamic_link_data) {
@@ -327,8 +331,11 @@ function student_registration_form_optimized($atts)
     $is_school_mode = get_option('site_mode') === 'SCHOOL';
     $atts = shortcode_atts(
         array(
+            'token_dynamic_link' => '',
             'connected_account' => '',
             'coupon_code' => '',
+            'coupon_complete' => '',
+            'coupon_credit' => '',
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
             'zelle_account' => '',
@@ -351,6 +358,7 @@ function student_registration_form_optimized($atts)
             'dynamic_link' => false,
             'use_ethnicity' => true,
             'fee_payment_completed' => false,
+            'second_surname_required' => false
         ),
         $atts,
         'student_registration_form'
@@ -365,7 +373,7 @@ function student_registration_form_optimized($atts)
     // 4. Lógica de "Payment Link" con validaciones y salidas tempranas (Guard Clauses).
     if ($dynamic_link) {
         // Valida que el token exista y no esté vacío.
-        if (empty($_GET['token'])) {
+        if (!$_GET['token'] && !$token_dynamic_link) {
             $error_message = __('Error: Payment link token is missing.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
@@ -376,7 +384,7 @@ function student_registration_form_optimized($atts)
         }
 
         // Sanitiza el token antes de usarlo.
-        $token = sanitize_text_field($_GET['token']);
+        $token = $token_dynamic_link ? $token_dynamic_link : sanitize_text_field($_GET['token']);
         $dynamic_link_data = get_dynamic_link_detail_by_link($token);
 
         if (!$dynamic_link_data) {
@@ -1087,8 +1095,40 @@ function status_order_completed($order, $order_id, $customer_id)
 
     // Asegura que el usuario de WordPress para el estudiante exista.
     create_user_student($student_id);
-    send_notification_staff_particular('New student', 'We would like to inform you that a new student has enrolled.', 0);
-    send_notification_staff_particular('New student', 'We would like to inform you that a new student has enrolled.', 4);
+    $student = get_student_detail($student_id);
+    $student = is_object($student) ? $student : (object) [];
+    $not_available = __('Not available', 'edusystem');
+    $student_document = isset($student->id_document) ? trim((string) $student->id_document) : '';
+    $student_full_name = function_exists('student_names_lastnames_helper')
+        ? trim((string) student_names_lastnames_helper($student_id))
+        : '';
+
+    $program_name = function_exists('get_name_program_student') ? trim((string) get_name_program_student($student_id)) : '';
+    $career_name = '';
+    if (function_exists('get_program_data_student')) {
+        $program_data_student = get_program_data_student($student_id);
+        $career_items = $program_data_student['career'] ?? [];
+        if (!empty($career_items)) {
+            $career_names = [];
+            foreach ($career_items as $career_item) {
+                if (is_object($career_item) && !empty($career_item->name)) {
+                    $career_names[] = $career_item->name;
+                }
+            }
+            $career_name = implode(', ', array_unique($career_names));
+        }
+    }
+
+    $notification_message = sprintf(
+        __('A new student has enrolled. Name: %1$s. ID: %2$s. Program: %3$s. Career: %4$s.', 'edusystem'),
+        $student_full_name !== '' ? $student_full_name : $not_available,
+        $student_document !== '' ? $student_document : $not_available,
+        $program_name !== '' ? $program_name : $not_available,
+        $career_name !== '' ? $career_name : $not_available
+    );
+
+    send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 0);
+    send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 4);
 
     // 3. Itera sobre los artículos para actualizar o crear registros de pago.
     foreach ($order->get_items() as $item) {
@@ -2201,6 +2241,14 @@ add_action('woocommerce_pay_order_before_payment', 'split_payment');
 
 function payments_parts()
 {
+    if (function_exists('WC') && WC()->cart) {
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            if (isset($cart_item['cuote_payment'])) {
+                return;
+            }
+        }
+    }
+
     include(plugin_dir_path(__FILE__) . 'templates/payment-parts.php');
 }
 
@@ -2506,6 +2554,8 @@ function update_price_product_cart_quota_rule()
     );
     $cookie_offer_complete = $_COOKIE['coupon_complete'] ?? '';
     $cookie_offer_quote = $_COOKIE['coupon_credit'] ?? '';
+    $is_multi_quota_for_offers = ($quotas_quantity > 1) || ((float) $initial_payment_sale > 0);
+    $is_single_quota_for_offers = !$is_multi_quota_for_offers;
 
     if (($cookie_does_not_exist || $cookie_exists_and_condition_met)) {
         // Get the coupon codes to potentially remove
@@ -2522,11 +2572,11 @@ function update_price_product_cart_quota_rule()
             WC()->cart->remove_coupon($offer_quote_coupon);
         }
 
-        if ($quotas_quantity == 1 && !empty($offer_complete_coupon)) {
+        if ($is_single_quota_for_offers && !empty($offer_complete_coupon)) {
             WC()->cart->apply_coupon($offer_complete_coupon);
         }
 
-        if ($quotas_quantity > 1 && !empty($offer_quote_coupon)) {
+        if ($is_multi_quota_for_offers && !empty($offer_quote_coupon)) {
             WC()->cart->apply_coupon($offer_quote_coupon);
         }
 
@@ -2536,18 +2586,9 @@ function update_price_product_cart_quota_rule()
                 if (WC()->cart->has_discount("100% registration fee")) {
                     WC()->cart->remove_coupon("100% registration fee");
                 }
-
-                // if (WC()->cart->has_discount("50% registration fee")) {
-                //     WC()->cart->remove_coupon("50% registration fee");
-                // }
-
                 if ($quotas_quantity == 1) {
                     WC()->cart->apply_coupon("100% registration fee");
                 }
-
-                // if ($quotas_quantity > 1) {
-                //     WC()->cart->apply_coupon("50% registration fee");
-                // }
             }
         }
     }
@@ -2562,11 +2603,11 @@ function update_price_product_cart_quota_rule()
         WC()->cart->remove_coupon($cookie_offer_quote);
     }
 
-    if ($quotas_quantity == 1 && !empty($cookie_offer_complete)) {
+    if ($is_single_quota_for_offers && !empty($cookie_offer_complete)) {
         WC()->cart->apply_coupon($cookie_offer_complete);
     }
 
-    if ($quotas_quantity > 1 && !empty($cookie_offer_quote)) {
+    if ($is_multi_quota_for_offers && !empty($cookie_offer_quote)) {
         WC()->cart->apply_coupon($cookie_offer_quote);
     }
 
@@ -2654,6 +2695,35 @@ function save_metadata_checkout_create_order_item($item, $cart_item_key, $values
         $order->add_meta_data('program_data', json_encode($values['program_data']));
     }
 
+}
+
+add_action('woocommerce_checkout_create_order', 'aes_set_order_meta_from_cart', 20, 1);
+function aes_set_order_meta_from_cart($order)
+{
+    $cart = WC()->cart;
+    if (!$cart) {
+        return;
+    }
+
+    foreach ($cart->get_cart() as $cart_item) {
+        if (isset($cart_item['cuote_payment'])) {
+            $order->update_meta_data('cuote_payment', (int) $cart_item['cuote_payment']);
+        }
+        if (isset($cart_item['student_id'])) {
+            $order->update_meta_data('student_id', (int) $cart_item['student_id']);
+        }
+        if (isset($cart_item['institute_id'])) {
+            $order->update_meta_data('institute_id', (int) $cart_item['institute_id']);
+        }
+
+        if (
+            isset($cart_item['cuote_payment']) ||
+            isset($cart_item['student_id']) ||
+            isset($cart_item['institute_id'])
+        ) {
+            break;
+        }
+    }
 }
 
 add_action('wp_ajax_nopriv_reload_payment_table', 'reload_payment_table');

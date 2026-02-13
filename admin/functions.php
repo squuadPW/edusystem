@@ -1140,94 +1140,166 @@ function daily_cuote_pendings()
         )
     );
 
+    if (empty($payments)) {
+        exit;
+    }
+
+    $student_ids = [];
     foreach ($payments as $payment) {
-        global $wpdb;
-        $pre_student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE id={$payment->student_id}");
-        if ($pre_student) {
-            $user = get_user_by('email', $pre_student->email);
+        $student_ids[] = (int) $payment->student_id;
+    }
 
-            $roles = $user->roles;
-            $table_students = $wpdb->prefix . 'students';
-            $table_student_payments = $wpdb->prefix . 'student_payments';
-            $customer_id = 0;
-            if (in_array('student', $roles)) {
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$user->user_email}'");
+    $student_ids = array_values(array_unique(array_filter($student_ids)));
+    if (empty($student_ids)) {
+        exit;
+    }
 
-                $birth_date = get_user_meta($user->ID, 'birth_date', true);
-                $birth_date_timestamp = strtotime($birth_date);
-                $current_timestamp = time();
-                $age = floor(($current_timestamp - $birth_date_timestamp) / 31536000); // 31536000 es el número de segundos en un año
-                if ($age >= 18) {
-                    $customer_id = $user->ID;
-                } else {
-                    $customer_id = $student->partner_id;
-                }
-            } else if (in_array('parent', $roles)) {
-                $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE partner_id='{$user->ID}'");
+    $placeholders = implode(',', array_fill(0, count($student_ids), '%d'));
+    $students = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT * FROM {$table_students} WHERE id IN ($placeholders)",
+            $student_ids
+        )
+    );
+    $students_by_id = [];
+    foreach ($students as $student_row) {
+        $students_by_id[(int) $student_row->id] = $student_row;
+    }
+
+    foreach ($student_ids as $student_id) {
+        $pre_student = $students_by_id[$student_id] ?? null;
+        if (!$pre_student || empty($pre_student->email)) {
+            continue;
+        }
+
+        $user = get_user_by('email', $pre_student->email);
+        if (!$user) {
+            continue;
+        }
+
+        $roles = (array) $user->roles;
+        $customer_id = 0;
+        $student = null;
+
+        if (in_array('student', $roles, true)) {
+            $student = $pre_student;
+
+            $birth_date = get_user_meta($user->ID, 'birth_date', true);
+            $birth_date_timestamp = $birth_date ? strtotime($birth_date) : 0;
+            $current_timestamp = time();
+            $age = $birth_date_timestamp ? floor(($current_timestamp - $birth_date_timestamp) / 31536000) : 0;
+            if ($age >= 18) {
                 $customer_id = $user->ID;
+            } else {
+                $customer_id = (int) $student->partner_id;
             }
-
-            if ($student) {
-                $cuote_pending = $wpdb->get_row("SELECT * FROM {$table_student_payments} WHERE student_id={$student->id} AND status_id = 0 AND date_next_payment <= NOW()");
-                if ($cuote_pending) {
-                    update_user_meta($customer_id, 'cuote_pending', 1);
-
-                    $args['customer_id'] = $customer_id;
-                    $args['status'] = array('wc-pending', 'wc-on-hold');
-                    $order_pendings = wc_get_orders($args);
-                    if (count($order_pendings) == 0) {
-                        $orders_customer = wc_get_orders(array(
-                            'customer_id' => $customer_id,
-                            'limit' => 1,
-                            'orderby' => 'date',
-                            'order' => 'ASC' // Para obtener la primera orden
-                        ));
-                        $order_old = $orders_customer[0];
-                        $order_id = $order_old->get_id();
-                        $old_order_items = $order_old->get_items();
-                        $first_item = reset($old_order_items);
-
-                        $order_args = array(
-                            'customer_id' => $customer_id,
-                            'status' => 'pending-payment',
-                        );
-
-                        $new_order = wc_create_order($order_args);
-                        $new_order->add_meta_data('old_order_primary', $order_id);
-                        $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
-                        $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
-                        $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
-                        $new_order->add_meta_data('cuote_payment', 1);
-                        $new_order->update_meta_data('_order_origin', 'Cuote pending - CronJob');
-                        $product = $first_item->get_product();
-                        $product->set_price($cuote_pending->amount);
-                        $new_order->add_product($product, $first_item->get_quantity());
-                        $new_order->calculate_totals();
-                        if ($order_old->get_address('billing')) {
-                            $billing_address = $order_old->get_address('billing');
-                            $new_order->set_billing_first_name($billing_address['first_name']);
-                            $new_order->set_billing_last_name($billing_address['last_name']);
-                            $new_order->set_billing_company($billing_address['company']);
-                            $new_order->set_billing_address_1($billing_address['address_1']);
-                            $new_order->set_billing_address_2($billing_address['address_2']);
-                            $new_order->set_billing_city($billing_address['city']);
-                            $new_order->set_billing_state($billing_address['state']);
-                            $new_order->set_billing_postcode($billing_address['postcode']);
-                            $new_order->set_billing_country($billing_address['country']);
-                            $new_order->set_billing_email($billing_address['email']);
-                            $new_order->set_billing_phone($billing_address['phone']);
-                        }
-                        $new_order->save();
-
-                        // hacemos el envio del email al email del customer, es decir, al que paga.
-                        $user_customer = get_user_by('id', $customer_id);
-                        $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
-                        $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
-                    }
-                } else {
-                    update_user_meta($customer_id, 'cuote_pending', 0);
-                }
+        } elseif (in_array('parent', $roles, true)) {
+            $customer_id = $user->ID;
+            if ((int) $pre_student->partner_id === $customer_id) {
+                $student = $pre_student;
+            } else {
+                $student = $wpdb->get_row(
+                    $wpdb->prepare(
+                        "SELECT * FROM {$table_students} WHERE partner_id = %d",
+                        $customer_id
+                    )
+                );
             }
+        }
+
+        if (!$student || !$customer_id) {
+            continue;
+        }
+
+        $cuote_pending = $wpdb->get_row(
+            $wpdb->prepare(
+                "SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW() LIMIT 1",
+                (int) $student->id
+            )
+        );
+
+        if (!$cuote_pending) {
+            update_user_meta($customer_id, 'cuote_pending', 0);
+            continue;
+        }
+
+        update_user_meta($customer_id, 'cuote_pending', 1);
+
+        $order_pendings = wc_get_orders([
+            'customer_id' => $customer_id,
+            'status' => ['wc-pending', 'wc-on-hold'],
+            'limit' => 1,
+        ]);
+
+        if (!empty($order_pendings)) {
+            continue;
+        }
+
+        $orders_customer = wc_get_orders([
+            'customer_id' => $customer_id,
+            'limit' => 1,
+            'orderby' => 'date',
+            'order' => 'ASC',
+        ]);
+
+        if (empty($orders_customer)) {
+            continue;
+        }
+
+        $order_old = $orders_customer[0];
+        $order_id = $order_old->get_id();
+        $old_order_items = $order_old->get_items();
+        $first_item = reset($old_order_items);
+        if (!$first_item) {
+            continue;
+        }
+
+        $order_args = [
+            'customer_id' => $customer_id,
+            'status' => 'pending-payment',
+        ];
+
+        $new_order = wc_create_order($order_args);
+        $new_order->add_meta_data('old_order_primary', $order_id);
+        $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
+        $new_order->add_meta_data('institute_id', $order_old->get_meta('institute_id'));
+        $new_order->add_meta_data('student_id', $order_old->get_meta('student_id'));
+        $new_order->add_meta_data('cuote_payment', 1);
+        $new_order->update_meta_data('_order_origin', 'Cuote pending - CronJob');
+
+        $product = $first_item->get_product();
+        if (!$product) {
+            continue;
+        }
+
+        $product->set_price($cuote_pending->amount);
+        $new_order->add_product($product, $first_item->get_quantity());
+        $new_order->calculate_totals();
+
+        $billing_address = $order_old->get_address('billing');
+        if (!empty($billing_address)) {
+            $new_order->set_billing_first_name($billing_address['first_name'] ?? '');
+            $new_order->set_billing_last_name($billing_address['last_name'] ?? '');
+            $new_order->set_billing_company($billing_address['company'] ?? '');
+            $new_order->set_billing_address_1($billing_address['address_1'] ?? '');
+            $new_order->set_billing_address_2($billing_address['address_2'] ?? '');
+            $new_order->set_billing_city($billing_address['city'] ?? '');
+            $new_order->set_billing_state($billing_address['state'] ?? '');
+            $new_order->set_billing_postcode($billing_address['postcode'] ?? '');
+            $new_order->set_billing_country($billing_address['country'] ?? '');
+            $new_order->set_billing_email($billing_address['email'] ?? '');
+            $new_order->set_billing_phone($billing_address['phone'] ?? '');
+        }
+        $new_order->save();
+
+        $user_customer = get_user_by('id', $customer_id);
+        if ($user_customer) {
+            $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
+            $email_user->trigger(
+                $user_customer,
+                'You have pending payments',
+                'We invite you to log in to our platform as soon as possible so you can see your pending payments.'
+            );
         }
     }
 

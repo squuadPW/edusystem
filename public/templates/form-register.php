@@ -90,8 +90,8 @@
                 id="lastname_student" required value="<?= $last_name ?? '' ?>">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="middle_last_name_student"><?= __('Second surname', 'edusystem'); ?></label>
-            <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off">
+            <label for="middle_last_name_student"><?= __('Second surname', 'edusystem'); ?><?= $second_surname_required ? '<span class="required">*</span>' : '' ?></label>
+            <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" <?= $second_surname_required ? 'required' : '' ?>>
         </div>
         <?php if ($birth_date_position == 'DOWN') { ?>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
