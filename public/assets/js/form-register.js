@@ -1722,7 +1722,7 @@ function customFlatpickr() {
         : "en"
       : "en",
     dateFormat: document.getElementById("current_lang")
-      ? document.getElementById("current_lang").value == "en_EN"
+      ? document.getElementById("current_lang").value == "es_ES"
         ? "d/m/Y"
         : "m/d/Y"
       : "m/d/Y",
