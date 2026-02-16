@@ -2020,10 +2020,8 @@ add_action( 'woocommerce_account_dashboard', function () {
             <p>Aquí puedes consultar tus ofertas exclusivas basadas en tus compras anteriores.</p>
 
             <pre>
-                <?php //test_generate_projection_student(258,true) ?>
                 
                 <?php 
-                    // generate_expectation_matrix( 258 );
                     generate_academic_projection_student( 258 )
                 ?>
             </pre>
@@ -2844,9 +2842,6 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
 
     // verifica si el studiante tiene pagos pendientes
     $pending_payments = get_payments($student->id) == 2 ? true : false;
-
-    /* var_dump($projection);
-    return; */
 
     $projection_data = []; 
     foreach ( $projection as $subject ) {
