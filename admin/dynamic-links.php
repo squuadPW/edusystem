@@ -494,7 +494,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
         $is_manager = in_array('manager', $roles);
         $is_admin = in_array('administrator', $roles);
 
-        if (!$is_admin) {
+        /* if ( !$is_admin ) {
             if ($is_manager) {
                 // Manager: sees links they created OR links assigned to them
                 $where[] = "(created_by = %d OR manager_id = %d)";
@@ -514,7 +514,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                 $args = array_merge($args, $user_filter_args);
             }
         }
-
+ */
         // --- FINAL QUERY CONSTRUCTION ---
         $where_sql = '';
         if (!empty($where)) {
