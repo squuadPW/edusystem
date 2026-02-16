@@ -186,7 +186,7 @@ function create_tables()
     $table_count_pending_student = $wpdb->prefix . 'count_pending_student';
     $table_requests = $wpdb->prefix . 'requests';
     $table_type_requests = $wpdb->prefix . 'type_requests';
-    $table_expected_matrix_school = $wpdb->prefix . 'expected_matrix_school';
+    $table_expected_matrix = $wpdb->prefix . 'expected_matrix';
     $table_pensum = $wpdb->prefix . 'pensum';
     $table_feed = $wpdb->prefix . 'feed';
     $table_dynamic_links = $wpdb->prefix . 'dynamic_links';
@@ -543,14 +543,16 @@ function create_tables()
     // table_pensum
     dbDelta(
         "CREATE TABLE " . $table_pensum . " (
-        id INT(11) NOT NULL AUTO_INCREMENT,
-        name TEXT NOT NULL,
-        matrix JSON NULL,
+        `id` INT(11) NOT NULL AUTO_INCREMENT,
+        `name` TEXT NOT NULL,
+        `matrix` JSON NULL,
         `type` TEXT NOT NULL,
         `status` INT(11) NOT NULL,
-        program_id TEXT NULL,
-        institute_id INT(11) NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `program_id` TEXT NULL,
+        `institute_id` INT(11) NULL,
+        `expected_matrix_id` INT(11) NULL DEFAULT NULL,
+        `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
 
@@ -1392,50 +1394,624 @@ function create_tables()
         }
     }
 
-    $sql = "CREATE TABLE $table_expected_matrix_school (
-        id mediumint(9) NOT NULL AUTO_INCREMENT,
-        terms_available smallint(5) NOT NULL,
-        terms_config JSON NOT NULL,
-        created_at datetime DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY  (id),
-        UNIQUE KEY ix_terms_available (terms_available)
+    $sql = "CREATE TABLE $table_expected_matrix (
+        id INT(11) NOT NULL AUTO_INCREMENT,
+        key_condition TEXT NOT NULL,
+        value_condition TEXT NOT NULL,
+        matrix_config JSON NOT NULL,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY  (id)
     ) $charset_collate;";
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($sql);
 
-    $matrix_data = [
-        15 => [1 => 'R', 3 => 'R', 6 => 'R', 8 => 'R', 11 => 'R', 13 => 'R'],
-        14 => [1 => 'R', 3 => 'R', 6 => 'R', 8 => 'R', 10 => 'R', 12 => 'R'],
-        13 => [1 => 'R', 3 => 'R', 5 => 'R', 7 => 'R', 9 => 'R', 11 => 'R'],
-        12 => [1 => 'R', 3 => 'R', 5 => 'R', 7 => 'R', 9 => 'R', 11 => 'R'],
-        11 => [1 => 'R', 3 => 'R', 5 => 'R', 6 => 'R', 8 => 'R', 10 => 'R'],
-        10 => [1 => 'R', 3 => 'R', 5 => 'R', 6 => 'R', 7 => 'R', 9 => 'R'],
-        9  => [1 => 'R', 2 => 'R', 4 => 'R', 5 => 'R', 6 => 'R', 8 => 'R'],
-        8  => [1 => 'R', 2 => 'R', 4 => 'R', 5 => 'R', 6 => 'R', 7 => 'R'],
-        7  => [1 => 'R', 2 => 'R', 3 => 'R', 4 => 'R', 5 => 'R', 6 => 'R'],
-        6  => [1 => 'R', 2 => 'R', 3 => 'R', 4 => 'RR', 5 => 'R'],
-        5  => [1 => 'R', 2 => 'RR', 3 => 'R', 4 => 'R', 5 => 'R']
+    // elimina esta tabla antigua
+    $wpdb->query("DROP TABLE IF EXISTS `{$wpdb->prefix}expected_matrix_school`;");
+
+    /* 1 => [
+        'max_HC' => 1, // maximo de unidades de credito para inscribir
+        'term_HC' => 0, // minimo de HC que deberia tener para para inscribir
+        'max_HC_student' => // maximo de unidades de credito del estudiante incluyendo las materias que esta incribiendo
+    ], */
+
+    $matrix_data = [  
+        15 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 1
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            4 => [
+                'max_HC' => 1, 
+                'term_HC' => 2, 
+                'max_HC_student' => 2
+            ], 
+            5 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 2
+            ], 
+            6 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 3
+            ],
+            7 => [
+                'max_HC' => 1, 
+                'term_HC' => 3,
+                'max_HC_student' => 3
+            ], 
+            8 => [
+                'max_HC' => 1, 
+                'term_HC' => 3,
+                'max_HC_student' => 4
+            ], 
+            9 => [
+                'max_HC' => 1, 
+                'term_HC' => 4,
+                'max_HC_student' => 4
+            ], 
+            10 => [
+                'max_HC' => 1, 
+                'term_HC' => 4,
+                'max_HC_student' => 4
+            ], 
+            11 => [
+                'max_HC' => 1, 
+                'term_HC' => 4,
+                'max_HC_student' => 5
+            ], 
+            12 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 5
+            ], 
+            13 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+            14 => [
+                'max_HC' => 2, 
+                'term_HC' => 6,
+                'max_HC_student' => 6
+            ], 
+            15 => [
+                'max_HC' => 2, 
+                'term_HC' => 6,
+                'max_HC_student' => 6
+            ]
+        ],
+        14 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 1
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            4 => [
+                'max_HC' => 1, 
+                'term_HC' => 2, // hc acumuladas <= a este valor
+                'max_HC_student' => 2 //< hc acumuladas debe se menor a este valor
+            ], 
+            5 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 2
+            ], 
+            6 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 3
+            ], 
+            7 => [
+                'max_HC' => 1, 
+                'term_HC' => 3,
+                'max_HC_student' => 3
+            ],
+            8 => [
+                'max_HC' => 1, 
+                'term_HC' => 3,
+                'max_HC_student' => 4
+            ], 
+            9 => [
+                'max_HC' => 1, 
+                'term_HC' => 4,
+                'max_HC_student' => 4
+            ], 
+            10 => [
+                'max_HC' => 1, 
+                'term_HC' => 4,
+                'max_HC_student' => 5
+            ], 
+            11 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 5
+            ], 
+            12 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+            13 => [
+                'max_HC' => 2, 
+                'term_HC' => 6,
+                'max_HC_student' => 6
+            ], 
+            14 => [
+                'max_HC' => 2, 
+                'term_HC' => 6,
+                'max_HC_student' => 6
+            ],
+        ],
+        13 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 1
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            4 => [
+                'max_HC' => 1, 
+                'term_HC' => 2, // hc acumuladas <= a este valor
+                'max_HC_student' => 2 //< hc acumuladas debe se menor a este valor
+            ], 
+            5 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 3
+            ], 
+            6 => [
+                'max_HC' => 1,
+                'term_HC' => 3,
+                'max_HC_student' => 3
+            ], 
+            7 => [
+                'max_HC' => 1, 
+                'term_HC' => 3,
+                'max_HC_student' => 4
+            ],
+            8 => [
+                'max_HC' => 1, 
+                'term_HC' => 4,
+                'max_HC_student' => 4
+            ], 
+            9 => [
+                'max_HC' => 1, 
+                'term_HC' => 4,
+                'max_HC_student' => 5
+            ], 
+            10 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 5
+            ], 
+            11 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+            12 => [
+                'max_HC' => 2, 
+                'term_HC' => 6,
+                'max_HC_student' => 6
+            ], 
+            13 => [
+                'max_HC' => 2, 
+                'term_HC' => 6,
+                'max_HC_student' => 6
+            ]
+        ],
+        12 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 1
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            4 => [
+                'max_HC' => 1, 
+                'term_HC' => 2, 
+                'max_HC_student' => 2 
+            ], 
+            5 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 3
+            ], 
+            6 => [
+                'max_HC' => 1,
+                'term_HC' => 3,
+                'max_HC_student' => 3
+            ],
+            7 => [
+                'max_HC' => 1, 
+                'term_HC' => 3,
+                'max_HC_student' => 4
+            ], 
+            8 => [
+                'max_HC' => 1, 
+                'term_HC' => 4,
+                'max_HC_student' => 4
+            ], 
+            9 => [
+                'max_HC' => 2, 
+                'term_HC' => 4,
+                'max_HC_student' => 5
+            ], 
+            10 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 5
+            ], 
+            11 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+            12 => [
+                'max_HC' => 2, 
+                'term_HC' => 6,
+                'max_HC_student' => 6
+            ]
+        ],
+        11 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 1
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            4 => [
+                'max_HC' => 1, 
+                'term_HC' => 2,
+                'max_HC_student' => 2 
+            ], 
+            5 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 3
+            ], 
+            6 => [
+                'max_HC' => 1,
+                'term_HC' => 3,
+                'max_HC_student' => 4
+            ],
+            7 => [
+                'max_HC' => 1, 
+                'term_HC' => 4,
+                'max_HC_student' => 4
+            ], 
+            8 => [
+                'max_HC' => 2, 
+                'term_HC' => 4,
+                'max_HC_student' => 5
+            ], 
+            9 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 5
+            ], 
+            10 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+            11 => [
+                'max_HC' => 2, 
+                'term_HC' => 6,
+                'max_HC_student' => 6
+            ]
+        ],
+        10 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 1
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            4 => [
+                'max_HC' => 1, 
+                'term_HC' => 2, 
+                'max_HC_student' => 2
+            ], 
+            5 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 3
+            ], 
+            6 => [
+                'max_HC' => 1,
+                'term_HC' => 3,
+                'max_HC_student' => 4
+            ],
+            7 => [
+                'max_HC' => 2, 
+                'term_HC' => 4,
+                'max_HC_student' => 5
+            ], 
+            8 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 5
+            ], 
+            9 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+            10 => [
+                'max_HC' => 2, 
+                'term_HC' => 6,
+                'max_HC_student' => 6
+            ]
+        ],
+        9 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 2
+            ], 
+            4 => [
+                'max_HC' => 1, 
+                'term_HC' => 2, 
+                'max_HC_student' => 3 
+            ], 
+            5 => [
+                'max_HC' => 1,
+                'term_HC' => 3,
+                'max_HC_student' => 4
+            ], 
+            6 => [
+            'max_HC' => 2,
+                'term_HC' => 4,
+                'max_HC_student' => 5
+            ], 
+            7 => [
+                'max_HC' => 2, 
+                'term_HC' =>5,
+                'max_HC_student' => 5
+            ], 
+            8 => [
+            'max_HC' => 2,
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+            9 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ]
+        ], 
+        8 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 2
+            ], 
+            4 => [
+                'max_HC' => 1, 
+                'term_HC' => 2, 
+                'max_HC_student' => 3 
+            ], 
+            5 => [
+                'max_HC' => 2,
+                'term_HC' => 3,
+                'max_HC_student' => 4
+            ], 
+            6 => [
+            'max_HC' => 2,
+                'term_HC' => 4,
+                'max_HC_student' => 5
+            ], 
+            7 => [
+                'max_HC' => 2, 
+                'term_HC' => 5, 
+                'max_HC_student' => 6
+            ], 
+            8 => [
+                'max_HC' => 2, 
+                'term_HC' => 5, 
+                'max_HC_student' => 6
+            ]
+        ],   
+        7 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 3
+            ], 
+            4 => [
+                'max_HC' => 2, 
+                'term_HC' => 3, // hc acumuladas <= a este valor
+                'max_HC_student' => 4 //< hc acumuladas debe se menor a este valor
+            ], 
+            5 => [
+                'max_HC' => 2,
+                'term_HC' => 4,
+                'max_HC_student' => 5
+            ], 
+            6 => [
+            'max_HC' => 2,
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+            7 => [
+                'max_HC' => 2, 
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ]
+        ],
+        6 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 1,
+                'term_HC' => 1,
+                'max_HC_student' => 2
+            ], 
+            3 => [
+                'max_HC' => 1,
+                'term_HC' => 2,
+                'max_HC_student' => 3
+            ], 
+            4 => [
+                'max_HC' => 2, 
+                'term_HC' => 4, 
+                'max_HC_student' => 5 
+            ], 
+            5 => [
+                'max_HC' => 2,
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+            6 => [
+                'max_HC' => 2,
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ]
+        ],
+        5 => [
+            1 => [
+                'max_HC' => 1, 
+                'term_HC' => 0,
+                'max_HC_student' => 1
+            ], 
+            2 => [
+                'max_HC' => 2,
+                'term_HC' => 2,
+                'max_HC_student' => 3
+            ], 
+            3 => [
+                'max_HC' => 2,
+                'term_HC' => 3,
+                'max_HC_student' => 4
+            ], 
+            4 => [
+                'max_HC' => 2, 
+                'term_HC' => 4, 
+                'max_HC_student' => 5
+            ], 
+            5 => [
+                'max_HC' => 2,
+                'term_HC' => 5,
+                'max_HC_student' => 6
+            ], 
+        ]
     ];
 
-    foreach ($matrix_data as $terms_available_count => $terms_config_array) {
+    foreach ( $matrix_data as $terms_available_count => $matrix_config_array ) {
+
         $exists = $wpdb->get_var($wpdb->prepare(
-            "SELECT COUNT(*) FROM $table_expected_matrix_school WHERE terms_available = %d",
+            "SELECT COUNT(id) FROM {$table_expected_matrix} WHERE key_condition = 'terms' AND value_condition = %s ",
             $terms_available_count
         ));
 
-        if (!$exists) {
+        if ( !$exists ) {
             $wpdb->insert(
-                $table_expected_matrix_school,
-                [
-                    'terms_available' => $terms_available_count,
-                    'terms_config'    => json_encode($terms_config_array)
+                $table_expected_matrix,
+                [   
+                    'key_condition' => 'terms',
+                    'value_condition' => $terms_available_count,
+                    'matrix_config'    => json_encode($matrix_config_array)
                 ],
-                ['%d', '%s']
+                ['%s', '%s', '%s']
             );
         }
     }
 }
 
 
-
+ 
+ 
