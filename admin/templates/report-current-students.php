@@ -139,6 +139,16 @@
 		<form method="post"
 			action="<?= admin_url('admin.php?page=report-students') . ($_GET['section_tab'] ? '&section_tab=' . $_GET['section_tab'] : ''); ?>">
 			<div class="filter-controls">
+				<?php if (!empty($_GET['section_tab']) && $_GET['section_tab'] == 'scholarships') { ?>
+					<select name="scholarship_id" style="width: 100%;">
+						<option value="" selected><?= __('Select scholarship', 'edusystem') ?></option>
+						<?php foreach ($scholarships_availables as $scholarship) { ?>
+							<option value="<?= $scholarship->id ?>" <?= $_POST['scholarship_id'] == $scholarship->id ? 'selected' : '' ?>>
+								<?= $scholarship->name ?>
+							</option>
+						<?php } ?>
+					</select>
+				<?php } ?>
 				<?php if ($_GET['section_tab'] != 'current' && $_GET['section_tab'] != 'pending_electives') { ?>
 					<select name="academic_period" style="width: 100%;">
 						<option value="" selected>Select an academic period</option>

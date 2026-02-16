@@ -12,6 +12,8 @@ function show_admission_documents()
 
             $document_id = isset($_POST['document_id']) ? intval($_POST['document_id']) : 0;
             $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
+            $day_deadline = isset($_POST['day_deadline']) ? sanitize_text_field($_POST['day_deadline']) : null;
+            $deadline_condition = isset($_POST['deadline_condition']) ? sanitize_text_field($_POST['deadline_condition']) : null;
 
             $type_file = isset($_POST['type_file']) ? sanitize_text_field($_POST['type_file']) : '';
             $type_file_array = array_filter(array_map('trim', explode(',', $type_file)));
@@ -49,6 +51,8 @@ function show_admission_documents()
                     'academic_department' => $academic_department,
                     'type_file' => $type_file,
                     'id_requisito' => $id_requisito,
+                    'day_deadline' => $day_deadline,
+                    'deadline_condition' => $deadline_condition,
                     'updated_at' => date('Y-m-d H:i:s')
                 ], ['id' => $document_id]);
 
@@ -72,6 +76,7 @@ function show_admission_documents()
                         'academic_department' => $academic_department,
                         'type_file'           => $type_file,
                         'id_requisito'        => $id_requisito,
+                        'deadline'            => $deadline,
                         'updated_at'          => date('Y-m-d H:i:s')
                     ]
                 );

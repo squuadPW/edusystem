@@ -21,6 +21,21 @@
 				<input type="submit" id="search-submit" class="button" value="<?= esc_html__('Search','edusystem') ?>">
 			</p>
 			<p class="search-box" style="margin-right: 10px">
+				<label class="screen-reader-text" for="search-box-id-search-input"><?= esc_html__('Classroom access','edusystem') . ':'; ?></label>
+				<select name="classroom_access">
+					<option value="" selected><?= esc_html__('Select classroom access', 'edusystem') ?></option>
+					<option value="full_access" <?= !empty($_GET['classroom_access']) ? (($_GET['classroom_access'] == 'full_access') ? 'selected' : '') : ''; ?>>
+						<?= esc_html__('Full access to classroom', 'edusystem') ?>
+					</option>
+					<option value="without_classroom" <?= !empty($_GET['classroom_access']) ? (($_GET['classroom_access'] == 'without_classroom') ? 'selected' : '') : ''; ?>>
+						<?= esc_html__('Without classroom', 'edusystem') ?>
+					</option>
+					<option value="classroom_removed" <?= !empty($_GET['classroom_access']) ? (($_GET['classroom_access'] == 'classroom_removed') ? 'selected' : '') : ''; ?>>
+						<?= esc_html__('Classroom access removed', 'edusystem') ?>
+					</option>
+				</select>
+			</p>
+			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text" for="search-box-id-search-input"><?= esc_html__('Search','edusystem') . ':'; ?></label>
 				<select name="academic_period_cut" data-textoption="<?= esc_html__('Select term to filter', 'edusystem') ?>" data-initial-cut="<?= !empty($_GET['academic_period_cut']) ? esc_attr($_GET['academic_period_cut']) : ''; ?>">
 					<option value="" selected><?= esc_html__('Select term to filter', 'edusystem') ?></option>

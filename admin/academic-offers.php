@@ -159,6 +159,7 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
         $academic_offers_array = [];
         $period = isset($_GET['academic_period']) ? sanitize_text_field($_GET['academic_period']) : '';
         $cut = isset($_GET['academic_period_cut']) ? sanitize_text_field($_GET['academic_period_cut']) : '';
+        $type = isset($_GET['type']) ? sanitize_text_field($_GET['type']) : '';
 
         // PAGINATION
         $per_page = 20;
@@ -180,6 +181,11 @@ class TT_Academic_Offers_List_Table extends WP_List_Table
         if (!empty($cut)) {
             $where_clauses[] = 'cut_period = %s';
             $params[] = $cut;
+        }
+
+        if (!empty($type)) {
+            $where_clauses[] = 'type = %s';
+            $params[] = $type;
         }
 
         $sql = "SELECT SQL_CALC_FOUND_ROWS * FROM {$table_academic_offers}";

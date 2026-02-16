@@ -571,7 +571,7 @@ function get_document_status_class($status)
 {
     $status_colors = [
         'No sent' => '',
-        'Sent' => 'blue',
+        'Under review' => 'blue',
         'Processing' => 'yellow',
         'Declined' => 'red',
         'Expired' => 'red',
@@ -716,7 +716,7 @@ function get_status_document($status_id)
 
     $status = match ($status_id) {
         '0' => __('No sent', 'edusystem'),
-        '1' => __('Sent', 'edusystem'),
+        '1' => __('Under review', 'edusystem'),
         '2' => __('Processing', 'edusystem'),
         '3' => __('Declined', 'edusystem'),
         '4' => __('Expired', 'edusystem'),

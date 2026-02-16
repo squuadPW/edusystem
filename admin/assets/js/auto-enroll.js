@@ -74,6 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const params = new URLSearchParams({
                 action: "auto_enroll_students_bulk",
+                academic_period: document.getElementById('academic_period') ? document.getElementById('academic_period').value : '',
+                academic_period_cut: document.getElementById('academic_period_cut') ? document.getElementById('academic_period_cut').value : ''
             });
 
             const revertButtonState = () => {
@@ -106,5 +108,63 @@ document.addEventListener("DOMContentLoaded", () => {
         date.setTime(date.getTime() + 1 * 24 * 60 * 60 * 1000);
         const expires = "; expires=" + date.toGMTString();
         document.cookie = name + "=" + value + expires + "; path=/";
+    }
+
+    // Logic for Dynamic Selectors (Period & Cut)
+    const periodSelect = document.getElementById('academic_period');
+    const cutSelect = document.getElementById('academic_period_cut');
+    
+    if (periodSelect && cutSelect) {
+        const translation = { select_cut: cutSelect.dataset.textoption || 'Select Term' };
+
+        const fetchCuts = (period) => {
+            const formData = new FormData();
+            formData.append('action', 'get_cuts_by_period');
+            formData.append('period', period);
+
+            fetch(ajax_object.ajax_url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Keep the current value if valid, otherwise reset
+                // But generally, when changing period, cuts change entirely, so reset is safer unless we are just reloading options for same period
+                // However, the user flow is: Change Period -> Fetch New Cuts.
+                // The current selection of cut likely doesn't exist in the new period, so we don't try to preserve it unless it's a reload.
+                // But this runs on change.
+                
+                cutSelect.innerHTML = '';
+
+                // Default Option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = translation.select_cut;
+                cutSelect.appendChild(defaultOption);
+
+                data.forEach(cut => {
+                    const option = document.createElement('option');
+                    option.value = cut.cut;
+                    option.textContent = cut.cut;
+                    cutSelect.appendChild(option);
+                });
+            })
+            .catch(err => console.error('Error fetching cuts:', err));
+        };
+
+        periodSelect.addEventListener('change', function() {
+            const period = this.value;
+            if (period) {
+                // Reset cut select to loading or empty while fetching
+                cutSelect.innerHTML = '<option value="">Loading...</option>';
+                fetchCuts(period);
+            } else {
+                cutSelect.innerHTML = '';
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = translation.select_cut;
+                cutSelect.appendChild(defaultOption);
+            }
+        });
     }
 });

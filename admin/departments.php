@@ -1,5 +1,179 @@
 <?php
 
+function aes_create_default_departments()
+{
+    global $wpdb;
+    $table_departments = $wpdb->prefix . 'departments';
+
+    $admissions_caps = [
+        'manager_admission_aes',
+        'manager_documents_aes',
+        'updating_student_documents',
+        'manager_statusbar_student'
+    ];
+
+    $payments_caps = [
+        'manager_payments_aes',
+        'manager_payment_plans',
+        'manager_payment_school_subjects',
+        'manager_payment_fees',
+        'manager_payment_comissions'
+    ];
+
+    $communications_caps = [
+        'manager_communications_aes',
+        'manager_send_email_aes',
+        'manager_send_notification_aes',
+        'manager_templates_emails'
+    ];
+
+    $academic_caps = [
+        'manager_academic_aes',
+        'manager_academic_periods_aes',
+        'manager_academic_offers_aes',
+        'manager_academic_projection_aes',
+        'manager_automatically_inscriptions',
+        'manager_graduations_aes',
+        'manager_requests_aes',
+        'manager_scholarship_aes',
+        'manager_availables_scholarship_aes',
+        'manager_pensums',
+        'manager_programs',
+        'manager_enrollments_aes',
+        'can_regenerate_projection',
+        'withdraw_student',
+        'manager_school_subjects',
+        'manager_school_subjects_aes',
+        'manager_edit_school_subjects',
+        'manager_feed',
+        'manager_dynamic_links',
+        'manager_student_matrix'
+    ];
+
+    $all_caps = array_values(array_unique(array_merge(
+        $admissions_caps,
+        $payments_caps,
+        $communications_caps,
+        $academic_caps,
+        [
+            'manager_certificates',
+            'manager_documents_certificates',
+            'manager_users_signatures_certificate',
+            'manager_id_card',
+            'manager_configuration_certificates',
+            'manager_staff_menu_aes',
+            'manager_staff_aes',
+            'manager_institutes_aes',
+            'manager_alliances_aes',
+            'manager_teachers_aes',
+            'manager_sales_aes',
+            'manager_accounts_receivables_aes',
+            'manager_report_sales_product',
+            'manager_comissions_aes',
+            'manager_report_billing_ranking_aes',
+            'manager_report_students_aes',
+            'manager_settings_aes',
+            'manager_departments_aes',
+            'manager_configuration_options_aes',
+            'manager_custom_inputs',
+            'manager_grades_by_country',
+            'manager_media_aes',
+            'manager_users_aes',
+            'create_users',
+            'edit_users',
+            'delete_users',
+            'promote_users',
+            'remove_users',
+            'switch_users',
+            'list_users',
+            'manager_epc',
+            'manager_logs',
+            'split_payment_method'
+        ]
+    )));
+
+    $defaults = [
+        [
+            'name' => 'administrator_edusystem',
+            'description' => 'Company administrator (EduSystem)',
+            'capabilities' => $all_caps
+        ],
+        [
+            'name' => 'administration_edusystem',
+            'description' => 'Payments and amounts manager (EduSystem)',
+            'capabilities' => $payments_caps
+        ],
+        [
+            'name' => 'admissions_edusystem',
+            'description' => 'Student admissions (EduSystem)',
+            'capabilities' => $admissions_caps
+        ],
+        [
+            'name' => 'communications_edusystem',
+            'description' => 'Communications manager (EduSystem)',
+            'capabilities' => $communications_caps
+        ],
+        [
+            'name' => 'academic_edusystem',
+            'description' => 'Academic manager (EduSystem)',
+            'capabilities' => $academic_caps
+        ]
+    ];
+
+    foreach ($defaults as $department) {
+        $name = strtolower($department['name']);
+        $description = $department['description'];
+        $capabilities = $department['capabilities'];
+
+        $existing_department = $wpdb->get_row(
+            $wpdb->prepare("SELECT id FROM {$table_departments} WHERE name = %s", $name)
+        );
+
+        if (!$existing_department) {
+            $wpdb->insert($table_departments, [
+                'name' => $name,
+                'description' => $description,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+        }
+
+        $role_name = str_replace('', '_', $name);
+
+        if (!wp_roles()->is_role($role_name)) {
+            $cap = [];
+
+            foreach ($capabilities as $capability) {
+                $cap[$capability] = true;
+            }
+
+            $role = add_role($role_name, ucwords(strtolower($name)), $cap);
+
+            if ($role) {
+                $role->add_cap('edit_posts');
+                $role->add_cap('manage_options');
+                $role->add_cap('read');
+
+                if (in_array('manager_users_aes', $capabilities)) {
+                    $role->add_cap('create_users');
+                    $role->add_cap('delete_users');
+                    $role->add_cap('edit_users');
+                    $role->add_cap('list_users');
+                    $role->add_cap('promote_users');
+                    $role->add_cap('remove_users');
+                }
+
+                if (in_array('manager_media_aes', $capabilities)) {
+                    $role->add_cap('upload_files');
+                    $role->add_cap('edit_posts');
+                    $role->add_cap('delete_posts');
+                    $role->add_cap('edit_others_posts');
+                    $role->add_cap('delete_others_posts');
+                }
+            }
+        }
+    }
+}
+
 function list_admin_form_department_content()
 {
 

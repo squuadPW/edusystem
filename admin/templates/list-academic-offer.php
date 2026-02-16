@@ -20,6 +20,22 @@
 			<p class="search-box" style="margin-right: 10px">
 				<label class="screen-reader-text"
 					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
+				<select name="type">
+					<option value=""><?= __('Select type', 'edusystem') ?></option>
+					<option value="regular" <?= !empty($_GET['type']) ? (($_GET['type'] == 'regular') ? 'selected' : '') : ''; ?>>
+						<?= __('Regular', 'edusystem') ?>
+					</option>
+					<option value="elective" <?= !empty($_GET['type']) ? (($_GET['type'] == 'elective') ? 'selected' : '') : ''; ?>>
+						<?= __('Elective', 'edusystem') ?>
+					</option>
+					<option value="equivalence" <?= !empty($_GET['type']) ? (($_GET['type'] == 'equivalence') ? 'selected' : '') : ''; ?>>
+						<?= __('Equivalence', 'edusystem') ?>
+					</option>
+				</select>
+			</p>
+			<p class="search-box" style="margin-right: 10px">
+				<label class="screen-reader-text"
+					for="search-box-id-search-input"><?= __('Search', 'edusystem') . ':'; ?></label>
 				<select name="academic_period_cut">
 					<option value=""><?= __('Select academic period cut', 'edusystem') ?></option>
 					<option value="A" <?= !empty($_GET['academic_period_cut']) ? (($_GET['academic_period_cut'] == 'A') ? 'selected' : '') : ''; ?>>A</option>
