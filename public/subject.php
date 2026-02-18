@@ -62,10 +62,22 @@ add_filter('woocommerce_add_cart_item_data', function($cart_item_data, $product_
 
         $subject_id = intval($_REQUEST['subject_id']);
         $subject = get_subject_details($subject_id);
+
+        $price = floatval($subject->price);
+        if( $price == '' ) {
+
+            if( $subject->type == 'elective' ) {
+                $default_price_electives = get_option('default_price_electives', 0);
+                $price = floatval($default_price_electives);
+            } else if( $subject->type == 'regular' ) {
+                $default_price_regular_courses = get_option('default_price_regular_courses', 0);
+                $price = floatval($default_price_regular_courses);
+            }
+        }
         
         $cart_item_data['subject_id'] = $subject->id;
         $cart_item_data['custom_name_subject'] = $subject->name;
-        $cart_item_data['custom_price_subject'] = floatval($subject->price);
+        $cart_item_data['custom_price_subject'] = $price;
         $cart_item_data['custom_currency_subject'] = $subject->currency;
 
     }
