@@ -664,7 +664,7 @@ function create_tables()
         `is_open` tinyint(1) NOT NULL DEFAULT 0,
         `code_subject` text NOT NULL,
         `name` text NOT NULL,
-        `price` double NOT NULL,
+        `price` double NULL DEFAULT NULL,
         `currency` text NOT NULL,
         `product_id` int(11) DEFAULT NULL,
         `description` text NOT NULL,

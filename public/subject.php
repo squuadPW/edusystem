@@ -64,7 +64,7 @@ add_filter('woocommerce_add_cart_item_data', function($cart_item_data, $product_
         $subject = get_subject_details($subject_id);
 
         $price = floatval($subject->price);
-        if( $price == '' ) {
+        if( $price == NULL ) {
 
             if( $subject->type == 'elective' ) {
                 $default_price_electives = get_option('default_price_electives', 0);
