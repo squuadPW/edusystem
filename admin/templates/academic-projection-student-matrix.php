@@ -114,7 +114,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                         $status = $is_multi_entry ? ($item['status'][$sub_index] ?? 'pendiente') : ($item['status'] ?? 'pendiente');
                                                     ?>
 
-                                                    <tr id="matrix-row-<?= $real_index; ?>" <?= $status == 'blocked' ? 'style="background: #ff6969  !important; "' : ''?> >
+                                                    <tr id="matrix-row-<?= $real_index; ?>" <?= $status == 'blocked' ? 'style="background: #eba3a3  !important; "' : ''?> >
                                                         <th scope="row"><?= $real_index + 1; ?></th>
                                                         
                                                         <td>
@@ -136,7 +136,13 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                                 <?php } ?>
                                                             </select> -->
 
-                                                            <?= esc_html($subject->name) ?>
+                                                            <?php 
+                                                                foreach ( $subjects_regular as $subject ): 
+                                                                    if ( $subject_id == $subject->id ) {
+                                                                        echo esc_html($subject->name);
+                                                                    }
+                                                                endforeach; 
+                                                            ?>
                                                         </td>
 
                                                         <?php if ($sub_index === 0): ?>
