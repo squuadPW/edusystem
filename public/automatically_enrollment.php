@@ -983,14 +983,12 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
 
             // Extraemos todos los subject_id en un array simple y buscamos el valor
             $index = array_search($subjet_id, array_column($expected_matrix, 'subject_id'));
-            $id = (int) $expected_matrix[$index]->subject_id;
-
             if ( $index !== false ) {
 
                 $expectation_record = $expected_matrix[$index];
 
                 // Ejecutamos la actualización
-                $updated = $wpdb->update( $table_student_expected_matrix, $data,['id' => $id] );
+                $wpdb->update( $table_student_expected_matrix, $data,['id' => (int) $expected_matrix[$index]->id] );
                 
                 // eliminamos el registro que se actualizo
                 unset($expected_matrix[$index]);

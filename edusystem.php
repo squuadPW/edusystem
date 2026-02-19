@@ -2022,14 +2022,14 @@ function create_tables()
             <pre>
                 
                 <?php 
-                    generate_academic_projection_student( 258 )
+                    test_generate_projection_student( 258 )
                 ?>
             </pre>
         </div>
     <?php
 }); */
 
-/* function generate_projection_student( $student_id ) {
+/* function test_generate_projection_student( $student_id ) {
 
     // Validar el ID del estudiante
     if ( !is_numeric($student_id) || $student_id <= 0 ) return false;
@@ -2169,7 +2169,7 @@ function create_tables()
     }
 
     // Genera la matris esperada del estudiante y inserta los registro en DB
-    generate_expectation_matrix( $student, $projection, $pensum );
+    test_generate_expectation_matrix( $student, $projection, $pensum );
 } */
 
 /* 
@@ -2177,7 +2177,7 @@ function create_tables()
     $projection es la proyeccion del studiante
     $pensum trae el pensum correspondiente al estudiante
 */
-/* function generate_expectation_matrix( $student, $projection, $pensum ) {
+/* function test_generate_expectation_matrix( $student, $projection, $pensum ) {
 
     if ( !$student || !$projection || !$pensum ) return false;
 

@@ -12,7 +12,7 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
     <?php endif; ?>
 
     <?php
-    include(plugin_dir_path(__FILE__) . 'cookie-message.php');
+        include(plugin_dir_path(__FILE__) . 'cookie-message.php');
     ?>
 
     <div style="display:flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
@@ -49,23 +49,24 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
 
                             <form method="post"
                                 action="<?= admin_url('admin.php?page=add_admin_form_academic_projection_content&action=update_matrix'); ?>">
+
                                 <input type="hidden" name="action" value="update_academic_matrix" />
                                 <input type="hidden" name="student_id" value="<?= esc_attr($student_id); ?>" />
                                 <input type="hidden" name="projection_id" value="<?= esc_attr($projection->id ?? ''); ?>" />
-                                <?php // wp_nonce_field('update_matrix_action', 'update_matrix_nonce'); 
-                                ?>
+                                
+                                <?php // wp_nonce_field('update_matrix_action', 'update_matrix_nonce'); ?>
 
                                 <div style="overflow-x: auto;">
                                     <table class="wp-list-table widefat fixed striped">
                                         <thead>
                                             <tr>
                                                 <th scope="col" style="width: 5%;">#</th>
+                                                <th scope="col" style="width: 30%;"><?= __('Subject', 'edusystem'); ?></th>
                                                 <!-- <th scope="col" style="width: 15%;"><?= __('Type', 'edusystem'); ?></th> -->
                                                 <th scope="col" style="width: 30%;">
                                                     <?= __('Academic Period', 'edusystem'); ?></th>
                                                 <th scope="col" style="width: 30%;"><?= __('Academic Cut', 'edusystem'); ?>
                                                 </th>
-                                                <th scope="col" style="width: 30%;"><?= __('Subject', 'edusystem'); ?></th>
                                                 <th scope="col" style="width: 15%;"><?= __('Status', 'edusystem'); ?></th>
                                             </tr>
                                         </thead>
@@ -73,46 +74,70 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                             <?php $real_index = 0; // Índice de la fila real en la tabla 
                                             ?>
                                             <?php foreach ($matrix as $matrix_index => $item): ?>
-                                                <?php $item = (array) $item; // Asegura que es un array para el acceso seguro 
-                                                ?>
-                                                <?php
-                                                // Determina si los datos son un array (múltiples registros) o un valor simple
-                                                $is_multi_entry = is_array($item['subject_id'] ?? null);
-                                                // Obtiene el número de filas a iterar
-                                                $entry_count = $is_multi_entry ? count($item['subject_id']) : 1;
-                                                // Obtiene el estado de completado del grupo para deshabilitar el Periodo/Corte
-                                                $is_group_completed = $is_multi_entry ? in_array(true, (array)$item['completed']) : ($item['completed'] ?? false);
-                                                // Obtiene el estado de aprobada para el grupo (si alguna subentrada tiene 'aprobada')
-                                                $is_group_approved = false;
-                                                if ($is_multi_entry) {
-                                                    $statuses = (array)($item['status'] ?? []);
-                                                    $is_group_approved = in_array('aprobada', $statuses, true) || in_array('en curso', $statuses, true);
-                                                } else {
-                                                    $is_group_approved = (isset($item['status']) && ($item['status'] === 'aprobada' || $item['status'] === 'en curso'));
-                                                }
+                                                <?php 
+                                                
+                                                    // Asegura que es un array para el acceso seguro 
+                                                    $item = (array) $item; 
 
-                                                // Si el grupo está completado o aprobado, se deshabilitan los selects
-                                                $is_group_disabled = $is_group_completed || $is_group_approved;
+                                                    // Determina si los datos son un array (múltiples registros) o un valor simple
+                                                    $is_multi_entry = is_array($item['subject_id'] ?? null);
+                                                    // Obtiene el número de filas a iterar
+                                                    $entry_count = $is_multi_entry ? count($item['subject_id']) : 1;
+                                                    // Obtiene el estado de completado del grupo para deshabilitar el Periodo/Corte
+                                                    $is_group_completed = $is_multi_entry ? in_array(true, (array)$item['completed']) : ($item['completed'] ?? false);
+                                                    // Obtiene el estado de aprobada para el grupo (si alguna subentrada tiene 'aprobada')
+                                                    $is_group_approved = false;
+                                                    if ($is_multi_entry) {
+                                                        $statuses = (array)($item['status'] ?? []);
+                                                        $is_group_approved = in_array('aprobada', $statuses, true) || in_array('en curso', $statuses, true);
+                                                    } else {
+                                                        $is_group_approved = (isset($item['status']) && ($item['status'] === 'aprobada' || $item['status'] === 'en curso'));
+                                                    }
+
+                                                    // Si el grupo está completado o aprobado, se deshabilitan los selects
+                                                    $is_group_disabled = $is_group_completed || $is_group_approved;
                                                 ?>
 
-                                                    <?php for ($sub_index = 0; $sub_index < $entry_count; $sub_index++, $real_index++): ?>
+                                                <?php for ($sub_index = 0; $sub_index < $entry_count; $sub_index++, $real_index++): ?>
                                                     <?php
-                                                    // --- Extracción de valores por fila ---
-                                                    $type = $is_multi_entry ? ($item['type'][$sub_index] ?? 'R') : ($item['type'] ?? 'R');
-                                                    $type_label = $type === 'R' ? __('Regular', 'edusystem') : ($type === 'E' ? __('Elective', 'edusystem') : 'N/A');
+                                                        // --- Extracción de valores por fila ---
+                                                        $type = $is_multi_entry ? ($item['type'][$sub_index] ?? 'R') : ($item['type'] ?? 'R');
+                                                        $type_label = $type === 'R' ? __('Regular', 'edusystem') : ($type === 'E' ? __('Elective', 'edusystem') : 'N/A');
 
-                                                    // Para Periodo y Corte (valores únicos para el grupo) se extrae del índice 0 si es multi.
-                                                    $code_period = $is_multi_entry ? ($item['code_period'][0] ?? '') : ($item['code_period'] ?? '');
-                                                    $cut = $is_multi_entry ? ($item['cut'][0] ?? '') : ($item['cut'] ?? '');
+                                                        // Para Periodo y Corte (valores únicos para el grupo) se extrae del índice 0 si es multi.
+                                                        $code_period = $is_multi_entry ? ($item['code_period'][0] ?? '') : ($item['code_period'] ?? '');
+                                                        $cut = $is_multi_entry ? ($item['cut'][0] ?? '') : ($item['cut'] ?? '');
 
-                                                    // Subject, completed y status (valores por sub-ítem)
-                                                    $subject_id = $is_multi_entry ? ($item['subject_id'][$sub_index] ?? '') : ($item['subject_id'] ?? '');
-                                                    $completed = $is_multi_entry ? ($item['completed'][$sub_index] ?? false) : ($item['completed'] ?? false);
-                                                    $status = $is_multi_entry ? ($item['status'][$sub_index] ?? 'pendiente') : ($item['status'] ?? 'pendiente');
+                                                        // Subject, completed y status (valores por sub-ítem)
+                                                        $subject_id = $is_multi_entry ? ($item['subject_id'][$sub_index] ?? '') : ($item['subject_id'] ?? '');
+                                                        $completed = $is_multi_entry ? ($item['completed'][$sub_index] ?? false) : ($item['completed'] ?? false);
+                                                        $status = $is_multi_entry ? ($item['status'][$sub_index] ?? 'pendiente') : ($item['status'] ?? 'pendiente');
                                                     ?>
 
-                                                    <tr id="matrix-row-<?= $real_index; ?>">
+                                                    <tr id="matrix-row-<?= $real_index; ?>" <?= $status == 'blocked' ? 'style="background: #ff6969  !important; "' : ''?> >
                                                         <th scope="row"><?= $real_index + 1; ?></th>
+                                                        
+                                                        <td>
+                                                            <input type="hidden" name="matrix[<?= $matrix_index ?>][subject_id][<?= $sub_index ?>]"
+                                                                value="<?= esc_attr($subject_id) ?>" />
+                                                            <input type="hidden" name="matrix[<?= $matrix_index ?>][completed][<?= $sub_index ?>]"
+                                                                value="<?= esc_attr($completed ? '1' : '0') ?>" />
+                                                            <input type="hidden" name="matrix[<?= $matrix_index ?>][status][<?= $sub_index ?>]"
+                                                                value="<?= esc_attr($status) ?>" />
+
+                                                            <!-- <select name="matrix[<?= $matrix_index ?>][subject_id][<?= $sub_index ?>]" class="subject-select"
+                                                                style="width: 100%; min-width: 200px;"
+                                                                <?= $completed || $is_group_disabled ? 'disabled' : '' ?>>
+                                                                <option value="" <?= empty($subject_id) ? 'selected' : '' ?>><?= __('Select Subject', 'edusystem') ?></option>
+                                                                <?php foreach ($subjects_regular as $subject) { ?>
+                                                                    <option value="<?= $subject->id ?>" <?= ($subject_id == $subject->id) ? 'selected' : '' ?>>
+                                                                        <?= esc_html($subject->name) ?>
+                                                                    </option>
+                                                                <?php } ?>
+                                                            </select> -->
+
+                                                            <?= esc_html($subject->name) ?>
+                                                        </td>
 
                                                         <?php if ($sub_index === 0): ?>
                                                             <!-- <td rowspan="<?= $entry_count ?>"> -->
@@ -158,25 +183,6 @@ $student_id = (int) $_GET['student_id']; // Variable added here for use in the f
                                                                 </select>
                                                             </td>
                                                         <?php endif; ?>
-                                                        <td>
-                                                            <input type="hidden" name="matrix[<?= $matrix_index ?>][subject_id][<?= $sub_index ?>]"
-                                                                value="<?= esc_attr($subject_id) ?>" />
-                                                            <input type="hidden" name="matrix[<?= $matrix_index ?>][completed][<?= $sub_index ?>]"
-                                                                value="<?= esc_attr($completed ? '1' : '0') ?>" />
-                                                            <input type="hidden" name="matrix[<?= $matrix_index ?>][status][<?= $sub_index ?>]"
-                                                                value="<?= esc_attr($status) ?>" />
-
-                                                            <select name="matrix[<?= $matrix_index ?>][subject_id][<?= $sub_index ?>]" class="subject-select"
-                                                                style="width: 100%; min-width: 200px;"
-                                                                <?= $completed || $is_group_disabled ? 'disabled' : '' ?>>
-                                                                <option value="" <?= empty($subject_id) ? 'selected' : '' ?>><?= __('Select Subject', 'edusystem') ?></option>
-                                                                <?php foreach ($subjects_regular as $subject) { ?>
-                                                                    <option value="<?= $subject->id ?>" <?= ($subject_id == $subject->id) ? 'selected' : '' ?>>
-                                                                        <?= esc_html($subject->name) ?>
-                                                                    </option>
-                                                                <?php } ?>
-                                                            </select>
-                                                        </td>
                                                         <td>
                                                             <?= esc_html(ucfirst($status)); ?>
                                                         </td>

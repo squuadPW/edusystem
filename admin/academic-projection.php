@@ -184,7 +184,7 @@ function add_admin_form_academic_projection_content()
             $students = $wpdb->get_results("SELECT * FROM {$table_students} ORDER BY id DESC");
 
             foreach ($students as $key => $student) {
-                generate_projection_student($student->id);
+                generate_projection_student( $student->id );
             }
 
             setcookie('message', __('Successfully generated all missing academic projections for the students.', 'edusystem'), time() + 3600, '/');
@@ -211,7 +211,7 @@ function add_admin_form_academic_projection_content()
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'generate_academic_projection_student') {
             $student_id = $_GET['student_id'];
-            generate_projection_student($student_id, true);
+            generate_projection_student( $student_id );
 
             setcookie('message', __('Successfully generated academic projections for the student.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_admission_content&section_tab=student_details&student_id=') . $student_id);
