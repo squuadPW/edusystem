@@ -52,6 +52,7 @@
 type_document,id_document,name,last_name,email,program_identificator,payment_plan_identificator,transfer_cr,send_email
 DNI,12345678,Juan,Pérez,juan.perez@email.com,PROG001,PLAN001,1,1
 DNI,87654321,Ana,García,ana.garcia@email.com,PROG002,PLAN002,0,0
+DNI,11112222,Camila,Rojas,camila.rojas@email.com,"PROG001,PROG003","PLAN001,PLAN007",1,0
 					</pre>
 					<ul style="font-size:12px;">
 						<li><b>type_document</b>: <?= __('Document type (e.g., DNI, Passport)', 'edusystem'); ?></li>
@@ -59,8 +60,8 @@ DNI,87654321,Ana,García,ana.garcia@email.com,PROG002,PLAN002,0,0
 						<li><b>name</b>: <?= __('First name', 'edusystem'); ?></li>
 						<li><b>last_name</b>: <?= __('First surname', 'edusystem'); ?></li>
 						<li><b>email</b>: <?= __('Email address', 'edusystem'); ?></li>
-						<li><b>program_identificator</b>: <?= __('Program code/identifier', 'edusystem'); ?></li>
-						<li><b>payment_plan_identificator</b>: <?= __('Payment plan code/identifier', 'edusystem'); ?></li>
+						<li><b>program_identificator</b>: <?= __('Program code/identifier. Use comma-separated values for multiple.', 'edusystem'); ?></li>
+						<li><b>payment_plan_identificator</b>: <?= __('Payment plan code/identifier. Use comma-separated values for multiple.', 'edusystem'); ?></li>
 						<li><b>transfer_cr</b>: <?= __('Transfer credits (1 = Yes, 0 = No)', 'edusystem'); ?></li>
 						<li><b>send_email</b>: <?= __('Send email (1 = Yes, 0 = No)', 'edusystem'); ?></li>
 					</ul>

@@ -31,7 +31,7 @@ if (!function_exists('edusystem_get_student_classroom_access')) {
 
             if (!$result['has_moodle']) {
                 $result['access'] = false;
-                $result['error'] = __('No Moodle student ID assigned.', 'edusystem');
+                $result['error'] = __('Your virtual classroom access is not active yet.', 'edusystem');
             }
 
             if ($result['access'] && function_exists('are_required_documents_approved_deadline') && are_required_documents_approved_deadline($student->id) === false) {

@@ -194,8 +194,11 @@ function form_asp_psp_optimized($atts)
     $is_school_mode = get_option('site_mode') === 'SCHOOL';
     $atts = shortcode_atts(
         array(
+            'token_dynamic_link' => '',
             'connected_account' => '',
             'coupon_code' => '',
+            'coupon_complete' => '',
+            'coupon_credit' => '',
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
             'zelle_account' => '',
@@ -203,6 +206,8 @@ function form_asp_psp_optimized($atts)
             'register_psp' => false,
             'hidden_payment_methods' => '',
             'fixed_fee_inscription' => false,
+            'allowed_programs' => '',
+            'allowed_plans' => '',
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
@@ -218,6 +223,7 @@ function form_asp_psp_optimized($atts)
             'dynamic_link' => false,
             'use_ethnicity' => true,
             'fee_payment_completed' => false,
+            'second_surname_required' => false
         ),
         $atts,
         'form_asp_psp'
@@ -232,7 +238,7 @@ function form_asp_psp_optimized($atts)
     // 4. Lógica de "Payment Link" con validaciones y salidas tempranas (Guard Clauses).
     if ($dynamic_link) {
         // Valida que el token exista y no esté vacío.
-        if (empty($_GET['token'])) {
+        if (!$_GET['token'] && !$token_dynamic_link) {
             $error_message = __('Error: Payment link token is missing.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
@@ -243,7 +249,7 @@ function form_asp_psp_optimized($atts)
         }
 
         // Sanitiza el token antes de usarlo.
-        $token = sanitize_text_field($_GET['token']);
+        $token = $token_dynamic_link ? $token_dynamic_link : sanitize_text_field($_GET['token']);
         $dynamic_link_data = get_dynamic_link_detail_by_link($token);
 
         if (!$dynamic_link_data) {
@@ -262,20 +268,36 @@ function form_asp_psp_optimized($atts)
         $name = $dynamic_link_data->name;
         $last_name = $dynamic_link_data->last_name;
         $email = $dynamic_link_data->email;
-        $program = $dynamic_link_data->program_identificator;
-        $subprogram = $dynamic_link_data->subprogram_identificator ?? null;
-        $plan = $dynamic_link_data->payment_plan_identificator;
+        $program_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_link_data->program_identificator)));
+        $plan_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_link_data->payment_plan_identificator)));
+        $allowed_programs = implode(',', $program_ids);
+        $allowed_plans = implode(',', $plan_ids);
+
+        $program = count($program_ids) === 1 ? $program_ids[0] : '';
+        $coupon_complete = $dynamic_link_data->coupon_complete;
+        $coupon_credit = $dynamic_link_data->coupon_credit;
+        $subprogram = count($plan_ids) === 1 ? ($dynamic_link_data->subprogram_identificator ?? null) : null;
+        $plan = count($plan_ids) === 1 ? $plan_ids[0] : '';
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
-        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 0 ? 'true' : false;
-        $fixed_fee_inscription = 'true';
+        $same_account = $dynamic_link_data->same_account;
+        $separate_program_fee = $same_account ? false : ($dynamic_link_data->fee_payment_completed == 0 ? 'true' : false);
+        $fixed_fee_inscription = $same_account ? false : 'true';
 
-        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator);
-        $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
-        $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
-        $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
-        $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
-        $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
+        if (count($plan_ids) === 1) {
+            $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($plan_ids[0]);
+            $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
+            $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
+            $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
+            $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
+            $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
+        } else {
+            $hidden_payment_methods = '';
+            $connected_account = '';
+            $flywire_portal_code = '';
+            $zelle_account = '';
+            $bank_transfer_account = '';
+        }
     }
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del payment link).
@@ -324,8 +346,11 @@ function student_registration_form_optimized($atts)
     $is_school_mode = get_option('site_mode') === 'SCHOOL';
     $atts = shortcode_atts(
         array(
+            'token_dynamic_link' => '',
             'connected_account' => '',
             'coupon_code' => '',
+            'coupon_complete' => '',
+            'coupon_credit' => '',
             'flywire_portal_code' => 'FGY',
             'manager_user_id' => '',
             'zelle_account' => '',
@@ -333,6 +358,8 @@ function student_registration_form_optimized($atts)
             'register_psp' => false,
             'hidden_payment_methods' => '',
             'fixed_fee_inscription' => false,
+            'allowed_programs' => '',
+            'allowed_plans' => '',
             'styles_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'styles_title_shortcode' => 'margin-top: 30px !important; background: rgb(223 223 223); color: black',
             'max_age' => 18,
@@ -348,6 +375,7 @@ function student_registration_form_optimized($atts)
             'dynamic_link' => false,
             'use_ethnicity' => true,
             'fee_payment_completed' => false,
+            'second_surname_required' => false
         ),
         $atts,
         'student_registration_form'
@@ -362,7 +390,7 @@ function student_registration_form_optimized($atts)
     // 4. Lógica de "Payment Link" con validaciones y salidas tempranas (Guard Clauses).
     if ($dynamic_link) {
         // Valida que el token exista y no esté vacío.
-        if (empty($_GET['token'])) {
+        if (!$_GET['token'] && !$token_dynamic_link) {
             $error_message = __('Error: Payment link token is missing.', 'edusystem');
             if (function_exists('wc_print_notice')) {
                 wc_print_notice($error_message, 'error');
@@ -373,7 +401,7 @@ function student_registration_form_optimized($atts)
         }
 
         // Sanitiza el token antes de usarlo.
-        $token = sanitize_text_field($_GET['token']);
+        $token = $token_dynamic_link ? $token_dynamic_link : sanitize_text_field($_GET['token']);
         $dynamic_link_data = get_dynamic_link_detail_by_link($token);
 
         if (!$dynamic_link_data) {
@@ -392,20 +420,36 @@ function student_registration_form_optimized($atts)
         $name = $dynamic_link_data->name;
         $last_name = $dynamic_link_data->last_name;
         $email = $dynamic_link_data->email;
-        $program = $dynamic_link_data->program_identificator;
-        $subprogram = $dynamic_link_data->subprogram_identificator ?? null;
-        $plan = $dynamic_link_data->payment_plan_identificator;
+        $program_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_link_data->program_identificator)));
+        $plan_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_link_data->payment_plan_identificator)));
+        $allowed_programs = implode(',', $program_ids);
+        $allowed_plans = implode(',', $plan_ids);
+
+        $program = count($program_ids) === 1 ? $program_ids[0] : '';
+        $coupon_complete = $dynamic_link_data->coupon_complete;
+        $coupon_credit = $dynamic_link_data->coupon_credit;
+        $subprogram = count($plan_ids) === 1 ? ($dynamic_link_data->subprogram_identificator ?? null) : null;
+        $plan = count($plan_ids) === 1 ? $plan_ids[0] : '';
         $manager_user_id = $dynamic_link_data->manager_id;
         $fee_payment_completed = $dynamic_link_data->fee_payment_completed;
-        $separate_program_fee = $dynamic_link_data->fee_payment_completed == 0 ? 'true' : false;
-        $fixed_fee_inscription = 'true';
+        $same_account = $dynamic_link_data->same_account;
+        $separate_program_fee = $same_account ? false : ($dynamic_link_data->fee_payment_completed == 0 ? 'true' : false);
+        $fixed_fee_inscription = $same_account ? false : 'true';
 
-        $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($dynamic_link_data->payment_plan_identificator, $fee_payment_completed);
-        $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
-        $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
-        $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
-        $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
-        $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
+        if (count($plan_ids) === 1) {
+            $hidden_payment_methods_data = get_hidden_payment_methods_by_plan($plan_ids[0], $fee_payment_completed);
+            $hidden_payment_methods = $hidden_payment_methods_data['hidden_methods_csv'] ?? '';
+            $connected_account = $hidden_payment_methods_data['connected_account'] ?? '';
+            $flywire_portal_code = $hidden_payment_methods_data['flywire_portal_code'] ?? '';
+            $zelle_account = $hidden_payment_methods_data['zelle_account'] ?? '';
+            $bank_transfer_account = $hidden_payment_methods_data['bank_transfer_account'] ?? '';
+        } else {
+            $hidden_payment_methods = '';
+            $connected_account = '';
+            $flywire_portal_code = '';
+            $zelle_account = '';
+            $bank_transfer_account = '';
+        }
     }
 
     // 5. Carga de datos comunes (se ejecuta siempre, después de la lógica del payment link).
@@ -1081,6 +1125,40 @@ function status_order_completed($order, $order_id, $customer_id)
 
     // Asegura que el usuario de WordPress para el estudiante exista.
     create_user_student($student_id);
+    $student = get_student_detail($student_id);
+    $student = is_object($student) ? $student : (object) [];
+    $not_available = __('Not available', 'edusystem');
+    $student_document = isset($student->id_document) ? trim((string) $student->id_document) : '';
+    $student_full_name = function_exists('student_names_lastnames_helper')
+        ? trim((string) student_names_lastnames_helper($student_id))
+        : '';
+
+    $program_name = function_exists('get_name_program_student') ? trim((string) get_name_program_student($student_id)) : '';
+    $career_name = '';
+    if (function_exists('get_program_data_student')) {
+        $program_data_student = get_program_data_student($student_id);
+        $career_items = $program_data_student['career'] ?? [];
+        if (!empty($career_items)) {
+            $career_names = [];
+            foreach ($career_items as $career_item) {
+                if (is_object($career_item) && !empty($career_item->name)) {
+                    $career_names[] = $career_item->name;
+                }
+            }
+            $career_name = implode(', ', array_unique($career_names));
+        }
+    }
+
+    $notification_message = sprintf(
+        __('A new student has enrolled. Name: %1$s. ID: %2$s. Program: %3$s. Career: %4$s.', 'edusystem'),
+        $student_full_name !== '' ? $student_full_name : $not_available,
+        $student_document !== '' ? $student_document : $not_available,
+        $program_name !== '' ? $program_name : $not_available,
+        $career_name !== '' ? $career_name : $not_available
+    );
+
+    send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 0);
+    send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 4);
 
     // 3. Itera sobre los artículos para actualizar o crear registros de pago.
     foreach ($order->get_items() as $item) {
@@ -2193,6 +2271,14 @@ add_action('woocommerce_pay_order_before_payment', 'split_payment');
 
 function payments_parts()
 {
+    if (function_exists('WC') && WC()->cart) {
+        foreach (WC()->cart->get_cart() as $cart_item) {
+            if (isset($cart_item['cuote_payment'])) {
+                return;
+            }
+        }
+    }
+
     include(plugin_dir_path(__FILE__) . 'templates/payment-parts.php');
 }
 
@@ -2245,28 +2331,27 @@ function woocommerce_update_cart()
         }
     }
 
+    $offer_complete = strtolower(get_option('offer_complete'));
+    $offer_quote = strtolower(get_option('offer_quote'));
+    $cookie_offer_complete = isset($_COOKIE['coupon_complete']) ? strtolower($_COOKIE['coupon_complete']) : '';
+    $cookie_offer_quote = isset($_COOKIE['coupon_credit']) ? strtolower($_COOKIE['coupon_credit']) : '';
+
     if ($variation != 'Complete') {
-        $applied_coupons = array_diff($applied_coupons, array(strtolower(get_option('offer_complete'))));
+        $applied_coupons = array_diff($applied_coupons, array_filter([$offer_complete, $cookie_offer_complete]));
 
-        $offer_quote = strtolower(get_option('offer_quote'));
-
-        if (!empty($offer_quote)) {
-            if (in_array($offer_quote, $applied_coupons)) {
-                // Si existe, lo eliminamos
-                $applied_coupons = array_diff($applied_coupons, [$offer_quote]);
+        foreach (array_filter([$offer_quote, $cookie_offer_quote]) as $coupon_to_add) {
+            if (!in_array($coupon_to_add, $applied_coupons, true)) {
+                array_push($applied_coupons, $coupon_to_add);
             }
-
-            // Agregamos el valor al array
-            array_push($applied_coupons, $offer_quote);
         }
     } else {
         if (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) {
-            if (!empty(get_option('offer_complete'))) {
-                $applied_coupons = array_diff($applied_coupons, array(strtolower(get_option('offer_quote'))));
-            }
+            $applied_coupons = array_diff($applied_coupons, array_filter([$offer_quote, $cookie_offer_quote]));
 
-            if (!empty(get_option('offer_complete'))) {
-                array_push($applied_coupons, strtolower(get_option('offer_complete')));
+            foreach (array_filter([$offer_complete, $cookie_offer_complete]) as $coupon_to_add) {
+                if (!in_array($coupon_to_add, $applied_coupons, true)) {
+                    array_push($applied_coupons, $coupon_to_add);
+                }
             }
         }
     }
@@ -2274,7 +2359,11 @@ function woocommerce_update_cart()
     // Aplicar los cupones restantes en la matriz $applied_coupons
     foreach ($applied_coupons as $key => $coupon) {
 
-        if ($coupon == strtolower(get_option('offer_complete')) || $coupon == strtolower(get_option('offer_quote'))) {
+        if ($coupon == $cookie_offer_complete || $coupon == $cookie_offer_quote) {
+            if (isset($coupon) && !empty($coupon)) {
+                $woocommerce->cart->apply_coupon($coupon);
+            }
+        } elseif ($coupon == $offer_complete || $coupon == $offer_quote) {
             $max_date_timestamp = get_option('max_date_offer');
             if ($max_date_timestamp >= current_time('timestamp')) {
                 if (isset($coupon) && !empty($coupon)) {
@@ -2493,6 +2582,10 @@ function update_price_product_cart_quota_rule()
         !empty($_COOKIE[$cookie_name]) &&
         $_COOKIE[$cookie_name] !== 'true'
     );
+    $cookie_offer_complete = $_COOKIE['coupon_complete'] ?? '';
+    $cookie_offer_quote = $_COOKIE['coupon_credit'] ?? '';
+    $is_multi_quota_for_offers = ($quotas_quantity > 1) || ((float) $initial_payment_sale > 0);
+    $is_single_quota_for_offers = !$is_multi_quota_for_offers;
 
     if (($cookie_does_not_exist || $cookie_exists_and_condition_met)) {
         // Get the coupon codes to potentially remove
@@ -2509,11 +2602,11 @@ function update_price_product_cart_quota_rule()
             WC()->cart->remove_coupon($offer_quote_coupon);
         }
 
-        if ($quotas_quantity == 1 && !empty($offer_complete_coupon)) {
+        if ($is_single_quota_for_offers && !empty($offer_complete_coupon)) {
             WC()->cart->apply_coupon($offer_complete_coupon);
         }
 
-        if ($quotas_quantity > 1 && !empty($offer_quote_coupon)) {
+        if ($is_multi_quota_for_offers && !empty($offer_quote_coupon)) {
             WC()->cart->apply_coupon($offer_quote_coupon);
         }
 
@@ -2523,20 +2616,29 @@ function update_price_product_cart_quota_rule()
                 if (WC()->cart->has_discount("100% registration fee")) {
                     WC()->cart->remove_coupon("100% registration fee");
                 }
-
-                // if (WC()->cart->has_discount("50% registration fee")) {
-                //     WC()->cart->remove_coupon("50% registration fee");
-                // }
-
                 if ($quotas_quantity == 1) {
                     WC()->cart->apply_coupon("100% registration fee");
                 }
-
-                // if ($quotas_quantity > 1) {
-                //     WC()->cart->apply_coupon("50% registration fee");
-                // }
             }
         }
+    }
+
+    // Remove 'offer_complete' coupon if it's applied
+    if (WC()->cart->has_discount($cookie_offer_complete)) {
+        WC()->cart->remove_coupon($cookie_offer_complete);
+    }
+
+    // Remove 'offer_quote' coupon if it's applied
+    if (WC()->cart->has_discount($cookie_offer_quote)) {
+        WC()->cart->remove_coupon($cookie_offer_quote);
+    }
+
+    if ($is_single_quota_for_offers && !empty($cookie_offer_complete)) {
+        WC()->cart->apply_coupon($cookie_offer_complete);
+    }
+
+    if ($is_multi_quota_for_offers && !empty($cookie_offer_quote)) {
+        WC()->cart->apply_coupon($cookie_offer_quote);
     }
 
     $cart = WC()->cart;
@@ -2623,6 +2725,35 @@ function save_metadata_checkout_create_order_item($item, $cart_item_key, $values
         $order->add_meta_data('program_data', json_encode($values['program_data']));
     }
 
+}
+
+add_action('woocommerce_checkout_create_order', 'aes_set_order_meta_from_cart', 20, 1);
+function aes_set_order_meta_from_cart($order)
+{
+    $cart = WC()->cart;
+    if (!$cart) {
+        return;
+    }
+
+    foreach ($cart->get_cart() as $cart_item) {
+        if (isset($cart_item['cuote_payment'])) {
+            $order->update_meta_data('cuote_payment', (int) $cart_item['cuote_payment']);
+        }
+        if (isset($cart_item['student_id'])) {
+            $order->update_meta_data('student_id', (int) $cart_item['student_id']);
+        }
+        if (isset($cart_item['institute_id'])) {
+            $order->update_meta_data('institute_id', (int) $cart_item['institute_id']);
+        }
+
+        if (
+            isset($cart_item['cuote_payment']) ||
+            isset($cart_item['student_id']) ||
+            isset($cart_item['institute_id'])
+        ) {
+            break;
+        }
+    }
 }
 
 add_action('wp_ajax_nopriv_reload_payment_table', 'reload_payment_table');
@@ -4484,6 +4615,31 @@ function load_data_program_callback()
     $payment_plans = get_associated_all_plans_by_program_id($program_identificator);
 
     wp_send_json_success(array('careers' => $careers, 'payment_plans' => $payment_plans));
+    exit;
+}
+
+add_action('wp_ajax_get_hidden_payment_methods_by_plan', 'get_hidden_payment_methods_by_plan_callback');
+add_action('wp_ajax_nopriv_get_hidden_payment_methods_by_plan', 'get_hidden_payment_methods_by_plan_callback');
+
+function get_hidden_payment_methods_by_plan_callback()
+{
+    $plan_id = isset($_GET['plan_id']) ? sanitize_text_field($_GET['plan_id']) : '';
+    $fee_payment_completed = isset($_GET['fee_payment_completed']) ? intval($_GET['fee_payment_completed']) : 0;
+
+    if (empty($plan_id)) {
+        wp_send_json_success([
+            'hidden_methods' => [],
+            'hidden_methods_csv' => '',
+            'connected_account' => '',
+            'flywire_portal_code' => '',
+            'zelle_account' => '',
+            'bank_transfer_account' => '',
+        ]);
+        exit;
+    }
+
+    $data = get_hidden_payment_methods_by_plan($plan_id, $fee_payment_completed);
+    wp_send_json_success($data);
     exit;
 }
 

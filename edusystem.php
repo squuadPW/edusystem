@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 4.0.7
+Version: 4.0.23
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -29,101 +29,101 @@ define('EDUSYSTEM_REMOTE_INFO_URL', 'https://versions.squuad.com/plugins/edusyst
 // ------  Sistema de actualizaciones ---------
 
 // Verificar actualizaciones
-add_filter('site_transient_update_plugins', 'EDUSYSTEM_check_update');
-function EDUSYSTEM_check_update($transient){
+// add_filter('site_transient_update_plugins', 'EDUSYSTEM_check_update');
+// function EDUSYSTEM_check_update($transient){
 
-    if (empty($transient->checked)) return $transient;
+//     if (empty($transient->checked)) return $transient;
 
-    if ($remote = wp_c_get_remote_info()) {
+//     if ($remote = wp_c_get_remote_info()) {
 
-        $plugin_file = plugin_basename(__FILE__);
-        $current_version = EDUSYSTEM_VERSION;
+//         $plugin_file = plugin_basename(__FILE__);
+//         $current_version = EDUSYSTEM_VERSION;
 
-        if (
-        version_compare($current_version, $remote->version, '<') &&
-        version_compare($remote->requires, get_bloginfo('version'), '<') &&
-        version_compare($remote->requires_php, PHP_VERSION, '<')
-        ) {
+//         if (
+//         version_compare($current_version, $remote->version, '<') &&
+//         version_compare($remote->requires, get_bloginfo('version'), '<') &&
+//         version_compare($remote->requires_php, PHP_VERSION, '<')
+//         ) {
 
-            $update = new stdClass();
-            $update->slug = $remote->slug;
-            $update->plugin = $plugin_file;
-            $update->new_version = $remote->version;
-            $update->tested = $remote->tested;
-            $update->package = $remote->download_url;
+//             $update = new stdClass();
+//             $update->slug = $remote->slug;
+//             $update->plugin = $plugin_file;
+//             $update->new_version = $remote->version;
+//             $update->tested = $remote->tested;
+//             $update->package = $remote->download_url;
 
-            $transient->response[$update->plugin] = $update;
-        }
-    }
+//             $transient->response[$update->plugin] = $update;
+//         }
+//     }
 
-    return $transient;
-}
+//     return $transient;
+// }
 
-// Proporcionar información del plugin
-add_filter('plugins_api', 'EDUSYSTEM_plugin_info', 20, 3);
-function EDUSYSTEM_plugin_info($res, $action, $args) {
-    if (
-        'plugin_information' !== $action ||
-        plugin_basename(__DIR__) !== $args->slug
-    ) {
-        return $res;
-    }
+// // Proporcionar información del plugin
+// add_filter('plugins_api', 'EDUSYSTEM_plugin_info', 20, 3);
+// function EDUSYSTEM_plugin_info($res, $action, $args) {
+//     if (
+//         'plugin_information' !== $action ||
+//         plugin_basename(__DIR__) !== $args->slug
+//     ) {
+//         return $res;
+//     }
 
-    if ($remote = EDUSYSTEM_get_remote_info()) {
-        $res = new stdClass();
-        $res->name = $remote->name;
-        $res->slug = $remote->slug;
-        $res->author = $remote->author;
-        $res->author_profile = $remote->author_profile;
-        $res->version = $remote->version;
-        $res->tested = $remote->tested;
-        $res->requires = $remote->requires;
-        $res->requires_php = $remote->requires_php;
-        $res->download_link = $remote->download_url;
-        $res->trunk = $remote->download_url;
-        $res->last_updated = $remote->last_updated;
+//     if ($remote = EDUSYSTEM_get_remote_info()) {
+//         $res = new stdClass();
+//         $res->name = $remote->name;
+//         $res->slug = $remote->slug;
+//         $res->author = $remote->author;
+//         $res->author_profile = $remote->author_profile;
+//         $res->version = $remote->version;
+//         $res->tested = $remote->tested;
+//         $res->requires = $remote->requires;
+//         $res->requires_php = $remote->requires_php;
+//         $res->download_link = $remote->download_url;
+//         $res->trunk = $remote->download_url;
+//         $res->last_updated = $remote->last_updated;
 
-        $res->sections = [
-            'description' => $remote->sections->description,
-            'installation' => $remote->sections->installation,
-            'changelog' => $remote->sections->changelog
-        ];
+//         $res->sections = [
+//             'description' => $remote->sections->description,
+//             'installation' => $remote->sections->installation,
+//             'changelog' => $remote->sections->changelog
+//         ];
 
-        if ( !empty($remote->sections->screenshots) ) {
-            $res->sections['screenshots'] = $remote->sections->screenshots;
-        }
+//         if ( !empty($remote->sections->screenshots) ) {
+//             $res->sections['screenshots'] = $remote->sections->screenshots;
+//         }
 
-        $res->banners = [
-            'low' => $remote->banners->low,
-            'high' => $remote->banners->high
-        ];
-    }
+//         $res->banners = [
+//             'low' => $remote->banners->low,
+//             'high' => $remote->banners->high
+//         ];
+//     }
 
-    return $res;
-}
+//     return $res;
+// }
 
-// Obtener información remota con caché
-function EDUSYSTEM_get_remote_info() {
+// // Obtener información remota con caché
+// function EDUSYSTEM_get_remote_info() {
 
-    static $remote_info = null;
+//     static $remote_info = null;
 
-    if (null === $remote_info) {
-        $remote = wp_remote_get(EDUSYSTEM_REMOTE_INFO_URL, [
-            'timeout' => 10,
-            'headers' => ['Accept' => 'application/json']
-        ]);
+//     if (null === $remote_info) {
+//         $remote = wp_remote_get(EDUSYSTEM_REMOTE_INFO_URL, [
+//             'timeout' => 10,
+//             'headers' => ['Accept' => 'application/json']
+//         ]);
 
-        if (
-            !is_wp_error($remote) &&
-            200 === wp_remote_retrieve_response_code($remote) &&
-            !empty($body = wp_remote_retrieve_body($remote))
-        ) {
-            $remote_info = json_decode($body);
-        }
-    }
+//         if (
+//             !is_wp_error($remote) &&
+//             200 === wp_remote_retrieve_response_code($remote) &&
+//             !empty($body = wp_remote_retrieve_body($remote))
+//         ) {
+//             $remote_info = json_decode($body);
+//         }
+//     }
 
-    return $remote_info;
-}
+//     return $remote_info;
+// }
 
 // ------  END Sistema de actualizaciones --------
 
@@ -150,6 +150,7 @@ function update_language() {
 }
 
 register_activation_hook(__FILE__, 'create_tables');
+register_activation_hook(__FILE__, 'aes_create_default_departments');
 function create_tables()
 {
     global $wpdb;
@@ -518,11 +519,14 @@ function create_tables()
         name TEXT NULL,
         last_name TEXT NULL,
         email TEXT NULL,
+        coupon_complete TEXT NULL,
+        coupon_credit TEXT NULL,
         program_identificator TEXT NOT NULL,
         subprogram_identificator INT NULL,
         payment_plan_identificator TEXT NULL,
         transfer_cr BOOLEAN NOT NULL DEFAULT 0,
         fee_payment_completed BOOLEAN NOT NULL DEFAULT 0,
+        same_account BOOLEAN NOT NULL DEFAULT 0,
         manager_id INT(11) NULL,
         created_by INT(11) NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -662,7 +666,7 @@ function create_tables()
         `is_open` tinyint(1) NOT NULL DEFAULT 0,
         `code_subject` text NOT NULL,
         `name` text NOT NULL,
-        `price` double NOT NULL,
+        `price` double NULL DEFAULT NULL,
         `currency` text NOT NULL,
         `product_id` int(11) DEFAULT NULL,
         `description` text NOT NULL,
@@ -1138,6 +1142,8 @@ function create_tables()
             is_required INT(11) NOT NULL,
             is_visible BOOLEAN NOT NULL DEFAULT 1,
             id_requisito TEXT NOT NULL,
+            day_deadline INT NULL,
+            deadline_condition TEXT NULL,
             updated_at DATETIME NULL,
             created_at DATETIME NOT NULL,
             PRIMARY KEY (id))$charset_collate;"
@@ -1235,6 +1241,8 @@ function create_tables()
             is_required INT(11) NOT NULL,
             is_visible BOOLEAN NOT NULL DEFAULT 1,
             id_requisito TEXT NOT NULL,
+            day_deadline INT NULL,
+            deadline_condition TEXT NULL,
             updated_at DATETIME NULL,
             created_at DATETIME NOT NULL,
             PRIMARY KEY (id))$charset_collate;"

@@ -1,7 +1,42 @@
+<?php
+$selected_programs = [];
+$selected_plans = [];
+if (isset($dynamic_link) && !empty($dynamic_link)) {
+    $selected_programs = array_filter(array_map('trim', explode(',', (string) $dynamic_link->program_identificator)));
+    $selected_plans = array_filter(array_map('trim', explode(',', (string) $dynamic_link->payment_plan_identificator)));
+}
+$selected_plan_for_details = count($selected_plans) === 1 ? $selected_plans[0] : '';
+?>
+
 <script>
     window.initialPlansData = <?= json_encode($payment_plans); ?>;
     window.selectedSubprogramId = "<?= isset($dynamic_link->subprogram_identificator) ? $dynamic_link->subprogram_identificator : ''; ?>";
+    window.selectedProgramIds = <?= json_encode(array_values($selected_programs)); ?>;
+    window.selectedPlanIds = <?= json_encode(array_values($selected_plans)); ?>;
 </script>
+
+<?php if (!$multiple_accounts) { ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modeSelect = document.getElementById("accounts-mode");
+            const feeWrapper = document.getElementById("fee_payment_completed_wrapper");
+            const sameAccountHidden = document.getElementById("same_account_hidden");
+
+            if (!modeSelect || !feeWrapper || !sameAccountHidden) {
+                return;
+            }
+
+            const toggleFeeMode = () => {
+                const isSeparate = modeSelect.value === "separate";
+                feeWrapper.style.display = isSeparate ? "block" : "none";
+                sameAccountHidden.disabled = isSeparate;
+            };
+
+            toggleFeeMode();
+            modeSelect.addEventListener("change", toggleFeeMode);
+        });
+    </script>
+<?php } ?>
 
 <div class="wrap">
     <?php if (isset($dynamic_link) && !empty($dynamic_link)): ?>
@@ -79,21 +114,32 @@
                                 <div style="margin: 18px;">
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="program_identificator"><b><?= __('Program', 'edusystem'); ?></b><span class="required">*</span></label>
-                                        <select name="program_identificator" id="program-identificator" autocomplete="off" required>
-                                            <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                                        <select name="program_identificator[]" id="program-identificator" autocomplete="off" multiple required>
                                             <?php foreach ($programs as $program): ?>
-                                                <option value="<?= $program->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->program_identificator == $program->identificator) ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->description; ?>)</option>
+                                                <?php $is_selected = in_array($program->identificator, $selected_programs, true); ?>
+                                                <option value="<?= $program->identificator; ?>" <?= $is_selected ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->description; ?>)</option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
 
                                     <div style="font-weight:400; <?= empty($payment_plans) ? 'display: none;' : ''; ?>" class="space-offer" id="scholarship-element">
                                         <label for="payment_plan_identificator"><b><?= __('Scholarship', 'edusystem'); ?></b><span class="required">*</span></label>
-                                        <select name="payment_plan_identificator" id="payment-plan-identificator" autocomplete="off" required>
-                                            <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                                            <?php foreach ($payment_plans as $payment_plan): ?>
-                                                <option value="<?= $payment_plan['plan']->identificator; ?>" <?= (isset($dynamic_link) && !empty($dynamic_link) && $dynamic_link->payment_plan_identificator == $payment_plan['plan']->identificator) ? 'selected' : ''; ?>><?= $payment_plan['plan']->name; ?> (<?= $payment_plan['plan']->description; ?>) - <?= $payment_plan['plan']->total_price ? ($payment_plan['plan']->currency ? $payment_plan['plan']->currency : "$") . "" . $payment_plan['plan']->total_price : "0"; ?></option>
-                                            <?php endforeach; ?>
+                                        <select name="payment_plan_identificator[]" id="payment-plan-identificator" autocomplete="off" multiple required>
+                                            <?php if (!empty($payment_plans_grouped)): ?>
+                                                <?php foreach ($payment_plans_grouped as $group): ?>
+                                                    <optgroup label="<?= esc_attr($group['program']['name'] ?? __('Program', 'edusystem')); ?>">
+                                                        <?php foreach ($group['plans'] as $payment_plan): ?>
+                                                            <?php $is_selected = in_array($payment_plan['plan']->identificator, $selected_plans, true); ?>
+                                                            <option value="<?= $payment_plan['plan']->identificator; ?>" <?= $is_selected ? 'selected' : ''; ?>><?= $payment_plan['plan']->name; ?> (<?= $payment_plan['plan']->description; ?>) - <?= $payment_plan['plan']->total_price ? ($payment_plan['plan']->currency ? $payment_plan['plan']->currency : "$") . "" . $payment_plan['plan']->total_price : "0"; ?></option>
+                                                        <?php endforeach; ?>
+                                                    </optgroup>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <?php foreach ($payment_plans as $payment_plan): ?>
+                                                    <?php $is_selected = in_array($payment_plan['plan']->identificator, $selected_plans, true); ?>
+                                                    <option value="<?= $payment_plan['plan']->identificator; ?>" <?= $is_selected ? 'selected' : ''; ?>><?= $payment_plan['plan']->name; ?> (<?= $payment_plan['plan']->description; ?>) - <?= $payment_plan['plan']->total_price ? ($payment_plan['plan']->currency ? $payment_plan['plan']->currency : "$") . "" . $payment_plan['plan']->total_price : "0"; ?></option>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
                                         </select>
                                     </div>
 
@@ -108,7 +154,7 @@
                                         <label for="details-payment-plan"><b><?= __('Details', 'edusystem'); ?></b></label>
                                         <div id="details-payment-plan">
                                             <?php foreach ($payment_plans as $payment_plan): ?>
-                                                <?php if ($payment_plan['plan']->identificator == $dynamic_link->payment_plan_identificator) {
+                                                <?php if ($payment_plan['plan']->identificator == $selected_plan_for_details) {
                                                     $currency = $payment_plan['plan']->currency ? $payment_plan['plan']->currency : get_woocommerce_currency_symbol();
                                                 ?>
                                                     <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
@@ -206,9 +252,52 @@
                                     </div>
 
                                     <div style="font-weight:400;" class="space-offer">
-                                        <input type="checkbox" id="fee_payment_completed" style="width: auto !important;" name="fee_payment_completed" value="1" <?= (isset($dynamic_link) && $dynamic_link->fee_payment_completed == 1) ? 'checked' : ''; ?>>
-                                        <label for="fee_payment_completed"><b><?= __('Payment Fee Complete', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        <label for="coupon_complete"><b><?= __('Coupon complete', 'edusystem'); ?></b></label><br>
+                                        <input type="text" name="coupon_complete" value="<?= esc_attr($dynamic_link->coupon_complete ?? ''); ?>">
                                     </div>
+
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="coupon_credit"><b><?= __('Coupon credit', 'edusystem'); ?></b></label><br>
+                                        <input type="text" name="coupon_credit" value="<?= esc_attr($dynamic_link->coupon_credit ?? ''); ?>">
+                                    </div>
+
+                                    <?php
+                                    $accounts_mode = 'together';
+                                    if (isset($dynamic_link) && !empty($dynamic_link)) {
+                                        if (isset($dynamic_link->same_account)) {
+                                            $accounts_mode = (int) $dynamic_link->same_account === 1 ? 'together' : 'separate';
+                                        } elseif (isset($dynamic_link->fee_payment_completed) && (int) $dynamic_link->fee_payment_completed === 1) {
+                                            $accounts_mode = 'separate';
+                                        }
+                                    }
+                                    ?>
+
+                                    <?php if (!$multiple_accounts) { ?>
+                                        <div style="font-weight:400;" class="space-offer">
+                                            <label for="accounts-mode"><b><?= __('Program and fee setup', 'edusystem'); ?></b><span class="required">*</span></label>
+                                            <select name="accounts_mode" id="accounts-mode" autocomplete="off" required>
+                                                <option value="together" <?= $accounts_mode === 'together' ? 'selected' : ''; ?>>
+                                                    <?= __('Program and fee together', 'edusystem'); ?>
+                                                </option>
+                                                <option value="separate" <?= $accounts_mode === 'separate' ? 'selected' : ''; ?>>
+                                                    <?= __('Program and fee separated', 'edusystem'); ?>
+                                                </option>
+                                            </select>
+                                        </div>
+                                    <?php } ?>
+
+                                    <?php if ($multiple_accounts) { ?>
+                                        <div style="font-weight:400;" class="space-offer">
+                                            <input type="checkbox" id="fee_payment_completed" style="width: auto !important;" name="fee_payment_completed" value="1" <?= (isset($dynamic_link) && $dynamic_link->fee_payment_completed == 1) ? 'checked' : ''; ?>>
+                                            <label for="fee_payment_completed"><b><?= __('Payment Fee Complete', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        </div>
+                                    <?php } else { ?>
+                                        <input type="hidden" name="same_account" id="same_account_hidden" value="1">
+                                        <div style="font-weight:400; display:none;" class="space-offer" id="fee_payment_completed_wrapper">
+                                            <input type="checkbox" id="fee_payment_completed" style="width: auto !important;" name="fee_payment_completed" value="1" <?= (isset($dynamic_link) && $dynamic_link->fee_payment_completed == 1) ? 'checked' : ''; ?>>
+                                            <label for="fee_payment_completed"><b><?= __('Payment Fee Complete', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
+                                        </div>
+                                    <?php } ?>
                                 </div>
                             </div>
 

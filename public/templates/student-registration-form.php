@@ -27,11 +27,15 @@
         value="<?= $fee_payment_completed ?? '' ?>">
     <input type="hidden" name="max_age" id="max_age" value="<?= $max_age ?>">
     <input type="hidden" name="limit_age" id="limit_age" value="<?= $limit_age ?>">
+    <input type="hidden" name="coupon_complete" id="coupon_complete" value="<?= $coupon_complete ?>">
+    <input type="hidden" name="coupon_credit" id="coupon_credit" value="<?= $coupon_credit ?>">
     <input type="hidden" name="program_shortcode" id="program_shortcode" value="<?= $program ?>">
     <input type="hidden" name="subprogram_shortcode" id="subprogram_shortcode" value="<?= $subprogram ?>">
     <input type="hidden" name="career_shortcode" id="career_shortcode" value="<?= $career ?>">
     <input type="hidden" name="mention_shortcode" id="mention_shortcode" value="<?= $mention ?>">
     <input type="hidden" name="plan_shortcode" id="plan_shortcode" value="<?= $plan ?>">
+    <input type="hidden" name="allowed_programs" id="allowed_programs" value="<?= $allowed_programs ?? '' ?>">
+    <input type="hidden" name="allowed_plans" id="allowed_plans" value="<?= $allowed_plans ?? '' ?>">
     <input type="hidden" id="product_id_input" name="product_id">
     <input type="hidden" name="current_lang" id="current_lang" value="<?= $current_lang ?>">
     <input type="hidden" name="separate_program_fee" id="separate_program_fee" value="<?= $separate_program_fee ?? '' ?>">
@@ -88,8 +92,8 @@
                 id="lastname_student" required value="<?= $last_name ?? '' ?>">
         </div>
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="middle_last_name_student"><?= __('Second surname', 'edusystem'); ?></label>
-            <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off">
+            <label for="middle_last_name_student"><?= __('Second surname', 'edusystem'); ?><?= $second_surname_required ? '<span class="required">*</span>' : '' ?></label>
+            <input class="formdata capitalize" type="text" name="middle_last_name_student" autocomplete="off" <?= $second_surname_required ? 'required' : '' ?>>
         </div>
         <?php if ($birth_date_position == 'DOWN') { ?>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
@@ -240,7 +244,7 @@
             <div class="subtitle text-align-center"><?= __('Degree details', 'edusystem'); ?></div>
         </div>
 
-        <?php if (!isset($program) || empty($program)) { ?>
+        <?php if (!isset($program) || $program === '') { ?>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">
                 <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span
                         class="required">*</span></label>

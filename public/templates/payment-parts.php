@@ -4,6 +4,10 @@
         global $woocommerce;
         $cart = $woocommerce->cart;
         $site_mode = get_option('site_mode');
+        $hide_fee_checkbox_checkout = filter_var(
+            get_option('hide_fee_checkbox_checkout'),
+            FILTER_VALIDATE_BOOLEAN
+        );
 
         // excluye los productos de fee
         $separate_program_fee = $_COOKIE['separate_program_fee'] ?? false;
@@ -48,7 +52,11 @@
             $_COOKIE[$cookie_name] !== 'true'
         );
 
-        if ((!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) && ($cookie_does_not_exist || $cookie_exists_and_condition_met)): ?>
+        if (
+            (!$hide_fee_checkbox_checkout) &&
+            (!isset($_COOKIE['from_webinar']) && empty($_COOKIE['from_webinar'])) &&
+            ($cookie_does_not_exist || $cookie_exists_and_condition_met)
+        ): ?>
 
             <div>
                 <div style="margin-bottom: 10px !important; text-align: center">

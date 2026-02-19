@@ -16,9 +16,20 @@ document.addEventListener("DOMContentLoaded", function () {
   const careerIdShortcode = document.getElementById("career_shortcode");
   const mentionIdShortcode = document.getElementById("mention_shortcode");
   const planIdShortcode = document.getElementById("plan_shortcode");
+  const allowedProgramsInput = document.getElementById("allowed_programs");
+  const allowedPlansInput = document.getElementById("allowed_plans");
+  const allowedPrograms = parseCsv(allowedProgramsInput?.value);
+  const allowedPlans = parseCsv(allowedPlansInput?.value);
+  const effectiveAllowedPrograms =
+    allowedPrograms.length > 0
+      ? allowedPrograms
+      : parseCsv(programIdShortcode?.value);
+  const effectiveAllowedPlans =
+    allowedPlans.length > 0 ? allowedPlans : parseCsv(planIdShortcode?.value);
   const passwordInput = document.getElementById("password");
   const confirmPasswordInput = document.getElementById("confirm_password");
   const errorDiv = document.getElementById("password-error");
+  const registerForm = document.querySelector("form.form-aes");
 
     const attachPasswordToggle = (inputEl) => {
     if (!inputEl) return;
@@ -60,8 +71,39 @@ document.addEventListener("DOMContentLoaded", function () {
     inputEl.insertAdjacentElement("afterend", toggleBtn);
   };
 
-  attachPasswordToggle(passwordInput);
-  attachPasswordToggle(confirmPasswordInput);
+  if (registerForm) {
+    attachPasswordToggle(passwordInput);
+    attachPasswordToggle(confirmPasswordInput);
+  }
+
+  function parseCsv(value) {
+    if (!value) return [];
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0);
+  }
+
+  function filterSelectOptions(selectEl, allowedList) {
+    if (
+      !selectEl ||
+      selectEl.tagName !== "SELECT" ||
+      !allowedList ||
+      allowedList.length === 0
+    ) {
+      return;
+    }
+
+    Array.from(selectEl.options).forEach((option) => {
+      if (!option.value) {
+        return;
+      }
+
+      if (!allowedList.includes(option.value)) {
+        option.remove();
+      }
+    });
+  }
 
   const mesAnio = document.getElementById('expected_graduation_date');
   if (mesAnio) {
@@ -218,6 +260,12 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (program) {
+    filterSelectOptions(program, effectiveAllowedPrograms);
+
+    if (effectiveAllowedPrograms.length === 1 && !program.value) {
+      program.value = effectiveAllowedPrograms[0];
+    }
+
     program.addEventListener("change", async (e) => {
       document.getElementById("buttonsave").disabled = true;
       shutdownFields(
@@ -247,7 +295,11 @@ document.addEventListener("DOMContentLoaded", function () {
         careerElement.required = false;
       }
 
-      if (!programIdentificator) {
+      if (
+        programIdentificator === "" ||
+        programIdentificator === null ||
+        programIdentificator === undefined
+      ) {
         return;
       }
 
@@ -296,17 +348,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // --- Lógica para el select de Planes de Pago ---
         if (isPlanSelect) {
+          let addedPlans = 0;
           planSelectContainer.style.display = "block";
           planElement.required = true;
 
           paymentPlans.forEach((plan) => {
+            if (
+              effectiveAllowedPlans.length > 0 &&
+              !effectiveAllowedPlans.includes(plan.identificator)
+            ) {
+              return;
+            }
             const option = document.createElement("option");
             option.value = plan.identificator;
             option.textContent = plan.name;
             planElement.appendChild(option);
+            addedPlans++;
           });
 
-          if (isPlanShortcodeValid) {
+          if (addedPlans === 0) {
+            planSelectContainer.style.display = "none";
+            planElement.required = false;
+          } else if (isPlanShortcodeValid) {
             planElement.value = planIdShortcode.value;
           }
         }
@@ -317,7 +380,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (
       (program.value && program.value !== "") ||
-      (programIdShortcode && programIdShortcode.value)
+      (programIdShortcode && programIdShortcode.value !== "")
     ) {
       program.dispatchEvent(new Event("change"));
     }
@@ -511,8 +574,11 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!planId) {
         gradeSelectContainer.style.display = "none";
         gradeInput.required = false;
+        updateHiddenPayments(null);
         return;
       }
+
+      updateHiddenPayments(planId);
 
       try {
         const params = new URLSearchParams({
@@ -568,6 +634,53 @@ document.addEventListener("DOMContentLoaded", function () {
     ) {
       plan.dispatchEvent(new Event("change"));
     }
+  }
+
+  async function updateHiddenPayments(planId) {
+    const hiddenPayments = document.getElementById("hidden_payment_methods");
+    const connectedAccount = document.getElementById(
+      "squuad_stripe_selected_client_id",
+    );
+    const flywirePortalCode = document.getElementById("flywire_portal_code");
+    const zelleAccount = document.getElementById("zelle_account");
+    const bankTransferAccount = document.getElementById(
+      "bank_transfer_account",
+    );
+    const feePaymentCompleted = document.getElementById("fee_payment_completed");
+
+    if (!planId) {
+      if (hiddenPayments) hiddenPayments.value = "";
+      if (connectedAccount) connectedAccount.value = "";
+      if (flywirePortalCode) flywirePortalCode.value = "";
+      if (zelleAccount) zelleAccount.value = "";
+      if (bankTransferAccount) bankTransferAccount.value = "";
+      return;
+    }
+
+    const params = new URLSearchParams({
+      action: "get_hidden_payment_methods_by_plan",
+      plan_id: planId,
+      fee_payment_completed: feePaymentCompleted ? feePaymentCompleted.value : 0,
+    });
+
+    try {
+      const response = await fetch(`${ajax_object.ajax_url}?${params.toString()}`, {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error(formRegisterStrings.networkFailed);
+      }
+
+      const data = await response.json();
+      const payload = data.data || {};
+
+      if (hiddenPayments) hiddenPayments.value = payload.hidden_methods_csv || "";
+      if (connectedAccount) connectedAccount.value = payload.connected_account || "";
+      if (flywirePortalCode) flywirePortalCode.value = payload.flywire_portal_code || "";
+      if (zelleAccount) zelleAccount.value = payload.zelle_account || "";
+      if (bankTransferAccount) bankTransferAccount.value = payload.bank_transfer_account || "";
+    } catch (error) {}
   }
 
   const countrySelect = document.getElementById("country-select");
@@ -1715,7 +1828,7 @@ function customFlatpickr() {
         : "en"
       : "en",
     dateFormat: document.getElementById("current_lang")
-      ? document.getElementById("current_lang").value == "en_EN"
+      ? document.getElementById("current_lang").value == "es_ES"
         ? "d/m/Y"
         : "m/d/Y"
       : "m/d/Y",
