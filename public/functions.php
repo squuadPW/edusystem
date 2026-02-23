@@ -1157,8 +1157,11 @@ function status_order_completed($order, $order_id, $customer_id)
         $career_name !== '' ? $career_name : $not_available
     );
 
-    send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 0);
-    send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 4);
+    $registration_data = $order->get_meta('registration_data');
+    if( isset($registration_data) && !empty($registration_data) ) {
+        send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 0);
+        send_notification_staff_particular(__('New student', 'edusystem'), $notification_message, 4);
+    }
 
     // 3. Itera sobre los artículos para actualizar o crear registros de pago.
     foreach ($order->get_items() as $item) {

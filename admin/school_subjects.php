@@ -34,9 +34,12 @@ function add_admin_form_school_subjects_content()
             $matrix_position = $_POST['matrix_position'];
             $max_students = $_POST['max_students'];
             $teacher_id = $_POST['teacher_id'];
-            $price = $_POST['price'] ?? 0;
+            $price = $_POST['price'];
+            if( $price == '' ) $price = null;
             $currency = $_POST['currency'] ?? get_woocommerce_currency();
             $retake_limit = $_POST['retake_limit'] ?? null;
+
+            
 
             //update
             if (isset($subject_id) && !empty($subject_id)) {
