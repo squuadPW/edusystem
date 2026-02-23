@@ -2,8 +2,8 @@
 $selected_programs = [];
 $selected_plans = [];
 if (isset($dynamic_link) && !empty($dynamic_link)) {
-    $selected_programs = array_filter(array_map('trim', explode(',', (string) $dynamic_link->program_identificator)));
-    $selected_plans = array_filter(array_map('trim', explode(',', (string) $dynamic_link->payment_plan_identificator)));
+    $selected_programs = array_filter(array_map('trim', explode(',', (string) $dynamic_link->program_identificator)), 'strlen');
+    $selected_plans = array_filter(array_map('trim', explode(',', (string) $dynamic_link->payment_plan_identificator)), 'strlen');
 }
 $selected_plan_for_details = count($selected_plans) === 1 ? $selected_plans[0] : '';
 ?>
@@ -116,8 +116,8 @@ $selected_plan_for_details = count($selected_plans) === 1 ? $selected_plans[0] :
                                         <label for="program_identificator"><b><?= __('Program', 'edusystem'); ?></b><span class="required">*</span></label>
                                         <select name="program_identificator[]" id="program-identificator" autocomplete="off" multiple required>
                                             <?php foreach ($programs as $program): ?>
-                                                <?php $is_selected = in_array($program->identificator, $selected_programs, true); ?>
-                                                <option value="<?= $program->identificator; ?>" <?= $is_selected !== '' ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->description; ?>)</option>
+                                                <?php $is_selected = in_array($program->identificator, $selected_programs); ?>
+                                                <option value="<?= $program->identificator; ?>" <?= $is_selected ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->description; ?>)</option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
