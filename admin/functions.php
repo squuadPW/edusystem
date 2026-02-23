@@ -999,15 +999,18 @@ function admin_notice($message, $type = 'success')
 function get_payments_plans_by_program()
 {
     $program_id = sanitize_text_field(wp_unslash($_POST['program_id']));
-    $program_ids = array_filter(array_map('trim', explode(',', (string) $program_id)));
+    $program_ids = array_filter(array_map('trim', explode(',', (string) $program_id)), 'strlen');
 
     global $wpdb;
     $table_programs = $wpdb->prefix . 'programs';
     $payment_plans = [];
     $groups = [];
+    $associateds = [];
+    $single_program_id_value = null;
 
     foreach ($program_ids as $single_program_id) {
         $associateds = get_associated_plans_by_program_id($single_program_id);
+        $single_program_id_value = $single_program_id;
         $group_plans = [];
 
         foreach ($associateds as $plan) {
