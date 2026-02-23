@@ -117,7 +117,7 @@ $selected_plan_for_details = count($selected_plans) === 1 ? $selected_plans[0] :
                                         <select name="program_identificator[]" id="program-identificator" autocomplete="off" multiple required>
                                             <?php foreach ($programs as $program): ?>
                                                 <?php $is_selected = in_array($program->identificator, $selected_programs, true); ?>
-                                                <option value="<?= $program->identificator; ?>" <?= $is_selected ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->description; ?>)</option>
+                                                <option value="<?= $program->identificator; ?>" <?= $is_selected === '' ? 'selected' : ''; ?>><?= $program->name; ?> (<?= $program->description; ?>)</option>
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
