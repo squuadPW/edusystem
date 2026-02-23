@@ -79,6 +79,10 @@ function save_essential_data_order($order)
         ]
     ]);
 
+    // eleimina las cookie de cupones para que no se apliquen en futuras compras
+    setcookie('coupon_complete', '', time() - 3000, '/');
+    setcookie('coupon_credit', '', time() - 3000, '/');
+
     $order->update_meta_data('registration_data', $registration_data);
 
     $order->save();
@@ -145,6 +149,8 @@ function save_student()
         $squuad_stripe_selected_client_id = isset($_POST['squuad_stripe_selected_client_id']) ? $_POST['squuad_stripe_selected_client_id'] : false;
         $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : false;
         $coupon_code = isset($_POST['coupon_code']) ? $_POST['coupon_code'] : false;
+        $coupon_complete = isset($_POST['coupon_complete']) ? $_POST['coupon_complete'] : false;
+        $coupon_credit = isset($_POST['coupon_credit']) ? $_POST['coupon_credit'] : false;
         $flywire_portal_code = isset($_POST['flywire_portal_code']) ? $_POST['flywire_portal_code'] : false;
         $zelle_account = isset($_POST['zelle_account']) ? $_POST['zelle_account'] : false;
         $bank_transfer_account = isset($_POST['bank_transfer_account']) ? $_POST['bank_transfer_account'] : false;
@@ -208,6 +214,8 @@ function save_student()
         setcookie('separate_program_fee', $separate_program_fee, time() + 864000, '/');
         setcookie('fee_payment_completed', $fee_payment_completed, time() + 864000, '/');
         setcookie('fees', json_encode($fees), time() + 864000, '/');
+        setcookie('coupon_complete', $coupon_complete, time() + 864000, '/');
+        setcookie('coupon_credit', $coupon_credit, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);
