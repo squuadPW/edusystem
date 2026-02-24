@@ -1460,12 +1460,6 @@ h2 {
 }
 #select2-programas_select-results [role=group] {
   position: relative;
-  /* li{
-          margin-bottom: 0px;
-      } */
-  /* .select2-results__group {
-          display: none;
-      } */
 }
 #select2-programas_select-results [role=group] li:first-of-type {
   position: absolute;
@@ -1474,6 +1468,14 @@ h2 {
   background: rgba(202, 202, 202, 0.2392156863);
   width: 80%;
   border-radius: 0px 15px 15px 0px;
+}
+#select2-programas_select-results [role=group] {
+  /* li{
+          margin-bottom: 0px;
+      } */
+  /* .select2-results__group {
+          display: none;
+      } */
 }
 
 #admission_fees .fees_body {
@@ -2236,7 +2238,6 @@ tr.child-order-row .view_details {
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  /* Oculta las etiquetas visuales de los seleccionados en la barra */
 }
 #document_view #form_document .title {
   margin-top: 20px;
@@ -2258,7 +2259,8 @@ tr.child-order-row .view_details {
 }
 #document_view #form_document input[type=text],
 #document_view #form_document input[type=number],
-#document_view #form_document select {
+#document_view #form_document select,
+#document_view #form_document textarea {
   width: 100%;
 }
 #document_view #form_document input[type=checkbox] {
@@ -2268,6 +2270,9 @@ tr.child-order-row .view_details {
 }
 #document_view #form_document button.button-primary {
   align-self: flex-end;
+}
+#document_view #form_document {
+  /* Oculta las etiquetas visuales de los seleccionados en la barra */
 }
 #document_view #form_document #select2-select_scope-container .select2-selection__choice {
   display: none !important;

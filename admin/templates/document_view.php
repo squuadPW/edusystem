@@ -10,6 +10,7 @@
         $is_required         = $document->is_required == 1 ? 'checked' : '';
         $type_file           = $document->type_file ?? '';
         $id_requisito        = $document->id_requisito ?? '';
+        $help_text           = $document->help_text ?? '';
         $day_deadline        = $document->day_deadline ?? '';
         $deadline_condition  = $document->deadline_condition ?? '';
         $academic_department = !empty($document->academic_department) 
@@ -25,6 +26,7 @@
             $is_required         = $form_data['is_required']        ?? $is_required;
             $type_file           = $form_data['type_file']          ?? $type_file;
             $id_requisito        = $form_data['id_requisito']       ?? $id_requisito;
+            $help_text           = $form_data['help_text']          ?? $help_text;
             $day_deadline        = $form_data['day_deadline']       ?? $day_deadline;
             $deadline_condition  = $form_data['deadline_condition'] ?? $deadline;
             $academic_department = $form_data['academic_scope']     ?? $academic_department;  
@@ -89,6 +91,13 @@
                                         name="id_requisito" 
                                         value="<?= esc_attr($id_requisito); ?>"
                                     >
+                                </label>
+                            </div>
+
+                            <div class="group-input" >
+                                <label for="help_text">
+                                    <b><?= __('Help text','edusystem'); ?></b>
+                                    <textarea name="help_text" ><?= esc_attr($help_text); ?></textarea>
                                 </label>
                             </div>
 

@@ -1114,6 +1114,13 @@ body.modal-open {
 
 #progressButton {
   width: 50%;
+}
+@media screen and (max-width: 900px) {
+  #progressButton {
+    width: 100% !important;
+  }
+}
+#progressButton {
   height: 47px;
   padding: 10px 20px !important;
   border-radius: 20px;
@@ -1123,11 +1130,6 @@ body.modal-open {
   color: white !important;
   background-color: var(--primary-color);
   margin: auto;
-}
-@media screen and (max-width: 900px) {
-  #progressButton {
-    width: 100% !important;
-  }
 }
 
 #progressButton:hover {

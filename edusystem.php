@@ -992,6 +992,7 @@ function create_tables()
         approved_by INT(11) NULL,
         status INT(11) NOT NULL,
         description TEXT NULL,
+        help_text TEXT NULL,
         is_required INT(11) NOT NULL DEFAULT 0,
         is_visible BOOLEAN NOT NULL DEFAULT 1,
         automatic BOOLEAN NOT NULL DEFAULT 0,
@@ -1136,6 +1137,7 @@ function create_tables()
             id INT(11) NOT NULL AUTO_INCREMENT,
             name TEXT NOT NULL,
             type_file TEXT NOT NULL,
+            help_text TEXT NULL,
             academic_department JSON NULL,
             grade_id INT(11) NOT NULL,
             program_identificator TEXT NULL,
@@ -1235,6 +1237,7 @@ function create_tables()
         "CREATE TABLE " . $table_documents . " (
             id INT(11) NOT NULL AUTO_INCREMENT,
             name TEXT NOT NULL,
+            help_text TEXT NULL,
             type_file TEXT NOT NULL,
             academic_department JSON NULL,
             grade_id INT(11) NOT NULL,

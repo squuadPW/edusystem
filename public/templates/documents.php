@@ -93,11 +93,14 @@ $date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
                                     <?php if ($document->max_date_upload): ?>
                                         <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>: <?= date($date_format, strtotime($document->max_date_upload)) ?></span>
                                     <?php endif; ?>
+                                    
+                                    <?php if ( $document->help_text ) : ?>
+                                        <span class="help-tooltip"
+                                            data-tippy-content="<?= $document->help_text ?>">
+                                            <span style="color: #002fbd; margin-top: -5px;" class="dashicons dashicons-editor-help"></span>
+                                        </span>
+                                    <?php endif; ?>
 
-                                    <span class="help-tooltip"
-                                        data-tippy-content="<?php echo get_help_info_document($document->document_id) ?>">
-                                        <span style="color: #002fbd; margin-top: -5px;" class="dashicons dashicons-editor-help"></span>
-                                    </span>
                                 </td>
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
                                     data-title="<?= __('Status', 'edusystem'); ?>">

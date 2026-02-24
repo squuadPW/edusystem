@@ -12,6 +12,7 @@ function show_admission_documents()
 
             $document_id = isset($_POST['document_id']) ? intval($_POST['document_id']) : 0;
             $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
+            $help_text = isset($_POST['help_text']) ? wp_kses_post($_POST['help_text']) : '';
             $day_deadline = isset($_POST['day_deadline']) ? sanitize_text_field($_POST['day_deadline']) : null;
             $deadline_condition = isset($_POST['deadline_condition']) ? sanitize_text_field($_POST['deadline_condition']) : null;
 
@@ -51,6 +52,7 @@ function show_admission_documents()
                     'academic_department' => $academic_department,
                     'type_file' => $type_file,
                     'id_requisito' => $id_requisito,
+                    'help_text' => $help_text,
                     'day_deadline' => $day_deadline,
                     'deadline_condition' => $deadline_condition,
                     'updated_at' => date('Y-m-d H:i:s')
