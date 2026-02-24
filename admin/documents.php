@@ -78,7 +78,9 @@ function show_admission_documents()
                         'academic_department' => $academic_department,
                         'type_file'           => $type_file,
                         'id_requisito'        => $id_requisito,
-                        'deadline'            => $deadline,
+                        'help_text'           => $help_text,
+                        'day_deadline'        => $day_deadline,
+                        'deadline_condition'  => $deadline_condition,
                         'updated_at'          => date('Y-m-d H:i:s')
                     ]
                 );
