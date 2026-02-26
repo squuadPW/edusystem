@@ -139,11 +139,11 @@ $date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
                                     data-title="<?= __('Action', 'edusystem'); ?>">
                                     <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4 || $document->status == 6) { ?>
                                         <div class="custom-file">
-                                            <input type="file" class="custom-file-input" <?= in_array($document_name_complete, $arr_photos_student) ? 'id=student_photo' : '' ?>
+                                            <input type="file" class="custom-file-input" <?= $document->profile ? 'id=student_photo' : '' ?>
                                                 name="<?= 'document_' . $document->id . '_student_id_' . $student->id; ?>"
                                                 accept="<?= $document->type_file ?>"
                                                 data-fileallowed="<?= $document->type_file ?>">
-                                            <span class="custom-file-label" <?= in_array($document_name_complete, $arr_photos_student) ? 'id=student_photo_label_input' : '' ?>><?= __('Select file', 'edusystem') ?></span>
+                                            <span class="custom-file-label" <?= $document->profile ? 'id=student_photo_label_input' : '' ?>><?= __('Select file', 'edusystem') ?></span>
                                         </div>
                                     <?php } else { ?>
                                         <a target="_blank" href="<?= wp_get_attachment_url($document->attachment_id); ?>" type="button"

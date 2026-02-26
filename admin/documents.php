@@ -11,7 +11,7 @@ function show_admission_documents()
             $table_documents = $wpdb->prefix . 'documents';
 
             $document_id = isset($_POST['document_id']) ? intval($_POST['document_id']) : 0;
-            $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
+            $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
             $profile = isset($_POST['profile']) ? 1 : 0;
             $help_text = isset($_POST['help_text']) ? wp_kses_post($_POST['help_text']) : '';
             $tooltip_help_text = isset($_POST['tooltip_help_text']) ? 0 : 1;

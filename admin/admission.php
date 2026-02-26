@@ -1176,7 +1176,7 @@ function handle_document_rejection($student_id, $document, $remove_access = true
         update_status_student($student_id, 1);
     }
 
-    if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO", "PHOTO-ID OR PASSPORT"])) {
+    if ( $document->profile ) {
         $wpdb->update("{$wpdb->prefix}students", ['profile_picture' => null], ['id' => $student_id]);
     }
 
@@ -1195,7 +1195,7 @@ function handle_document_approval($student_id, $document)
     $table_student_documents = $wpdb->prefix . 'student_documents';
     $wpdb->update($table_student_documents, ['max_date_upload' => NULL], ['student_id' => $student_id, 'id' => $document->id]);
 
-    if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO", "PHOTO-ID OR PASSPORT"])) {
+    if ( $document->profile ) {
         $wpdb->update(
             "{$wpdb->prefix}students",
             ['profile_picture' => $document->attachment_id],

@@ -77,6 +77,7 @@
                                     <b><?= __('Accepted File Types','edusystem'); ?></b>
                                     <input 
                                         type="text" 
+                                        id="type_file" 
                                         name="type_file" 
                                         value="<?= esc_attr($type_file); ?>" 
                                         placeholder = <?= __('Ej: .pdf, .docx, .jpg, .png','edusystem') ?>
@@ -89,7 +90,7 @@
 
                                 <div class="group-input" >
                                     <label for="profile">
-                                        <input type="checkbox" name="profile" <?= $profile ? 'checked' : '' ?> >
+                                        <input type="checkbox" id="profile" name="profile" <?= $profile ? 'checked' : '' ?> >
                                         <b><?= __('Profile','edusystem'); ?></b>
                                     </label>
                                 </div>
