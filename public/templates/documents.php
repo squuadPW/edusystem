@@ -66,12 +66,18 @@ $date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
                 </caption>
                 <thead>
                     <tr>
-                        <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-document"><span
-                                class="nobr"><?= __('Document', 'edusystem'); ?></span></th>
-                        <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-status"><span
-                                class="nobr"><?= __('Status', 'edusystem'); ?></span></th>
-                        <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action"><span
-                                class="nobr"><?= __('Action', 'edusystem'); ?></span></th>
+                        <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-document">
+                            <span class="nobr"><?= __('Document', 'edusystem'); ?></span>
+                        </th>
+                        <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-deadline" style="text-align: center;">
+                            <span class="nobr" ><?= __('Deadline', 'edusystem'); ?></span>
+                        </th>
+                        <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-status">
+                            <span class="nobr"><?= __('Status', 'edusystem'); ?></span>
+                        </th>
+                        <th class="woocommerce-orders-table__header woocommerce-orders-table__header-order-action">
+                            <span class="nobr"><?= __('Action', 'edusystem'); ?></span>
+                        </th>
                 </thead>
                 <tbody>
                     <?php $documents = get_documents($student->id); ?>
@@ -90,9 +96,6 @@ $date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
                                     <?php endif; ?>
 
                                     <?= $name; ?>
-                                    <?php if ($document->max_date_upload): ?>
-                                        <span class="deadline">- <?= __('DEADLINE', 'edusystem') ?>: <?= date($date_format, strtotime($document->max_date_upload)) ?></span>
-                                    <?php endif; ?>
                                     
                                     <?php if ( $document->help_text ) : ?>
 
@@ -108,6 +111,18 @@ $date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
                                     <?php endif; ?>
 
                                 </td>
+
+                                <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date" style="text-align: center;" >
+                                    
+                                    <?php if ($document->max_date_upload): ?>
+
+                                        <span class="deadline"><?= date($date_format, strtotime($document->max_date_upload)) ?></span>
+                                    <?php else: ?>
+                                        <b>-</b>
+                                    <?php endif; ?>
+
+                                </td>
+                                
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-date"
                                     data-title="<?= __('Status', 'edusystem'); ?>">
                                     <input type="hidden" name="<?= 'status_file_' . $document->id . '_student_id_' . $student->id; ?>"
@@ -135,6 +150,7 @@ $date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
                                     ?>
                                     <span style="<?= $style ?>"><?= $status == __('No sent', 'edusytem') ? __('Pending', 'edusystem') : $status ?></span>
                                 </td>
+
                                 <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                     data-title="<?= __('Action', 'edusystem'); ?>">
                                     <?php if ($document->status == 0 || $document->status == 3 || $document->status == 4 || $document->status == 6) { ?>
