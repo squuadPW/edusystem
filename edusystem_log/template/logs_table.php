@@ -49,7 +49,7 @@
             <?php foreach( $types AS $type ): ?>
                         
                 <option value="<?=$type?>" <?= selected( $_GET['type'] ?? '', $type ); ?> >
-                    <?= edusystem_get_log_type_label( $type ) ?>
+                    <?= edusystem_set_log_type_label( $type ) ?>
                 </option>
             <?php endforeach; ?>
                     

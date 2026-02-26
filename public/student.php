@@ -656,7 +656,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
     $first_name   = get_user_meta($current_user->ID, 'first_name', true);
     $last_name = get_user_meta($current_user->ID, 'last_name', true);
     $message = sprintf(__('The student %s saw grades.', 'edusystem'), $first_name . ' ' . $last_name);
-    edusystem_get_log($message, 'califications', $current_user->ID);
+    edusystem_set_log($message, 'califications', $current_user->ID);
 });
 
 add_action('woocommerce_account_teacher-course-students_endpoint', function () {
@@ -907,8 +907,18 @@ function insert_student($order)
     }
 
     $student_id = $wpdb->insert_id;
+    /* if( !$student_id ) {
+        edusystem_set_log("Error al crear el estudiante: " . $wpdb->last_error, 'student_insertion_error', null);
+        return;
+    } */
+
     insert_register_program($student_id, $program);
     update_metadata_student($student);
+
+    /* if ( check_access_virtual($student_id) ) {
+         handle_virtual_classroom_access($student_id);
+    } 
+ */
     return $student_id;
 }
 

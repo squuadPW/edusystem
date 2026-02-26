@@ -38,7 +38,7 @@ Módulo para registrar, visualizar y eliminar eventos del sistema Edusystem (log
 
 ## Cómo funciona (resumen)
 - Generación manual de logs: al invocar la función pública
-  `edusystem_get_log( $message, $type, $user_id )` con los datos correctos, el módulo inserta un registro en la tabla de logs. Es decir, llamar a esa función con mensaje, tipo y (opcional) user_id genera un log.
+  `edusystem_set_log( $message, $type, $user_id )` con los datos correctos, el módulo inserta un registro en la tabla de logs. Es decir, llamar a esa función con mensaje, tipo y (opcional) user_id genera un log.
 - Visualización: la página de administración carga `Edusystem_Log_Table`, aplica filtros (usuario, tipo, rango de fechas, búsqueda) y muestra los registros paginados.
 
 ## Comportamiento por defecto (logs automáticos)
@@ -66,21 +66,21 @@ if ( ! defined( 'EDUSYSTEM_TYPE_LOGS' ) ) {
 ```
 
 *Comportamiento:*
-- Si un tipo está presente en `EDUSYSTEM_TYPE_LOGS`, la función `edusystem_get_log_type_label( $type )` devolverá la etiqueta registrada (traducida).  
+- Si un tipo está presente en `EDUSYSTEM_TYPE_LOGS`, la función `edusystem_set_log_type_label( $type )` devolverá la etiqueta registrada (traducida).  
 - Si no está registrado, la función devolverá el identificador del tipo tal cual (fallback).  
 
 *Personalización:*
-- Puedes filtrar las etiquetas con el filtro `edusystem_get_log_type_label` para cambios dinámicos desde plugins/tema.
+- Puedes filtrar las etiquetas con el filtro `edusystem_set_log_type_label` para cambios dinámicos desde plugins/tema.
 
 ## Funciones públicas y ejemplos
 
-- edusystem_get_log( $message, $type = 'info', $user_id = null )  
+- edusystem_set_log( $message, $type = 'info', $user_id = null )  
   Inserta un registro. Ejemplo:
   ```php
-  edusystem_get_log( 'Alumno actualizado: ID 123', 'save_student', $student_user_id );
+  edusystem_set_log( 'Alumno actualizado: ID 123', 'save_student', $student_user_id );
   ```
 
-- edusystem_get_log_type_label( $type )  
+- edusystem_set_log_type_label( $type )  
   Devuelve legible/traducida para un tipo de log definido según `EDUSYSTEM_TYPE_LOGS`.
   Si el tipo no existe, devuelve el identificador recibido.
 
@@ -96,9 +96,9 @@ if ( ! defined( 'EDUSYSTEM_TYPE_LOGS' ) ) {
     }
 
     // Uso de la función
-    echo esc_html( edusystem_get_log_type_label( 'login' ) );        // Imprime: Inicio de sesión
-    echo esc_html( edusystem_get_log_type_label( 'save_student' ) );// Imprime: Guardar datos de estudiante
-    echo esc_html( edusystem_get_log_type_label( 'unknown' ) );     // Imprime: unknown (fallback)
+    echo esc_html( edusystem_set_log_type_label( 'login' ) );        // Imprime: Inicio de sesión
+    echo esc_html( edusystem_set_log_type_label( 'save_student' ) );// Imprime: Guardar datos de estudiante
+    echo esc_html( edusystem_set_log_type_label( 'unknown' ) );     // Imprime: unknown (fallback)
   ```
 
 ## Interfaz de administración

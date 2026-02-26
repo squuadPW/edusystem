@@ -85,7 +85,7 @@ register_deactivation_hook( EDUSYSTEM__FILE__, function () {
 });
 
 // Registra un log en la tabla de logs de Edusystem
-function edusystem_get_log( $message, $type = 'info', $user_id = null ) {
+function edusystem_set_log( $message, $type = 'info', $user_id = null ) {
 
     if (empty($user_id)) $user_id = get_current_user_id();
     
@@ -102,7 +102,7 @@ function edusystem_get_log( $message, $type = 'info', $user_id = null ) {
 }
 
 // Obtiene los textos asociados al tipo de log
-function edusystem_get_log_type_label( $type ) {
+function edusystem_set_log_type_label( $type ) {
     return isset( EDUSYSTEM_TYPE_LOGS[$type]) ? EDUSYSTEM_TYPE_LOGS[$type] : $type;
 }
 
