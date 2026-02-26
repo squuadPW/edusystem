@@ -95,10 +95,16 @@ $date_format = (strpos(get_locale(), 'es') === 0) ? 'd/m/Y' : 'm/d/Y';
                                     <?php endif; ?>
                                     
                                     <?php if ( $document->help_text ) : ?>
-                                        <span class="help-tooltip"
-                                            data-tippy-content="<?= $document->help_text ?>">
-                                            <span style="color: #002fbd; margin-top: -5px;" class="dashicons dashicons-editor-help"></span>
-                                        </span>
+
+                                        <?php if( $document->tooltip_help_text ): ?>
+                                            <span class="help-tooltip"
+                                                data-tippy-content="<?= $document->help_text ?>">
+                                                <span style="color: #002fbd; margin-top: -5px;" class="dashicons dashicons-editor-help"></span>
+                                            </span>
+                                        <?php else: ?>
+                                            <p class="help-text" style="font-size: 12px; color: #919191;"><?= $document->help_text ?></p>
+                                        <?php endif; ?>
+                                        
                                     <?php endif; ?>
 
                                 </td>

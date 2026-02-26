@@ -981,18 +981,20 @@ function create_tables()
 
     // table_student_documents
     dbDelta(
-        "CREATE TABLE " . $table_student_documents . " (
+        "CREATE TABLE $table_student_documents  (
         id INT(11) NOT NULL AUTO_INCREMENT,
         student_id INT(11) NOT NULL,
         document_id TEXT NOT NULL,
         doc_id INT(11) NOT NULL,
         type_file TEXT NOT NULL,
+        profile BOOLEAN NOT NULL DEFAULT 0,
         id_requisito TEXT NOT NULL,
         attachment_id BIGINT NOT NULL,
         approved_by INT(11) NULL,
         status INT(11) NOT NULL,
         description TEXT NULL,
         help_text TEXT NULL,
+        tooltip_help_text BOOLEAN NOT NULL DEFAULT 1,
         is_required INT(11) NOT NULL DEFAULT 0,
         is_visible BOOLEAN NOT NULL DEFAULT 1,
         automatic BOOLEAN NOT NULL DEFAULT 0,
@@ -1130,115 +1132,15 @@ function create_tables()
         );
     }
 
-    // table_documents - MANTENER el if para la inserción inicial de datos
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_documents}'") != $table_documents) {
-        dbDelta(
-        "CREATE TABLE " . $table_documents . " (
-            id INT(11) NOT NULL AUTO_INCREMENT,
-            name TEXT NOT NULL,
-            type_file TEXT NOT NULL,
-            help_text TEXT NULL,
-            academic_department JSON NULL,
-            grade_id INT(11) NOT NULL,
-            program_identificator TEXT NULL,
-            is_required INT(11) NOT NULL,
-            is_visible BOOLEAN NOT NULL DEFAULT 1,
-            id_requisito TEXT NOT NULL,
-            day_deadline INT NULL,
-            deadline_condition TEXT NULL,
-            updated_at DATETIME NULL,
-            created_at DATETIME NOT NULL,
-            PRIMARY KEY (id))$charset_collate;"
-        );
-
-        $grades = $wpdb->get_results("SELECT * FROM {$table_grades}");
-
-        if (!empty($grades)) {
-
-        foreach ($grades as $grade) {
-
-            $wpdb->insert($table_documents, [
-            'name' => 'GOVERNMENT-ISSUED PHOTO ID. (IDENTITY DOCUMENT OR PASSPORT OR DRIVER\'S LICENSE OR CEDULA OR DNI OR DIN)',
-            'type_file' => '.pdf',
-            'grade_id' => $grade->id,
-            'is_required' => 1,
-            'id_requisito' => '',
-            'created_at' => date('Y-m-d H:i:s')
-            ]);
-
-            $wpdb->insert($table_documents, [
-            'name' => 'PHOTO-ID OR PASSPORT',
-            'type_file' => '.jpeg, .png, .jpg',
-            'grade_id' => $grade->id,
-            'is_required' => 1,
-            'id_requisito' => '',
-            'created_at' => date('Y-m-d H:i:s')
-            ]);
-
-            $wpdb->insert($table_documents, [
-            'name' => 'LAST DEGREE DIPLOMA OBTAINED. (NATIONAL OR FOREIGN)',
-            'type_file' => '.pdf',
-            'grade_id' => $grade->id,
-            'is_required' => 0,
-            'id_requisito' => '',
-            'created_at' => date('Y-m-d H:i:s')
-            ]);
-
-            $wpdb->insert($table_documents, [
-            'name' => 'REPORT OF GRADES OR OFFICIAL TRANSCRIPTS OF COURSES PASSED AT A HIGHER EDUCATION INSTITUTION (TSU OR BACHELOR\'S DEGREE)',
-            'type_file' => '.pdf',
-            'grade_id' => $grade->id,
-            'is_required' => 0,
-            'id_requisito' => '',
-            'created_at' => date('Y-m-d H:i:s')
-            ]);
-
-            $wpdb->insert($table_documents, [
-            'name' => 'OFFICIAL GED HIGH SCHOOL ORIGINAL TRANSCRIPTS',
-            'type_file' => '.pdf',
-            'grade_id' => $grade->id,
-            'is_required' => 0,
-            'id_requisito' => '',
-            'created_at' => date('Y-m-d H:i:s')
-            ]);
-
-            $wpdb->insert($table_documents, [
-            'name' => 'TRANSLATION OR EQUIVALENT HIGH SCHOOL OR GED BY RECOGNIZED INSTITUTION',
-            'type_file' => '.pdf',
-            'grade_id' => $grade->id,
-            'is_required' => 0,
-            'id_requisito' => '',
-            'created_at' => date('Y-m-d H:i:s')
-            ]);
-
-            $wpdb->insert($table_documents, [
-            'name' => 'CURRICULUM VITAE (PH D. ONLY)',
-            'type_file' => '.pdf',
-            'grade_id' => $grade->id,
-            'is_required' => 0,
-            'id_requisito' => '',
-            'created_at' => date('Y-m-d H:i:s')
-            ]);
-
-            $wpdb->insert($table_documents, [
-            'name' => 'THESIS IDEA TO DEVELOP (PH.D. ONLY)',
-            'type_file' => '.pdf',
-            'grade_id' => $grade->id,
-            'is_required' => 0,
-            'id_requisito' => '',
-            'created_at' => date('Y-m-d H:i:s')
-            ]);
-
-        }
-        }
-    } else {
-        // Si la tabla ya existe, aún puedes llamar a dbDelta para actualizar su estructura
-        dbDelta(
-        "CREATE TABLE " . $table_documents . " (
+    // table_documents 
+    dbDelta(
+        "CREATE TABLE $table_documents (
             id INT(11) NOT NULL AUTO_INCREMENT,
             name TEXT NOT NULL,
             help_text TEXT NULL,
+            tooltip_help_text BOOLEAN NOT NULL DEFAULT 1,
             type_file TEXT NOT NULL,
+            profile BOOLEAN NOT NULL DEFAULT 0,
             academic_department JSON NULL,
             grade_id INT(11) NOT NULL,
             is_required INT(11) NOT NULL,
@@ -1248,9 +1150,10 @@ function create_tables()
             deadline_condition TEXT NULL,
             updated_at DATETIME NULL,
             created_at DATETIME NOT NULL,
-            PRIMARY KEY (id))$charset_collate;"
-        );
-    }
+            PRIMARY KEY (id)
+        )
+        $charset_collate;"
+    );
 
     // table_documents_for_teachers - MANTENER el if para la inserción inicial de datos
     if ($wpdb->get_var("SHOW TABLES LIKE '{$table_documents_for_teachers}'") != $table_documents_for_teachers) {

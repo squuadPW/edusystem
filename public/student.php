@@ -1037,7 +1037,9 @@ function insert_register_documents( $student_id )
 
     // Obtencion de los documentos por el programa, carrera o mencion
     $documents = $wpdb->get_results( $wpdb->prepare(
-        "SELECT `d`.id, `d`.name, `d`.is_visible, `d`.type_file, `d`.id_requisito, `d`.help_text, `d`.day_deadline, `d`.deadline_condition,
+        "SELECT `d`.id, `d`.name, `d`.is_visible, `d`.type_file, `d`.id_requisito, 
+                `d`.help_text, `d`.day_deadline, `d`.deadline_condition, `d`.profile, 
+                `d`.tooltip_help_text,
             CASE
                 WHEN `d`.is_required = 1 THEN 1
                 WHEN `d`.is_required = 0 THEN
@@ -1121,8 +1123,10 @@ function insert_register_documents( $student_id )
         $is_required = $document->is_required;
         $is_visible = $document->is_visible;
         $type_file = $document->type_file;
+        $profile = $document->profile;
         $id_requisito = $document->id_requisito;
         $help_text = $document->help_text;
+        $tooltip_help_text = $document->tooltip_help_text;
         $doc_id = $document->id;
         $day_deadline = (int) $document->day_deadline;
         $deadline_condition = $document->deadline_condition;
@@ -1155,8 +1159,10 @@ function insert_register_documents( $student_id )
             'doc_id' => $doc_id,
             'is_required' => $is_required,
             'help_text' => $help_text,
+            'tooltip_help_text' => $tooltip_help_text,
             'is_visible' => $is_visible,
             'type_file' => $type_file,
+            'profile' => $profile,
             'id_requisito' => $id_requisito,
             'max_date_upload' => $deadline,
             'status' => 0,

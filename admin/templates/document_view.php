@@ -9,8 +9,10 @@
         $document_name       = $document->name ?? ''; ;
         $is_required         = $document->is_required == 1 ? 'checked' : '';
         $type_file           = $document->type_file ?? '';
+        $profile             = $document->profile ?? 0;
         $id_requisito        = $document->id_requisito ?? '';
         $help_text           = $document->help_text ?? '';
+        $tooltip_help_text   = $document->tooltip_help_text ?? 0;
         $day_deadline        = $document->day_deadline ?? '';
         $deadline_condition  = $document->deadline_condition ?? '';
         $academic_department = !empty($document->academic_department) 
@@ -25,10 +27,12 @@
             $document_name       = $form_data['name']               ?? $document_name;
             $is_required         = $form_data['is_required']        ?? $is_required;
             $type_file           = $form_data['type_file']          ?? $type_file;
+            $profile             = $form_data['profile']            ?? $profile;
             $id_requisito        = $form_data['id_requisito']       ?? $id_requisito;
             $help_text           = $form_data['help_text']          ?? $help_text;
+            $tooltip_help_text   = $form_data['tooltip_help_text']  ?? $tooltip_help_text;
             $day_deadline        = $form_data['day_deadline']       ?? $day_deadline;
-            $deadline_condition  = $form_data['deadline_condition'] ?? $deadline;
+            $deadline_condition  = $form_data['deadline_condition'] ?? $deadline_condition;
             $academic_department = $form_data['academic_scope']     ?? $academic_department;  
         }
     ?>
@@ -82,6 +86,14 @@
                                 <p class="description">
                                     <?= __('Allowed formats: .pdf, .doc, .docx, .xl, .xls, .jpg, .jpge, .png, .web','edusystem'); ?>
                                 </p>
+
+                                <div class="group-input" >
+                                    <label for="profile">
+                                        <input type="checkbox" name="profile" <?= $profile ? 'checked' : '' ?> >
+                                        <b><?= __('Profile','edusystem'); ?></b>
+                                    </label>
+                                </div>
+
                             </div>
 
                             <div class="group-input" >
@@ -98,6 +110,13 @@
                                 <label for="help_text">
                                     <b><?= __('Help text','edusystem'); ?></b>
                                     <textarea name="help_text" ><?= esc_attr($help_text); ?></textarea>
+                                </label>
+                            </div>
+
+                            <div class="group-input" >
+                                <label for="tooltip_help_text">
+                                    <input type="checkbox" name="tooltip_help_text" <?= !$tooltip_help_text ? 'checked' : '' ?> >
+                                    <span><?= __('Disable tooltip','edusystem'); ?></span>
                                 </label>
                             </div>
 
