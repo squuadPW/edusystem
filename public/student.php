@@ -1534,11 +1534,19 @@ function load_feed()
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
 
     $table_student_payments = $wpdb->prefix . 'student_payments';
+    $table_orders = $wpdb->prefix . 'wc_orders';
     $payments = [];
     if($student) {
         $payments = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND order_id != null AND date_next_payment <= NOW()",
+                "SELECT `p`.* 
+                FROM `$table_student_payments` AS `p`
+                LEFT JOIN `$table_orders` AS `o` ON `p`.order_id = `o`.id
+                WHERE `p`.student_id = %d AND `p`.status_id = 0 AND `p`.date_next_payment <= NOW()
+                    AND (
+                        `p`.order_id IS NULL 
+                        OR `o`.status = 'wc-pending'
+                    )",
                 (int) $student->id
             )
         );
