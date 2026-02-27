@@ -1538,7 +1538,7 @@ function load_feed()
     if($student) {
         $payments = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()",
+                "SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND order_id != null AND date_next_payment <= NOW()",
                 (int) $student->id
             )
         );
