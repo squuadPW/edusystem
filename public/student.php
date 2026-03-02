@@ -80,6 +80,7 @@ function save_essential_data_order($order)
     ]);
 
     // eleimina las cookie de cupones para que no se apliquen en futuras compras
+    setcookie('token_dynamic_link', '', time() - 3000, '/');
     setcookie('coupon_complete', '', time() - 3000, '/');
     setcookie('coupon_credit', '', time() - 3000, '/');
 
@@ -105,6 +106,9 @@ function save_student()
         setcookie('one_time_payment', '', time(), '/');
         setcookie('is_scholarship', '', time(), '/');
         setcookie('payment_method_selected', '', time(), '/');
+
+        // Datos generales
+        $token_dynamic_link = isset($_POST['token_dynamic_link']) ? $_POST['token_dynamic_link'] : null;
 
         // Datos del estudiante
         $birth_date = isset($_POST['birth_date_student']) ? $_POST['birth_date_student'] : null;
@@ -181,6 +185,8 @@ function save_student()
             wc_add_notice(__('Emails can\'t be the same', 'edusystem'), 'error');
             return;
         }
+
+        setcookie('token_dynamic_link', $token_dynamic_link, time() + 864000, '/');
 
         setcookie('is_older', '', time() + 864000, '/');
         setcookie('ethnicity', $ethnicity, time() + 864000, '/');
