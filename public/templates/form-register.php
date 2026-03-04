@@ -143,6 +143,7 @@
         </div>
 
         <!-- DATOS DEL PADRE -->
+        <input type="hidden" id="user_id_parent" name="user_id_parent" value="<?= is_user_logged_in() ? get_current_user_id() : '' ?>">
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"
             style="<?= $styles_shortcode ?>">
             <div class="subtitle text-align-center"><?= __('Parent details', 'edusystem'); ?></div>
@@ -244,7 +245,7 @@
             <div class="subtitle text-align-center"><?= __('Degree details', 'edusystem'); ?></div>
         </div>
 
-        <?php if (!isset($program) || empty($program)) { ?>
+        <?php if (!isset($program) || $program === '') { ?>
             <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="program_select">
                 <label for="program"><?= __('Program of your interest', 'edusystem'); ?><span
                         class="required">*</span></label>
