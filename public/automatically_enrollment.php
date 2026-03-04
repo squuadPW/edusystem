@@ -90,6 +90,7 @@ function automatically_offers_enrollment() {
 }
 
 function automatically_enrollment($student_id) {
+    
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_students} WHERE id = %d", $student_id));
