@@ -620,6 +620,11 @@ function generate_projection_student( $student_id ) {
 
     // Genera la matris esperada del estudiante y inserta los registro en DB
     generate_expectation_matrix( $student, $projection, $pensum );
+
+    $full_name_student = student_names_lastnames_helper($student->id); 
+    $user = get_user_by('email', $student->email);
+    $user_id = $user ? $user->ID : 0;
+    edusystem_set_log('The projection has been generated correctly for the student ' . $full_name_student, 'projection_generated_student', $user_id);
 }
 
 /* function generate_projection_student($student_id, $force = false) {
@@ -986,6 +991,7 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
     global $wpdb;
     $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
     $table_academic_periods_cut = "{$wpdb->prefix}academic_periods_cut";
+    $table_student_payments = $wpdb->prefix . 'student_payments';
     $table_expected_matrix = "{$wpdb->prefix}expected_matrix";
 
     // lista de materias del pensum
@@ -1049,7 +1055,17 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
     $current_cut = $current_period_cut['cut'];
 
     // verifica si el studiante tiene pagos pendientes
-    $pending_payments = get_payments($student->id) == 1 ? true : false;
+
+    $products = [get_fee_product_id($student_id, 'registration'), get_fee_product_id($student_id, 'graduation')];
+    $products_list = "'" . implode("','", $products) . "'";
+
+    $payments = $wpdb->get_var(
+        "SELECT COUNT(id) FROM {$table_student_payments}
+        WHERE student_id = {$student->id}
+        AND product_id NOT IN ({$products_list})
+        AND status_id = 0 AND date_next_payment <= DATE_SUB(CURDATE(), INTERVAL 5 DAY)"
+    );
+    $pending_payments = $payments > 0 ? true : false;
 
     // filtra solo las materia regulares de la projeccion
     $projection_data = []; 
@@ -1059,10 +1075,15 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
         }
     }
 
-    // genra la matrix esperada del estudiante
+    // genera la matrix esperada del estudiante
     $accumulated_hc = 0;
     $matrix = [];
+    $total_terms = 0;
     foreach( $matrix_config as $key => $matrix_config_data ) {
+
+        if( $key == 'default' ) continue;
+
+        $total_terms++;
 
         // Obtener datos del período que deberia o debio cursar la asignatura
         $period_index = $key - 1;
@@ -1154,6 +1175,92 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
         }
   
     }
+
+    if( $subjects && $matrix_config->default ) {
+
+        $matrix_config_data = $matrix_config->default;
+
+        while ( $subjects ) {
+
+            // Obtener datos del período que deberia o debio cursar la asignatura
+            $period_index = $total_terms;
+            $period_data = ( $period_index < count($future_periods) ) ? $future_periods[$period_index] : null;
+            
+            $registered_hc = 0; // registra la cantidad de HC()
+
+            // Convertimos los valores a enteros para una comparación numérica limpia
+            $data_code = (int)$period_data->code;
+            $curr_code = (int)$current_period;  
+        
+            foreach ( $projection_data as $subject ) {
+                
+                if ( 
+                    ( $subject['is_completed'] === true || $subject['this_cut'] === true ) && 
+                    $subject['code_period'] === $period_data->code && 
+                    $subject['cut'] === $period_data->cut
+                ) {
+
+                    $status = $subject['is_completed'] ? 'aprobada' : 'activa';
+                    
+                    $matrix[$key][] = [
+                        'subject' => $subject['subject'],
+                        'subject_id' => (int) $subject['subject_id'],
+                        'code_period' => $period_data->code,
+                        'cut' => $period_data->cut,
+                        'type' => 'R',
+                        'status' => $status
+                    ];
+                    
+                    $registered_hc += (int) $subject['hc'];
+                    
+                    // elimina la asignatura de la lista de asignaturas que estan pendientes
+                    $subjects = array_filter($subjects, function($item) use ( $subject ) {
+                        return $item->subject_id !== (int) $subject['subject_id'];
+                    });
+                }
+            }
+
+            // valida que el periodo y corte corresppndiente en $period_data es menor que el actual
+            if ( ( $data_code === $curr_code && $period_data->cut >= $current_cut ) || $data_code > $curr_code ) {
+            
+                foreach ( $subjects as $i => $subject ) {
+
+                    if( $registered_hc < $matrix_config_data->max_HC ) { 
+
+                        $subject_projection = $projection_data[$subject->subject_id] ?? null;
+                        if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] > $subject_projection['assigned_slots']) {
+                            
+                            $subject_move = $subjects[$i];
+                            unset($subjects[$i]);
+
+                            $subject_move->status = 'blocked'; // si es array usa ['status']
+                            $subjects[] = $subject_move;
+
+                            continue;
+                        }
+
+                        $status = $subject->status ?? ($pending_payments ? 'blocked' : 'pendiente');
+
+                        // inscribe materia
+                        $matrix[$key][] = [
+                            'subject' => $subject->subject,
+                            'subject_id' => $subject->subject_id,
+                            'code_period' => $period_data ? $period_data->code : '', 
+                            'cut' => $period_data ? $period_data->cut : '', 
+                            'type' => 'R',
+                            'status' => $status
+                        ];
+
+                        $registered_hc += $subject->hc;
+
+                        unset($subjects[$i]);
+                    } 
+                }
+            }
+            
+            $total_terms++;
+        }
+    } 
 
     // obtienen todos los registros de la matriz esperada anterior
     $expected_matrix = $wpdb->get_results( $wpdb->prepare(
@@ -2086,4 +2193,22 @@ function get_expected_matrix_by_student($student_id)
     }
 
     return $matrix;
+}
+
+
+// add_action('init', 'procesar_estudiantes_graduandos');
+function procesar_estudiantes_graduandos() {
+    
+    global $wpdb;
+    $tabla = $wpdb->prefix . 'students';
+
+    $students = $wpdb->get_results("SELECT * FROM `$tabla` 
+              WHERE expected_graduation_date IS NOT NULL 
+              AND status_id != 5");
+
+    if ( $students ) {
+        foreach ($students as $student) {
+            generate_projection_student( $student->id );
+        }
+    }
 }

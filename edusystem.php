@@ -1407,6 +1407,9 @@ function create_tables()
                 'max_HC' => 2, 
                 'term_HC' => 6,
                 'max_HC_student' => 6
+            ],
+            'default' => [
+                'max_HC' => 2,
             ]
         ],
         14 => [
@@ -1480,6 +1483,9 @@ function create_tables()
                 'term_HC' => 6,
                 'max_HC_student' => 6
             ],
+            'default' => [
+                'max_HC' => 2,
+            ]
         ],
         13 => [
             1 => [
@@ -1546,6 +1552,9 @@ function create_tables()
                 'max_HC' => 2, 
                 'term_HC' => 6,
                 'max_HC_student' => 6
+            ],
+            'default' => [
+                'max_HC' => 2,
             ]
         ],
         12 => [
@@ -1608,6 +1617,9 @@ function create_tables()
                 'max_HC' => 2, 
                 'term_HC' => 6,
                 'max_HC_student' => 6
+            ],
+            'default' => [
+                'max_HC' => 2,
             ]
         ],
         11 => [
@@ -1665,6 +1677,9 @@ function create_tables()
                 'max_HC' => 2, 
                 'term_HC' => 6,
                 'max_HC_student' => 6
+            ],
+            'default' => [
+                'max_HC' => 2,
             ]
         ],
         10 => [
@@ -1717,6 +1732,9 @@ function create_tables()
                 'max_HC' => 2, 
                 'term_HC' => 6,
                 'max_HC_student' => 6
+            ],
+            'default' => [
+                'max_HC' => 2,
             ]
         ],
         9 => [
@@ -1764,6 +1782,9 @@ function create_tables()
                 'max_HC' => 2, 
                 'term_HC' => 5,
                 'max_HC_student' => 6
+            ],
+            'default' => [
+                'max_HC' => 2,
             ]
         ], 
         8 => [
@@ -1806,6 +1827,9 @@ function create_tables()
                 'max_HC' => 2, 
                 'term_HC' => 5, 
                 'max_HC_student' => 6
+            ],
+            'default' => [
+                'max_HC' => 2,
             ]
         ],   
         7 => [
@@ -1843,6 +1867,9 @@ function create_tables()
                 'max_HC' => 2, 
                 'term_HC' => 5,
                 'max_HC_student' => 6
+            ],
+            'default' => [
+                'max_HC' => 2,
             ]
         ],
         6 => [
@@ -1875,6 +1902,9 @@ function create_tables()
                 'max_HC' => 2,
                 'term_HC' => 5,
                 'max_HC_student' => 6
+            ],
+            'default' => [
+                'max_HC' => 2,
             ]
         ],
         5 => [
@@ -1902,7 +1932,10 @@ function create_tables()
                 'max_HC' => 2,
                 'term_HC' => 5,
                 'max_HC_student' => 6
-            ], 
+            ],
+            'default' => [
+                'max_HC' => 2,
+            ]
         ]
     ];
 
