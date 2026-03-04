@@ -80,8 +80,7 @@ function add_admin_form_auto_inscription_content()
     include(plugin_dir_path(__FILE__) . 'templates/auto-inscription-detail.php');
 }
 
-function auto_enroll_students_bulk_callback()
-{
+/* function auto_enroll_students_bulk_callback() {
     global $wpdb;
     $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
     
@@ -106,7 +105,14 @@ function auto_enroll_students_bulk_callback()
     }
     wp_send_json(true);
     die();
-}
+} */
 
 add_action('wp_ajax_nopriv_auto_enroll_students_bulk', 'auto_enroll_students_bulk_callback');
 add_action('wp_ajax_auto_enroll_students_bulk', 'auto_enroll_students_bulk_callback');
+function auto_enroll_students_bulk_callback() {
+
+    $automatically_enrollment = automatically_offers_enrollment();
+    wp_send_json( $automatically_enrollment ?? false );
+    die();
+
+}

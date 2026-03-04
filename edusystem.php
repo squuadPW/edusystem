@@ -726,6 +726,7 @@ function create_tables()
         calification DOUBLE(10, 2) NULL,
         code_period INT(11) NOT NULL,
         cut_period TEXT NOT NULL,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
