@@ -73,24 +73,27 @@
         </div>
 
         <!-- DATOS DE ACCESO -->
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
-            style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
-            <div class="subtitle text-align-center" id="access_data">
-                <?= __('Platform access data of student', 'edusystem'); ?>
+        <input type="hidden" id="user_id_parent" name="user_id_parent" value="<?= is_user_logged_in() ? get_current_user_id() : '' ?>">
+        <div style="display: contents;" data-is_logged_in="<?= is_user_logged_in() ?>" >
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10"
+                style="margin-top: 30px !important; background: rgb(223 223 223); color: black">
+                <div class="subtitle text-align-center" id="access_data" >
+                    <?= __('Platform access data of student', 'edusystem'); ?>
+                </div>
             </div>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="email"><?= __('Email address', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" type="email" name="email_student" autocomplete="off"
-                oninput="sendAjaxStudentEmailDocument()" required>
-            <span id="existstudentemail"
-                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'edusystem'); ?></span>
-            <span id="sameemailstudent"
-                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'edusystem'); ?></span>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="password"><?= __('Please establish your password', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" type="password" name="password" autocomplete="off" required>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="email"><?= __('Email address', 'edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata" type="email" name="email_student" autocomplete="off"
+                    oninput="sendAjaxStudentEmailDocument()" required>
+                <span id="existstudentemail"
+                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('This email is already associated with a user', 'edusystem'); ?></span>
+                <span id="sameemailstudent"
+                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The student cannot share the same email as the representative', 'edusystem'); ?></span>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="password"><?= __('Please establish your password', 'edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata" type="password" name="password" autocomplete="off" required>
+            </div>
         </div>
 
         <!-- DATOS DEL GRADO -->

@@ -1,6 +1,9 @@
 <form method="POST" action="<?= the_permalink() . '?action=new_applicant_me'; ?>" class="form-aes" id="form-me" autocomplete="off">
     <div class="grid grid-cols-12 gap-4">
 
+        <!-- DATOS DEL PADRE/STUDENT -->
+        <input type="hidden" id="user_id_parent" name="user_id_parent" value="<?= is_user_logged_in() ? get_current_user_id() : '' ?>">
+
         <!-- DATOS DEL ESTUDIANTE -->
         <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6"
             style="margin-top: 30px !important; background: rgb(223 223 223); color: black">

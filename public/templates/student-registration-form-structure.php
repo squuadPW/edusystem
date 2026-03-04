@@ -39,7 +39,7 @@ $tooltip_text = __('Please select the grade you are currently studying', 'edusys
 <input type="hidden" id="grade_tooltip_content" value="<?= esc_attr($tooltip_text); ?>">
 
 <?php if (is_user_logged_in()) { ?>
-    <?php if (isset($is_student)) { ?>
+    <?php if ( isset($is_student)) { ?>
         <?php include(plugin_dir_path(__FILE__) . 'form-register-others.php'); ?>
     <?php } else { ?>
         <section class="segment" style="margin: auto">

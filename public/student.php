@@ -53,6 +53,7 @@ function save_essential_data_order($order)
             "locale" => $_COOKIE['locale'] ?? null
         ],
         "parent" => [
+            "user_id" => $_COOKIE['user_id_parent'] ?? null,
             "agent_name" => $_COOKIE['agent_name'] ?? null,
             "agent_last_name" => $_COOKIE['agent_last_name'] ?? null,
             "type_document" => $_COOKIE['parent_document_type'] ?? null,
@@ -80,6 +81,7 @@ function save_essential_data_order($order)
     ]);
 
     // eleimina las cookie de cupones para que no se apliquen en futuras compras
+    setcookie('token_dynamic_link', '', time() - 3000, '/');
     setcookie('coupon_complete', '', time() - 3000, '/');
     setcookie('coupon_credit', '', time() - 3000, '/');
 
@@ -106,6 +108,9 @@ function save_student()
         setcookie('is_scholarship', '', time(), '/');
         setcookie('payment_method_selected', '', time(), '/');
 
+        // Datos generales
+        $token_dynamic_link = isset($_POST['token_dynamic_link']) ? $_POST['token_dynamic_link'] : null;
+
         // Datos del estudiante
         $birth_date = isset($_POST['birth_date_student']) ? $_POST['birth_date_student'] : null;
         $document_type = isset($_POST['document_type']) ? $_POST['document_type'] : null;
@@ -120,6 +125,7 @@ function save_student()
         $ethnicity = isset($_POST['etnia']) ? $_POST['etnia'] : null;
 
         // Datos del padre
+        $user_id_parent = isset($_POST['user_id_parent']) ? $_POST['user_id_parent'] : null;
         $birth_date_parent = isset($_POST['birth_date_parent']) ? $_POST['birth_date_parent'] : null;
         $parent_document_type = isset($_POST['parent_document_type']) ? $_POST['parent_document_type'] : null;
         $id_document_parent = isset($_POST['id_document_parent']) ? $_POST['id_document_parent'] : null;
@@ -181,6 +187,8 @@ function save_student()
             wc_add_notice(__('Emails can\'t be the same', 'edusystem'), 'error');
             return;
         }
+
+        setcookie('token_dynamic_link', $token_dynamic_link, time() + 864000, '/');
 
         setcookie('is_older', '', time() + 864000, '/');
         setcookie('ethnicity', $ethnicity, time() + 864000, '/');
@@ -315,6 +323,8 @@ function save_student()
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
 
+                setcookie('user_id_parent', $user_id_parent, time() + 864000, '/');
+
                 redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id);
                 // wp_redirect(home_url('/select-payment'));
                 break;
@@ -322,7 +332,7 @@ function save_student()
             default:
 
                 global $current_user;
-                setcookie('agent_name', ucwords(get_user_user_meta(get_current_user_id(), 'first_name', true)), time() + 864000, '/');
+                setcookie('agent_name', ucwords(get_user_meta(get_current_user_id(), 'first_name', true)), time() + 864000, '/');
                 setcookie('agent_last_name', ucwords(get_user_meta(get_current_user_id(), 'last_name', true)), time() + 864000, '/');
                 setcookie('email_partner', $current_user->user_email, time() + 864000, '/');
                 setcookie('number_partner', get_user_meta(get_current_user_id(), 'billing_phone', true), time() + 864000, '/');
@@ -330,6 +340,8 @@ function save_student()
                 setcookie('parent_document_type', get_user_meta(get_current_user_id(), 'type_document', true), time() + 864000, '/');
                 setcookie('id_document_parent', get_user_meta(get_current_user_id(), 'id_document', true), time() + 864000, '/');
                 setcookie('gender_parent', get_user_meta(get_current_user_id(), 'gender_parent', true), time() + 864000, '/');
+
+                setcookie('user_id_parent', $user_id_parent, time() + 864000, '/');
 
                 redirect_to_checkout($from_webinar, $is_scholarship, false, $product_id, $coupon_code, $fixed_fee_inscription, $fees, $fee_payment_completed, $institute_id);
                 // wp_redirect(home_url('/select-payment'));
@@ -1534,11 +1546,19 @@ function load_feed()
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
 
     $table_student_payments = $wpdb->prefix . 'student_payments';
+    $table_orders = $wpdb->prefix . 'wc_orders';
     $payments = [];
     if($student) {
         $payments = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()",
+                "SELECT `p`.* 
+                FROM `$table_student_payments` AS `p`
+                LEFT JOIN `$table_orders` AS `o` ON `p`.order_id = `o`.id
+                WHERE `p`.student_id = %d AND `p`.status_id = 0 AND `p`.date_next_payment <= NOW()
+                    AND (
+                        `p`.order_id IS NULL 
+                        OR `o`.status = 'wc-pending'
+                    )",
                 (int) $student->id
             )
         );
