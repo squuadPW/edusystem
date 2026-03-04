@@ -144,71 +144,75 @@
 
         <!-- DATOS DEL PADRE -->
         <input type="hidden" id="user_id_parent" name="user_id_parent" value="<?= is_user_logged_in() ? get_current_user_id() : '' ?>">
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title"
-            style="<?= $styles_shortcode ?>">
-            <div class="subtitle text-align-center"><?= __('Parent details', 'edusystem'); ?></div>
-        </div>
-        <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="birth_date_parent"><?= __('Date of birth', 'edusystem'); ?><span
-                    class="required">*</span></label>
-            <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_parent"
-                name="birth_date_parent" required>
-        </div>
+        <div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-10" id="parent-title" style="<?= $styles_shortcode ?>">
+                <div class="subtitle text-align-center"><?= __('Parent details', 'edusystem'); ?></div>
+            </div>
 
-        <div id="parent_document_type_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="document_type"><?= __('Type document', 'edusystem'); ?><span class="required">*</span></label>
-            <select id="parent_document_type" name="parent_document_type" autocomplete="off"
-                oninput="validateIDs(false)" required>
-                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                <option value="passport"><?= __('Passport', 'edusystem'); ?></option>
-                <option value="identification_document"><?= __('Identification Document', 'edusystem'); ?></option>
-                <option value="ssn"><?= __('SSN', 'edusystem'); ?></option>
-            </select>
-        </div>
+            <div id="parent_birth_date_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="birth_date_parent"><?= __('Date of birth', 'edusystem'); ?>
+                    <span class="required">*</span>
+                </label>
+                <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_parent"
+                    name="birth_date_parent" required>
+            </div>
+r
+            <div id="parent_document_type_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="document_type"><?= __('Type document', 'edusystem'); ?><span class="required">*</span></label>
+                <select id="parent_document_type" name="parent_document_type" autocomplete="off"
+                    oninput="validateIDs(false)" required>
+                    <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                    <option value="passport"><?= __('Passport', 'edusystem'); ?></option>
+                    <option value="identification_document"><?= __('Identification Document', 'edusystem'); ?></option>
+                    <option value="ssn"><?= __('SSN', 'edusystem'); ?></option>
+                </select>
+            </div>
 
-        <div id="parent_id_document_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="id_document_parent"><?= __('ID document', 'edusystem'); ?><span
-                    class="required">*</span></label>
-            <input class="formdata capitalize" autocomplete="off" type="text" id="id_document_parent"
-                name="id_document_parent" oninput="validateIDs(false)" required>
-            <span class="sameids"
-                style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same ID as the student', 'edusystem'); ?></span>
-        </div>
-        <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="agent_name"><?= __('First name', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="agent_name" autocomplete="off" id="agent_name"
-                required>
-        </div>
-        <div id="parent-lastname-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="agent_last_name"><?= __('First surname', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata capitalize" type="text" name="agent_last_name" autocomplete="off"
-                id="agent_last_name" required>
-        </div>
-        <div id="parent-phone-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="number_partner"><?= __('Contact number', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" type="tel" id="number_partner" autocomplete="off" id="number_partner"
-                name="number_partner" required>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="parent-gender-field">
-            <label for="gender_parent"><?= __('Gender', 'edusystem'); ?><span class="required">*</span></label>
-            <select class="form-control" id="gender_parent" required name="gender_parent">
-                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                <option value="male"><?= __('Male', 'edusystem'); ?></option>
-                <option value="female"><?= __('Female', 'edusystem'); ?></option>
-            </select>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="country"><?= __('Country', 'edusystem'); ?><span class="required">*</span></label>
-            <select name="country" autocomplete="off" id="country-select">
-                <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
-                <?php foreach ($countries as $key => $country) { ?>
-                    <option value="<?= $key ?>"><?= $country; ?></option>
-                <?php } ?>
-            </select>
-        </div>
-        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
-            <label for="city"><?= __('City', 'edusystem'); ?><span class="required">*</span></label>
-            <input class="formdata" type="text" name="city" autocomplete="off">
+            <div id="parent_id_document_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="id_document_parent"><?= __('ID document', 'edusystem'); ?><span
+                        class="required">*</span></label>
+                <input class="formdata capitalize" autocomplete="off" type="text" id="id_document_parent"
+                    name="id_document_parent" oninput="validateIDs(false)" required>
+                <span class="sameids"
+                    style="font-style: italic; color: red; font-size: 12px; display: none"><?= __('The representative cannot share the same ID as the student', 'edusystem'); ?></span>
+            </div>
+            <div id="parent_name_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="agent_name"><?= __('First name', 'edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata capitalize" type="text" name="agent_name" autocomplete="off" id="agent_name"
+                    required>
+            </div>
+            <div id="parent-lastname-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="agent_last_name"><?= __('First surname', 'edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata capitalize" type="text" name="agent_last_name" autocomplete="off"
+                    id="agent_last_name" required>
+            </div>
+            <div id="parent-phone-field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="number_partner"><?= __('Contact number', 'edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata" type="tel" id="number_partner" autocomplete="off" id="number_partner"
+                    name="number_partner" required>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6" id="parent-gender-field">
+                <label for="gender_parent"><?= __('Gender', 'edusystem'); ?><span class="required">*</span></label>
+                <select class="form-control" id="gender_parent" required name="gender_parent">
+                    <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                    <option value="male"><?= __('Male', 'edusystem'); ?></option>
+                    <option value="female"><?= __('Female', 'edusystem'); ?></option>
+                </select>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="country"><?= __('Country', 'edusystem'); ?><span class="required">*</span></label>
+                <select name="country" autocomplete="off" id="country-select">
+                    <option value="" selected="selected"><?= __('Select an option', 'edusystem'); ?></option>
+                    <?php foreach ($countries as $key => $country) { ?>
+                        <option value="<?= $key ?>"><?= $country; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+            <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
+                <label for="city"><?= __('City', 'edusystem'); ?><span class="required">*</span></label>
+                <input class="formdata" type="text" name="city" autocomplete="off">
+            </div>
+
         </div>
 
         <!-- DATOS DE ACCESO -->
