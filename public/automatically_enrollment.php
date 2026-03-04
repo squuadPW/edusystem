@@ -1049,7 +1049,7 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
     $current_cut = $current_period_cut['cut'];
 
     // verifica si el studiante tiene pagos pendientes
-    $pending_payments = get_payments($student->id) == 2 ? true : false;
+    $pending_payments = get_payments($student->id) == 1 ? true : false;
 
     // filtra solo las materia regulares de la projeccion
     $projection_data = []; 
