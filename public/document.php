@@ -70,7 +70,6 @@ add_action('woocommerce_account_student-documents_endpoint', function() {
         }
     }
 
-    $arr_photos_student = ['PHOTO OF STUDENT CARD', 'STUDENT\'S PHOTO', 'FOTO DEL ESTUDIANTE', "PHOTO-ID OR PASSPORT"];
     include(plugin_dir_path(__FILE__) . 'templates/documents.php');
 });
 

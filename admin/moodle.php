@@ -267,7 +267,7 @@ function get_url_login($email)
                     $message = sprintf(__('The student %s successfully logged into Moodle.', 'edusystem'), $first_name.' '.$last_name);
                     $type = 'moodle_login';
                 }
-                edusystem_get_log($message, $type, $user->ID);
+                edusystem_set_log($message, $type, $user->ID);
             }
 
             return $url['loginurl'];
@@ -288,7 +288,7 @@ function get_url_login($email)
             $type = 'error_moodle';
             $user_id = 0;
         }
-        edusystem_get_log($message, $type, $user_id);
+        edusystem_set_log($message, $type, $user_id);
 
 
         return [];

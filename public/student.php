@@ -79,6 +79,11 @@ function save_essential_data_order($order)
         ]
     ]);
 
+    // eleimina las cookie de cupones para que no se apliquen en futuras compras
+    setcookie('token_dynamic_link', '', time() - 3000, '/');
+    setcookie('coupon_complete', '', time() - 3000, '/');
+    setcookie('coupon_credit', '', time() - 3000, '/');
+
     $order->update_meta_data('registration_data', $registration_data);
 
     $order->save();
@@ -101,6 +106,9 @@ function save_student()
         setcookie('one_time_payment', '', time(), '/');
         setcookie('is_scholarship', '', time(), '/');
         setcookie('payment_method_selected', '', time(), '/');
+
+        // Datos generales
+        $token_dynamic_link = isset($_POST['token_dynamic_link']) ? $_POST['token_dynamic_link'] : null;
 
         // Datos del estudiante
         $birth_date = isset($_POST['birth_date_student']) ? $_POST['birth_date_student'] : null;
@@ -145,6 +153,8 @@ function save_student()
         $squuad_stripe_selected_client_id = isset($_POST['squuad_stripe_selected_client_id']) ? $_POST['squuad_stripe_selected_client_id'] : false;
         $product_id = isset($_POST['product_id']) ? $_POST['product_id'] : false;
         $coupon_code = isset($_POST['coupon_code']) ? $_POST['coupon_code'] : false;
+        $coupon_complete = isset($_POST['coupon_complete']) ? $_POST['coupon_complete'] : false;
+        $coupon_credit = isset($_POST['coupon_credit']) ? $_POST['coupon_credit'] : false;
         $flywire_portal_code = isset($_POST['flywire_portal_code']) ? $_POST['flywire_portal_code'] : false;
         $zelle_account = isset($_POST['zelle_account']) ? $_POST['zelle_account'] : false;
         $bank_transfer_account = isset($_POST['bank_transfer_account']) ? $_POST['bank_transfer_account'] : false;
@@ -175,6 +185,8 @@ function save_student()
             wc_add_notice(__('Emails can\'t be the same', 'edusystem'), 'error');
             return;
         }
+
+        setcookie('token_dynamic_link', $token_dynamic_link, time() + 864000, '/');
 
         setcookie('is_older', '', time() + 864000, '/');
         setcookie('ethnicity', $ethnicity, time() + 864000, '/');
@@ -208,6 +220,8 @@ function save_student()
         setcookie('separate_program_fee', $separate_program_fee, time() + 864000, '/');
         setcookie('fee_payment_completed', $fee_payment_completed, time() + 864000, '/');
         setcookie('fees', json_encode($fees), time() + 864000, '/');
+        setcookie('coupon_complete', $coupon_complete, time() + 864000, '/');
+        setcookie('coupon_credit', $coupon_credit, time() + 864000, '/');
 
         if (!empty($institute_id) && $institute_id != 'other') {
             $institute = get_institute_details($institute_id);
@@ -648,7 +662,7 @@ add_action('woocommerce_account_califications_endpoint', function () {
     $first_name   = get_user_meta($current_user->ID, 'first_name', true);
     $last_name = get_user_meta($current_user->ID, 'last_name', true);
     $message = sprintf(__('The student %s saw grades.', 'edusystem'), $first_name . ' ' . $last_name);
-    edusystem_get_log($message, 'califications', $current_user->ID);
+    edusystem_set_log($message, 'califications', $current_user->ID);
 });
 
 add_action('woocommerce_account_teacher-course-students_endpoint', function () {
@@ -899,8 +913,18 @@ function insert_student($order)
     }
 
     $student_id = $wpdb->insert_id;
+    /* if( !$student_id ) {
+        edusystem_set_log("Error al crear el estudiante: " . $wpdb->last_error, 'student_insertion_error', null);
+        return;
+    } */
+
     insert_register_program($student_id, $program);
     update_metadata_student($student);
+
+    /* if ( check_access_virtual($student_id) ) {
+         handle_virtual_classroom_access($student_id);
+    } 
+ */
     return $student_id;
 }
 
@@ -1019,7 +1043,9 @@ function insert_register_documents( $student_id )
 
     // Obtencion de los documentos por el programa, carrera o mencion
     $documents = $wpdb->get_results( $wpdb->prepare(
-        "SELECT `d`.id, `d`.name, `d`.is_visible, `d`.type_file, `d`.id_requisito, `d`.day_deadline, `d`.deadline_condition,
+        "SELECT `d`.id, `d`.name, `d`.is_visible, `d`.type_file, `d`.id_requisito, 
+                `d`.help_text, `d`.day_deadline, `d`.deadline_condition, `d`.profile, 
+                `d`.tooltip_help_text,
             CASE
                 WHEN `d`.is_required = 1 THEN 1
                 WHEN `d`.is_required = 0 THEN
@@ -1103,7 +1129,10 @@ function insert_register_documents( $student_id )
         $is_required = $document->is_required;
         $is_visible = $document->is_visible;
         $type_file = $document->type_file;
+        $profile = $document->profile;
         $id_requisito = $document->id_requisito;
+        $help_text = $document->help_text;
+        $tooltip_help_text = $document->tooltip_help_text;
         $doc_id = $document->id;
         $day_deadline = (int) $document->day_deadline;
         $deadline_condition = $document->deadline_condition;
@@ -1135,8 +1164,11 @@ function insert_register_documents( $student_id )
             'document_id' => $document_name, 
             'doc_id' => $doc_id,
             'is_required' => $is_required,
+            'help_text' => $help_text,
+            'tooltip_help_text' => $tooltip_help_text,
             'is_visible' => $is_visible,
             'type_file' => $type_file,
+            'profile' => $profile,
             'id_requisito' => $id_requisito,
             'max_date_upload' => $deadline,
             'status' => 0,
@@ -1508,11 +1540,19 @@ function load_feed()
     $student = $wpdb->get_row("SELECT * FROM {$table_students} WHERE email='{$current_user->user_email}' OR partner_id={$current_user->ID}");
 
     $table_student_payments = $wpdb->prefix . 'student_payments';
+    $table_orders = $wpdb->prefix . 'wc_orders';
     $payments = [];
     if($student) {
         $payments = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM {$table_student_payments} WHERE student_id = %d AND status_id = 0 AND date_next_payment <= NOW()",
+                "SELECT `p`.* 
+                FROM `$table_student_payments` AS `p`
+                LEFT JOIN `$table_orders` AS `o` ON `p`.order_id = `o`.id
+                WHERE `p`.student_id = %d AND `p`.status_id = 0 AND `p`.date_next_payment <= NOW()
+                    AND (
+                        `p`.order_id IS NULL 
+                        OR `o`.status = 'wc-pending'
+                    )",
                 (int) $student->id
             )
         );

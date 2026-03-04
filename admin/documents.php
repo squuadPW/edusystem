@@ -11,7 +11,10 @@ function show_admission_documents()
             $table_documents = $wpdb->prefix . 'documents';
 
             $document_id = isset($_POST['document_id']) ? intval($_POST['document_id']) : 0;
-            $name = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
+            $name = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
+            $profile = isset($_POST['profile']) ? 1 : 0;
+            $help_text = isset($_POST['help_text']) ? wp_kses_post($_POST['help_text']) : '';
+            $tooltip_help_text = isset($_POST['tooltip_help_text']) ? 0 : 1;
             $day_deadline = isset($_POST['day_deadline']) ? sanitize_text_field($_POST['day_deadline']) : null;
             $deadline_condition = isset($_POST['deadline_condition']) ? sanitize_text_field($_POST['deadline_condition']) : null;
 
@@ -44,17 +47,22 @@ function show_admission_documents()
                 $is_required = 0;
             }
 
+            $data_document = [
+                'name'                => $name,
+                'is_required'         => $is_required,
+                'academic_department' => $academic_department,
+                'type_file'           => $type_file,
+                'profile'             => $profile,
+                'id_requisito'        => $id_requisito,
+                'help_text'           => $help_text,
+                'tooltip_help_text'   => $tooltip_help_text,
+                'day_deadline'        => $day_deadline,
+                'deadline_condition'  => $deadline_condition,
+                'updated_at'          => date('Y-m-d H:i:s')
+            ];
+
             if( $document_id ){
-                $update = $wpdb->update($table_documents, [
-                    'name' => $name, 
-                    'is_required' => $is_required, 
-                    'academic_department' => $academic_department,
-                    'type_file' => $type_file,
-                    'id_requisito' => $id_requisito,
-                    'day_deadline' => $day_deadline,
-                    'deadline_condition' => $deadline_condition,
-                    'updated_at' => date('Y-m-d H:i:s')
-                ], ['id' => $document_id]);
+                $update = $wpdb->update($table_documents, $data_document, ['id' => $document_id]);
 
                 if( $update ){
                     setcookie('message', __('The document has been updated correctly.', 'edusystem'), time() + 10, '/');
@@ -68,18 +76,7 @@ function show_admission_documents()
                 }
 
             } else {
-                $insert = $wpdb->insert(
-                    $table_documents,
-                    [
-                        'name'                => $name,
-                        'is_required'         => $is_required,
-                        'academic_department' => $academic_department,
-                        'type_file'           => $type_file,
-                        'id_requisito'        => $id_requisito,
-                        'deadline'            => $deadline,
-                        'updated_at'          => date('Y-m-d H:i:s')
-                    ]
-                );
+                $insert = $wpdb->insert( $table_documents, $data_document );
 
                 if( $insert ){
                     $document_id = $wpdb->insert_id;

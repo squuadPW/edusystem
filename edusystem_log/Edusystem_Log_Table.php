@@ -181,7 +181,7 @@ class Edusystem_Log_Table extends WP_List_Table {
                     'id'         => $log->id,
                     'user_id'       =>  $log->user_id,
                     'user'       => $user_name,
-                    'type'       => edusystem_get_log_type_label($log->type),
+                    'type'       => edusystem_set_log_type_label($log->type),
                     'message'    => $log->message,
                     'created_at' => $log->created_at,
                 ];

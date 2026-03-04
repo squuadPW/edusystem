@@ -6,6 +6,8 @@
         </div>
     </div>
 
+    <input type="hidden" name="token_dynamic_link" id="token_dynamic_link" value="<?= $token ?? ''; ?>">
+
     <input type="hidden" name="crm_token" id="x-api-key" value="<?= get_option('crm_token') ?? ''; ?>">
     <input type="hidden" name="crm_url" id="x-api-url" value="<?= get_option('crm_url') ?? ''; ?>">
     <input type="hidden" name="crm_id" id="x-api-id" value="<?= $_GET['crm_id'] ?? ''; ?>">

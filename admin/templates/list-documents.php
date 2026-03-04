@@ -99,7 +99,8 @@
                                 <?php $academic_department = json_decode($document->academic_department, true) ?>
                                 <?php if( !empty( $academic_department )  ): ?>
 
-                                    <?
+                                    <?php
+                                    
                                         $list_programs = [];
 
                                         global $wpdb;
