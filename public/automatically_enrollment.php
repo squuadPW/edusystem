@@ -89,8 +89,7 @@ function automatically_offers_enrollment() {
     
 }
 
-function automatically_enrollment($student_id)
-{
+function automatically_enrollment($student_id) {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_students} WHERE id = %d", $student_id));
@@ -205,8 +204,7 @@ function automatically_enrollment($student_id)
     update_max_upload_at($student->id);
 }
 
-/* function automatically_enrollment($student_id)
-{
+/* function automatically_enrollment($student_id) {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_students} WHERE id = %d", $student_id));
@@ -630,8 +628,7 @@ function generate_projection_student( $student_id ) {
     generate_expectation_matrix( $student, $projection, $pensum );
 }
 
-/* function generate_projection_student($student_id, $force = false)
-{
+/* function generate_projection_student($student_id, $force = false) {
     global $wpdb;
 
     // Validar el ID del estudiante
@@ -1217,8 +1214,7 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
 
 }
 
-/* function build_detailed_matrix($terms_config, $terms_available, $matrix_regular, $student_id)
-{
+/* function build_detailed_matrix($terms_config, $terms_available, $matrix_regular, $student_id) {
     global $wpdb;
 
     if (empty($terms_config) || empty($matrix_regular)) {
