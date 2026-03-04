@@ -156,7 +156,7 @@
                 <input class="formdata flatpickr" autocomplete="off" type="date" id="birth_date_parent"
                     name="birth_date_parent" required>
             </div>
-r
+
             <div id="parent_document_type_field" class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6">
                 <label for="document_type"><?= __('Type document', 'edusystem'); ?><span class="required">*</span></label>
                 <select id="parent_document_type" name="parent_document_type" autocomplete="off"
