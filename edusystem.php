@@ -1859,7 +1859,7 @@ function create_tables()
                 'max_HC_student' => 5
             ], 
             6 => [
-            'max_HC' => 2,
+                'max_HC' => 2,
                 'term_HC' => 5,
                 'max_HC_student' => 6
             ], 

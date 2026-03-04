@@ -1079,6 +1079,7 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
     $accumulated_hc = 0;
     $matrix = [];
     $total_terms = 0;
+
     foreach( $matrix_config as $key => $matrix_config_data ) {
 
         if( $key == 'default' ) continue;
@@ -1219,13 +1220,13 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
                     });
                 }
             }
-
+    
             // valida que el periodo y corte corresppndiente en $period_data es menor que el actual
             if ( ( $data_code === $curr_code && $period_data->cut >= $current_cut ) || $data_code > $curr_code ) {
-            
+                
                 foreach ( $subjects as $i => $subject ) {
 
-                    if( $registered_hc < $matrix_config_data->max_HC ) { 
+                    if( $registered_hc < $matrix_config_data->max_HC ) {
 
                         $subject_projection = $projection_data[$subject->subject_id] ?? null;
                         if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] > $subject_projection['assigned_slots']) {
@@ -1256,6 +1257,7 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
                         unset($subjects[$i]);
                     } 
                 }
+   
             }
             
             $total_terms++;
@@ -2195,6 +2197,12 @@ function get_expected_matrix_by_student($student_id)
     return $matrix;
 }
 
+
+add_action('admin_notices', function() {
+    echo '<pre>';
+        generate_projection_student( 376 );
+    echo '</pre>';
+});
 
 // add_action('init', 'procesar_estudiantes_graduandos');
 function procesar_estudiantes_graduandos() {
