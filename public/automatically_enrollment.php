@@ -2143,6 +2143,27 @@ function persist_expected_matrix($student_id, $detailed_matrix)
     return $inserted;
 }
 
+function update_period_cut_expected_matrix ( $id, $academic_period, $academic_period_cut ) {
+
+    global $wpdb;
+    $updated = $wpdb->update( 
+        "{$wpdb->prefix}student_expected_matrix", 
+        [ 
+            'academic_period'     => $academic_period, 
+            'academic_period_cut' => $academic_period_cut 
+        ],
+        [ 
+            'id' => $id, 
+        ],
+        [ '%s', '%s' ], 
+        [ '%d' ]  
+    );
+
+    return $updated;
+
+}
+
+
 function clear_expected_matrix_for_student($student_id)
 {
     global $wpdb;
@@ -2155,48 +2176,7 @@ function get_expected_matrix_by_student($student_id)
     global $wpdb;
     $table = $wpdb->prefix . 'student_expected_matrix';
 
-    $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE student_id=%d ORDER BY term_index ASC, id ASC", $student_id));
-
-    $matrix = [];
-    foreach ($rows as $row) {
-        $idx = max(0, intval($row->term_index) - 1);
-        if (!isset($matrix[$idx])) {
-            $matrix[$idx] = [
-                'type' => 'R',
-                'subject_id' => [],
-                'cut' => [],
-                'code_period' => [],
-                'completed' => [],
-                'status' => []
-            ];
-        }
-
-        // Resolve subject_id: prefer numeric subject_id stored, otherwise try to find by subject code or name
-        $resolved_subject_id = null;
-        if (!empty($row->subject_id) && is_numeric($row->subject_id)) {
-            $resolved_subject_id = intval($row->subject_id);
-        } else {
-            $candidate = $row->subject ?? $row->subject_code ?? '';
-            if (!empty($candidate)) {
-                if (is_numeric($candidate)) {
-                    $resolved_subject_id = intval($candidate);
-                } else {
-                    // Try to lookup by code_subject or name in school_subjects
-                    $table_school_subjects = $wpdb->prefix . 'school_subjects';
-                    $maybe_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_school_subjects} WHERE code_subject = %s OR name = %s LIMIT 1", $candidate, $candidate));
-                    if (!empty($maybe_id)) {
-                        $resolved_subject_id = intval($maybe_id);
-                    }
-                }
-            }
-        }
-
-        $matrix[$idx]['subject_id'][] = $resolved_subject_id !== null ? $resolved_subject_id : null;
-        $matrix[$idx]['cut'][] = $row->academic_period_cut;
-        $matrix[$idx]['code_period'][] = $row->academic_period;
-        $matrix[$idx]['completed'][] = false;
-        $matrix[$idx]['status'][] = !empty($row->status) ? $row->status : 'pendiente';
-    }
+    $matrix = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE student_id=%d ORDER BY term_index ASC, id ASC", $student_id));
 
     return $matrix;
 }
@@ -2223,3 +2203,5 @@ function procesar_estudiantes_graduandos() {
 
     update_option('generate_projection_student_test', true);
 }
+
+
