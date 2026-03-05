@@ -479,14 +479,6 @@ function load_inscriptions_regular_valid($student, $status = "(status_id = 1 OR 
     return count($inscriptions);
 }
 
-add_action('admin_notices', function() {
-
-    echo '<h1>hola</h1>';
-    echo '<pre>';
-        generate_projection_student( 66 );
-    echo '</pre>';
-});
-
 function generate_projection_student( $student_id ) {
 
     // Validar el ID del estudiante
