@@ -479,6 +479,14 @@ function load_inscriptions_regular_valid($student, $status = "(status_id = 1 OR 
     return count($inscriptions);
 }
 
+add_action('admin_notices', function() {
+
+    echo '<h1>hola</h1>';
+    echo '<pre>';
+        generate_projection_student( 66 );
+    echo '</pre>';
+});
+
 function generate_projection_student( $student_id ) {
 
     // Validar el ID del estudiante
@@ -985,7 +993,6 @@ function generate_projection_student( $student_id ) {
 } */
 
 function generate_expectation_matrix( $student, $projection, $pensum ) {
-
     if ( !$student || !$projection || !$pensum ) return false;
 
     global $wpdb;
@@ -993,6 +1000,7 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
     $table_academic_periods_cut = "{$wpdb->prefix}academic_periods_cut";
     $table_student_payments = $wpdb->prefix . 'student_payments';
     $table_expected_matrix = "{$wpdb->prefix}expected_matrix";
+    $table_students = $wpdb->prefix . 'students';
 
     // lista de materias del pensum
     $pensum_matrix = json_decode( $pensum->matrix );
@@ -1032,6 +1040,9 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
 
         // Aplicar límites: min 5, max 15 // consultar el terminos del programa
         $terms_available = min(15, max(5, intval($periods_count)));
+
+        // Actualizar los terminos del estudiante 
+        $wpdb->update($table_students, ['terms_available' => $terms_available], ['id' => $student->id]);
        
         $matrix_config_json = $wpdb->get_var( $wpdb->prepare(
             "SELECT matrix_config FROM `$table_expected_matrix`
@@ -1079,7 +1090,7 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
     $accumulated_hc = 0;
     $matrix = [];
     $total_terms = 0;
-
+    
     foreach( $matrix_config as $key => $matrix_config_data ) {
 
         if( $key == 'default' ) continue;
@@ -1142,7 +1153,8 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
                 ) { 
 
                     $subject_projection = $projection_data[$subject->subject_id] ?? null;
-                    if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] > $subject_projection['assigned_slots']) {
+                    var_dump($subject_projection);
+                    if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] >= $subject_projection['assigned_slots']) {
                         
                         $subject_move = $subjects[$i];
                         unset($subjects[$i]);
@@ -1223,13 +1235,13 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
     
             // valida que el periodo y corte corresppndiente en $period_data es menor que el actual
             if ( ( $data_code === $curr_code && $period_data->cut >= $current_cut ) || $data_code > $curr_code ) {
-                
-                foreach ( $subjects as $i => $subject ) {
 
-                    if( $registered_hc < $matrix_config_data->max_HC ) {
+                while( $registered_hc < $matrix_config_data->max_HC AND $subjects ) {
+
+                    foreach ( $subjects as $i => $subject ) {
 
                         $subject_projection = $projection_data[$subject->subject_id] ?? null;
-                        if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] > $subject_projection['assigned_slots']) {
+                        if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] >= $subject_projection['assigned_slots']) {
                             
                             $subject_move = $subjects[$i];
                             unset($subjects[$i]);
@@ -2197,16 +2209,13 @@ function get_expected_matrix_by_student($student_id)
     return $matrix;
 }
 
-
-add_action('admin_notices', function() {
-    echo '<pre>';
-        generate_projection_student( 376 );
-    echo '</pre>';
-});
-
-// add_action('init', 'procesar_estudiantes_graduandos');
+//add_action('init', 'procesar_estudiantes_graduandos');
 function procesar_estudiantes_graduandos() {
     
+    if ( get_option('generate_projection_student_test') ) {
+        return; 
+    }
+
     global $wpdb;
     $tabla = $wpdb->prefix . 'students';
 
@@ -2219,4 +2228,6 @@ function procesar_estudiantes_graduandos() {
             generate_projection_student( $student->id );
         }
     }
+
+    update_option('generate_projection_student_test', true);
 }
