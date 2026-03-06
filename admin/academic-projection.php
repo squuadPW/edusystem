@@ -510,8 +510,6 @@ function add_admin_form_academic_projection_content()
 
             foreach ( $new_matrix_data as $id => $subject ) {
 
-                var_dump($subject);
-
                 if( (boolean) $subject['update_disable'] ) continue;
 
                 $update = update_period_cut_expected_matrix( $id, $subject['code_period'], $subject['cut'] );

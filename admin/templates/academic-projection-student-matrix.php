@@ -178,3 +178,81 @@
         </div>
     </div>
 </div>
+
+
+
+<script>
+
+    /* document.addEventListener('change', function(e) {
+        if ( e.target && e.target.classList.contains('academic-period-select') ) {
+            const periodSelect = e.target;
+            const periodCode = periodSelect.value;
+            
+            // Encontrar el select de "cut" en la misma fila (tr)
+            const row = periodSelect.closest('tr');
+            const cutSelect = row.querySelector('.academic-cut-select');
+
+            if (!periodCode) {
+                cutSelect.innerHTML = '<option value="">Seleccione Corte</option>';
+                return;
+            }
+
+            // Preparar los datos para el AJAX de WordPress
+            const formData = new FormData();
+            formData.append('action', 'get_academic_cuts');
+            formData.append('period_code', periodCode);
+
+            // Fetch a la URL de admin-ajax.php (asegúrate de que esté disponible en el objeto local de WP)
+            // Si no tienes el objeto localizado, puedes usar: '/wp-admin/admin-ajax.php'
+            fetch('<?= admin_url('admin-ajax.php') ?>', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(res => {
+                if (res.success) {
+                    let options = '<option value="">Seleccione Corte</option>';
+                    res.data.forEach(item => {
+                        options += `<option value="${item.cut}">${item.cut}</option>`;
+                    });
+                    cutSelect.innerHTML = options;
+                } else {
+                    cutSelect.innerHTML = '<option value="">Sin cortes</option>';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+ */
+</script>
+
+<?php 
+
+    /* // Registrar las acciones para usuarios logueados y no logueados
+    add_action('wp_ajax_get_academic_cuts', 'get_academic_cuts_callback');
+    add_action('wp_ajax_nopriv_get_academic_cuts', 'get_academic_cuts_callback');
+
+    function get_academic_cuts_callback() {
+        global $wpdb;
+
+        // Validar el periodo enviado
+        $period_code = isset($_POST['period_code']) ? sanitize_text_field($_POST['period_code']) : '';
+
+        if (empty($period_code)) {
+            wp_send_json_error('Periodo no proporcionado');
+        }
+
+        // Consulta usando wpdb y placeholders para seguridad
+        $table_name = $wpdb->prefix . 'academic_periods_cut';
+        $results = $wpdb->get_results(
+            $wpdb->prepare("SELECT cut FROM $table_name WHERE code = %s", $period_code)
+        );
+
+        if ($results) {
+            wp_send_json_success($results);
+        } else {
+            wp_send_json_error('No se encontraron cortes');
+        }
+
+        wp_die(); // Obligatorio en AJAX de WordPress
+    } */

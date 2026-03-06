@@ -69,7 +69,7 @@ Sí, ofrecemos soporte técnico. Contacta a través de nuestro sitio web o foro 
 - Corrección de errores menores:
   - Mejora en el procesamiento de estudiantes que ya no tienen términos en casos AES.
   - Corrección del bloqueo de materias al superar el límite de reinscripciones.
-- Se ajusto la actualizacion manual de la matriz de un estudiante.
+- Se ajusto la actualizacion manual de la matriz del estudiante.
 
 
 ### 4.2.0
