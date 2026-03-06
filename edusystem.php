@@ -2358,4 +2358,17 @@ function create_tables()
 } */
 
  
+
+    /* WITH RankedRecords AS (
+    SELECT 
+        *,
+        ROW_NUMBER() OVER (
+            PARTITION BY status_id, section, student_id, subject_id, code_subject, calification, code_period, cut_period 
+            ORDER BY created_at DESC
+        ) AS rn
+    FROM `wp_student_period_inscriptions`
+)
+SELECT *
+FROM RankedRecords
+WHERE rn > 1; */
  

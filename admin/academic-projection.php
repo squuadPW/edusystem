@@ -281,6 +281,21 @@ function add_admin_form_academic_projection_content()
             $cut = $_POST['cut'];
 
             get_moodle_notes($subject_id, $code, $cut);
+
+            // log del system
+            $url = add_query_arg(array(
+                'page'                => 'add_admin_form_academic_projection_content',
+                'section_tab'         => 'validate_enrollment_subject',
+                'academic_period'     => $code,
+                'academic_period_cut' => $cut,
+                'subject_id'          => $subject_id,
+            ), admin_url('admin.php'));
+            
+            $subject = get_subject_details($subject_id);
+            $message = __("The user has downloaded the Moodle notes for the subject %s",'edusystem');
+            $message = sprintf($message, "<a href='{$url}' > $subject->name </a> ");
+            edusystem_set_log($message, 'Download moodle notes');
+
             setcookie('message', __('Successfully updated notes for the students.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollment_subject&academic_period=' . $code . '&academic_period_cut=' . $cut . '&subject_id=' . $subject_id . '&section=1'));
             exit;
@@ -443,6 +458,19 @@ function add_admin_form_academic_projection_content()
             }
 
             update_max_upload_at($projection->student_id);
+
+            // log del system
+            $url = add_query_arg(array(
+                'page'        => 'add_admin_form_admission_content',
+                'section_tab' => 'student_details',
+                'student_id'  => $projection->student_id,
+            ), admin_url('admin.php'));
+            
+            $student_full_name = student_names_lastnames_helper( $projection->student_id );
+            $message = __("The user has manually updated the student's registration %s",'edusystem');
+            $message = sprintf($message, "<a href='{$url}' > $student_full_name </a> ");
+            edusystem_set_log($message, 'Manual update registrations');
+
             setcookie('message', __('Projection adjusted successfully.', 'edusystem'), time() + 10, '/');
             setcookie('message-error', $errors, time() + 3600, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
@@ -532,6 +560,17 @@ function add_admin_form_academic_projection_content()
                 $text_error = sprintf(__('There was an error updating the following subjects: %s.','edusystem'), $subject_error );
                 setcookie('message-error', $text_error, time() + 10, '/');
             }
+
+            $url = add_query_arg(array(
+                'page'        => 'add_admin_form_admission_content',
+                'section_tab' => 'student_details',
+                'student_id'  => $student_id,
+            ), admin_url('admin.php'));
+            
+            $student_full_name = student_names_lastnames_helper( $student_id );
+            $message = __('The user to manually update the matrix of student %s','edusystem');
+            $message = sprintf($message, "<a href='{$url}' > $student_full_name </a> ");
+            edusystem_set_log($message, 'Manual matrix update');
 
             // 4. Redirect
             $redirect_url = admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=student_matrix&student_id=' . $student_id);
@@ -2556,6 +2595,20 @@ function get_close_academic_offer()
     ], ['code_period' => $academic_period, 'cut_period' => $academic_period_cut, 'subject_id' => $subject_id, 'section' => $section]);
 
     setcookie('message', $close_offer ? __('Successfully closed offer.', 'edusystem') : __('Successfully opened offer.', 'edusystem'), time() + 3600, '/');
+    
+    // log del system
+    $url = add_query_arg(array(
+        'page'                => 'add_admin_form_academic_projection_content',
+        'section_tab'         => 'validate_enrollment_subject',
+        'academic_period'     => $academic_period,
+        'academic_period_cut' => $academic_period_cut,
+        'subject_id'          => $subject_id,
+    ), admin_url('admin.php'));
+            
+    $subject = get_subject_details($subject_id);
+    $message = __("The user has closed the offer for the subject %s",'edusystem');
+    $message = sprintf($message, "<a href='{$url}' > $subject->name </a> ");
+    edusystem_set_log($message, 'Close academic offer');
 
     echo json_encode(['status' => 'success']);
     exit;
