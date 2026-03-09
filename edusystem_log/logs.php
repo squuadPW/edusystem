@@ -58,9 +58,8 @@ add_action('edusystem_save_student_data', function ( $student_id ) {
 
         $name_student = '';
         if( $student_id ){
-            $first_name   = get_user_meta( (int) $student_id, 'first_name', true );
-            $last_name = get_user_meta( (int) $student_id, 'last_name', true );
-            $name_student = $first_name.' '.$last_name;
+            
+            $name_student = student_names_lastnames_helper( $student_id );
          
             $url = esc_url(add_query_arg(
                 array(
