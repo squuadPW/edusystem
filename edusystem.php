@@ -677,6 +677,7 @@ function create_tables()
         `moodle_course_id` int(11) DEFAULT NULL,
         `teacher_id` int(11) DEFAULT NULL,
         `type` text DEFAULT NULL,
+        `prerelation` TEXT NULL DEFAULT NULL,
         `is_elective` tinyint(1) NOT NULL DEFAULT 0,
         `retake_limit` int(11) DEFAULT NULL,
         `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
