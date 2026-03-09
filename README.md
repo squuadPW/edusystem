@@ -1,6 +1,6 @@
 # EduSystem
 
-**Versión:** 4.2.1  
+**Versión:** 4.2.2  
 **Autor:** EduSof  
 **URI del Autor:** https://edusof.com/  
 **Licencia:** GPL2  
@@ -64,6 +64,9 @@ Sí, ofrecemos soporte técnico. Contacta a través de nuestro sitio web o foro 
 -->
 
 ## Registro de Cambios
+
+### 4.2.2
+- Ajuste de los log de edusystem
 
 ### 4.2.1
 - Corrección de errores menores:
