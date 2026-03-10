@@ -2372,4 +2372,29 @@ function create_tables()
 SELECT *
 FROM RankedRecords
 WHERE rn > 1; */
+
+
+/* 
+
+WITH RankedRecords AS ( SELECT *, ROW_NUMBER() OVER ( PARTITION BY status_id, section, student_id, subject_id, code_subject, calification, code_period, cut_period ORDER BY created_at DESC ) AS rn FROM `wp_student_period_inscriptions` ) SELECT s.id AS student_table_id, s.name, s.last_name, s.email, r.* FROM RankedRecords r INNER JOIN `wp_students` s ON r.student_id = s.id WHERE r.rn > 1;
+*/
+
+
+/* 
+
+SELECT * FROM `wp_students` 
+WHERE id IN (
+    SELECT student_id
+    FROM (
+        SELECT 
+            student_id,
+            ROW_NUMBER() OVER (
+                PARTITION BY status_id, section, student_id, subject_id, code_subject, calification, code_period, cut_period 
+                ORDER BY created_at DESC
+            ) AS rn
+        FROM `wp_student_period_inscriptions`
+    ) AS DuplicateCheck
+    WHERE rn > 1
+);
+*/
  
