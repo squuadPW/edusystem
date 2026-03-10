@@ -322,16 +322,25 @@
 
             <div >
                 <div class="form-group" style="padding: 0px 10px 10px 10px;" >
-                    <label for="default_price_electives"><?= __('Default price for electives'); ?></label> <br>
+                    <label for="default_price_electives"><?= __('Default price for electives', 'edusystem'); ?></label> <br>
                     <input type="number" name="default_price_electives" min="0" value="<?= get_option('default_price_electives') ?? 0 ?>">
                 </div>
 
                 <div class="form-group" style="padding: 0px 10px 10px 10px;" >
-                    <label for="default_price_regular_courses"><?= __('Default price for regular courses'); ?></label> <br>
+                    <label for="default_price_regular_courses"><?= __('Default price for regular courses', 'edusystem'); ?></label> <br>
                     <input type="number" name="default_price_regular_courses" min="0" value="<?= get_option('default_price_regular_courses') ?? 0?>">
                 </div>
             </div>
-            
+
+            <div >
+                <div class="form-group" style="padding: 0px 10px 10px 10px;" >
+                    <label for="default_price_electives">
+                        <input type="checkbox" name="default_stripe_account" value="1" <?= checked(1, get_option('default_stripe_account'), false); ?>>
+                        <?= __('Use default Stripe account', 'edusystem'); ?>
+                    </label>
+                </div>
+            </div>
+
         </div>
 
         <div id="by_design" style="display: none">

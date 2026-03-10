@@ -484,7 +484,15 @@ add_shortcode('student_registration_form', 'student_registration_form_optimized'
 add_filter('woocommerce_available_payment_gateways', 'hide_payment_gateways_from_cookie');
 
 function hide_payment_gateways_from_cookie($available_gateways)
-{
+{   
+    
+    if ( empty($_COOKIE['squuad_stripe_selected_client_id']) ) {
+
+        if( !get_option('default_stripe_account') ) {
+            unset($available_gateways['woo_squuad_stripe']);
+        }
+    }
+
     // Verificar si la cookie existe
     if (!isset($_COOKIE['student_registration_hidden_payments']) || empty($_COOKIE['student_registration_hidden_payments'])) {
         return $available_gateways;
