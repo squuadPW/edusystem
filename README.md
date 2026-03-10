@@ -66,7 +66,9 @@ Sí, ofrecemos soporte técnico. Contacta a través de nuestro sitio web o foro 
 ## Registro de Cambios
 
 ### 4.2.2
-- Ajuste de los log de edusystem
+- Optimización de Logs: Refactorización del sistema de registros de EduSystem para mejorar la trazabilidad de eventos.
+- Soporte de Identificadores Cero: Se corrigió la validación de Payment Links para permitir planes de pago con identificador 0.
+- Gestión de Pasarela: Implementación de un interruptor (toggle) para habilitar o deshabilitar la cuenta de Stripe por defecto.
 
 ### 4.2.1
 - Corrección de errores menores:
