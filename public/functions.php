@@ -2737,36 +2737,20 @@ function save_metadata_checkout_create_order_item($item, $cart_item_key, $values
         $order->add_meta_data('program_data', json_encode($values['program_data']));
     }
 
-}
-
-add_action('woocommerce_checkout_create_order', 'aes_set_order_meta_from_cart', 20, 1);
-function aes_set_order_meta_from_cart($order)
-{
-    $cart = WC()->cart;
-    if (!$cart) {
-        return;
+    if (isset($values['cuote_payment'])) {
+        $order->update_meta_data('cuote_payment', (int) $values['cuote_payment']);
     }
 
-    foreach ($cart->get_cart() as $cart_item) {
-        if (isset($cart_item['cuote_payment'])) {
-            $order->update_meta_data('cuote_payment', (int) $cart_item['cuote_payment']);
-        }
-        if (isset($cart_item['student_id'])) {
-            $order->update_meta_data('student_id', (int) $cart_item['student_id']);
-        }
-        if (isset($cart_item['institute_id'])) {
-            $order->update_meta_data('institute_id', (int) $cart_item['institute_id']);
-        }
-
-        if (
-            isset($cart_item['cuote_payment']) ||
-            isset($cart_item['student_id']) ||
-            isset($cart_item['institute_id'])
-        ) {
-            break;
-        }
+    if (isset($values['student_id'])) {
+        $order->update_meta_data('student_id', (int) $values['student_id']);
     }
+
+    if (isset($values['institute_id'])) {
+        $order->update_meta_data('institute_id', (int) $values['institute_id']);
+    }
+
 }
+
 
 add_action('wp_ajax_nopriv_reload_payment_table', 'reload_payment_table');
 add_action('wp_ajax_reload_payment_table', 'reload_payment_table');
