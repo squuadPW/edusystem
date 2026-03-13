@@ -24,6 +24,7 @@
 			<?php } ?>
 
 			<input type="hidden" id="id_document" name="id_document" value="<?= $_GET['id_document'] ?>" required>
+			<input type="hidden" id="student_id" name="student_id" value="<?= $student->id ?>" >
 			<input type="hidden" id="generate" name="generate"
 				value="<?= $_GET['student_available'] == 1 && isset($payments) ? true : false ?>" required>
 

@@ -69,6 +69,7 @@ Sí, ofrecemos soporte técnico. Contacta a través de nuestro sitio web o foro 
 - Optimización de Logs: Refactorización del sistema de registros de EduSystem para mejorar la trazabilidad de eventos.
 - Soporte de Identificadores Cero: Se corrigió la validación de Payment Links para permitir planes de pago con identificador 0.
 - Gestión de Pasarela: Implementación de un interruptor (toggle) para habilitar o deshabilitar la cuenta de Stripe por defecto.
+- Se reparo el boton generar la orden a la cuota desde administracion.
 
 ### 4.2.1
 - Corrección de errores menores:

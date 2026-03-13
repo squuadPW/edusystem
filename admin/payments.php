@@ -633,53 +633,65 @@ function add_admin_form_payments_content()
             if ( $generate ) {
 
                 $student_id = $_POST['student_id'];
-                $customer_id = $student->partner_id;
-                $institute_id = 0;
-                $payment = 0;
-                
-                $proxima_cuota = $wpdb->get_row(
+                $student_array = get_student_from_id($student_id);
+                $student = $student_array[0];
+
+                $cuota = $wpdb->get_row(
                     $wpdb->prepare(
                         "SELECT * FROM $table_student_payments 
                         WHERE student_id = %d 
-                        AND status_id = %d 
+                        AND status_id = 0
                         ORDER BY date_next_payment ASC 
                         LIMIT 1",
-                        $student_id,
-                        0
+                        $student->id
                     )
                 );
+
+                if( !$student || !$cuota ) {
+                    wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $student->id_document));
+                    exit;
+                }
+
+                $customer_id = (int) $student->partner_id;
+                $institute_id = (int) $student->institute_id;
+                $alliances = get_alliances_from_institute($institute_id);
+                $alliance_id = json_encode($alliances);
 
                 $new_order = wc_create_order([
                     'customer_id' => $customer_id,
                     'status' => 'pending-payment',
                 ]);
 
-                $new_order->add_meta_data('alliance_id', $order_old->get_meta('alliance_id'));
+                $new_order->add_meta_data('alliance_id', $alliance_id);
                 $new_order->add_meta_data('institute_id', $institute_id );
-                $new_order->add_meta_data('student_id', $student_id );
-                $new_order->add_meta_data('cuote_payment', $payment->id);
-                $new_order->update_meta_data('_order_origin', 'Cuote pending - Admin');
+                $new_order->add_meta_data('student_id', $student->id );
+                $new_order->add_meta_data('cuote_payment', $cuota->id);
 
-                $product = $first_item->get_product(); // meter el producto del item de payment
-                $product->set_price($amount);
-                
-                $new_order->add_product($product, 1);
+                $product = wc_get_product($cuota->variation_id ? $cuota->variation_id : $cuota->product_id);
+                $item_id = $new_order->add_product($product, 1);
+                $item = $new_order->get_item($item_id);
+                $item->set_subtotal($cuota->amount);
+                $item->set_total($cuota->amount);
+                $item->save(); 
+
+                    
+                $billing_data = [
+                    'first_name' => get_user_meta($customer_id, 'billing_first_name', true),
+                    'last_name'  => get_user_meta($customer_id, 'billing_last_name', true),
+                    'email'      => get_user_meta($customer_id, 'billing_email', true),
+                    'phone'      => get_user_meta($customer_id, 'billing_phone', true),
+                    'address_1'  => get_user_meta($customer_id, 'billing_address_1', true),
+                    'address_2'  => get_user_meta($customer_id, 'billing_address_2', true),
+                    'city'       => get_user_meta($customer_id, 'billing_city', true),
+                    'postcode'   => get_user_meta($customer_id, 'billing_postcode', true),
+                    'country'    => get_user_meta($customer_id, 'billing_country', true),
+                    'state'      => get_user_meta($customer_id, 'billing_state', true),
+                    'company'    => get_user_meta($customer_id, 'billing_company', true)
+                ];
+
+                $new_order->set_address($billing_data, 'billing');
+
                 $new_order->calculate_totals();
-
-                if ( $order_old->get_address('billing') ) {
-                    $billing_address = $order_old->get_address('billing');
-                    $new_order->set_billing_first_name($billing_address['first_name']);
-                    $new_order->set_billing_last_name($billing_address['last_name']);
-                    $new_order->set_billing_company($billing_address['company']);
-                    $new_order->set_billing_address_1($billing_address['address_1']);
-                    $new_order->set_billing_address_2($billing_address['address_2']);
-                    $new_order->set_billing_city($billing_address['city']);
-                    $new_order->set_billing_state($billing_address['state']);
-                    $new_order->set_billing_postcode($billing_address['postcode']);
-                    $new_order->set_billing_country($billing_address['country']);
-                    $new_order->set_billing_email($billing_address['email']);
-                    $new_order->set_billing_phone($billing_address['phone']);
-                }
                 $new_order->save();
 
                 set_institute_in_order($new_order, $institute_id);
@@ -687,7 +699,7 @@ function add_admin_form_payments_content()
                 // hacemos el envio del email al email del customer, es decir, al que paga.
                 $user_customer = get_user_by('id', $customer_id);
                 $email_user = WC()->mailer()->get_emails()['WC_Email_Sender_User_Email'];
-                $email_user->trigger($user_customer, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
+                $email_user->trigger($customer_id, 'You have pending payments', 'We invite you to log in to our platform as soon as possible so you can see your pending payments.');
 
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&success_advance_payment=true'));
                 exit;
@@ -752,7 +764,6 @@ function add_admin_form_payments_content()
                 exit;
             }
             */
-
 
             if ($student) {
                 wp_redirect(admin_url('admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document=' . $id_document));
