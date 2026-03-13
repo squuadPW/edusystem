@@ -65,6 +65,9 @@ Sí, ofrecemos soporte técnico. Contacta a través de nuestro sitio web o foro 
 
 ## Registro de Cambios
 
+### 4.2.3
+- Permite agregar cuotas al programa desde el panel de administracion.
+
 ### 4.2.2
 - Optimización de Logs: Refactorización del sistema de registros de EduSystem para mejorar la trazabilidad de eventos.
 - Soporte de Identificadores Cero: Se corrigió la validación de Payment Links para permitir planes de pago con identificador 0.
