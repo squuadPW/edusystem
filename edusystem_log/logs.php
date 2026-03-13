@@ -7,7 +7,7 @@ add_action('wp_login', function ($user_login, $user) {
     $last_name  = get_user_meta($user->ID, 'last_name', true);
 
     $message = sprintf(__('User %s logged in', 'edusystem'), $first_name.' '.$last_name);
-    edusystem_get_log( $message, 'login', $user->ID);
+    edusystem_set_log( $message, 'login', $user->ID);
 
 }, 10, 2);
 
@@ -36,7 +36,7 @@ add_action('wp_logout', function () {
         $message = sprintf(__('The user %s session closed', 'edusystem'), $first_name.' '.$last_name);
 
         // Registrar el log
-        edusystem_get_log($message, 'logout', $user_id);
+        edusystem_set_log($message, 'logout', $user_id);
 
         // Limpiar el transient
         delete_transient('last_logout_user');
@@ -58,9 +58,8 @@ add_action('edusystem_save_student_data', function ( $student_id ) {
 
         $name_student = '';
         if( $student_id ){
-            $first_name   = get_user_meta( (int) $student_id, 'first_name', true );
-            $last_name = get_user_meta( (int) $student_id, 'last_name', true );
-            $name_student = $first_name.' '.$last_name;
+            
+            $name_student = student_names_lastnames_helper( $student_id );
          
             $url = esc_url(add_query_arg(
                 array(
@@ -74,6 +73,6 @@ add_action('edusystem_save_student_data', function ( $student_id ) {
         }
 
         // Registrar el log
-        edusystem_get_log($message, 'save_student_data', $user->ID);
+        edusystem_set_log($message, 'save_student_data', $user->ID);
     }
 });

@@ -156,8 +156,10 @@ function add_admin_form_configuration_options_content()
             // others
             $default_price_electives = sanitize_text_field($_POST['default_price_electives']);
             $default_price_regular_courses = sanitize_text_field ($_POST['default_price_regular_courses']);
+            $default_stripe_account = sanitize_text_field ($_POST['default_stripe_account']);
             update_option('default_price_electives', $default_price_electives);
             update_option('default_price_regular_courses', $default_price_regular_courses);
+            update_option('default_stripe_account', $default_stripe_account);
 
             // Redirect to the same page with a success message
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content&success=true'));

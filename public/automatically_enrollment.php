@@ -1,18 +1,11 @@
 <?php
 
-add_action('admin_notices', function () {
-    echo '<div class="notice notice-info is-dismissible">
-             <p><strong>Aviso:</strong> Este mensaje aparecerá en todas las pantallas del admin.</p>
-         </div>';
-
-    echo '<pre>';
-        automatically_offers_enrollment();
-    echo '</pre>';
-});
-
 function automatically_offers_enrollment() {
     
     $load = load_current_cut_enrollment();
+    if( !$load ) return;
+
+    // obtiene corte y periodo para la inscripción automática
     $code = $load['code'];
     $cut = $load['cut'];
 
@@ -21,7 +14,6 @@ function automatically_offers_enrollment() {
     $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
     $table_academic_offers = $wpdb->prefix . 'academic_offers';
     $table_students = $wpdb->prefix . 'students';
-
 
     // obtiene todas las ofertas de este periodo que no han sido descargadas en el sistema de calificaciones.
     $offers = $wpdb->get_results(
@@ -53,44 +45,46 @@ function automatically_offers_enrollment() {
             $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_students} WHERE id = %d", $expected->student_id) );
             if( !$student ) continue;
 
-            continue;
-
             // Insertar inscripción
-            // 
-            /* $wpdb->insert($table_student_period_inscriptions, [
+            $insert = $wpdb->insert($table_student_period_inscriptions, [
                 'status_id' => 1,
-                'section' => $section,
-                'student_id' => $student->id,
-                'subject_id' => $offer->subject_id,
-                'code_subject' => $offer->code_subject,
+                'section' => (int) $section,
+                'student_id' => (int) $student->id,
+                'subject_id' => (int) $subject->id,
+                'code_subject' => $subject->code_subject,
                 'code_period' => $code,
                 'cut_period' => $cut,
                 'type' => $subject->type
-            ]); */
+            ]);
+            if( !$insert ) continue;
 
-            // Update student's projection so the subject appears as this cut
-            /* update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
-            update_expected_matrix_after_enrollment($student->id, $subject->id, $code, $cut);
-            edusystem_get_log('Enrolled in subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
-            edusystem_get_log('Projection updated for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
+            // Actualizar la proyección del estudiante y la matriz esperada
+            generate_projection_student($student->id); 
+            
+            $full_name_student = student_names_lastnames_helper($student->id);
+            $user = get_user_by('email', $student->email);
+            $user_id = $user ? $user->ID : 0;
+            edusystem_set_log('Enrolled in subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
+            edusystem_set_log('Projection updated for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
 
             // mandamos a moodle
-            $offer = get_offer_filtered($subject->id, $code, $cut, $section);
-            if ($offer && isset($offer->moodle_course_id) && get_option('auto_enroll_regular')) {
+            if ( isset($offer->moodle_course_id) && get_option('auto_enroll_regular') ) {
                 $enrollments = courses_enroll_student($student->id, [(int) $offer->moodle_course_id]);
                 if (!empty($enrollments)) {
                     enroll_student($enrollments);
-                    edusystem_get_log('Student ' . $full_name_student . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user_id);
+                    edusystem_set_log('Student ' . $full_name_student . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user_id);
                 }
-            } */
+            }
         }
 
     }
+
+    return true;
     
 }
 
-function automatically_enrollment($student_id)
-{
+function automatically_enrollment($student_id) {
+    
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_students} WHERE id = %d", $student_id));
@@ -124,13 +118,13 @@ function automatically_enrollment($student_id)
         foreach ($expected_rows as $row) {
             $subject_id = $row->subject_id;
             if (empty($subject_id)) {
-                edusystem_get_log('Empty subject ID found for student ' . $full_name_student . ' in expected rows', 'Automatically enrollment', $user_id);
+                edusystem_set_log('Empty subject ID found for student ' . $full_name_student . ' in expected rows', 'Automatically enrollment', $user_id);
                 continue;
             }
 
             $subject = get_subject_details($subject_id);
             if (!$subject) {
-                edusystem_get_log('Subject not found for ID ' . $subject_id . ' for student ' . $full_name_student, 'Automatically enrollment', $user_id);
+                edusystem_set_log('Subject not found for ID ' . $subject_id . ' for student ' . $full_name_student, 'Automatically enrollment', $user_id);
                 continue;
             }
 
@@ -157,7 +151,7 @@ function automatically_enrollment($student_id)
                         break;
                 }
 
-                edusystem_get_log($log_message, 'Automatically enrollment', $user_id);
+                edusystem_set_log($log_message, 'Automatically enrollment', $user_id);
                 continue;
             }
 
@@ -165,7 +159,7 @@ function automatically_enrollment($student_id)
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
             if (!$offer_available_to_enroll) {
                 // Si no hay oferta, no inscribimos esta materia
-                edusystem_get_log('No offer available for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student ' . $full_name_student . ' in the period ' . $code . ' - ' . $cut, 'Automatically enrollment', $user_id);
+                edusystem_set_log('No offer available for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student ' . $full_name_student . ' in the period ' . $code . ' - ' . $cut, 'Automatically enrollment', $user_id);
                 continue;
             }
 
@@ -182,11 +176,10 @@ function automatically_enrollment($student_id)
                 'type' => $subject->type
             ]);
 
-            // Update student's projection so the subject appears as this cut
-            update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
-            update_expected_matrix_after_enrollment($student->id, $subject->id, $code, $cut);
-            edusystem_get_log('Enrolled in subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
-            edusystem_get_log('Projection updated for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
+            // Actualizar la proyección del estudiante y la matriz esperada
+            generate_projection_student($student->id); 
+            edusystem_set_log('Enrolled in subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
+            edusystem_set_log('Projection updated for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
 
             // mandamos a moodle
             $offer = get_offer_filtered($subject->id, $code, $cut, $section);
@@ -194,19 +187,18 @@ function automatically_enrollment($student_id)
                 $enrollments = courses_enroll_student($student->id, [(int) $offer->moodle_course_id]);
                 if (!empty($enrollments)) {
                     enroll_student($enrollments);
-                    edusystem_get_log('Student ' . $full_name_student . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user_id);
+                    edusystem_set_log('Student ' . $full_name_student . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user_id);
                 }
             }
         }
     } else {
-        edusystem_get_log('No expected rows found by student ' . $full_name_student . ' for the period ' . $code . '-' . $cut, 'Automatically enrollment', $user_id);
+        edusystem_set_log('No expected rows found by student ' . $full_name_student . ' for the period ' . $code . '-' . $cut, 'Automatically enrollment', $user_id);
     }
 
     update_max_upload_at($student->id);
 }
 
-/* function automatically_enrollment($student_id)
-{
+/* function automatically_enrollment($student_id) {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
     $student = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_students} WHERE id = %d", $student_id));
@@ -240,13 +232,13 @@ function automatically_enrollment($student_id)
         foreach ($expected_rows as $row) {
             $subject_id = $row->subject_id;
             if (empty($subject_id)) {
-                edusystem_get_log('Empty subject ID found for student ' . $full_name_student . ' in expected rows', 'Automatically enrollment', $user_id);
+                edusystem_set_log('Empty subject ID found for student ' . $full_name_student . ' in expected rows', 'Automatically enrollment', $user_id);
                 continue;
             }
 
             $subject = get_subject_details($subject_id);
             if (!$subject) {
-                edusystem_get_log('Subject not found for ID ' . $subject_id . ' for student ' . $full_name_student, 'Automatically enrollment', $user_id);
+                edusystem_set_log('Subject not found for ID ' . $subject_id . ' for student ' . $full_name_student, 'Automatically enrollment', $user_id);
                 continue;
             }
 
@@ -273,7 +265,7 @@ function automatically_enrollment($student_id)
                         break;
                 }
 
-                edusystem_get_log($log_message, 'Automatically enrollment', $user_id);
+                edusystem_set_log($log_message, 'Automatically enrollment', $user_id);
                 continue;
             }
 
@@ -281,7 +273,7 @@ function automatically_enrollment($student_id)
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
             if (!$offer_available_to_enroll) {
                 // Si no hay oferta, no inscribimos esta materia
-                edusystem_get_log('No offer available for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student ' . $full_name_student . ' in the period ' . $code . ' - ' . $cut, 'Automatically enrollment', $user_id);
+                edusystem_set_log('No offer available for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student ' . $full_name_student . ' in the period ' . $code . ' - ' . $cut, 'Automatically enrollment', $user_id);
                 continue;
             }
 
@@ -301,8 +293,8 @@ function automatically_enrollment($student_id)
             // Update student's projection so the subject appears as this cut
             update_projection_after_enrollment($student->id, $subject->id, $code, $cut, 1);
             update_expected_matrix_after_enrollment($student->id, $subject->id, $code, $cut);
-            edusystem_get_log('Enrolled in subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
-            edusystem_get_log('Projection updated for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
+            edusystem_set_log('Enrolled in subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
+            edusystem_set_log('Projection updated for subject ' . $subject->name . ' (' . $subject->id . ')' . ' for student: ' . $full_name_student, 'Automatically enrollment', $user_id);
 
             // mandamos a moodle
             $offer = get_offer_filtered($subject->id, $code, $cut, $section);
@@ -310,12 +302,12 @@ function automatically_enrollment($student_id)
                 $enrollments = courses_enroll_student($student->id, [(int) $offer->moodle_course_id]);
                 if (!empty($enrollments)) {
                     enroll_student($enrollments);
-                    edusystem_get_log('Student ' . $full_name_student . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user_id);
+                    edusystem_set_log('Student ' . $full_name_student . ' enrolled in Moodle Course ID: ' . $offer->moodle_course_id, 'Automatically enrollment', $user_id);
                 }
             }
         }
     } else {
-        edusystem_get_log('No expected rows found by student ' . $full_name_student . ' for the period ' . $code . '-' . $cut, 'Automatically enrollment', $user_id);
+        edusystem_set_log('No expected rows found by student ' . $full_name_student . ' for the period ' . $code . '-' . $cut, 'Automatically enrollment', $user_id);
     }
 
     update_max_upload_at($student->id);
@@ -628,10 +620,14 @@ function generate_projection_student( $student_id ) {
 
     // Genera la matris esperada del estudiante y inserta los registro en DB
     generate_expectation_matrix( $student, $projection, $pensum );
+
+    $full_name_student = student_names_lastnames_helper($student->id); 
+    $user = get_user_by('email', $student->email);
+    $user_id = $user ? $user->ID : 0;
+    edusystem_set_log('The projection has been generated correctly for the student ' . $full_name_student, 'projection_generated_student', $user_id);
 }
 
-/* function generate_projection_student($student_id, $force = false)
-{
+/* function generate_projection_student($student_id, $force = false) {
     global $wpdb;
 
     // Validar el ID del estudiante
@@ -731,7 +727,7 @@ function generate_projection_student( $student_id ) {
         }
     } else {
         $full_name_student = student_names_lastnames_helper($student_id);
-        edusystem_get_log('Expected graduation date is empty for student: ' . $full_name_student, 'Automatically enrollment');
+        edusystem_set_log('Expected graduation date is empty for student: ' . $full_name_student, 'Automatically enrollment');
     }
 
     // Obtener inscripciones del estudiante
@@ -989,13 +985,14 @@ function generate_projection_student( $student_id ) {
 } */
 
 function generate_expectation_matrix( $student, $projection, $pensum ) {
-
     if ( !$student || !$projection || !$pensum ) return false;
 
     global $wpdb;
     $table_student_expected_matrix = $wpdb->prefix . 'student_expected_matrix';
     $table_academic_periods_cut = "{$wpdb->prefix}academic_periods_cut";
+    $table_student_payments = $wpdb->prefix . 'student_payments';
     $table_expected_matrix = "{$wpdb->prefix}expected_matrix";
+    $table_students = $wpdb->prefix . 'students';
 
     // lista de materias del pensum
     $pensum_matrix = json_decode( $pensum->matrix );
@@ -1035,6 +1032,9 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
 
         // Aplicar límites: min 5, max 15 // consultar el terminos del programa
         $terms_available = min(15, max(5, intval($periods_count)));
+
+        // Actualizar los terminos del estudiante 
+        $wpdb->update($table_students, ['terms_available' => $terms_available], ['id' => $student->id]);
        
         $matrix_config_json = $wpdb->get_var( $wpdb->prepare(
             "SELECT matrix_config FROM `$table_expected_matrix`
@@ -1058,7 +1058,17 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
     $current_cut = $current_period_cut['cut'];
 
     // verifica si el studiante tiene pagos pendientes
-    $pending_payments = get_payments($student->id) == 2 ? true : false;
+
+    $products = [get_fee_product_id($student_id, 'registration'), get_fee_product_id($student_id, 'graduation')];
+    $products_list = "'" . implode("','", $products) . "'";
+
+    $payments = $wpdb->get_var(
+        "SELECT COUNT(id) FROM {$table_student_payments}
+        WHERE student_id = {$student->id}
+        AND product_id NOT IN ({$products_list})
+        AND status_id = 0 AND date_next_payment <= DATE_SUB(CURDATE(), INTERVAL 5 DAY)"
+    );
+    $pending_payments = $payments > 0 ? true : false;
 
     // filtra solo las materia regulares de la projeccion
     $projection_data = []; 
@@ -1068,10 +1078,16 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
         }
     }
 
-    // genra la matrix esperada del estudiante
+    // genera la matrix esperada del estudiante
     $accumulated_hc = 0;
     $matrix = [];
+    $total_terms = 0;
+    
     foreach( $matrix_config as $key => $matrix_config_data ) {
+
+        if( $key == 'default' ) continue;
+
+        $total_terms++;
 
         // Obtener datos del período que deberia o debio cursar la asignatura
         $period_index = $key - 1;
@@ -1129,7 +1145,8 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
                 ) { 
 
                     $subject_projection = $projection_data[$subject->subject_id] ?? null;
-                    if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] > $subject_projection['assigned_slots']) {
+                    var_dump($subject_projection);
+                    if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] >= $subject_projection['assigned_slots']) {
                         
                         $subject_move = $subjects[$i];
                         unset($subjects[$i]);
@@ -1163,6 +1180,93 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
         }
   
     }
+
+    if( $subjects && $matrix_config->default ) {
+
+        $matrix_config_data = $matrix_config->default;
+
+        while ( $subjects ) {
+
+            // Obtener datos del período que deberia o debio cursar la asignatura
+            $period_index = $total_terms;
+            $period_data = ( $period_index < count($future_periods) ) ? $future_periods[$period_index] : null;
+            
+            $registered_hc = 0; // registra la cantidad de HC()
+
+            // Convertimos los valores a enteros para una comparación numérica limpia
+            $data_code = (int)$period_data->code;
+            $curr_code = (int)$current_period;  
+        
+            foreach ( $projection_data as $subject ) {
+                
+                if ( 
+                    ( $subject['is_completed'] === true || $subject['this_cut'] === true ) && 
+                    $subject['code_period'] === $period_data->code && 
+                    $subject['cut'] === $period_data->cut
+                ) {
+
+                    $status = $subject['is_completed'] ? 'aprobada' : 'activa';
+                    
+                    $matrix[$key][] = [
+                        'subject' => $subject['subject'],
+                        'subject_id' => (int) $subject['subject_id'],
+                        'code_period' => $period_data->code,
+                        'cut' => $period_data->cut,
+                        'type' => 'R',
+                        'status' => $status
+                    ];
+                    
+                    $registered_hc += (int) $subject['hc'];
+                    
+                    // elimina la asignatura de la lista de asignaturas que estan pendientes
+                    $subjects = array_filter($subjects, function($item) use ( $subject ) {
+                        return $item->subject_id !== (int) $subject['subject_id'];
+                    });
+                }
+            }
+    
+            // valida que el periodo y corte corresppndiente en $period_data es menor que el actual
+            if ( ( $data_code === $curr_code && $period_data->cut >= $current_cut ) || $data_code > $curr_code ) {
+
+                while( $registered_hc < $matrix_config_data->max_HC AND $subjects ) {
+
+                    foreach ( $subjects as $i => $subject ) {
+
+                        $subject_projection = $projection_data[$subject->subject_id] ?? null;
+                        if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] >= $subject_projection['assigned_slots']) {
+                            
+                            $subject_move = $subjects[$i];
+                            unset($subjects[$i]);
+
+                            $subject_move->status = 'blocked'; // si es array usa ['status']
+                            $subjects[] = $subject_move;
+
+                            continue;
+                        }
+
+                        $status = $subject->status ?? ($pending_payments ? 'blocked' : 'pendiente');
+
+                        // inscribe materia
+                        $matrix[$key][] = [
+                            'subject' => $subject->subject,
+                            'subject_id' => $subject->subject_id,
+                            'code_period' => $period_data ? $period_data->code : '', 
+                            'cut' => $period_data ? $period_data->cut : '', 
+                            'type' => 'R',
+                            'status' => $status
+                        ];
+
+                        $registered_hc += $subject->hc;
+
+                        unset($subjects[$i]);
+                    } 
+                }
+   
+            }
+            
+            $total_terms++;
+        }
+    } 
 
     // obtienen todos los registros de la matriz esperada anterior
     $expected_matrix = $wpdb->get_results( $wpdb->prepare(
@@ -1217,8 +1321,7 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
 
 }
 
-/* function build_detailed_matrix($terms_config, $terms_available, $matrix_regular, $student_id)
-{
+/* function build_detailed_matrix($terms_config, $terms_available, $matrix_regular, $student_id) {
     global $wpdb;
 
     if (empty($terms_config) || empty($matrix_regular)) {
@@ -1371,9 +1474,7 @@ function update_projection_after_enrollment($student_id, $subject_id, $code_peri
 
     // Normalize subject details
     $subject = get_subject_details($subject_id);
-    if (!$subject) {
-        return false;
-    }
+    if (!$subject) return false;
 
     $proj_row = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table_student_academic_projection} WHERE student_id = %d", $student_id));
     $projection_arr = [];
@@ -2042,6 +2143,27 @@ function persist_expected_matrix($student_id, $detailed_matrix)
     return $inserted;
 }
 
+function update_period_cut_expected_matrix ( $id, $academic_period, $academic_period_cut ) {
+
+    global $wpdb;
+    $updated = $wpdb->update( 
+        "{$wpdb->prefix}student_expected_matrix", 
+        [ 
+            'academic_period'     => $academic_period, 
+            'academic_period_cut' => $academic_period_cut 
+        ],
+        [ 
+            'id' => $id, 
+        ],
+        [ '%s', '%s' ], 
+        [ '%d' ]  
+    );
+
+    return $updated;
+
+}
+
+
 function clear_expected_matrix_for_student($student_id)
 {
     global $wpdb;
@@ -2054,48 +2176,32 @@ function get_expected_matrix_by_student($student_id)
     global $wpdb;
     $table = $wpdb->prefix . 'student_expected_matrix';
 
-    $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE student_id=%d ORDER BY term_index ASC, id ASC", $student_id));
-
-    $matrix = [];
-    foreach ($rows as $row) {
-        $idx = max(0, intval($row->term_index) - 1);
-        if (!isset($matrix[$idx])) {
-            $matrix[$idx] = [
-                'type' => 'R',
-                'subject_id' => [],
-                'cut' => [],
-                'code_period' => [],
-                'completed' => [],
-                'status' => []
-            ];
-        }
-
-        // Resolve subject_id: prefer numeric subject_id stored, otherwise try to find by subject code or name
-        $resolved_subject_id = null;
-        if (!empty($row->subject_id) && is_numeric($row->subject_id)) {
-            $resolved_subject_id = intval($row->subject_id);
-        } else {
-            $candidate = $row->subject ?? $row->subject_code ?? '';
-            if (!empty($candidate)) {
-                if (is_numeric($candidate)) {
-                    $resolved_subject_id = intval($candidate);
-                } else {
-                    // Try to lookup by code_subject or name in school_subjects
-                    $table_school_subjects = $wpdb->prefix . 'school_subjects';
-                    $maybe_id = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_school_subjects} WHERE code_subject = %s OR name = %s LIMIT 1", $candidate, $candidate));
-                    if (!empty($maybe_id)) {
-                        $resolved_subject_id = intval($maybe_id);
-                    }
-                }
-            }
-        }
-
-        $matrix[$idx]['subject_id'][] = $resolved_subject_id !== null ? $resolved_subject_id : null;
-        $matrix[$idx]['cut'][] = $row->academic_period_cut;
-        $matrix[$idx]['code_period'][] = $row->academic_period;
-        $matrix[$idx]['completed'][] = false;
-        $matrix[$idx]['status'][] = !empty($row->status) ? $row->status : 'pendiente';
-    }
+    $matrix = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE student_id=%d ORDER BY term_index ASC, id ASC", $student_id));
 
     return $matrix;
 }
+
+//add_action('init', 'procesar_estudiantes_graduandos');
+function procesar_estudiantes_graduandos() {
+    
+    if ( get_option('generate_projection_student_test') ) {
+        return; 
+    }
+
+    global $wpdb;
+    $tabla = $wpdb->prefix . 'students';
+
+    $students = $wpdb->get_results("SELECT * FROM `$tabla` 
+              WHERE expected_graduation_date IS NOT NULL 
+              AND status_id != 5");
+
+    if ( $students ) {
+        foreach ($students as $student) {
+            generate_projection_student( $student->id );
+        }
+    }
+
+    update_option('generate_projection_student_test', true);
+}
+
+

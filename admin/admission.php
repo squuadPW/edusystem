@@ -1176,7 +1176,7 @@ function handle_document_rejection($student_id, $document, $remove_access = true
         update_status_student($student_id, 1);
     }
 
-    if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO", "PHOTO-ID OR PASSPORT"])) {
+    if ( $document->profile ) {
         $wpdb->update("{$wpdb->prefix}students", ['profile_picture' => null], ['id' => $student_id]);
     }
 
@@ -1195,7 +1195,7 @@ function handle_document_approval($student_id, $document)
     $table_student_documents = $wpdb->prefix . 'student_documents';
     $wpdb->update($table_student_documents, ['max_date_upload' => NULL], ['student_id' => $student_id, 'id' => $document->id]);
 
-    if (in_array($document->document_id, ['PHOTO OF STUDENT CARD', "STUDENT'S PHOTO", "PHOTO-ID OR PASSPORT"])) {
+    if ( $document->profile ) {
         $wpdb->update(
             "{$wpdb->prefix}students",
             ['profile_picture' => $document->attachment_id],
@@ -1203,6 +1203,7 @@ function handle_document_approval($student_id, $document)
         );
     }
 
+    // esto es para compatibilidad de el sitema aes
     if (in_array($document->document_id, ['CERTIFIED NOTES HIGH SCHOOL'])) {
         update_equivalence_califications($student_id);
     }
@@ -1212,9 +1213,9 @@ function handle_document_approval($student_id, $document)
     }
 
     $student = get_student_detail($student_id);
-    if ($document->is_required && check_access_virtual($student_id) && !$student->moodle_student_id) {
+    if ( check_access_virtual($student_id) && !$student->moodle_student_id) {
         handle_virtual_classroom_access($student_id);
-    } else if ($document->is_required && $student->moodle_student_id && $student->status_id < 2) {
+    } else if ( $student->moodle_student_id && $student->status_id < 2) {
         update_status_student($student_id, 2);
     }
 }

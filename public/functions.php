@@ -484,7 +484,15 @@ add_shortcode('student_registration_form', 'student_registration_form_optimized'
 add_filter('woocommerce_available_payment_gateways', 'hide_payment_gateways_from_cookie');
 
 function hide_payment_gateways_from_cookie($available_gateways)
-{
+{   
+    
+    if ( empty($_COOKIE['squuad_stripe_selected_client_id']) ) {
+
+        if( !get_option('default_stripe_account') ) {
+            unset($available_gateways['woo_squuad_stripe']);
+        }
+    }
+
     // Verificar si la cookie existe
     if (!isset($_COOKIE['student_registration_hidden_payments']) || empty($_COOKIE['student_registration_hidden_payments'])) {
         return $available_gateways;
@@ -2849,9 +2857,10 @@ function reload_button_schoolship()
     global $woocommerce;
     $has_scholarship = false;
     $applied_coupons = $woocommerce->cart->get_applied_coupons();
+                        
 
     foreach ($applied_coupons as $coupon) {
-        if (strtolower($coupon) == 'latam scholarship') {
+        if (strtolower($coupon) == 'latam scholarship' ) {
             $has_scholarship = true;
             break;
         }
@@ -2860,17 +2869,17 @@ function reload_button_schoolship()
     // Check if the 'name_institute' cookie is NOT set or is empty
     /* if (!isset($_COOKIE['name_institute']) || empty($_COOKIE['name_institute'])) { */
     ?>
-    <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
-        <?php if ($has_scholarship): ?>
-            <button id="apply-scholarship-btn" type="button" disabled>
-                <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
-            </button>
-        <?php else: ?>
-            <button id="apply-scholarship-btn" type="button">
-                <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
-            </button>
-        <?php endif; ?>
-    </div>
+        <div class="col-start-1 sm:col-start-4 col-span-12 sm:col-span-6 mt-5 mb-5" style="text-align:center;">
+            <?php if ($has_scholarship): ?>
+                <button id="apply-scholarship-btn" type="button" disabled>
+                    <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer already applied' : 'Scholarship already applied' ?>
+                </button>
+            <?php else: ?>
+                <button id="apply-scholarship-btn" type="button">
+                    <?php echo (isset($_COOKIE['from_webinar']) && !empty($_COOKIE['from_webinar'])) ? 'Special webinar offer' : 'Activate scholarship' ?>
+                </button>
+            <?php endif; ?>
+        </div>
     <?php
     /* } */
 

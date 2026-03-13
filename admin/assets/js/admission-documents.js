@@ -180,7 +180,28 @@ document.addEventListener('DOMContentLoaded', ()=>{
         });
     }
 
+    type_file = document.getElementById('type_file');
+    if( type_file ){
+        
+        type_file.addEventListener('input', function() {
 
+            const formats = type_file.value.toLowerCase();
+            
+            // extensiones de imagen permitidas
+            const allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
+
+            const extensions = formats.split(',').map(ext => ext.trim());
+
+            const is_image_formats = extensions.length > 0 && formats !== "" && 
+                                extensions.every(ext => allowed_extensions.includes(ext));
+
+            const profile = document.getElementById('profile');
+            if ( profile ) profile.disabled = is_image_formats ? false : true;
+            
+        });
+
+        type_file.dispatchEvent(new Event('input'));
+    }
 });
 
 /*

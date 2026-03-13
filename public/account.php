@@ -134,3 +134,32 @@ function trigger_elective_modal() {
 }
 
 add_action( 'wp_loaded', 'trigger_elective_modal' );
+
+/* 
+ *   Permitir cancelar pedidos en estado "on-hold".
+ */
+
+// Permitir cancelar pedidos en estado "on-hold"
+add_filter( 'woocommerce_valid_order_statuses_for_cancel', function ( $statuses, $order ) {
+    $statuses[] = 'on-hold';
+    return $statuses;
+}, 10, 2 );
+
+// Agregar el botón de cancelar en la página de pedidos del cliente para pedidos "on-hold"
+add_filter( 'woocommerce_my_account_my_orders_actions', function ( $actions, $order ) {
+    if ( $order->has_status( 'on-hold' ) ) {
+        
+        $my_account_orders_url = wc_get_endpoint_url( 'orders', '', wc_get_page_permalink( 'myaccount' ) );
+        $cancel_url = $order->get_cancel_order_url( $my_account_orders_url );
+
+        $actions['cancel']['url'] = $cancel_url;
+    }
+    return $actions;
+}, 10, 2 ); 
+
+
+// modal de cancelar ordenes
+add_action( 'wp_footer', function () {
+    if ( ! is_account_page() ) return;
+    include(plugin_dir_path(__FILE__) . '/templates/modal-cancel-order.php' );
+});

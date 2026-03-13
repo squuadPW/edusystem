@@ -731,3 +731,39 @@ function refresh_wc_cart() {
 })(jQuery);
 
 
+// funciones del modal de cancelacion de ordenes
+document.addEventListener('DOMContentLoaded', function() {
+
+    const modal = document.getElementById('modal-cancel-order');
+    if( modal ) {
+
+        // Capturar clics en botones de cancelar
+        const cancel_buttons = document.querySelectorAll('.cancel');
+        if( cancel_buttons ) {
+            cancel_buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) { 
+                    e.preventDefault();
+
+                    const confirm_btn = document.getElementById('confirm_order_cancel');
+                    if( !confirm_btn ) return;
+
+                    cancel_url = this.getAttribute('href');
+                    confirm_btn.setAttribute('href', cancel_url);
+
+                    modal.style.display = 'block';
+                });
+            });
+        }
+
+        // Cerrar modal
+        const modal_close = document.querySelectorAll('.modal-close');
+        if( modal_close.length > 0 ) {
+            modal_close.forEach(btn => {
+                btn.addEventListener('click', function(e) { 
+                    e.preventDefault();
+                    modal.style.display = 'none';
+                });
+            });
+        }
+    }
+});

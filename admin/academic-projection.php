@@ -121,57 +121,32 @@ function add_admin_form_academic_projection_content()
 
         if (isset($_GET['section_tab']) && $_GET['section_tab'] === 'student_matrix') {
 
-            if (!isset($_GET['student_id']) || !is_numeric($_GET['student_id'])) {
-                return;
+            $student_id = isset($_GET['student_id']) || is_numeric($_GET['student_id']) ? intval($_GET['student_id']) : 0;
+            $student = get_student_detail($student_id);
+
+            if ( !$student ) {
+                ?>
+                    <h2 style="margin-bottom:15px;"><?= __('Not found', 'edusystem'); ?></h2>
+                <?php
             }
 
-            global $wpdb;
+            global $wpdb, $current_user;
             $table_academic_periods = $wpdb->prefix . 'academic_periods';
             $table_school_subjects = $wpdb->prefix . 'school_subjects';
-            $student_id = (int) $_GET['student_id'];
-            $student = get_student_detail($student_id);
-            $projection = get_projection_by_student($student_id);
-
-            $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE is_active = 1");
-            // Use the relational table as canonical source for the student's expected matrix.
-            if ($projection) {
-                $matrix = get_expected_matrix_by_student($projection->student_id);
-            } else {
-                $matrix = [];
-            }
-
-            // USADO EN EL TEMPLATE STUDENT-MATRIX.PHP
-            $subjects_regular = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE `type` = 'regular' AND is_active = 1");
-            $student_full_name = student_names_lastnames_helper($student->id);
+            
+            $roles = $current_user->roles;
+            $student_full_name = student_names_lastnames_helper( $student->id );
+            
+            $matrix = get_expected_matrix_by_student( $student_id );
+            
+            $subjects = $wpdb->get_results("SELECT id, name FROM {$table_school_subjects} WHERE `type` = 'regular' AND is_active = 1");
+            
             $periods = $wpdb->get_results("SELECT * FROM {$table_academic_periods} ORDER BY created_at DESC");
-            $cuts = ['A', 'B', 'C', 'D', 'E'];
 
-            $load = load_current_cut_enrollment();
-            $code = $load['code'];
-            $cut = $load['cut'];
+            $cuts = ['A', 'B', 'C', 'D', 'E'];
             
             // Calcular términos restantes basándose en la matriz JSON de la proyección
-            $terms_available_left = 0;
-            if ($projection && !empty($projection->matrix)) {
-                $matrix_json = json_decode($projection->matrix, true);
-                if (is_array($matrix_json)) {
-                    $found_index = -1;
-                    // Buscar el índice donde code_period y cut coinciden con el período/corte actual
-                    foreach ($matrix_json as $index => $term) {
-                        if (isset($term['code_period']) && isset($term['cut']) 
-                            && $term['code_period'] === $code && $term['cut'] === $cut) {
-                            $found_index = $index;
-                            break;
-                        }
-                    }
-                    
-                    // Si encontramos una coincidencia, contar los términos restantes (desde ese índice hasta el final)
-                    if ($found_index >= 0) {
-                        $terms_available_left = count($matrix_json) - $found_index;
-                    }
-                    // Si no se encuentra, terms_available_left queda en 0
-                }
-            }
+            $terms_available_left = 0;// calcular los terminos restantes
 
             include(plugin_dir_path(__FILE__) . 'templates/academic-projection-student-matrix.php');
         }
@@ -306,6 +281,21 @@ function add_admin_form_academic_projection_content()
             $cut = $_POST['cut'];
 
             get_moodle_notes($subject_id, $code, $cut);
+
+            // log del system
+            $url = add_query_arg(array(
+                'page'                => 'add_admin_form_academic_projection_content',
+                'section_tab'         => 'validate_enrollment_subject',
+                'academic_period'     => $code,
+                'academic_period_cut' => $cut,
+                'subject_id'          => $subject_id,
+            ), admin_url('admin.php'));
+            
+            $subject = get_subject_details($subject_id);
+            $message = __("The user has downloaded the Moodle notes for the subject %s",'edusystem');
+            $message = sprintf($message, "<a href='{$url}' > $subject->name </a> ");
+            edusystem_set_log($message, 'Download moodle notes');
+
             setcookie('message', __('Successfully updated notes for the students.', 'edusystem'), time() + 3600, '/');
             wp_redirect(admin_url('admin.php?page=add_admin_form_academic_projection_content&section_tab=validate_enrollment_subject&academic_period=' . $code . '&academic_period_cut=' . $cut . '&subject_id=' . $subject_id . '&section=1'));
             exit;
@@ -468,6 +458,19 @@ function add_admin_form_academic_projection_content()
             }
 
             update_max_upload_at($projection->student_id);
+
+            // log del system
+            $url = add_query_arg(array(
+                'page'        => 'add_admin_form_admission_content',
+                'section_tab' => 'student_details',
+                'student_id'  => $projection->student_id,
+            ), admin_url('admin.php'));
+            
+            $student_full_name = student_names_lastnames_helper( $projection->student_id );
+            $message = __("The user has manually updated the student's registration %s",'edusystem');
+            $message = sprintf($message, "<a href='{$url}' > $student_full_name </a> ");
+            edusystem_set_log($message, 'Manual update registrations');
+
             setcookie('message', __('Projection adjusted successfully.', 'edusystem'), time() + 10, '/');
             setcookie('message-error', $errors, time() + 3600, '/');
             wp_redirect(admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=academic_projection_details&projection_id=' . $projection_id));
@@ -526,38 +529,48 @@ function add_admin_form_academic_projection_content()
             wp_redirect(admin_url('/admin.php?page=add_admin_form_configuration_options_content'));
             exit;
         } else if (isset($_GET['action']) && $_GET['action'] == 'update_matrix') {
-            global $wpdb;
-            $table_student_academic_projection = $wpdb->prefix . 'student_academic_projection';
-            $projection_id = isset($_POST['projection_id']) ? intval($_POST['projection_id']) : 0;
+
             $student_id = isset($_POST['student_id']) ? intval($_POST['student_id']) : 0;
-            $new_matrix_data_raw = isset($_POST['matrix']) ? $_POST['matrix'] : [];
+            $new_matrix_data = isset($_POST['matrix']) ? $_POST['matrix'] : [];
 
             $errors = [];
+            $update_subject = false;
 
-            if ($projection_id <= 0) {
-                $errors[] = __('Invalid projection ID.', 'edusystem');
+            foreach ( $new_matrix_data as $id => $subject ) {
+
+                if( (boolean) $subject['update_disable'] ) continue;
+
+                $update = update_period_cut_expected_matrix( $id, $subject['code_period'], $subject['cut'] );
+
+                /* if( !$update ){
+                    $errors[] = $subject['subject_name'];
+                } else { */
+                    $update_subject = true;
+                /* } */
             }
 
-            // 3. Process and Save Data
-            if (empty($errors)) {
-                foreach ($new_matrix_data_raw as $key => &$new_m) {
-                    $new_m['completed'] = false;
-                    if ($new_m['code_period'] && $new_m['cut'] && $new_m['subject_id']) {
-                        $inscription = get_inscriptions_by_student_subject($student_id, $new_m['code_period'], $new_m['cut'], $new_m['subject_id']);
-                        if ($inscription) {
-                            $new_m['completed'] = true;
-                        }
-                    }
-                }
-                // Persist the submitted matrix into the normalized table.
-                // Clear previous rows to avoid duplicates, then insert new ones.
-                clear_expected_matrix_for_student($student_id);
-                persist_expected_matrix($student_id, $new_matrix_data_raw);
+            if ( $update_subject ) {
                 setcookie('message', __('Projection matrix updated successfully.', 'edusystem'), time() + 10, '/');
-            } else {
-                // Handle validation errors
-                setcookie('message-error', implode('<br>', $errors), time() + 10, '/');
+            } 
+            
+            if ( !empty($errors) ) {
+
+                $subject_error = implode(', ', $errors); 
+
+                $text_error = sprintf(__('There was an error updating the following subjects: %s.','edusystem'), $subject_error );
+                setcookie('message-error', $text_error, time() + 10, '/');
             }
+
+            $url = add_query_arg(array(
+                'page'        => 'add_admin_form_admission_content',
+                'section_tab' => 'student_details',
+                'student_id'  => $student_id,
+            ), admin_url('admin.php'));
+            
+            $student_full_name = student_names_lastnames_helper( $student_id );
+            $message = __('The user to manually update the matrix of student %s','edusystem');
+            $message = sprintf($message, "<a href='{$url}' > $student_full_name </a> ");
+            edusystem_set_log($message, 'Manual matrix update');
 
             // 4. Redirect
             $redirect_url = admin_url('/admin.php?page=add_admin_form_academic_projection_content&section_tab=student_matrix&student_id=' . $student_id);
@@ -2582,6 +2595,20 @@ function get_close_academic_offer()
     ], ['code_period' => $academic_period, 'cut_period' => $academic_period_cut, 'subject_id' => $subject_id, 'section' => $section]);
 
     setcookie('message', $close_offer ? __('Successfully closed offer.', 'edusystem') : __('Successfully opened offer.', 'edusystem'), time() + 3600, '/');
+    
+    // log del system
+    $url = add_query_arg(array(
+        'page'                => 'add_admin_form_academic_projection_content',
+        'section_tab'         => 'validate_enrollment_subject',
+        'academic_period'     => $academic_period,
+        'academic_period_cut' => $academic_period_cut,
+        'subject_id'          => $subject_id,
+    ), admin_url('admin.php'));
+            
+    $subject = get_subject_details($subject_id);
+    $message = __("The user has closed the offer for the subject %s",'edusystem');
+    $message = sprintf($message, "<a href='{$url}' > $subject->name </a> ");
+    edusystem_set_log($message, 'Close academic offer');
 
     echo json_encode(['status' => 'success']);
     exit;

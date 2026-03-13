@@ -72,7 +72,7 @@
             </div>
         <?php endif ?>
 
-        <?php if ($site_mode != 'UNI') { ?>
+        <?php if ($site_mode != 'UNI' && empty( $_COOKIE['token_dynamic_link'] ) ) { ?>
             <div class="text-center elements-quote-hidden" style="padding: 18px 0px;">
                 <label><?= __('Apply to get the discount', 'edusystem') ?></label>
                 <div id="button-schoolship"></div>

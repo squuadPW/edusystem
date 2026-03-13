@@ -90,7 +90,7 @@ function add_admin_form_dynamic_link_content()
             $coupon_credit = sanitize_text_field($_POST['coupon_credit'] ?? '');
             $program_identificator_raw = $_POST['program_identificator'] ?? [];
             if (is_array($program_identificator_raw)) {
-                $program_identificator_values = array_filter(array_map('sanitize_text_field', $program_identificator_raw));
+                $program_identificator_values = array_filter(array_map('sanitize_text_field', $program_identificator_raw), 'strlen');
                 $program_identificator = implode(',', $program_identificator_values);
             } else {
                 $program_identificator = sanitize_text_field($program_identificator_raw);
@@ -98,7 +98,7 @@ function add_admin_form_dynamic_link_content()
             $subprogram_identificator = $_POST['subprogram_id'] ? intval($_POST['subprogram_id']) : null;
             $payment_plan_identificator_raw = $_POST['payment_plan_identificator'] ?? [];
             if (is_array($payment_plan_identificator_raw)) {
-                $payment_plan_identificator_values = array_filter(array_map('sanitize_text_field', $payment_plan_identificator_raw));
+                $payment_plan_identificator_values = array_filter(array_map('sanitize_text_field', $payment_plan_identificator_raw), 'strlen');
                 $payment_plan_identificator = implode(',', $payment_plan_identificator_values);
             } else {
                 $payment_plan_identificator = sanitize_text_field($payment_plan_identificator_raw);
@@ -538,8 +538,9 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
         $dynamic_links_array = [];
         if ($dynamic_links) {
             foreach ($dynamic_links as $dynamic_links_val) {
-                $program_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_links_val['program_identificator'])));
-                $plan_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_links_val['payment_plan_identificator'])));
+                
+                $program_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_links_val['program_identificator'])), 'strlen');
+                $plan_ids = array_filter(array_map('trim', explode(',', (string) $dynamic_links_val['payment_plan_identificator'])), 'strlen');
 
                 $program_names = [];
                 foreach ($program_ids as $program_id) {
