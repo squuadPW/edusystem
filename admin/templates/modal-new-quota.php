@@ -9,8 +9,6 @@
 		<form method="POST" action="<?= admin_url('admin.php?page=add_admin_form_payments_content&action=new_quota_student'); ?>" >
 
 			<input type="hidden" id="student_id" name="student_id" value="" />
-			<input type="hidden" id="product_id" name="product_id" value="" />
-			<input type="hidden" id="variation_id" name="variation_id" value="" />
 
 			<div class="modal-body">
 
@@ -20,7 +18,7 @@
 						<input type="number" id="amount" name="amount" min="0" />
 					</div>
 
-					<div class="group-input currency" >
+					<!-- <div class="group-input currency" >
 						<label><?= __('Currency','edusystem') ?></label>
 						<select name="currency" id="currency" >
 							<option value=""><?= __('select a currency','edusystem') ?></option>
@@ -28,7 +26,7 @@
 								<option value="<?php echo esc_attr($code); ?>"><?php echo esc_html($name . ' (' . $code . ')'); ?></option>
 							<?php endforeach; ?>
 						</select>
-					</div>
+					</div> -->
 				</div>
 
 				<div class="group-input" >

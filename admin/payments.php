@@ -1846,21 +1846,37 @@ function add_admin_form_payments_content()
         } else if ($_GET['action'] == 'new_quota_student') {
 
             $student_id = $_POST['student_id'] ?? 0;
-            $product_id = $_POST['product_id'] ?? 0;
-            $variation_id = $_POST['variation_id'] ?? 0;
-            $amount = $_POST['amount'] ?? 0.00;
-            $currency = $_POST['currency'] ?? get_woocommerce_currency();
-            $date_next_payment = $_POST['date_next_payment'];
+            $student = get_student_detail($student_id);
 
-            if ($student_id) {
+            if ( $student ) {
+
+                $amount = $_POST['amount'] ?? 0.00;
+                $currency = $_POST['currency'] ?? get_woocommerce_currency();
+                $date_next_payment = $_POST['date_next_payment'];
+
+                global $wpdb;
+                $table_student_payments = $wpdb->prefix . 'student_payments';
+                $payments = $wpdb->get_row( 
+                    $wpdb->prepare( 
+                        "SELECT * FROM $table_student_payments WHERE student_id = %d AND type_payment = 1 AND currency = %s ", 
+                        $student_id,
+                        $currency,
+                    ) 
+                );
+
+                if ( !$payments AND isset( $_SERVER['HTTP_REFERER'] ) ) {
+                    wp_redirect( $_SERVER['HTTP_REFERER'] );
+                    exit;
+                }
 
                 $status_id = 0;
-                $total_amount = $amount;
-                $original_amount = 0;
-                $discount_amount = 0.00;
-                $cuote = 1;
-                $num_cuotes = 1;
-                $type_payment = 1;
+                $product_id = $payments->product_id;
+                $variation_id = $payments->variation_id ?? 0;
+                $type_payment = $payments->type_payment ?? 1; 
+                $total_amount = $payments->total_amount + $amount;
+                $original_amount = $payments->original_amount + $amount;
+                $discount_amount = $original_amount - $total_amount;
+                $cuotes = $payments->num_cuotes + 1;
 
                 global $wpdb;
                 $wpdb->insert("{$wpdb->prefix}student_payments", [
@@ -1872,22 +1888,49 @@ function add_admin_form_payments_content()
                     'manager_id' => NULL,
                     'institute_id' => NULL,
                     'institute_fee' => 0.00,
-                    'alliances' => NULL,
+                    'alliances' => '[]',
                     'currency' => $currency,
                     'amount' => $amount,
-                    'original_amount_product' => 0.00,
-                    'total_amount' => $total_amount, // procesa
-                    'original_amount' => $original_amount, // procesa
-                    'discount_amount' => $discount_amount,  // procesar
-                    'type_payment' => $type_payment, // procesar
-                    'cuote' => $cuote, // procesar
-                    'num_cuotes' => $num_cuotes, // procesar
+                    'original_amount_product' => $amount,
+                    'total_amount' => $total_amount,
+                    'original_amount' => $original_amount,
+                    'discount_amount' => $discount_amount,
+                    'type_payment' => $type_payment,
+                    'cuote' => $cuotes, 
+                    'num_cuotes' => $cuotes,
                     'date_payment' => NULL,
                     'date_next_payment' => $date_next_payment,
                 ]);
+
+                // Obtén todas las cuotas para ese estudiante, producto y variación ordenadas por fecha
+                $payments = $wpdb->get_results($wpdb->prepare(
+                    "SELECT id, date_next_payment FROM {$table_student_payments} 
+                    WHERE student_id = %d AND product_id = %d AND variation_id = %d
+                    ORDER BY date_next_payment ASC",
+                    $student_id,
+                    $product_id,
+                    $variation_id,
+                ));
+
+                // Recorre y actualiza el campo cuote con el orden correcto
+                $counter = 1;
+                foreach ($payments as $payment) {
+                    $wpdb->update(
+                        $table_student_payments,
+                        [
+                            'cuote' => $counter,
+                            'num_cuotes' => count($payments),
+                            'total_amount' => $total_amount,
+                            'original_amount' => $original_amount,
+                            'discount_amount' => $discount_amount,
+                        ],
+                        ['id' => $payment->id]
+                    );
+                    $counter++;
+                }
             }
 
-            wp_redirect($_SERVER['REQUEST_URI']);
+            wp_redirect(admin_url("admin.php?page=add_admin_form_payments_content&section_tab=generate_advance_payment&student_available=1&id_document={$student->email}"));
             exit;
         }
     }
