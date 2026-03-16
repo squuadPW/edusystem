@@ -67,6 +67,7 @@ Sí, ofrecemos soporte técnico. Contacta a través de nuestro sitio web o foro 
 
 ### 4.2.3
 - Permite agregar cuotas al programa desde el panel de administracion.
+- Se corrigio los ordenes por defecto al pagar por el lado del cliente.
 
 ### 4.2.2
 - Optimización de Logs: Refactorización del sistema de registros de EduSystem para mejorar la trazabilidad de eventos.

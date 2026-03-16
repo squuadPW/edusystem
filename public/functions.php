@@ -4698,6 +4698,7 @@ add_filter('locale', 'my_custom_locale_switcher', 10, 1);
 
 
 function sc_set_order_pay_cookie_php() {
+
 	if ( ! isset( $_SERVER['REQUEST_URI'] ) ) {
 		return;
 	}
@@ -4708,7 +4709,7 @@ function sc_set_order_pay_cookie_php() {
 	}
 
     // Ensure we have a logged-in user and a valid WP user object
-    if ( ! is_user_logged_in() ) {
+    if ( !is_user_logged_in() ) {
         return;
     }
 

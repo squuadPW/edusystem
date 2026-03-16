@@ -3774,6 +3774,7 @@ function generate_quote_public_callback()
         WC()->cart->calculate_totals();
 
         $checkout_url = wc_get_checkout_url();
+        $checkout_url = add_query_arg('pay_for_order', 'true', $checkout_url);
         wp_send_json_success(['url' => $checkout_url]);
     } catch (Exception $e) {
         wp_send_json_error(['message' => $e->getMessage()]);
