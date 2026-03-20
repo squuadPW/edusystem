@@ -263,9 +263,6 @@ function add_admin_form_program_content()
                     $position = $rule['position'] ?? 0;
                     $description = $rule['description'] ?? '';
 
-                    var_dump($description);
-                    exit;
-
                     // crea o actualiza el sub programa
                     if ( !empty( $rule_id ) ) {
 

@@ -1145,7 +1145,6 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
                 ) { 
 
                     $subject_projection = $projection_data[$subject->subject_id] ?? null;
-                    var_dump($subject_projection);
                     if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] >= $subject_projection['assigned_slots']) {
                         
                         $subject_move = $subjects[$i];
