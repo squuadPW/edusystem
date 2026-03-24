@@ -44,6 +44,12 @@ function create_user_moodle($student_id)
             $MoodleRest = new MoodleRest($moodle_url . 'webservice/rest/server.php', $moodle_token);
             $password = wp_generate_password(12);
 
+            $user = get_user_by('email', $data_student->email );
+            if ($user) {
+                $user_id = $user->ID;
+                $lang = substr(get_user_locale($user_id), 0, 2);
+            }
+
             $users = [
                 'users' => [
                     [
@@ -59,7 +65,7 @@ function create_user_moodle($student_id)
                         'phone2' => $data_student->phone,
                         'institution' => $data_student->name_institute,
                         'address' => $address,
-                        'lang' => 'en'
+                        'lang' => $lang ?? 'en',
                     ]
                 ]
             ];
