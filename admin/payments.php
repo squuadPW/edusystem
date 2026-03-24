@@ -1858,8 +1858,23 @@ function add_admin_form_payments_content()
                 $table_student_payments = $wpdb->prefix . 'student_payments';
                 $payments = $wpdb->get_row( 
                     $wpdb->prepare( 
-                        "SELECT * FROM $table_student_payments WHERE student_id = %d AND type_payment = 1 AND currency = %s ", 
-                        $student_id,
+                        "SELECT sp.* 
+                        FROM $table_student_payments AS sp
+                        INNER JOIN {$wpdb->prefix}programs AS p ON `sp`.product_id = `p`.product_id 
+                            AND CAST(`sp`.variation_id AS UNSIGNED) = CAST(
+                                IFNULL(
+                                    JSON_UNQUOTE(JSON_EXTRACT(`p`.subprogram, CONCAT('$.\"', %s, '\".product_id')) ), 
+                                    '0'
+                                ) AS UNSIGNED
+                            )
+                        WHERE 
+                            `p`.identificator = %s 
+                            AND `sp`.student_id = %d 
+                            AND `sp`.currency = %s
+                        ", 
+                        $student->grade_id,
+                        $student->program_id,
+                        $student->id,
                         $currency,
                     ) 
                 );
@@ -1874,7 +1889,7 @@ function add_admin_form_payments_content()
                 $variation_id = $payments->variation_id ?? 0;
                 $type_payment = $payments->type_payment ?? 1; 
                 $total_amount = $payments->total_amount + $amount;
-                $original_amount = $payments->original_amount + $amount;
+                $original_amount = $payments->original_amount;
                 $discount_amount = $original_amount - $total_amount;
                 $cuotes = $payments->num_cuotes + 1;
 
