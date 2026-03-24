@@ -4825,6 +4825,15 @@ function display_academic_info_email($order, $sent_to_admin, $plain_text, $email
 
 add_action('woocommerce_email_order_meta', 'display_academic_info_email', 20, 4);
 
+
+add_filter( 'spm_payment_modal_settings', function( $data ) {
+
+    $data['url_params']['pay_for_order'] = 'true';
+
+    return $data;
+}, 10, 1 );
+
+
 //Bloquear el envío de correos de notas de pedido a clientes
 add_filter( 'woocommerce_email_enabled_customer_note', '__return_false' );
 add_filter( 'woocommerce_new_order_note_data', function ( $args, $args2 ) {
