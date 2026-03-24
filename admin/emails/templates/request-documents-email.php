@@ -5,7 +5,7 @@
 do_action( 'woocommerce_email_header', $email_heading, $email ); 
 
 ?>
-   <p><?= __('Great news! Your payment verification has been successfully completed. To continue with the process, you need to upload the following documents through the platform').':'; ?></p>
+   <p><?= __('Great news! Your payment verification has been successfully completed. To continue with the process, you need to upload the following documents through the platform','edusystem').':'; ?></p>
 
    <div style="margin-bottom: 40px;">
         <table class="td" cellspacing="0" cellpadding="6" style="width: 100%; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" border="1">
@@ -26,7 +26,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
         </table>
     </div>
 
-   <p><?= __('Once you have uploaded your documents, they will be reviewed by the corresponding team. We will notify you by email or through the platform when the review is complete.'); ?></p>
+   <p><?= __('Once you have uploaded your documents, they will be reviewed by the corresponding team. We will notify you by email or through the platform when the review is complete.','edusystem'); ?></p>
 <?php 
 /**
  * @hooked WC_Emails::email_footer() Output the email footer

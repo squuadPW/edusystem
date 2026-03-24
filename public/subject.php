@@ -116,7 +116,6 @@ add_action('woocommerce_checkout_create_order_line_item', function($item, $cart_
 
 //  llama el shortcode de comprar materias reprobadas
 /* add_action('woocommerce_account_dashboard', function () {
-
     echo do_shortcode('[buy_failed_subjects]');
 }, 1, 1); */
 
