@@ -4824,3 +4824,11 @@ function display_academic_info_email($order, $sent_to_admin, $plain_text, $email
 }
 
 add_action('woocommerce_email_order_meta', 'display_academic_info_email', 20, 4);
+
+
+add_filter( 'spm_payment_modal_settings', function( $data ) {
+
+    $data['url_params']['pay_for_order'] = 'true';
+
+    return $data;
+}, 10, 1 );
