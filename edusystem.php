@@ -1249,19 +1249,15 @@ function create_tables()
 
     // table_scholarships_availables
     dbDelta(
-        "CREATE TABLE " . $table_scholarships_availables . " (
+        "CREATE TABLE $table_scholarships_availables (
         id INT(11) NOT NULL AUTO_INCREMENT,
         name TEXT NOT NULL,
-        description TEXT NOT NULL,
-        coupons JSON NOT NULL,
-        fee_registration BOOLEAN DEFAULT 0,
-        percent_registration INT(11) NOT NULL,
-        program BOOLEAN DEFAULT 0,
-        percent_program INT(11) NOT NULL,
-        fee_graduation BOOLEAN DEFAULT 0,
-        percent_graduation INT(11) NOT NULL,
-        is_active BOOLEAN DEFAULT 1,
+        description TEXT NULL DEFAULT NULL,
+        program_id INT NOT NULL,
+        payment_plan_id INT NOT NULL,
+        is_active tinyint(1) DEFAULT 1,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
 

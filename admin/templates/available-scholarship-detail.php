@@ -45,29 +45,27 @@
                         </h3>
                         <div class="grid-container-report-3">
                             <div class="form-group" style="text-align: center">
-                                <input type="checkbox" name="fee_registration" id="fee_registration" <?= $scholarship ? (($scholarship->fee_registration == 1) ? 'checked' : '') : ''; ?>>
-                                <label for="fee_registration"><b><?= __('Fee registration', 'edusystem'); ?></b></label>
+                                <label for="program_id"><b><?= __('Program', 'edusystem'); ?></b></label>
+                                <select name="program_id">
+                                    <option value="" <?= selected('',$scholarship->program_id) ?>><?=__('Select program','edusystem')?></option>
+
+                                    <?php foreach( $programs AS $program ): ?>
+                                        <option value="<?= $program->id ?>" <?= selected($program->id,$scholarship->program_id) ?>><?= $program->name ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
+
                             <div class="form-group" style="text-align: center">
-                                <input type="checkbox" name="program" id="program" <?= $scholarship ? (($scholarship->program == 1) ? 'checked' : '') : ''; ?>>
-                                <label for="program"><b><?= __('Program', 'edusystem'); ?></b></label>
+                                <label for="payment_plan_id"><b><?= __('Payment plan', 'edusystem'); ?></b></label>
+                                <select name="payment_plan_id">
+                                    <option value="" <?= selected('',$scholarship->payment_plan_id) ?> ><?=__('Select payment plan','edusystem')?></option>
+
+                                    <?php foreach( $payment_plans AS $payment_plan ): ?>
+                                        <option value="<?= $payment_plan->id ?>" <?= selected($payment_plan->id,$scholarship->payment_plan_id) ?>><?= $payment_plan->name ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
-                            <div class="form-group" style="text-align: center">
-                                <input type="checkbox" name="fee_graduation" id="fee_graduation" <?= $scholarship ? (($scholarship->fee_graduation == 1) ? 'checked' : '') : ''; ?>>
-                                <label for="fee_graduation"><b><?= __('Fee graduation', 'edusystem'); ?></b></label>
-                            </div>
-                            <div class="form-group" style="text-align: center">
-                                <label for="percent_registration">Percent (%)</label>
-                                <input type="numer" step="0" name="percent_registration" value="<?= $scholarship ? $scholarship->percent_registration : '' ?>" required>
-                            </div>
-                            <div class="form-group" style="text-align: center">
-                                <label for="percent_program">Percent (%)</label>
-                                <input type="numer" step="0" name="percent_program" value="<?= $scholarship ? $scholarship->percent_program : '' ?>" required>
-                            </div>
-                            <div class="form-group" style="text-align: center">
-                                <label for="percent_graduation">Percent (%)</label>
-                                <input type="numer" step="0" name="percent_graduation" value="<?= $scholarship ? $scholarship->percent_graduation : '' ?>" required>
-                            </div>
+
                         </div>
                     </div>
                 </div>

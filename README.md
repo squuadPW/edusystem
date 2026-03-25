@@ -65,6 +65,10 @@ Sí, ofrecemos soporte técnico. Contacta a través de nuestro sitio web o foro 
 
 ## Registro de Cambios
 
+### 4.2.4
+- Se resolvio bug de compatibilidad con los metodos de pago y los pagos divididos
+- Se restructuro la funcion de guardado y funcionanmiento de las becas
+
 ### 4.2.3
 - Permite agregar cuotas al programa desde el panel de administracion.
 - Se corrigio los ordenes por defecto al pagar por el lado del cliente.

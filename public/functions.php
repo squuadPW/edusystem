@@ -4833,11 +4833,68 @@ add_filter( 'woocommerce_new_order_note_data', function ( $args, $args2 ) {
     return $args;
 }, 10, 2 );
 
-
-
+// compatibilidad del split payment con los m,etodos de pagos personalizados
 add_filter( 'spm_payment_modal_settings', function( $data ) {
 
     $data['url_params']['pay_for_order'] = 'true';
 
     return $data;
 }, 10, 1 );
+
+// modal informativo que se lo otorgo una beca al estudiante
+add_action( 'woocommerce_after_checkout_form', function () {
+    
+    $plan_identificator = $_COOKIE['plan_id'] ?? false;
+    $program_identificator = $_COOKIE['program_id'] ?? false;
+    if( !get_option('modal_scholarships_checkout') && !$plan_identificator && !$program_identificator ) return;
+
+    $plan = get_program_details_by_identificator($plan_identificator);
+    $program = get_student_program_details_by_identificator($program_identificator);
+
+    $scholarship = get_scholarship_details_by_program_plan( $program->id, $plan->id );
+    if( !$scholarship ) return;
+
+    ?>
+        <div id="modalScholarship" class="modal" style="display:block" >
+
+            <div class="modal-content" >
+                
+                <div class="modal-header p-5">
+                    <h3 style="font-weight: 600"><?=__('Scholarship', 'edusystem')?></h3>
+                    <span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+                </div>
+
+                <div class="modal-body text-center">
+
+                    </br>
+                    <p><?= sprintf(__('Congratulations, you have received the %s scholarship.','edusystem'), "<strong style='text-transform: uppercase;' >$scholarship->name</strong>") ?></p>
+                    <p><?= $scholarship->description ?></p>
+                    </br>
+
+                    <a class="button button-success modal-close" ><?= __('Accept','edusystem') ?></a>
+
+                    </br>
+
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded',() => {
+
+                const modal_close = document.querySelectorAll('.modal-close');
+                if (modal_close.length > 0) {
+                    modal_close.forEach(btn => {
+                        btn.addEventListener('click', function(e) { 
+                        
+                            const modalParent = this.closest('.modal'); 
+                            if (modalParent) modalParent.style.display = 'none';
+                    
+                        });
+                    });
+                }
+            });
+        </script>
+    <?php
+});

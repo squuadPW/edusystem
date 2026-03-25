@@ -180,6 +180,24 @@
             <input type="checkbox" id="hide-fee-checkbox-checkout" name="hide_fee_checkbox_checkout" <?php echo get_option('hide_fee_checkbox_checkout') == 'on' ? 'checked' : '' ?>>
             <label for="hide-fee-checkbox-checkout"><?= __('Hide checkbox to remove the checkout registration fee'); ?></label>
           </div>
+
+            <div >
+                <div class="form-group" style="padding: 0px 10px 10px 10px;" >
+                    <label for="default_price_electives">
+                        <input type="checkbox" name="default_stripe_account" value="1" <?= checked(1, get_option('default_stripe_account'), false); ?>>
+                        <?= __('Use default Stripe account', 'edusystem'); ?>
+                    </label>
+                </div>
+            </div>
+
+            <div >
+                <div class="form-group" style="padding: 0px 10px 10px 10px;" >
+                    <label for="modal_scholarships_checkout">
+                        <input type="checkbox" name="modal_scholarships_checkout" value="1" <?= checked(1, get_option('modal_scholarships_checkout'), false); ?>>
+                        <?= __('Use modal is scholarships in page checkout', 'edusystem'); ?>
+                    </label>
+                </div>
+            </div>
         </div>
 
         <div id="by_moodle" style="display: none">
@@ -329,15 +347,6 @@
                 <div class="form-group" style="padding: 0px 10px 10px 10px;" >
                     <label for="default_price_regular_courses"><?= __('Default price for regular courses', 'edusystem'); ?></label> <br>
                     <input type="number" name="default_price_regular_courses" min="0" value="<?= get_option('default_price_regular_courses') ?? 0?>">
-                </div>
-            </div>
-
-            <div >
-                <div class="form-group" style="padding: 0px 10px 10px 10px;" >
-                    <label for="default_price_electives">
-                        <input type="checkbox" name="default_stripe_account" value="1" <?= checked(1, get_option('default_stripe_account'), false); ?>>
-                        <?= __('Use default Stripe account', 'edusystem'); ?>
-                    </label>
                 </div>
             </div>
 
