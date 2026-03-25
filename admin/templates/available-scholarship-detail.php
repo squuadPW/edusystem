@@ -36,8 +36,7 @@
                         </div>
                         <div class="form-group">
                             <label for="description">Description</label>
-                            <textarea type="text" name="description"
-                                required><?= $scholarship ? $scholarship->description : '' ?></textarea>
+                            <textarea type="text" name="description"><?= $scholarship ? $scholarship->description : '' ?></textarea>
                         </div>
                         <h3
                             style="margin-top:20px;margin-bottom:0px;text-align:center; border-bottom: 1px solid #8080805c;">
@@ -46,7 +45,7 @@
                         <div class="grid-container-report-3">
                             <div class="form-group" style="text-align: center">
                                 <label for="program_id"><b><?= __('Program', 'edusystem'); ?></b></label>
-                                <select name="program_id">
+                                <select name="program_id" required>
                                     <option value="" <?= selected('',$scholarship->program_id) ?>><?=__('Select program','edusystem')?></option>
 
                                     <?php foreach( $programs AS $program ): ?>
@@ -57,7 +56,7 @@
 
                             <div class="form-group" style="text-align: center">
                                 <label for="payment_plan_id"><b><?= __('Payment plan', 'edusystem'); ?></b></label>
-                                <select name="payment_plan_id">
+                                <select name="payment_plan_id" required>
                                     <option value="" <?= selected('',$scholarship->payment_plan_id) ?> ><?=__('Select payment plan','edusystem')?></option>
 
                                     <?php foreach( $payment_plans AS $payment_plan ): ?>

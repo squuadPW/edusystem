@@ -333,7 +333,7 @@ function add_admin_form_available_scholarships_content()
             global $wpdb;
             $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
             $scholarship_id = $_POST['scholarship_id'] ?? false;
-            $name = $_POST['name'];
+            $name = isset($_POST['name']) ? strtoupper(sanitize_text_field($_POST['name'])) : '';
             $description = $_POST['description'];
             $program_id = $_POST['program_id'];
             $payment_plan_id = $_POST['payment_plan_id'];
