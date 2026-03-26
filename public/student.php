@@ -420,7 +420,16 @@ function redirect_to_checkout($from_webinar = false, $is_scholarship = false, $r
     }
 
     if (isset($coupon_code) && !empty($coupon_code)) {
-        $woocommerce->cart->apply_coupon($coupon_code);
+
+        $cupones_array = explode(',', $coupon_code);
+        foreach ( $cupones_array as $coupon ) {
+            
+            // $coupon = trim( $coupon );
+            if ( !empty( $coupon ) && !$woocommerce->cart->has_discount( $coupon ) ) {
+                $woocommerce->cart->apply_coupon($coupon);
+            }
+        }
+        
     }
 
     if (!$from_webinar && !$is_scholarship) {
