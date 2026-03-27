@@ -41,12 +41,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Marcar automáticamente la primera opción de cuotas
-    setTimeout(() => {
-        // Marcar automáticamente la primera opción de cuotas
-        if (options_quotas.length > 0) {
-            options_quotas[0].click(); // Simula un clic en la primera opción
-        }
-    }, 1000);
+    if (options_quotas.length > 0) {
+        options_quotas[0].click(); // Simula un clic en la primera opción
+    }
 
     // en caso de usar el split payment se bloquean las cuotas
     const splitPayment = document.getElementById("split_payment_method_active");
