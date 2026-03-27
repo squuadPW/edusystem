@@ -2394,3 +2394,6 @@ WHERE id IN (
 );
 */
  
+
+// tu dual diploma aes 
+// [student_registration_form coupon_code="latam scholarship" flywire_portal_code="FGD" connected_account="acct_1RgDN2Gy8ine1yTe" manager_user_id="555" hidden_payment_methods="bancolombia" register_psp="1" zelle_account="payments@americaneliteschool.org" bank_transfer_account="898155906106" styles_shortcode="margin-top: 30px !important; background: #e71f3b; color: white" fixed_fee_inscription="false" plan="TUDUALDIPLOMA" program="AES" career="AES" coupon_complete="100% Registration fee"]

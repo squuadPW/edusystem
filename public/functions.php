@@ -308,6 +308,11 @@ function form_asp_psp_optimized($atts)
     $careers = [];
     $mentions = [];
 
+    if( $manager_user_id ) {
+        $manager_user_id = $manager_user_id;
+        $programs = get_student_program();
+    }
+
     // Añade la acción al footer.
     // Considerar añadir una verificación para no agregarlo múltiples veces si el shortcode se usa más de una vez.
     if (!has_action('wp_footer', 'modal_continue_checkout')) {
@@ -4889,7 +4894,14 @@ add_action( 'woocommerce_after_checkout_form', function () {
                         btn.addEventListener('click', function(e) { 
                         
                             const modalParent = this.closest('.modal'); 
-                            if (modalParent) modalParent.style.display = 'none';
+                            if ( modalParent ){
+                                modalParent.style.display = 'none';
+
+                                // Marcar automáticamente la primera opción de cuotas
+                                options_quotas = document.querySelectorAll(".options-quotas .option-quota");
+                                if ( options_quotas.length > 0 ) options_quotas[0].click(); // Simula un clic en la primera opción
+                                
+                            } 
                     
                         });
                     });
