@@ -175,7 +175,7 @@
                                         <?php foreach( $list_programs AS $program ): ?>
                                             <li class="program-item-document">
                                                 <?php if( $program['exists'] ): ?>
-                                                    <b class="program-name-document"><?= $program['required'] ? "<span class='required' >*</span>" : "" ?><?= $program['name'] ?></b>
+                                                    <b class="program-name-document"><?= $document->is_required || $program['required'] ? "<span class='required' >*</span>" : "" ?><?= $program['name'] ?></b>
                                                 <?php else: ?>
                                                     <span class="program-name-document"><?= $program['name'] ?></span>
                                                 <?php endif ?>
@@ -184,7 +184,7 @@
                                                     <?php foreach( $program['careers'] AS $careers ): ?>
                                                         <li class="career-item-document">
                                                             <?php if( $careers['exists'] ): ?>
-                                                                <b class="career-name-document"><?= $careers['required'] ? "<span class='required' >*</span>" : "" ?><?= $careers['name'] ?></b>
+                                                                <b class="career-name-document"><?= $document->is_required || $careers['required'] ? "<span class='required' >*</span>" : "" ?><?= $careers['name'] ?></b>
                                                             <?php else: ?>
                                                                 <span class="career-name-document"><?= $careers['name'] ?></span>
                                                             <?php endif ?>
@@ -192,7 +192,7 @@
                                                             <ul class="mention-list-document">
                                                                 <?php foreach( $careers['mentions'] AS $mention ): ?>
                                                                     <li class="mention-item-document">
-                                                                        <b class="mention-name-document"><?= $mention['required'] ? "<span class='required' >*</span>" : "" ?><?= $mention['name'] ?></b>
+                                                                        <b class="mention-name-document"><?= $document->is_required || $mention['required'] ? "<span class='required' >*</span>" : "" ?><?= $mention['name'] ?></b>
                                                                     </li>
                                                                 <?php endforeach ?>
                                                             </ul>
@@ -204,7 +204,7 @@
                                     </ul>
 
                                 <?php else: ?>
-                                    <span><?= __('All programs','edusystem') ?></span>
+                                    <span><?= $document->is_required ? "<span class='required' >*</span>" : "" ?><?= __('All programs','edusystem') ?></span>
                                 <?php endif; ?>
 
                             </td>
