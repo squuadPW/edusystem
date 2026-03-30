@@ -397,11 +397,12 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'program' => __('Program', 'edusystem'),
-            'student' => __('Student or description', 'edusystem'),
+            'program'      => __('Program', 'edusystem'),
+            'link'        => __('Token', 'edusystem'),
+            'student'      => __('Student or description', 'edusystem'),
             'payment_plan' => __('Scholarship', 'edusystem'),
-            'created_by' => __('Created by', 'edusystem'),
-            'created_at' => __('Created at', 'edusystem'),
+            'created_by'   => __('Created by', 'edusystem'),
+            'created_at'   => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
 
@@ -457,8 +458,8 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
 
             // 3. Direct Search on dynamic_links (Always included in search logic)
             // We include name, last_name, and email to make the search more useful
-            $where_link_search = "(`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s)";
-            $search_link_args = [$like, $like, $like]; // 4 arguments
+            $where_link_search = "(`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s OR `link` LIKE %s)";
+            $search_link_args = [$like, $like, $like, $like]; // 4 arguments
 
             // 4. Construct the final search WHERE clause
             $identificator_conditions = [];
