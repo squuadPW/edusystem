@@ -111,10 +111,12 @@
                                         foreach ( $programs AS $program ) {
 
                                             $program_exists  = !empty( $academic_department['program'][$program->identificator]  );
+                                            $required  = $program_exists ? $academic_department['program'][$program->identificator]['required'] : false;
 
                                             $list_programs[$program->identificator] = [
                                                 'name' => $program->name,
                                                 'exists' => $program_exists,
+                                                'required' => $required,
                                                 'careers' => []
                                             ];
 
@@ -129,10 +131,12 @@
                                             foreach( $careers AS $career ) {
 
                                                 $career_exists = !empty( $academic_department['career'][$career->identificator]  );
+                                                $required  = $career_exists ? $academic_department['career'][$career->identificator]['required'] : false;
 
                                                 $list_programs[$program->identificator]['careers'][$career->identificator] = [
                                                     'name' => $career->name,
                                                     'exists' => $career_exists,
+                                                    'required' => $required,
                                                     'mentions' => []
                                                 ];
 
@@ -149,6 +153,7 @@
                                                         
                                                         $list_programs[$program->identificator]['careers'][$career->identificator]['mentions'][$mention->identificator]  = [
                                                             'name' => $mention->name,
+                                                            'required' => $academic_department['mention'][$mention->identificator]['required'],
                                                         ];
                                                     }
                                                 }
@@ -170,7 +175,7 @@
                                         <?php foreach( $list_programs AS $program ): ?>
                                             <li class="program-item-document">
                                                 <?php if( $program['exists'] ): ?>
-                                                    <b class="program-name-document"><?= $program['name'] ?></b>
+                                                    <b class="program-name-document"><?= $program['required'] ? "<span class='required' >*</span>" : "" ?><?= $program['name'] ?></b>
                                                 <?php else: ?>
                                                     <span class="program-name-document"><?= $program['name'] ?></span>
                                                 <?php endif ?>
@@ -179,7 +184,7 @@
                                                     <?php foreach( $program['careers'] AS $careers ): ?>
                                                         <li class="career-item-document">
                                                             <?php if( $careers['exists'] ): ?>
-                                                                <b class="career-name-document"><?= $careers['name'] ?></b>
+                                                                <b class="career-name-document"><?= $careers['required'] ? "<span class='required' >*</span>" : "" ?><?= $careers['name'] ?></b>
                                                             <?php else: ?>
                                                                 <span class="career-name-document"><?= $careers['name'] ?></span>
                                                             <?php endif ?>
@@ -187,7 +192,7 @@
                                                             <ul class="mention-list-document">
                                                                 <?php foreach( $careers['mentions'] AS $mention ): ?>
                                                                     <li class="mention-item-document">
-                                                                        <b class="mention-name-document"><?= $mention['name'] ?></b>
+                                                                        <b class="mention-name-document"><?= $mention['required'] ? "<span class='required' >*</span>" : "" ?><?= $mention['name'] ?></b>
                                                                     </li>
                                                                 <?php endforeach ?>
                                                             </ul>
