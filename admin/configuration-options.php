@@ -57,9 +57,11 @@ function add_admin_form_configuration_options_content()
             $moodle_url = sanitize_text_field($_POST['moodle_url']) ?? get_option('moodle_url');
             $moodle_token = sanitize_text_field($_POST['moodle_token']) ?? get_option('moodle_token');
             $public_course_id = sanitize_text_field($_POST['public_course_id']) ?? get_option('public_course_id');
+            $moodle_default_language = sanitize_text_field($_POST['moodle_default_language']) ?? get_option('moodle_default_language');
             update_option('moodle_url', $moodle_url);
             update_option('moodle_token', $moodle_token);
             update_option('public_course_id', $public_course_id);
+            update_option('moodle_default_language', $moodle_default_language);
 
             // crm
             $crm_url = sanitize_text_field($_POST['crm_url']) ?? get_option('crm_url');

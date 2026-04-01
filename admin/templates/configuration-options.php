@@ -193,6 +193,7 @@
             <input class="full-input" name="moodle_token" type="text" id="moodle_token"
               value="<?= get_option('moodle_token'); ?>" required>
           </div>
+
           <div class="form-group" style="padding: 0px 10px 10px 10px;">
             <label for="offer_complete"><?= __('Public information course', 'edusystem'); ?></label> <br>
             <select name="public_course_id" class="js-example-basic" style="width: 100%;">
@@ -206,6 +207,23 @@
               <?php endforeach; ?>
             </select>
           </div>
+
+            <div class="form-group" style="padding: 0px 10px 10px 10px;">
+
+                <label for="moodle_default_language"><?= __('Moodle default language', 'edusystem'); ?></label> <br>
+                
+                
+                <?php  
+                    wp_dropdown_languages( array(
+                        'id'                          => 'moodle_default_language',
+                        'name'                        => 'moodle_default_language',
+                        'selected'                    => get_option('moodle_default_language'),   
+                        'show_available_translations' => true, 
+                        'show_option_site_default'    => true, 
+                    ) );
+                ?>
+            </div>
+
         </div>
 
         <div id="by_crm" style="display: none">

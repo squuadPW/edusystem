@@ -42,13 +42,15 @@ function create_user_moodle($student_id)
         if (!empty($moodle_url) && !empty($moodle_token)) {
 
             $MoodleRest = new MoodleRest($moodle_url . 'webservice/rest/server.php', $moodle_token);
-            $password = wp_generate_password(12);
+            $password = wp_generate_password(12, true , true);
 
-            $user = get_user_by('email', $data_student->email );
+            $lang = get_option('moodle_default_language') ?? 'en';
+
+            /* $user = get_user_by('email', $data_student->email );
             if ($user) {
                 $user_id = $user->ID;
                 $lang = substr(get_user_locale($user_id), 0, 2);
-            }
+            } */
 
             $users = [
                 'users' => [
@@ -65,12 +67,13 @@ function create_user_moodle($student_id)
                         'phone2' => $data_student->phone,
                         'institution' => $data_student->name_institute,
                         'address' => $address,
-                        'lang' => $lang ?? 'en',
+                        'lang' => map_wp_language_to_moodle_variant($lang),
                     ]
                 ]
             ];
 
             $create_user = $MoodleRest->request('core_user_create_users', $users, MoodleRest::METHOD_POST);
+            
             $wpdb->update($table_students, [
                 'moodle_student_id' => $create_user[0]['id'],
                 'moodle_password' => $password
@@ -87,6 +90,7 @@ function create_user_moodle($student_id)
 
 function handle_student_registration_moodle($student_id)
 {
+
     generate_projection_student($student_id);
 
     if (get_option('auto_enroll_regular')) {
@@ -96,6 +100,8 @@ function handle_student_registration_moodle($student_id)
     if (get_option('public_course_id')) {
         enroll_student_public_course(courses_enroll_student($student_id, [(int) get_option('public_course_id')]));
     }
+
+    
 }
 
 /**
@@ -505,4 +511,27 @@ function sync_student_with_moodle($student_id)
         // Manejo de errores de la API
         return false;
     }
+}
+
+function map_wp_language_to_moodle_variant($valor_wp) {
+
+    if (empty($valor_wp) || $valor_wp === 'site-default') return 'en'; 
+
+    // Todo a minúsculas y asegurar guion bajo
+    $slug = strtolower(str_replace('-', '_', $valor_wp));
+
+    // Casos Especiales de Moodle (Idiomas que siempre se simplifican)
+    $simplificar = ['es_es', 'en_us', 'en_gb', 'fr_fr', 'de_de', 'nl_nl', 'it_it', 'pt_pt'];
+    
+    if (in_array($slug, $simplificar)) return explode('_', $slug)[0];
+
+    $partes = explode('_', $slug);
+    
+    if (count($partes) > 1) {
+        if ($partes[0] === $partes[1]) return $partes[0];
+        
+        return $partes[0] . '_' . $partes[1];
+    }
+
+    return $slug;
 }
