@@ -1018,7 +1018,7 @@ function add_loginout_link($items, $args) {
 
         if( get_option('virtual_classroom_button_header') ) {
             
-            $student_id
+            $student_id = 4;
             $url = home_url('?action=access_moodle_url&student_id=' . $student_id);
 
             $items .= '<li>
