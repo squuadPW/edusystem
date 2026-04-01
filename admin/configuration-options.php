@@ -35,6 +35,7 @@ function add_admin_form_configuration_options_content()
             $site_mode = sanitize_text_field($_POST['site_mode']) ?? get_option('site_mode');
             $default_stripe_account = sanitize_text_field ($_POST['default_stripe_account']);
             $modal_scholarships_checkout = sanitize_text_field ($_POST['modal_scholarships_checkout']);
+            $virtual_classroom_button_header = sanitize_text_field ($_POST['virtual_classroom_button_header']);
             
             update_option('payment_due', $payment_due);
             update_option('proof_due', $proof_due);
@@ -57,6 +58,7 @@ function add_admin_form_configuration_options_content()
             update_option('site_mode', $site_mode);
             update_option('default_stripe_account', $default_stripe_account);
             update_option('modal_scholarships_checkout', $modal_scholarships_checkout);
+            update_option('virtual_classroom_button_header', $virtual_classroom_button_header);
 
             // moodle
             $moodle_url = sanitize_text_field($_POST['moodle_url']) ?? get_option('moodle_url');

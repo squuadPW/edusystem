@@ -1008,14 +1008,27 @@ add_filter('woocommerce_account_orders_columns', 'modify_columns_orders');
 
 add_filter('wp_nav_menu_items', 'add_loginout_link', 10, 2);
 
-function add_loginout_link($items, $args)
-{
-
+function add_loginout_link($items, $args) {
+    
     if (is_user_logged_in()) {
-
+        
         global $current_user, $wpdb;
         $site_mode = get_option('site_mode');
         $table_users_notices = $wpdb->prefix . 'users_notices';
+
+        if( get_option('virtual_classroom_button_header') ) {
+            
+            $student_id
+            $url = home_url('?action=access_moodle_url&student_id=' . $student_id);
+
+            $items .= '<li>
+                    <a href="'. $url .'" class="button button-primary" >' .
+                        __('Virtual Classroom', 'edusystem') . '
+                    </a>
+                </li>';
+        }
+
+        
         $notices = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_users_notices} WHERE `read` = %d AND user_id = %d ORDER BY created_at DESC", 0, $current_user->ID));
         if (sizeof($notices) > 0) {
             $color = '#12e354 !important';
@@ -1065,6 +1078,7 @@ function add_loginout_link($items, $args)
         }
 
         $logout_link = wp_logout_url(get_home_url());
+
         $items .= '<li>
             <div class="logout-button-container" >
                 <div style="padding: 5px 20px !important; text-align: start; border-radius: 20px; color: white !important; font-size: 14px;">
@@ -4910,3 +4924,5 @@ add_action( 'woocommerce_after_checkout_form', function () {
         </script>
     <?php
 });
+
+
