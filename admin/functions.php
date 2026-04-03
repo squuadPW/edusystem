@@ -123,6 +123,10 @@ function aes_scripts_admin()
             $version,
             true
         );
+
+        wp_localize_script('academic-offers', 'ajax_object', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+        ]);
     }
 
     if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_scholarships_content') {
@@ -322,7 +326,7 @@ function aes_scripts_admin()
         wp_enqueue_script('academic-projection', plugins_url('edusystem') . '/admin/assets/js/academic-projection.js', array('jquery'), $version, true);
 
         wp_localize_script('academic-projection', 'projection_data', [
-            'url' => admin_url('admin-ajax.php'),
+            'ajax_url' => admin_url('admin-ajax.php'),
             'action' => 'close_academic_offer'
         ]);
     }

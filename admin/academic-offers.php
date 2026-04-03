@@ -524,3 +524,22 @@ function get_offers_availables_by_code($code, $cut)
 
     return $subjects;
 }
+
+// obtiene el corte del periodo seleccionado
+add_action('wp_ajax_get_cut_period', 'get_cut_period');
+add_action('wp_ajax_nopriv_get_cut_period', 'get_cut_period');
+function get_cut_period() {
+
+    $code_period = isset($_POST['code_period']) ? sanitize_text_field($_POST['code_period']) : '';
+    if( !$code_period ) wp_send_json_error(__('The period was not found.', 'edusystem'));
+    
+    global $wpdb;
+    $academic_periods_cut = $wpdb->prefix . 'academic_periods_cut';
+    $cut = $wpdb->get_col($wpdb->prepare(
+        "SELECT cut FROM $academic_periods_cut WHERE code LIKE %s",
+        $code_period
+    ));
+
+    wp_send_json_success(['cut' => $cut]);
+    
+}

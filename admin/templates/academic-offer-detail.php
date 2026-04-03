@@ -47,7 +47,7 @@
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="hc"><b><?= __('School year', 'edusystem'); ?></b></label><br>
-                                        <select name="code_period" required>
+                                        <select id="code_period" name="code_period" required>
                                             <option value="" selected>Assigns a school year to the offer</option>
                                             <?php foreach ($periods as $period) { ?>
                                                 <option value="<?php echo $period->code; ?>"
@@ -60,18 +60,8 @@
 
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="hc"><b><?= __('Cut', 'edusystem'); ?></b></label><br>
-                                        <select name="cut_period" required>
-                                            <option value="">Assigns a cut to the offer</option>
-                                            <option value="A" <?= (($offer->cut_period == 'A') ? 'selected' : '') ?>>A
-                                            </option>
-                                            <option value="B" <?= (($offer->cut_period == 'B') ? 'selected' : '') ?>>B
-                                            </option>
-                                            <option value="C" <?= (($offer->cut_period == 'C') ? 'selected' : '') ?>>C
-                                            </option>
-                                            <option value="D" <?= (($offer->cut_period == 'D') ? 'selected' : '') ?>>D
-                                            </option>
-                                            <option value="E" <?= (($offer->cut_period == 'E') ? 'selected' : '') ?>>E
-                                            </option>
+                                        <select id="cut_period" name="cut_period" required data-text_default="<?= __('Assigns a cut to the offer', 'edusystem'); ?>"   >
+                                            <option value=""><?= __('Assigns a cut to the offer', 'edusystem') ?></option>
                                         </select>
                                     </div>
 
