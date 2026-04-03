@@ -1017,15 +1017,19 @@ function add_loginout_link($items, $args) {
         $table_users_notices = $wpdb->prefix . 'users_notices';
 
         if( get_option('virtual_classroom_button_header') ) {
-            
-            $student_id = 4;
-            $url = home_url('?action=access_moodle_url&student_id=' . $student_id);
 
-            $items .= '<li>
-                    <a href="'. $url .'" class="button button-primary" >' .
-                        __('Virtual Classroom', 'edusystem') . '
-                    </a>
-                </li>';
+            if ( in_array('student', (array) $current_user->roles) ) {
+                $student_id = get_user_meta(get_current_user_id(), 'student_id', true);
+                if ($student_id && get_student_detail($student_id) ) {
+                    $url = home_url('?action=access_moodle_url&student_id=' . $student_id);
+
+                    $items .= '<li>
+                            <a href="'. $url .'" class="button button-primary" >' .
+                                __('Virtual Classroom', 'edusystem') . '
+                            </a>
+                        </li>';
+                }
+            }
         }
 
         
