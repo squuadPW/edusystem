@@ -203,4 +203,50 @@ function confirm_force_enrollment_subjects( button ) {
     document.getElementById('academic_projection_form').submit();
 }
 
+function get_cut_period_changed( key ) {
+
+    const code_period = document.getElementById(`academic_period_${key}`);
+    if( code_period ) {
+
+        cut_period = document.getElementById(`academic_period_cut_${key}`);
+        cut_period.innerHTML = "";
+
+        let opt_default = document.createElement('option');
+        opt_default.value = ''; 
+        opt_default.text = cut_period.dataset.text_default; 
+        cut_period.add(opt_default);
+
+        period = code_period.value;
+
+        const formData = new FormData();
+        formData.append('action', 'get_cut_period');
+        formData.append('code_period', period );
+            
+        fetch( 
+            projection_data.url, {
+            method: 'POST',
+            body: formData
+        })
+        .then( res => res.json() )
+        .then( res => {
+                
+            if( cut_period ){
+                if( res.success ) {
+                        
+                    res.data.cut.forEach(value => {
+
+                        let opt = document.createElement('option');
+                        opt.value = value; 
+                        opt.text = value; 
+                        cut_period.add(opt);
+                    });
+
+                } 
+            }
+                    
+        })
+        .catch( err => {} ); 
+    }
+}
+
 
