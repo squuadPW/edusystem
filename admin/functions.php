@@ -1907,6 +1907,21 @@ add_action('woocommerce_order_status_changed', function ($order_id, $old_status,
     }
 }, 10, 4);
 
+// oculta dupliqueitor del menu para usuarios no adminisreadores
+add_action( 'admin_init', 'ocultar_duplicator_para_no_admins' );
+function ocultar_duplicator_para_no_admins() {
 
-
+    $user = wp_get_current_user();
+    if (!in_array('administrator', (array) $user->roles)) {
+        
+        remove_menu_page( 'duplicator' );
+        
+        add_filter( 'all_plugins', function( $plugins ) {
+            if ( isset( $plugins['duplicator/duplicator.php'] ) ) {
+                unset( $plugins['duplicator/duplicator.php'] );
+            }
+            return $plugins;
+        });
+    }
+}
 
