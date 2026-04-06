@@ -301,6 +301,11 @@ $selected_plan_for_details = count($selected_plans) === 1 ? $selected_plans[0] :
                                 </div>
                             </div>
 
+                            <div style="font-weight:400;" class="space-offer">
+                                <label for="accounts-mode"><b><?= __('Description', 'edusystem'); ?></b><span class="required">*</span></label>
+                                <textarea></textarea>     
+                            </div>
+
                             <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
                                 <?php if ($dynamic_link) {
                                     $dynamic_link_token = isset($dynamic_link->link) ? $dynamic_link->link : '';

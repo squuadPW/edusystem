@@ -1547,7 +1547,7 @@ body.logged-in .custom-logo-link {
 }
 
 // se adapta el tamaño cuando esta el link del aula virtual en el menu
-@media (min-width: 769px) {
+/* @media (min-width: 769px) {
     .main-navigation:has(.virtual-classroom-link) {
         width: 100% !important;
 
@@ -1558,4 +1558,4 @@ body.logged-in .custom-logo-link {
             flex-wrap: wrap;
         }
     }
-}
+} */
