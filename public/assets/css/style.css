@@ -1459,4 +1459,16 @@ body.logged-in .custom-logo-link {
 }
 .seccion-dashboard .list-failed-subjects li .button-primary {
   width: auto;
+}
+
+@media (min-width: 769px) {
+  .main-navigation:has(.virtual-classroom-link) {
+    width: 100% !important;
+  }
+  .main-navigation:has(.virtual-classroom-link) .menu:has(.virtual-classroom-link) {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+  }
 }/*# sourceMappingURL=style.css.map */

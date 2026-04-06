@@ -1016,23 +1016,6 @@ function add_loginout_link($items, $args) {
         $site_mode = get_option('site_mode');
         $table_users_notices = $wpdb->prefix . 'users_notices';
 
-        if( get_option('virtual_classroom_button_header') ) {
-
-            if ( in_array('student', (array) $current_user->roles) ) {
-                $student_id = get_user_meta(get_current_user_id(), 'student_id', true);
-                if ($student_id && get_student_detail($student_id) ) {
-                    $url = home_url('?action=access_moodle_url&student_id=' . $student_id);
-
-                    $items .= '<li>
-                            <a href="'. $url .'" class="button button-primary" >' .
-                                __('Virtual Classroom', 'edusystem') . '
-                            </a>
-                        </li>';
-                }
-            }
-        }
-
-        
         $notices = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_users_notices} WHERE `read` = %d AND user_id = %d ORDER BY created_at DESC", 0, $current_user->ID));
         if (sizeof($notices) > 0) {
             $color = '#12e354 !important';
@@ -1082,6 +1065,30 @@ function add_loginout_link($items, $args) {
         }
 
         $logout_link = wp_logout_url(get_home_url());
+
+        if( get_option('virtual_classroom_button_header') ) {
+     
+            if ( in_array('student', (array) $current_user->roles) ) {
+                $student_id = get_user_meta(get_current_user_id(), 'student_id', true);
+                if ($student_id && get_student_detail($student_id) ) {
+
+                    // no muestra el link si el estudiante no tiene cursos
+                    $access = is_enrolled_in_courses($student_id);
+                    $access = isset($access) && is_array($access) ? $access : [];
+                    if( count($access) > 0 ) {
+
+                        $url = home_url('?action=access_moodle_url&student_id=' . $student_id);
+                        $target_attr = wp_is_mobile() ? '' : 'target="_blank"';
+
+                        $items .= '<li class="virtual-classroom-link" >
+                                <a href="'. $url .'" '.$target_attr.' >' .
+                                    __('Virtual Classroom', 'edusystem') . '
+                                </a>
+                            </li>';
+                    }
+                }
+            }
+        }
 
         $items .= '<li>
             <div class="logout-button-container" >
