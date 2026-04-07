@@ -639,6 +639,10 @@ add_action('woocommerce_account_califications_endpoint', function () {
 
             foreach ($inscriptions as $key => $inscription) {
                 if ($inscription->status_id == 3 || $inscription->status_id == 4) {
+
+                    $offers = get_offers_by_code( $inscription->code_period, $inscription->cut_period);
+                    if( !$offers ) continue;
+
                     if ($inscription->subject_id) {
                         $subject = $wpdb->get_row("SELECT * FROM {$table_school_subjects} WHERE id = {$inscription->subject_id}");
                     } else {

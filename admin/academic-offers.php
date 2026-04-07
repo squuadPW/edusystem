@@ -525,6 +525,12 @@ function get_offers_availables_by_code($code, $cut)
     return $subjects;
 }
 
+function get_offers_by_code($code, $cut) {
+    global $wpdb;
+    $offers = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}academic_offers` WHERE code_period='{$code}' AND cut_period='{$cut}' AND grades_downloaded = 0 ORDER BY section ASC");
+    return $offers;
+}
+
 // obtiene el corte del periodo seleccionado
 add_action('wp_ajax_get_cut_period', 'get_cut_period');
 add_action('wp_ajax_nopriv_get_cut_period', 'get_cut_period');
