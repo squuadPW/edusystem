@@ -18,25 +18,25 @@ document.addEventListener("DOMContentLoaded", () => {
      */
     options_quotas.forEach((option_quota) => {
         option_quota.addEventListener("click", function () {
-        // Eliminar la clase 'checked' de todas las opciones
-        options_quotas.forEach((opt) => {
-            opt.querySelector(".option-rule").removeAttribute("checked");
-        });
+            // Eliminar la clase 'checked' de todas las opciones
+            options_quotas.forEach((opt) => {
+                opt.querySelector(".option-rule").removeAttribute("checked");
+            });
 
-        // Añadir la clase 'checked' a la opción seleccionada
-        option_quota.querySelector(".option-rule").setAttribute("checked", true);
+            // Añadir la clase 'checked' a la opción seleccionada
+            option_quota.querySelector(".option-rule").setAttribute("checked", true);
 
-        rule_id = option_quota.getAttribute("data-id");
-        rule = document.getElementById(`data-rule-${rule_id}`)?.value;
-        if (rule) {
-            rule_data = JSON.parse(rule);
-            
-            payment_table(rule_data);
+            rule_id = option_quota.getAttribute("data-id");
+            rule = document.getElementById(`data-rule-${rule_id}`)?.value;
+            if (rule) {
+                rule_data = JSON.parse(rule);
+                
+                payment_table(rule_data);
 
-            table_payment = document.getElementById("table-payment");
-            product_id = table_payment.getAttribute("data-product_id");
-            update_price_product_cart_quota_rule_js(product_id, rule_id);
-        }
+                table_payment = document.getElementById("table-payment");
+                product_id = table_payment.getAttribute("data-product_id");
+                update_price_product_cart_quota_rule_js(product_id, rule_id);
+            }
         });
     });
 

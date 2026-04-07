@@ -86,6 +86,7 @@ function add_admin_form_dynamic_link_content()
             $name = sanitize_text_field($_POST['name']);
             $last_name = sanitize_text_field($_POST['last_name']);
             $email = sanitize_email($_POST['email']); // Mejor usar sanitize_email
+            $description = sanitize_textarea_field($_POST['description'] ?? ''); // Sanitizar descripción si se agregó
             $coupon_complete = sanitize_text_field($_POST['coupon_complete'] ?? '');
             $coupon_credit = sanitize_text_field($_POST['coupon_credit'] ?? '');
             $program_identificator_raw = $_POST['program_identificator'] ?? [];
@@ -146,6 +147,7 @@ function add_admin_form_dynamic_link_content()
                     'fee_payment_completed' => $fee_payment_completed,
                     'same_account' => $same_account,
                     'manager_id' => $manager_id,
+                    'description' => $description,
                     'created_by' => $created_by,
                 ], ['id' => $dynamic_link_id]);
 
@@ -173,6 +175,7 @@ function add_admin_form_dynamic_link_content()
                     'fee_payment_completed' => $fee_payment_completed,
                     'same_account' => $same_account,
                     'manager_id' => $manager_id,
+                    'description' => $description,
                     'created_by' => $created_by,
                 ]);
 
@@ -397,11 +400,13 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
     {
 
         $columns = array(
-            'program' => __('Program', 'edusystem'),
-            'student' => __('Student or description', 'edusystem'),
+            'program'      => __('Program', 'edusystem'),
+            'link'        => __('Token', 'edusystem'),
+            'student'      => __('Student or description', 'edusystem'),
             'payment_plan' => __('Scholarship', 'edusystem'),
-            'created_by' => __('Created by', 'edusystem'),
-            'created_at' => __('Created at', 'edusystem'),
+            'description'  => __('Description', 'edusystem'),
+            'created_by'   => __('Created by', 'edusystem'),
+            'created_at'   => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
         );
 
@@ -457,8 +462,8 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
 
             // 3. Direct Search on dynamic_links (Always included in search logic)
             // We include name, last_name, and email to make the search more useful
-            $where_link_search = "(`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s)";
-            $search_link_args = [$like, $like, $like]; // 4 arguments
+            $where_link_search = "(`name` LIKE %s OR `last_name` LIKE %s OR `email` LIKE %s OR `link` LIKE %s)";
+            $search_link_args = [$like, $like, $like, $like]; // 4 arguments
 
             // 4. Construct the final search WHERE clause
             $identificator_conditions = [];
@@ -571,6 +576,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                     'student' => $student_name_desc,
                     'payment_plan' => $payment_plan_detail,
                     'link' => $dynamic_links_val['link'],
+                    'description' => $dynamic_links_val['description'] ? $dynamic_links_val['description'] : '',
                     'created_by' => $created_by_name,
                     'created_at' => $dynamic_links_val['created_at'],
                     'email' => $dynamic_links_val['email']

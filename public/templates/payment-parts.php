@@ -72,7 +72,22 @@
             </div>
         <?php endif ?>
 
-        <?php if ($site_mode != 'UNI' && empty( $_COOKIE['token_dynamic_link'] ) ) { ?>
+        <?php 
+            $modal_scholarships = false;
+            $plan_identificator = $_COOKIE['plan_id'] ?? false;
+            $program_identificator = $_COOKIE['program_id'] ?? false;
+            if( get_option('modal_scholarships_checkout') && $plan_identificator && $program_identificator ) {
+                
+                $plan = get_program_details_by_identificator($plan_identificator);
+                $program = get_student_program_details_by_identificator($program_identificator);
+
+                $scholarship = get_scholarship_details_by_program_plan( $program->id, $plan->id );
+                if( $scholarship ) $modal_scholarships= true;
+        
+            } 
+            
+        ?>
+        <?php if ($site_mode != 'UNI' && empty( $_COOKIE['token_dynamic_link'] ) && !$modal_scholarships ) { ?>
             <div class="text-center elements-quote-hidden" style="padding: 18px 0px;">
                 <label><?= __('Apply to get the discount', 'edusystem') ?></label>
                 <div id="button-schoolship"></div>
