@@ -86,6 +86,7 @@ function add_admin_form_dynamic_link_content()
             $name = sanitize_text_field($_POST['name']);
             $last_name = sanitize_text_field($_POST['last_name']);
             $email = sanitize_email($_POST['email']); // Mejor usar sanitize_email
+            $description = sanitize_textarea_field($_POST['description'] ?? ''); // Sanitizar descripción si se agregó
             $coupon_complete = sanitize_text_field($_POST['coupon_complete'] ?? '');
             $coupon_credit = sanitize_text_field($_POST['coupon_credit'] ?? '');
             $program_identificator_raw = $_POST['program_identificator'] ?? [];
@@ -146,6 +147,7 @@ function add_admin_form_dynamic_link_content()
                     'fee_payment_completed' => $fee_payment_completed,
                     'same_account' => $same_account,
                     'manager_id' => $manager_id,
+                    'description' => $description,
                     'created_by' => $created_by,
                 ], ['id' => $dynamic_link_id]);
 
@@ -173,6 +175,7 @@ function add_admin_form_dynamic_link_content()
                     'fee_payment_completed' => $fee_payment_completed,
                     'same_account' => $same_account,
                     'manager_id' => $manager_id,
+                    'description' => $description,
                     'created_by' => $created_by,
                 ]);
 

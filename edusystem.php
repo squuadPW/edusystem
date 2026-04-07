@@ -528,6 +528,7 @@ function create_tables()
         fee_payment_completed BOOLEAN NOT NULL DEFAULT 0,
         same_account BOOLEAN NOT NULL DEFAULT 0,
         manager_id INT(11) NULL,
+        description TEXT NULL,
         created_by INT(11) NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"

@@ -302,8 +302,8 @@ $selected_plan_for_details = count($selected_plans) === 1 ? $selected_plans[0] :
                             </div>
 
                             <div style="font-weight:400;" class="space-offer">
-                                <label for="accounts-mode"><b><?= __('Description', 'edusystem'); ?></b><span class="required">*</span></label>
-                                <textarea></textarea>     
+                                <label for="description"><b><?= __('Description', 'edusystem'); ?></b></label>
+                                <textarea name="description" ><?= isset($dynamic_link) ? esc_textarea($dynamic_link->description) : ''; ?></textarea>     
                             </div>
 
                             <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
