@@ -404,6 +404,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
             'link'        => __('Token', 'edusystem'),
             'student'      => __('Student or description', 'edusystem'),
             'payment_plan' => __('Scholarship', 'edusystem'),
+            'description'  => __('Description', 'edusystem'),
             'created_by'   => __('Created by', 'edusystem'),
             'created_at'   => __('Created at', 'edusystem'),
             'view_details' => __('Actions', 'edusystem'),
@@ -575,6 +576,7 @@ class TT_Dynamic_all_List_Table extends WP_List_Table
                     'student' => $student_name_desc,
                     'payment_plan' => $payment_plan_detail,
                     'link' => $dynamic_links_val['link'],
+                    'description' => $dynamic_links_val['description'] ? $dynamic_links_val['description'] : '',
                     'created_by' => $created_by_name,
                     'created_at' => $dynamic_links_val['created_at'],
                     'email' => $dynamic_links_val['email']

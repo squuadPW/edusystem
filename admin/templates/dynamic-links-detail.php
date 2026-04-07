@@ -298,12 +298,13 @@ $selected_plan_for_details = count($selected_plans) === 1 ? $selected_plans[0] :
                                             <label for="fee_payment_completed"><b><?= __('Payment Fee Complete', 'edusystem'); ?></b><span class="text-danger">*</span></label><br>
                                         </div>
                                     <?php } ?>
-                                </div>
-                            </div>
 
-                            <div style="font-weight:400;" class="space-offer">
-                                <label for="description"><b><?= __('Description', 'edusystem'); ?></b></label>
-                                <textarea name="description" ><?= isset($dynamic_link) ? esc_textarea($dynamic_link->description) : ''; ?></textarea>     
+                                    <div style="font-weight:400;" class="space-offer">
+                                        <label for="description"><b><?= __('Description', 'edusystem'); ?></b></label>
+                                        <textarea name="description" style="width: 100%;" ><?= isset($dynamic_link) ? esc_textarea($dynamic_link->description) : ''; ?></textarea>     
+                                    </div>
+                                </div>
+
                             </div>
 
                             <div style="margin-top:20px;display:flex;flex-direction:row;justify-content:end;gap:5px;">
