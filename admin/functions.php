@@ -123,6 +123,10 @@ function aes_scripts_admin()
             $version,
             true
         );
+
+        wp_localize_script('academic-offers', 'ajax_object', [
+            'ajax_url' => admin_url('admin-ajax.php'),
+        ]);
     }
 
     if (isset($_GET['page']) && $_GET['page'] === 'add_admin_form_scholarships_content') {
@@ -322,7 +326,7 @@ function aes_scripts_admin()
         wp_enqueue_script('academic-projection', plugins_url('edusystem') . '/admin/assets/js/academic-projection.js', array('jquery'), $version, true);
 
         wp_localize_script('academic-projection', 'projection_data', [
-            'url' => admin_url('admin-ajax.php'),
+            'ajax_url' => admin_url('admin-ajax.php'),
             'action' => 'close_academic_offer'
         ]);
     }
@@ -542,7 +546,6 @@ function add_custom_admin_page()
         add_submenu_page('add_admin_form_academic_content', __('Pensum', 'edusystem'), __('Pensum', 'edusystem'), 'manager_pensums', 'add_admin_form_pensum_content', 'add_admin_form_pensum_content', 10);
         add_submenu_page('add_admin_form_academic_content', __('Program', 'edusystem'), __('Program', 'edusystem'), 'manager_programs', 'add_admin_form_student_program_content', 'add_admin_form_student_program_content', 10);
         add_submenu_page('add_admin_form_academic_content', __('School subjects', 'edusystem'), __('School subjects', 'edusystem'), 'manager_school_subjects_aes', 'add_admin_form_school_subjects_content', 'add_admin_form_school_subjects_content', 10);
-        add_submenu_page('add_admin_form_academic_content', __('Student banners', 'edusystem'), __('Student banners', 'edusystem'), 'manager_feed', 'add_admin_form_feed_content', 'add_admin_form_feed_content', 10);
         remove_submenu_page('add_admin_form_academic_content', 'add_admin_form_academic_content');
 
         add_menu_page(
@@ -587,6 +590,7 @@ function add_custom_admin_page()
         add_submenu_page('add_admin_form_communications_content', __('Send email', 'edusystem'), __('Send email', 'edusystem'), 'manager_send_email_aes', 'add_admin_form_send_email_content', 'add_admin_form_send_email_content', 10);
         add_submenu_page('add_admin_form_communications_content', __('Email to staff', 'edusystem'), __('Email to staff', 'edusystem'), 'manager_send_notification_aes', 'add_admin_form_send_notification_content', 'add_admin_form_send_notification_content', 10);
         add_submenu_page('add_admin_form_communications_content', __('Template emails', 'edusystem'), __('Template emails', 'edusystem'), 'manager_templates_emails', 'add_admin_form_templates_emails_content', 'add_admin_form_templates_emails_content', 10);
+        add_submenu_page('add_admin_form_communications_content', __('Student banners', 'edusystem'), __('Student banners', 'edusystem'), 'manager_feed', 'add_admin_form_feed_content', 'add_admin_form_feed_content', 10);
         remove_submenu_page('add_admin_form_communications_content', 'add_admin_form_communications_content');
 
         add_menu_page(
@@ -1903,6 +1907,21 @@ add_action('woocommerce_order_status_changed', function ($order_id, $old_status,
     }
 }, 10, 4);
 
+// oculta dupliqueitor del menu para usuarios no adminisreadores
+add_action( 'admin_init', 'ocultar_duplicator_para_no_admins' );
+function ocultar_duplicator_para_no_admins() {
 
-
+    $user = wp_get_current_user();
+    if (!in_array('administrator', (array) $user->roles)) {
+        
+        remove_menu_page( 'duplicator' );
+        
+        add_filter( 'all_plugins', function( $plugins ) {
+            if ( isset( $plugins['duplicator/duplicator.php'] ) ) {
+                unset( $plugins['duplicator/duplicator.php'] );
+            }
+            return $plugins;
+        });
+    }
+}
 
