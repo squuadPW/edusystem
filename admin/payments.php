@@ -1850,8 +1850,8 @@ function add_admin_form_payments_content()
 
             if ( $student ) {
 
-                $amount = $_POST['amount'] ?? 0.00;
-                $currency = $_POST['currency'] ?? get_woocommerce_currency();
+                $amount = (float) $_POST['amount'] ?? 0.00;
+                $currency = $_POST['currency'] ?? '';
                 $date_next_payment = $_POST['date_next_payment'];
 
                 global $wpdb;
