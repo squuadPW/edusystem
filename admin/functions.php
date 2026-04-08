@@ -326,7 +326,7 @@ function aes_scripts_admin()
         wp_enqueue_script('academic-projection', plugins_url('edusystem') . '/admin/assets/js/academic-projection.js', array('jquery'), $version, true);
 
         wp_localize_script('academic-projection', 'projection_data', [
-            'ajax_url' => admin_url('admin-ajax.php'),
+            'url' => admin_url('admin-ajax.php'),
             'action' => 'close_academic_offer'
         ]);
     }
