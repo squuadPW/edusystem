@@ -127,23 +127,36 @@
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-number"
                                         data-title="<?= __('Status', 'edusystem'); ?>">
                                         <?php
-                                        switch ($row['status_id']) {
-                                            case 0:
-                                                echo '<div style="color: gray; font-weight: 600">' . strtoupper('To begin') . '</div>';
-                                                break;
-                                            case 1:
-                                                echo '<div style="color: blue; font-weight: 600">' . strtoupper('Active') . '</div>';
-                                                break;
-                                            case 2:
-                                                echo '<div style="color: red; font-weight: 600">' . strtoupper('Unsubscribed') . '</div>';
-                                                break;
-                                            case 3:
-                                                echo '<div style="color: green; font-weight: 600">' . strtoupper('Approved') . '</div>';
-                                                break;
-                                            case 4:
-                                                echo '<div style="color: red; font-weight: 600">' . strtoupper('Reproved') . '</div>';
-                                                break;
-                                        }
+                                        
+                                            switch ($row['status_id']) {
+                                                case 0:
+                                                    echo '<div style="color: gray; font-weight: 600">' . strtoupper('To begin') . '</div>';
+                                                    break;
+                                                case 1:
+                                                    echo '<div style="color: blue; font-weight: 600">' . strtoupper('Active') . '</div>';
+                                                    break;
+                                                case 2:
+                                                    echo '<div style="color: red; font-weight: 600">' . strtoupper('Unsubscribed') . '</div>';
+                                                    break;
+                                                case 3:
+
+                                                    if( $row['active_offers'] ) {
+                                                        echo '<div style="color: orange; font-weight: 600">' . strtoupper('Awaiting grades') . '</div>';
+                                                        break;
+                                                    } 
+
+                                                    echo '<div style="color: green; font-weight: 600">' . strtoupper('Approved') . '</div>';
+                                                    break;
+                                                case 4:
+
+                                                    if( $row['active_offers'] ) {
+                                                        echo '<div style="color: orange; font-weight: 600">' . strtoupper('Awaiting grades') . '</div>';
+                                                        break;
+                                                    } 
+
+                                                    echo '<div style="color: red; font-weight: 600">' . strtoupper('Reproved') . '</div>';
+                                                    break;
+                                            }
                                         ?>
                                     </td>
                                     </td>
@@ -157,7 +170,7 @@
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                         data-title="<?= __('Grade', 'edusystem') ?>">
-                                        <strong><?= strtoupper($row['calification']) ?></strong>
+                                        <strong><?= $row['active_offers'] ? '-' : strtoupper($row['calification']) ?></strong>
                                     </td>
                                     <td class="align-middle woocommerce-orders-table__cell woocommerce-orders-table__cell-order-total"
                                         data-title="<?= __('Academic period', 'edusystem') ?>">
