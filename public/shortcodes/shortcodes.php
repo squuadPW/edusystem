@@ -220,7 +220,8 @@ add_shortcode('buy_failed_subjects', function () {
                                     $add_to_cart_url = add_query_arg( 
                                         array( 
                                             'add-to-cart' => get_master_subject_product_id(), 
-                                            'subject_id' => $subject->id 
+                                            'subject_id' => $subject->id,
+                                            'student_id' => $student_id
                                         ), 
                                         wc_get_checkout_url()
                                     );

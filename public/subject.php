@@ -60,6 +60,9 @@ add_filter('woocommerce_add_to_cart_handler', function($handler, $product_id) {
 add_filter('woocommerce_add_cart_item_data', function($cart_item_data, $product_id, $variation_id) {
     if (isset($_REQUEST['subject_id'])) {
 
+        $student_id = intval($_REQUEST['student_id']) ?? 0;
+        if ( !$student_id ) return $cart_item_data;
+
         $subject_id = intval($_REQUEST['subject_id']);
         $subject = get_subject_details($subject_id);
 
@@ -76,8 +79,10 @@ add_filter('woocommerce_add_cart_item_data', function($cart_item_data, $product_
         }
         
         $cart_item_data['subject_id'] = $subject->id;
+        $cart_item_data['student_id'] = $student_id;
         $cart_item_data['custom_name_subject'] = $subject->name;
         $cart_item_data['custom_price_subject'] = $price;
+        $cart_item_data['custom_currency_subject'] = $subject->currency;
         $cart_item_data['custom_currency_subject'] = $subject->currency;
 
     }
@@ -110,7 +115,13 @@ add_action('woocommerce_checkout_create_order_line_item', function($item, $cart_
     if ( isset($values['subject_id']) ) {
         $order->update_meta_data('subject_id', sanitize_text_field($values['subject_id']));
         $item->add_meta_data('subject_id', $values['subject_id']);
-    }
+
+        if ( isset($values['student_id']) ) {
+            if ( !$order->meta_exists('student_id') ) {
+                $order->update_meta_data('student_id', intval($values['student_id']));
+            }
+        }
+    }  
 
 }, 10, 4);
 
