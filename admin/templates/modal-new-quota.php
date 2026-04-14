@@ -15,7 +15,7 @@
 				<div class="seccion" >
 					<div class="group-input" >
 						<label><?= __('Amount','edusystem') ?></label>
-						<input type="number" id="amount" name="amount" min="0" />
+						<input type="number" id="amount" name="amount" min="0" step="0.01" />
 					</div>
 
 					<!-- <div class="group-input currency" >
