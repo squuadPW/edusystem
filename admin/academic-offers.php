@@ -531,14 +531,16 @@ function get_offers_by_code($code, $cut) {
     return $offers;
 }
 
-function get_active_offers_by_code_cut($code, $cut) {
+function get_active_offers_by_code_cut($subject_id, $code, $cut) {
 
     global $wpdb;
     $offers = $wpdb->get_var($wpdb->prepare(
         "SELECT id FROM `{$wpdb->prefix}academic_offers` 
-         WHERE code_period = %s 
-         AND cut_period = %s 
-         AND grades_downloaded = 0",
+         WHERE subject_id = %d 
+            AND code_period = %s 
+            AND cut_period = %s 
+            AND grades_downloaded = 0",
+        $subject_id,
         $code, 
         $cut
     ));
