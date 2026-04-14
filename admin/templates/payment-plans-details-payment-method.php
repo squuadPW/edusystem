@@ -33,8 +33,8 @@
 
                                     <div style="font-weight:400; margin-bottom: 10px;">
                                         <div>
-                                            <input style="width: auto !important;" type="checkbox" name="fee_inscription" id="fee_inscription">
-                                            <label for="fee_inscription"><b><?= __('Fee inscription paied', 'edusystem'); ?></b></label>
+                                            <input style="width: auto !important;" type="checkbox" name="fee_inscription" id="fee_inscription" checked >
+                                            <label for="fee_inscription"><b><?= __('Does it apply to the program?', 'edusystem'); ?></b></label>
                                         </div>
                                     </div>
 

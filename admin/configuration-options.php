@@ -33,6 +33,10 @@ function add_admin_form_configuration_options_content()
             $hide_fee_checkbox_checkout = sanitize_text_field($_POST['hide_fee_checkbox_checkout']) ?? get_option('hide_fee_checkbox_checkout');
             $default_lang_site = sanitize_text_field($_POST['default_lang_site']) ?? get_option('default_lang_site');
             $site_mode = sanitize_text_field($_POST['site_mode']) ?? get_option('site_mode');
+            $default_stripe_account = sanitize_text_field ($_POST['default_stripe_account']);
+            $modal_scholarships_checkout = sanitize_text_field ($_POST['modal_scholarships_checkout']);
+            $virtual_classroom_button_header = sanitize_text_field ($_POST['virtual_classroom_button_header']);
+            
             update_option('payment_due', $payment_due);
             update_option('proof_due', $proof_due);
             update_option('virtual_access', $virtual_access);
@@ -52,6 +56,9 @@ function add_admin_form_configuration_options_content()
             update_option('auto_approve_institute', $auto_approve_institute);
             update_option('default_lang_site', $default_lang_site);
             update_option('site_mode', $site_mode);
+            update_option('default_stripe_account', $default_stripe_account);
+            update_option('modal_scholarships_checkout', $modal_scholarships_checkout);
+            update_option('virtual_classroom_button_header', $virtual_classroom_button_header);
 
             // moodle
             $moodle_url = sanitize_text_field($_POST['moodle_url']) ?? get_option('moodle_url');
@@ -158,10 +165,8 @@ function add_admin_form_configuration_options_content()
             // others
             $default_price_electives = sanitize_text_field($_POST['default_price_electives']);
             $default_price_regular_courses = sanitize_text_field ($_POST['default_price_regular_courses']);
-            $default_stripe_account = sanitize_text_field ($_POST['default_stripe_account']);
             update_option('default_price_electives', $default_price_electives);
             update_option('default_price_regular_courses', $default_price_regular_courses);
-            update_option('default_stripe_account', $default_stripe_account);
 
             // Redirect to the same page with a success message
             wp_redirect(admin_url('admin.php?page=add_admin_form_configuration_options_content&success=true'));

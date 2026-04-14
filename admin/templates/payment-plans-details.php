@@ -244,7 +244,7 @@
                                                     <?= __('Account', 'edusystem'); ?>
                                                 </th>
                                                 <th scope="col" class="manage-column column-apply-fee">
-                                                    <?= __('Apply to pay the registration fee', 'edusystem'); ?>
+                                                    <?= __('Does it apply to the program?', 'edusystem'); ?>
                                                 </th>
                                                 <th scope="col" class="manage-column column-action-header" style="text-align: end">
                                                     <?= __('Action', 'edusystem'); ?>
@@ -261,7 +261,7 @@
                                                     <td data-colname="<?= __('Account', 'edusystem'); ?>">
                                                         <?= $method['account_identificator'] ?>
                                                     </td>
-                                                    <td data-colname="<?= __('Apply to pay the registration fee', 'edusystem'); ?>">
+                                                    <td data-colname="<?= __('Does it apply to the program?', 'edusystem'); ?>">
                                                         <?= $method['fee_payment_complete'] == 1 ? __('Yes', 'edusystem') : __('No', 'edusystem') ?>
                                                     </td>
                                                     <td data-colname="<?= __('Action', 'edusystem'); ?>" style="text-align: end">

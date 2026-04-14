@@ -332,45 +332,46 @@ function add_admin_form_available_scholarships_content()
         if ($_GET['action'] == 'save_scholarship') {
             global $wpdb;
             $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
-            $scholarship_id = $_POST['scholarship_id'];
-            $name = $_POST['name'];
+            $scholarship_id = $_POST['scholarship_id'] ?? false;
+            $name = isset($_POST['name']) ? strtoupper(sanitize_text_field($_POST['name'])) : '';
             $description = $_POST['description'];
-            $fee_registration = isset($_POST['fee_registration']) ? ($_POST['fee_registration'] == 'on' ? 1 : 0) : 0;
-            $percent_registration = $_POST['percent_registration'];
-            $program = isset($_POST['program']) ? ($_POST['program'] == 'on' ? 1 : 0) : 0;
-            $percent_program = $_POST['percent_program'];
-            $fee_graduation = isset($_POST['fee_graduation']) ? ($_POST['fee_graduation'] == 'on' ? 1 : 0) : 0;
-            $percent_graduation = $_POST['percent_graduation'];
+            $program_id = $_POST['program_id'];
+            $payment_plan_id = $_POST['payment_plan_id'];
             $is_active = isset($_POST['is_active']) ? ($_POST['is_active'] == 'on' ? 1 : 0) : 0;
-            $coupons = [];
 
-            if (isset($scholarship_id) && !empty($scholarship_id)) {
+
+            if ( isset($scholarship_id) && !empty($scholarship_id) ) {
                 $wpdb->update($table_scholarships_availables, [
                     'name' => $name,
                     'description' => $description,
-                    'coupons' => json_encode($coupons),
-                    'fee_registration' => $fee_registration,
-                    'percent_registration' => $percent_registration,
-                    'program' => $program,
-                    'percent_program' => $percent_program,
-                    'fee_graduation' => $fee_graduation,
-                    'percent_graduation' => $percent_graduation,
+                    'program_id' => $program_id,
+                    'payment_plan_id' => $payment_plan_id,
                     'is_active' => $is_active,
                 ], ['id' => $scholarship_id]);
 
             } else {
-                $wpdb->insert($table_scholarships_availables, [
-                    'name' => $name,
-                    'description' => $description,
-                    'coupons' => json_encode($coupons),
-                    'fee_registration' => $fee_registration,
-                    'percent_registration' => $percent_registration,
-                    'program' => $program,
-                    'percent_program' => $percent_program,
-                    'fee_graduation' => $fee_graduation,
-                    'percent_graduation' => $percent_graduation,
-                    'is_active' => $is_active,
-                ]);
+                
+                $exists = $wpdb->get_var( $wpdb->prepare(
+                    "SELECT COUNT(*) FROM $table_scholarships_availables WHERE program_id = %d AND payment_plan_id = %d",
+                    $program_id,
+                    $payment_plan_id
+                ));
+
+                if ( $exists > 0 ) {
+                    setcookie('error', __('Program configuration and payment plan are already in use for another scholarship', 'edusystem'), time() + 10, '/');
+                    wp_redirect($_SERVER['HTTP_REFERER']);
+                } else {
+
+                    $wpdb->insert($table_scholarships_availables, [
+                        'name' => $name,
+                        'description' => $description,
+                        'program_id' => (int) $program_id,
+                        'payment_plan_id' => (int) $payment_plan_id,
+                        'is_active' => $is_active,
+                    ]);
+
+                    $scholarship_id = $wpdb->insert_id;
+                }
             }
 
             if (isset($scholarship_id) && !empty($scholarship_id)) {
@@ -386,6 +387,8 @@ function add_admin_form_available_scholarships_content()
         if ($_GET['section_tab'] == 'available_scholarship_detail') {
             $scholarship_id = $_GET['scholarship_id'];
             $scholarship = get_scholarship_details($scholarship_id);
+            $programs = get_student_program();
+            $payment_plans = get_payment_plans();
             include(plugin_dir_path(__FILE__) . 'templates/available-scholarship-detail.php');
         }
 
@@ -949,6 +952,19 @@ function get_scholarship_details($scholarship_id)
     $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
 
     $scholarship = $wpdb->get_row("SELECT * FROM {$table_scholarships_availables} WHERE id={$scholarship_id}");
+    return $scholarship;
+}
+
+function get_scholarship_details_by_program_plan( $program_id, $payment_plan_id )
+{
+    global $wpdb;
+    $table_scholarships_availables = $wpdb->prefix . 'scholarships_availables';
+
+    $scholarship = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$table_scholarships_availables} WHERE program_id = %d AND payment_plan_id = %d ",
+        $program_id,
+        $payment_plan_id
+    ));
     return $scholarship;
 }
 

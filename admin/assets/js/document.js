@@ -262,7 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const confirmMessage = `Are you sure you want to ${action.toLowerCase()} this document?`;
         if (confirm(confirmMessage)) {
-          if (action.toLowerCase() === "decline") {
+          if ( button.id == "document-decline" ) {
             // Open modal with textarea for description
             modal.style.display = "block";
           } else {

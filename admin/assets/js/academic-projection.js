@@ -203,12 +203,27 @@ function confirm_force_enrollment_subjects( button ) {
     document.getElementById('academic_projection_form').submit();
 }
 
+// activa los select de periodo
+document.addEventListener('DOMContentLoaded', () => {
+    const period_selects = document.querySelectorAll('select[id^="academic_period_"]');
+    period_selects.forEach(select => {
+
+        select.dispatchEvent(new Event('change'));
+        
+        const key = select.id.replace('academic_period_', '');
+        if (select.value !== "") {
+            get_cut_period_changed(key);
+        }
+    });
+});
+
 function get_cut_period_changed( key ) {
 
     const code_period = document.getElementById(`academic_period_${key}`);
     if( code_period ) {
 
         cut_period = document.getElementById(`academic_period_cut_${key}`);
+        select_cut_value = cut_period.dataset.value ?? '';
         cut_period.innerHTML = "";
 
         let opt_default = document.createElement('option');
@@ -238,6 +253,8 @@ function get_cut_period_changed( key ) {
                         let opt = document.createElement('option');
                         opt.value = value; 
                         opt.text = value; 
+                        if (value == select_cut_value) opt.selected = true;
+                    
                         cut_period.add(opt);
                     });
 
