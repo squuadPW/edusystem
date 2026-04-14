@@ -227,6 +227,14 @@
                         <input type="checkbox" id="hide-fee-checkbox-checkout" name="hide_fee_checkbox_checkout" <?php echo get_option('hide_fee_checkbox_checkout') == 'on' ? 'checked' : '' ?>>
                         <label for="hide-fee-checkbox-checkout"><?= __('Hide checkbox to remove the checkout registration fee', 'edusystem'); ?></label>
                     </div>
+
+                    <div class="form-group" style="padding: 0px 10px 10px 10px;" >
+                        <label for="virtual_classroom_button_header">
+                            <input type="checkbox" name="virtual_classroom_button_header" value="1" <?= checked(1, get_option('virtual_classroom_button_header'), false); ?>>
+                            <?= __('virtual classroom button in header', 'edusystem'); ?>
+                        </label>
+                    </div>
+
                 </div>
 
                 <div id="by_moodle" style="display: none">

@@ -308,6 +308,11 @@ function form_asp_psp_optimized($atts)
     $careers = [];
     $mentions = [];
 
+    if( $manager_user_id ) {
+        $manager_user_id = $manager_user_id;
+        $programs = get_student_program();
+    }
+
     // Añade la acción al footer.
     // Considerar añadir una verificación para no agregarlo múltiples veces si el shortcode se usa más de una vez.
     if (!has_action('wp_footer', 'modal_continue_checkout')) {
@@ -1003,14 +1008,14 @@ add_filter('woocommerce_account_orders_columns', 'modify_columns_orders');
 
 add_filter('wp_nav_menu_items', 'add_loginout_link', 10, 2);
 
-function add_loginout_link($items, $args)
-{
-
+function add_loginout_link($items, $args) {
+    
     if (is_user_logged_in()) {
-
+        
         global $current_user, $wpdb;
         $site_mode = get_option('site_mode');
         $table_users_notices = $wpdb->prefix . 'users_notices';
+
         $notices = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_users_notices} WHERE `read` = %d AND user_id = %d ORDER BY created_at DESC", 0, $current_user->ID));
         if (sizeof($notices) > 0) {
             $color = '#12e354 !important';
@@ -1060,6 +1065,31 @@ function add_loginout_link($items, $args)
         }
 
         $logout_link = wp_logout_url(get_home_url());
+
+        if( get_option('virtual_classroom_button_header') ) {
+     
+            if ( in_array('student', (array) $current_user->roles) ) {
+                $student_id = get_user_meta(get_current_user_id(), 'student_id', true);
+                if ($student_id && get_student_detail($student_id) ) {
+
+                    // no muestra el link si el estudiante no tiene cursos
+                    $access = is_enrolled_in_courses($student_id);
+                    $access = isset($access) && is_array($access) ? $access : [];
+                    if( count($access) > 0 ) {
+
+                        $url = home_url('?action=access_moodle_url&student_id=' . $student_id);
+                        $target_attr = wp_is_mobile() ? '' : 'target="_blank"';
+
+                        $items .= '<li class="virtual-classroom-link" >
+                                <a href="'. $url .'" '.$target_attr.' >' .
+                                    __('Virtual Classroom', 'edusystem') . '
+                                </a>
+                            </li>';
+                    }
+                }
+            }
+        }
+
         $items .= '<li>
             <div class="logout-button-container" >
                 <div style="padding: 5px 20px !important; text-align: start; border-radius: 20px; color: white !important; font-size: 14px;">
@@ -4833,11 +4863,84 @@ add_filter( 'woocommerce_new_order_note_data', function ( $args, $args2 ) {
     return $args;
 }, 10, 2 );
 
-
-
+// compatibilidad del split payment con los m,etodos de pagos personalizados
 add_filter( 'spm_payment_modal_settings', function( $data ) {
 
     $data['url_params']['pay_for_order'] = 'true';
 
     return $data;
 }, 10, 1 );
+
+// modal informativo que se lo otorgo una beca al estudiante
+add_action( 'woocommerce_after_checkout_form', function () {
+    
+    $plan_identificator = $_COOKIE['plan_id'] ?? false;
+    $program_identificator = $_COOKIE['program_id'] ?? false;
+    if( !get_option('modal_scholarships_checkout') && !$plan_identificator && !$program_identificator ) return;
+
+    $plan = get_program_details_by_identificator($plan_identificator);
+    $program = get_student_program_details_by_identificator($program_identificator);
+
+    $scholarship = get_scholarship_details_by_program_plan( $program->id, $plan->id );
+    if( !$scholarship ) return;
+
+    ?>
+        <div id="modalScholarship" class="modal" style="display:block" >
+
+            <div class="modal-content" >
+                
+                <div class="modal-header p-5">
+                    <h3 style="font-weight: 600"><?=__('Scholarship', 'edusystem')?></h3>
+                    <span class="modal-close"><span class="dashicons dashicons-no-alt"></span></span>
+                </div>
+
+                <div class="modal-body text-center">
+
+                    </br>
+                    <p><?= sprintf(__('Congratulations, you have received the %s scholarship.','edusystem'), "<strong style='text-transform: uppercase;' >$scholarship->name</strong>") ?></p>
+                    <p><?= $scholarship->description ?></p>
+                    </br>
+
+                    <a class="button button-success modal-close" ><?= __('Accept','edusystem') ?></a>
+
+                    </br>
+
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded',() => {
+
+                const modal_close = document.querySelectorAll('.modal-close');
+                if (modal_close.length > 0) {
+                    modal_close.forEach(btn => {
+                        btn.addEventListener('click', function(e) { 
+                        
+                            const modalParent = this.closest('.modal'); 
+                            if ( modalParent ){
+                                modalParent.style.display = 'none';
+
+                                // Marcar automáticamente la primera opción de cuotas
+                                options_quotas = document.querySelectorAll(".options-quotas .option-quota");
+                                if ( options_quotas.length > 0 ) options_quotas[0].click(); // Simula un clic en la primera opción
+                                
+                            } 
+                    
+                        });
+                    });
+                }
+            });
+        </script>
+    <?php
+});
+
+add_filter( 'woocommerce_order_button_text', function ( $button_text ) {
+
+    if( !isset($_COOKIE['id_document']) ) return $button_text;
+
+    return __('Register student','edusystem'); 
+});
+
+

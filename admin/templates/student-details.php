@@ -739,7 +739,7 @@ $datetime_format = $date_format . ' H:i:s';
                                             </button>
                                         <?php endif; ?>
                                         <?php if ($document->status != 5 && $document->status != 6 && $document->status != 3): ?>
-                                            <button data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
+                                            <button id="document-decline" data-document-id="<?= $document->id; ?>" data-student-id="<?= $document->student_id; ?>"
                                                 data-status="3" class="button change-status button-danger-outline"
                                                 style="color: red; border-color: red;">
                                                 <?= esc_html__('Decline', 'edusystem') ?>

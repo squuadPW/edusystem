@@ -528,6 +528,7 @@ function create_tables()
         fee_payment_completed BOOLEAN NOT NULL DEFAULT 0,
         same_account BOOLEAN NOT NULL DEFAULT 0,
         manager_id INT(11) NULL,
+        description TEXT NULL,
         created_by INT(11) NULL,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
@@ -1249,19 +1250,15 @@ function create_tables()
 
     // table_scholarships_availables
     dbDelta(
-        "CREATE TABLE " . $table_scholarships_availables . " (
+        "CREATE TABLE $table_scholarships_availables (
         id INT(11) NOT NULL AUTO_INCREMENT,
         name TEXT NOT NULL,
-        description TEXT NOT NULL,
-        coupons JSON NOT NULL,
-        fee_registration BOOLEAN DEFAULT 0,
-        percent_registration INT(11) NOT NULL,
-        program BOOLEAN DEFAULT 0,
-        percent_program INT(11) NOT NULL,
-        fee_graduation BOOLEAN DEFAULT 0,
-        percent_graduation INT(11) NOT NULL,
-        is_active BOOLEAN DEFAULT 1,
+        description TEXT NULL DEFAULT NULL,
+        program_id INT NOT NULL,
+        payment_plan_id INT NOT NULL,
+        is_active tinyint(1) DEFAULT 1,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (id))$charset_collate;"
     );
 
@@ -2398,3 +2395,6 @@ WHERE id IN (
 );
 */
  
+
+// tu dual diploma aes 
+// [student_registration_form coupon_code="latam scholarship" flywire_portal_code="FGD" connected_account="acct_1RgDN2Gy8ine1yTe" manager_user_id="555" hidden_payment_methods="bancolombia" register_psp="1" zelle_account="payments@americaneliteschool.org" bank_transfer_account="898155906106" styles_shortcode="margin-top: 30px !important; background: #e71f3b; color: white" fixed_fee_inscription="false" plan="TUDUALDIPLOMA" program="AES" career="AES" coupon_complete="100% Registration fee"]
