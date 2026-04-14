@@ -1858,9 +1858,21 @@ function add_admin_form_payments_content()
                 $table_student_payments = $wpdb->prefix . 'student_payments';
                 $payments = $wpdb->get_row( 
                     $wpdb->prepare( 
-                        "SELECT * FROM $table_student_payments WHERE student_id = %d AND type_payment = 1 AND currency = %s ", 
-                        $student_id,
-                        $currency,
+                        "SELECT sp.* FROM wp_students AS `s`
+                        INNER JOIN wp_programs AS `p` 
+                        INNER JOIN wp_student_payments AS `sp` ON `sp`.student_id = `s`.id 
+                            AND `sp`.product_id = `p`.product_id
+                            AND CAST(`sp`.variation_id AS UNSIGNED) = CAST(
+                                IFNULL(
+                                    JSON_UNQUOTE(JSON_EXTRACT(`p`.subprogram, CONCAT('$.\"', `s`.grade_id , '\".product_id'))), 
+                                    '0'
+                                ) AS UNSIGNED
+                            )
+                        INNER JOIN wp_programs_by_student AS `ps` ON `ps`.plan_identificator = `p`.identificator 
+                            AND `ps`.student_id = `s`.id
+                        WHERE `s`.id = %d 
+                        ", 
+                        $student->id
                     ) 
                 );
 
