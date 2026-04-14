@@ -48,6 +48,7 @@ function get_master_subject_product_id() {
     return $query->have_posts() ? $query->posts[0] : 0;
 }
 
+// limpia el carrito para insertar la materia
 add_filter('woocommerce_add_to_cart_handler', function($handler, $product_id) {
 
     if ( isset($_REQUEST['subject_id']) ) {
@@ -59,6 +60,9 @@ add_filter('woocommerce_add_to_cart_handler', function($handler, $product_id) {
 // Inserta datos personalizados en el carrito
 add_filter('woocommerce_add_cart_item_data', function($cart_item_data, $product_id, $variation_id) {
     if (isset($_REQUEST['subject_id'])) {
+
+        $student_id = intval($_REQUEST['student_id']) ?? 0;
+        if ( !$student_id ) return $cart_item_data;
 
         $subject_id = intval($_REQUEST['subject_id']);
         $subject = get_subject_details($subject_id);
@@ -76,8 +80,10 @@ add_filter('woocommerce_add_cart_item_data', function($cart_item_data, $product_
         }
         
         $cart_item_data['subject_id'] = $subject->id;
+        $cart_item_data['student_id'] = $student_id;
         $cart_item_data['custom_name_subject'] = $subject->name;
         $cart_item_data['custom_price_subject'] = $price;
+        $cart_item_data['custom_currency_subject'] = $subject->currency;
         $cart_item_data['custom_currency_subject'] = $subject->currency;
 
     }
@@ -110,14 +116,93 @@ add_action('woocommerce_checkout_create_order_line_item', function($item, $cart_
     if ( isset($values['subject_id']) ) {
         $order->update_meta_data('subject_id', sanitize_text_field($values['subject_id']));
         $item->add_meta_data('subject_id', $values['subject_id']);
-    }
+
+        if ( isset($values['student_id']) ) {
+            if ( !$order->meta_exists('student_id') ) {
+                $order->update_meta_data('student_id', intval($values['student_id']));
+            }
+        }
+    }  
 
 }, 10, 4);
 
-//  llama el shortcode de comprar materias reprobadas
-/* add_action('woocommerce_account_dashboard', function () {
+// llama el shortcode de comprar materias reprobadas
+add_action('woocommerce_account_dashboard', function () {
     echo do_shortcode('[buy_failed_subjects]');
-}, 1, 1); */
+}, 1, 1);
 
+// crea el registro de la cuota de la materia al crear la orden
+add_action( 'woocommerce_new_order', function ( $order_id, $order ) {
 
+    $subject_id = $order->get_meta('subject_id');
+    $student_id = $order->get_meta('student_id');
+    if ( !$subject_id && !$student_id ) return;
 
+    $product_id = get_master_subject_product_id();
+    if ( !$product_id ) return;
+
+    // Obtiene el monto de la materia desde los items de la orden
+    $product_exists = false;
+    $amount = 0;
+    foreach ( $order->get_items() as $item_id => $item ) {
+        if ( $item->get_product_id() == $product_id ) {
+            $amount = $item->get_total(); 
+            $product_exists = true;
+            break; 
+        }
+    }
+    if ( !$product_exists ) return;
+
+    $date = new DateTime();
+    $currency = $order->get_currency();
+
+    $data = [
+        'status_id' => 0,
+        'student_id' => $student_id,
+        'order_id' => $order_id,
+        'product_id' => $product_id,
+        'variation_id' => 0,
+        'manager_id' => null,
+        'institute_id' => null,
+        'institute_fee' => 0,
+        'alliances' => null,
+        'currency' => $currency,
+        'amount' => $amount,
+        'original_amount_product' => $amount, 
+        'total_amount' => $amount,
+        'original_amount' => $amount,
+        'discount_amount' => 0, 
+        'type_payment' => 4,
+        'cuote' => 1,
+        'num_cuotes' => 1,
+        'date_payment' => $date->format('Y-m-d'),
+        'date_next_payment' => $date->format('Y-m-d'),
+    ];
+
+    global $wpdb;
+    $result = $wpdb->insert("{$wpdb->prefix}student_payments", $data);
+    if( !$result ) return;
+
+    $payment_id = $wpdb->insert_id;
+    $order->update_meta_data('cuote_payment', $payment_id );
+    $order->save();
+    
+}, 10, 2 );
+
+// Inscribe la materia si se completa la orden y es una orden de materia
+/* add_action( 'woocommerce_order_status_completed', 'mi_funcion_orden_completada', 10, 2 );
+function mi_funcion_orden_completada( $order_id, $order ) {
+    
+    $subject_id = $order->get_meta('subject_id');
+    $student_id = $order->get_meta('student_id');
+
+    if ( !$subject_id && !$student_id ) return;
+}
+
+add_action( 'woocommerce_order_status_changed', 'mi_cambio_de_status_personalizado', 10, 4 );
+function mi_cambio_de_status_personalizado( $order_id, $old_status, $new_status, $order ) {
+
+    if ( $old_status === 'completed' && $new_status !== 'completed' ) {
+        
+    }
+} */
