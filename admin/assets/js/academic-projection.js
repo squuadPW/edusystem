@@ -205,15 +205,10 @@ function confirm_force_enrollment_subjects( button ) {
 
 // activa los select de periodo
 document.addEventListener('DOMContentLoaded', () => {
-    const period_selects = document.querySelectorAll('select[id^="academic_period_"]');
+    const period_selects = document.querySelectorAll('select[id^="academic_period_"]:not([id*="_cut_"])');
     period_selects.forEach(select => {
 
         select.dispatchEvent(new Event('change'));
-        
-        const key = select.id.replace('academic_period_', '');
-        if (select.value !== "") {
-            get_cut_period_changed(key);
-        }
     });
 });
 
@@ -221,15 +216,6 @@ function get_cut_period_changed( key ) {
 
     const code_period = document.getElementById(`academic_period_${key}`);
     if( code_period ) {
-
-        cut_period = document.getElementById(`academic_period_cut_${key}`);
-        select_cut_value = cut_period.dataset.value ?? '';
-        cut_period.innerHTML = "";
-
-        let opt_default = document.createElement('option');
-        opt_default.value = ''; 
-        opt_default.text = cut_period.dataset.text_default; 
-        cut_period.add(opt_default);
 
         period = code_period.value;
 
@@ -244,8 +230,18 @@ function get_cut_period_changed( key ) {
         })
         .then( res => res.json() )
         .then( res => {
-                
+
+            cut_period = document.getElementById(`academic_period_cut_${key}`);
             if( cut_period ){
+
+                select_cut_value = cut_period.dataset.value ?? '';
+                cut_period.innerHTML = "";
+
+                let opt_default = document.createElement('option');
+                opt_default.value = ''; 
+                opt_default.text = cut_period.dataset.text_default; 
+                cut_period.add(opt_default);
+
                 if( res.success ) {
                         
                     res.data.cut.forEach(value => {
