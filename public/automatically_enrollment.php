@@ -198,6 +198,7 @@ function automatically_enrollment($student_id) {
     update_max_upload_at($student->id);
 }
 
+
 /* function automatically_enrollment($student_id) {
     global $wpdb;
     $table_students = $wpdb->prefix . 'students';
@@ -312,6 +313,63 @@ function automatically_enrollment($student_id) {
 
     update_max_upload_at($student->id);
 } */
+
+function subject_enrollment($student_id, $subject_id, $period = false, $cut = false ) {
+
+    $student = get_student_detail($student_id);
+    if (!$student) return false;
+
+    $subject = get_subject_details($subject_id);
+    if (!$subject) return false;
+
+    if(!$period || !$cut) {
+
+        $load = load_current_cut_enrollment();
+        $period = $load['code'];
+        $cut = $load['cut'];
+    }
+
+    // verifica si hay oferta academica disponible para esta materia en este periodo
+    if( !offer_available_to_enroll($subject->id, $period, $cut) ) return false;
+
+    // verifica si el estudiante esta inscrito ya en esta materia 
+    global $wpdb;
+    $table_student_period_inscriptions = $wpdb->prefix . 'student_period_inscriptions';
+    $existing_enrollment = $wpdb->get_row($wpdb->prepare(
+        "SELECT * FROM {$table_student_period_inscriptions} WHERE student_id = %d AND subject_id = %d AND code_period = %s AND cut_period = %s",
+        $student->id,
+        $subject->id,
+        $period,
+        $cut
+    ));
+    if ($existing_enrollment) return false;
+    
+    // obtiene la seccion disponible para esta materia en este periodo
+    $section = load_section_available($subject->id, $period, $cut);
+
+    // verifica si el perido actual es el mismo que el periodo a inscribir para determinar el status de la inscripción
+    $status_id = 1; // Activo
+    $current_load = load_current_cut_enrollment();
+    if ($current_load['code'] != $period || $current_load['cut'] != $cut) {
+        $status_id = 0; // para empezar
+    }
+    
+    $result = $wpdb->insert($table_student_period_inscriptions, [
+        'status_id' => $status_id,
+        'section' => $section,
+        'student_id' => $student->id,
+        'subject_id' => $subject->id,
+        'code_subject' => $subject->code_subject,
+        'code_period' => $period,
+        'cut_period' => $cut,
+        'type' => $subject->type
+    ]);
+
+    if( !$result ) return false;
+
+    return $wpdb->insert_id;
+
+}
 
 function load_inscriptions_electives($student)
 {

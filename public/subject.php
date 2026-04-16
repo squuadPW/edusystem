@@ -53,6 +53,21 @@ add_filter('woocommerce_add_to_cart_handler', function($handler, $product_id) {
 
     if ( isset($_REQUEST['subject_id']) ) {
         wc_empty_cart();
+
+        $gateways = WC()->payment_gateways->payment_gateways();
+
+        // crear la cookie de stripe
+        if ( isset( $gateways['woo_squuad_stripe'] ) ) {
+            $stripe_gateway = $gateways['woo_squuad_stripe'];
+            $settings = $stripe_gateway->settings;
+            
+            //obtiene el account id para crear la cookie
+            $account_id = $settings['account_id'] ?? null;
+            if ( $account_id ) {
+                setcookie('squuad_stripe_selected_client_id', $account_id, time() + (86400 * 30), "/");
+            }
+            
+        }
     }
     return $handler;
 }, 10, 2);
@@ -189,20 +204,59 @@ add_action( 'woocommerce_new_order', function ( $order_id, $order ) {
     
 }, 10, 2 );
 
-// Inscribe la materia si se completa la orden y es una orden de materia
-/* add_action( 'woocommerce_order_status_completed', 'mi_funcion_orden_completada', 10, 2 );
-function mi_funcion_orden_completada( $order_id, $order ) {
-    
+// Acciones de las materias respecto el stuatus de la orden
+add_action( 'woocommerce_order_status_changed', function ( $order_id, $old_status, $new_status, $order ) {
+
     $subject_id = $order->get_meta('subject_id');
     $student_id = $order->get_meta('student_id');
-
     if ( !$subject_id && !$student_id ) return;
-}
 
-add_action( 'woocommerce_order_status_changed', 'mi_cambio_de_status_personalizado', 10, 4 );
-function mi_cambio_de_status_personalizado( $order_id, $old_status, $new_status, $order ) {
-
-    if ( $old_status === 'completed' && $new_status !== 'completed' ) {
+    // si la orden cambia a completada o a procesando, inscribir la materi
+    if ( $new_status === 'completed' && $old_status !== 'completed' ){
         
+        $payment_id = $order->get_meta('cuote_payment');
+        if ( !$payment_id ) return;
+
+        $inscrpcion = subject_enrollment( $student_id, $subject_id );
+        if ( !$inscrpcion ) return;
+
+        $order->update_meta_data('subject_enrollment_id', $inscrpcion);
+
+        return;
     }
-} */
+
+    // si la orden cambia de completado a otro estatus distinto elimina la inscripción
+    if ( $new_status != 'completed' && $old_status === 'completed' ) {
+
+        // eliminar la inscripción
+        $subject_enrollment_id = $order->get_meta('subject_enrollment_id');
+        if ( $subject_enrollment_id ) {
+
+            global $wpdb;
+            $wpdb->delete("{$wpdb->prefix}student_period_inscriptions", [
+                'id' => $subject_enrollment_id,
+            ]);
+
+            $order->delete_meta_data('subject_enrollment_id');
+            $order->save();
+        }
+    }
+
+    // si la orden cambia a cancelada o fallida, eliminar la cuota asociada y limpia la orden
+    if( $new_status == 'cancelled' || $new_status == 'failed' ) {
+
+        // eliminar la cuota
+        $payment_id = $order->get_meta('cuote_payment');
+        if ( $payment_id ) {
+
+            global $wpdb;
+            $wpdb->delete("{$wpdb->prefix}student_payments", [
+                'id' => $payment_id
+            ]);
+
+            $order->delete_meta_data('cuote_payment');
+            $order->save();
+        }
+    }    
+
+} , 10, 4 );
