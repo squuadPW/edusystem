@@ -155,6 +155,87 @@ add_action( 'woocommerce_new_order', function ( $order_id, $order ) {
     $student_id = $order->get_meta('student_id');
     if ( !$subject_id && !$student_id ) return;
 
+    create_subject_data_order_payment( $order_id );
+    
+}, 10, 2 );
+
+// Acciones de las materias respecto el stuatus de la orden
+add_action( 'woocommerce_order_status_changed', function ( $order_id, $old_status, $new_status, $order ) {
+
+    // si el estatus no cambia, no hace nada
+    if( $new_status === $old_status ) return;
+
+    $subject_id = (int) $order->get_meta('subject_id');
+    $student_id = (int) $order->get_meta('student_id');
+    if ( !$subject_id && !$student_id ) return;
+
+    // en caso de que la orden haya fallado o se haya cancelado y vuelva a cambiar a otro estatus,
+    // crea el registro de la cuota de la materia
+    if ( $old_status == 'failed' || $old_status == 'cancelled' ) {
+        create_subject_data_order_payment( $order_id );
+        $order = wc_get_order( $order_id ); // recarga la orden para obtener los nuevos metadatos
+    }
+
+    // si la orden cambia a completada o a procesando, inscribir la materi
+    if ( $new_status == 'completed' || $new_status == 'processing' ){
+        
+        $payment_id = $order->get_meta('cuote_payment');
+        if ( !$payment_id ) return;
+
+        $inscrpcion = subject_enrollment( $student_id, $subject_id );
+        if ( !$inscrpcion ) return;
+
+        $order->update_meta_data('subject_enrollment_id', $inscrpcion);
+
+        return;
+    }
+
+    // si la orden cambia de completado a otro estatus distinto elimina la inscripción
+    if ( $new_status != 'completed' && $old_status === 'completed' ) {
+
+        // eliminar la inscripción
+        $subject_enrollment_id = $order->get_meta('subject_enrollment_id');
+        if ( $subject_enrollment_id ) {
+
+            global $wpdb;
+            $wpdb->delete("{$wpdb->prefix}student_period_inscriptions", [
+                'id' => $subject_enrollment_id,
+            ]);
+
+            $order->delete_meta_data('subject_enrollment_id');
+            $order->save();
+        }
+    }
+
+    // si la orden cambia a cancelada o fallida, eliminar la cuota asociada y limpia la orden
+    if( $new_status == 'cancelled' || $new_status == 'failed' ) {
+
+        // eliminar la cuota
+        $payment_id = $order->get_meta('cuote_payment');
+        if ( $payment_id ) {
+
+            global $wpdb;
+            $wpdb->delete("{$wpdb->prefix}student_payments", [
+                'id' => $payment_id
+            ]);
+
+            $order->delete_meta_data('cuote_payment');
+            $order->save();
+        }
+    } 
+
+} , 10, 4 );
+
+
+function create_subject_data_order_payment( $order_id ) {
+
+    $order = wc_get_order( $order_id );
+    if ( !$order ) return;
+    
+    $subject_id = $order->get_meta('subject_id');
+    $student_id = $order->get_meta('student_id');
+    if ( !$subject_id && !$student_id ) return;
+
     $product_id = get_master_subject_product_id();
     if ( !$product_id ) return;
 
@@ -203,62 +284,5 @@ add_action( 'woocommerce_new_order', function ( $order_id, $order ) {
     $payment_id = $wpdb->insert_id;
     $order->update_meta_data('cuote_payment', $payment_id );
     $order->save();
-    
-}, 10, 2 );
 
-// Acciones de las materias respecto el stuatus de la orden
-add_action( 'woocommerce_order_status_changed', function ( $order_id, $old_status, $new_status, $order ) {
-
-    $subject_id = $order->get_meta('subject_id');
-    $student_id = $order->get_meta('student_id');
-    if ( !$subject_id && !$student_id ) return;
-
-    // si la orden cambia a completada o a procesando, inscribir la materi
-    if ( $new_status === 'completed' && $old_status !== 'completed' ){
-        
-        $payment_id = $order->get_meta('cuote_payment');
-        if ( !$payment_id ) return;
-
-        $inscrpcion = subject_enrollment( $student_id, $subject_id );
-        if ( !$inscrpcion ) return;
-
-        $order->update_meta_data('subject_enrollment_id', $inscrpcion);
-
-        return;
-    }
-
-    // si la orden cambia de completado a otro estatus distinto elimina la inscripción
-    if ( $new_status != 'completed' && $old_status === 'completed' ) {
-
-        // eliminar la inscripción
-        $subject_enrollment_id = $order->get_meta('subject_enrollment_id');
-        if ( $subject_enrollment_id ) {
-
-            global $wpdb;
-            $wpdb->delete("{$wpdb->prefix}student_period_inscriptions", [
-                'id' => $subject_enrollment_id,
-            ]);
-
-            $order->delete_meta_data('subject_enrollment_id');
-            $order->save();
-        }
-    }
-
-    // si la orden cambia a cancelada o fallida, eliminar la cuota asociada y limpia la orden
-    if( $new_status == 'cancelled' || $new_status == 'failed' ) {
-
-        // eliminar la cuota
-        $payment_id = $order->get_meta('cuote_payment');
-        if ( $payment_id ) {
-
-            global $wpdb;
-            $wpdb->delete("{$wpdb->prefix}student_payments", [
-                'id' => $payment_id
-            ]);
-
-            $order->delete_meta_data('cuote_payment');
-            $order->save();
-        }
-    }    
-
-} , 10, 4 );
+}
