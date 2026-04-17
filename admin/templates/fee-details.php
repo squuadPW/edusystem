@@ -113,7 +113,7 @@
                                                 <?php if( $payment_plans ): ?>
                                                     <?php foreach ($payment_plans as $payment_plan): ?>
 
-                                                        <optgroup label="<?= esc_attr($payment_plan->name) ?>">
+                                                        <optgroup label="<?= esc_attr($payment_plan->name) ?> (<?= esc_html($payment_plan->description)?>)">
 
                                                             <option value="<?= esc_attr($payment_plan->identificator)?>" <?= selected( in_array( $payment_plan->identificator, json_decode($fee['programs'], true) ?? [] ) ); ?>>
                                                                 <?= esc_html($payment_plan->name) ?> (<?= esc_html($payment_plan->description)?>)
@@ -123,7 +123,7 @@
                                                             <?php if($payment_subplans): ?>
                                                                 <?php foreach ($payment_subplans as $payment_subplan_id => $payment_subplan): ?>
                                                                     <option value="<?= esc_attr($payment_plan->identificator . '_' . $payment_subplan_id) ?>" <?= selected(in_array($payment_plan->identificator . '_' . $payment_subplan_id, json_decode($fee['programs'], true) ?? [])); ?>>
-                                                                        <?= esc_html($payment_subplan['name']) ?>
+                                                                        <?= esc_html($payment_subplan['name']) ?> <?= $payment_subplan['description'] ? "(". esc_html($payment_subplan['description']) . ")" : '' ?>
                                                                     </option>
                                                                 <?php endforeach; ?>
                                                             <?php endif; ?>
