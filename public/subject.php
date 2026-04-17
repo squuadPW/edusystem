@@ -182,22 +182,30 @@ add_action( 'woocommerce_order_status_changed', function ( $order_id, $old_statu
         $payment_id = $order->get_meta('cuote_payment');
         if ( !$payment_id ) return;
 
-        $inscrpcion = subject_enrollment( $student_id, $subject_id );
-        if ( !$inscrpcion ) return;
+        $inscripcion = subject_enrollment( $student_id, $subject_id );
+        if ( !$inscripcion ) return;
 
-        $order->update_meta_data('subject_enrollment_id', $inscrpcion);
+        $order->update_meta_data('subject_enrollment_id', (int) $inscripcion);
+        $order->save();
 
         return;
     }
 
     // si la orden cambia de completado a otro estatus distinto elimina la inscripción
-    if ( $new_status != 'completed' && $old_status === 'completed' ) {
+    if ( $new_status != 'completed' && $old_status == 'completed' ) {
 
         // eliminar la inscripción
-        $subject_enrollment_id = $order->get_meta('subject_enrollment_id');
-        if ( $subject_enrollment_id ) {
+        $subject_enrollment_id = (int) $order->get_meta('subject_enrollment_id');
+        $payment_id = (int) $order->get_meta('cuote_payment');
+        if ( $payment_id && $subject_enrollment_id ) {
 
             global $wpdb;
+            $wpdb->update("{$wpdb->prefix}student_payments", [
+                'status_id' => 1
+            ], [
+                'id' => $payment_id
+            ]);
+
             $wpdb->delete("{$wpdb->prefix}student_period_inscriptions", [
                 'id' => $subject_enrollment_id,
             ]);
@@ -211,7 +219,7 @@ add_action( 'woocommerce_order_status_changed', function ( $order_id, $old_statu
     if( $new_status == 'cancelled' || $new_status == 'failed' ) {
 
         // eliminar la cuota
-        $payment_id = $order->get_meta('cuote_payment');
+        $payment_id = (int) $order->get_meta('cuote_payment');
         if ( $payment_id ) {
 
             global $wpdb;
@@ -226,7 +234,7 @@ add_action( 'woocommerce_order_status_changed', function ( $order_id, $old_statu
 
 } , 10, 4 );
 
-
+// crea el registro de la cuota de la materia 
 function create_subject_data_order_payment( $order_id ) {
 
     $order = wc_get_order( $order_id );
