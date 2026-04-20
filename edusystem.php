@@ -142,6 +142,7 @@ if (!class_exists('WP_List_Table')) {
 require plugin_dir_path(__FILE__) . 'settings.php';
 require plugin_dir_path(__FILE__) . 'public/functions.php';
 require plugin_dir_path(__FILE__) . 'admin/functions.php';
+require plugin_dir_path(__FILE__) . 'buy-elective-subjects-aes.php';
 require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
 add_action( 'plugins_loaded', 'update_language' );
