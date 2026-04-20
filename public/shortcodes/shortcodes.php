@@ -166,6 +166,11 @@ add_shortcode('buy_failed_subjects', function () {
     $students = get_students_detail_partner($current_user_id);
     if (!$students) return;
 
+    $html = '';
+    $load = load_current_cut_enrollment();
+    $code = $load['code'];
+    $cut = $load['cut'];
+
     foreach ( $students as $student ) {
         
         $student_id = $student->id;
@@ -174,21 +179,22 @@ add_shortcode('buy_failed_subjects', function () {
         $table_inscriptions = "{$wpdb->prefix}student_period_inscriptions";
         $table_subjects = "{$wpdb->prefix}school_subjects";
 
-        $subjects_failed = $wpdb->get_results($wpdb->prepare(
-            "SELECT `sub`.id, `sub`.name, `sub`.code_subject, `sub`.price, `sub`.currency, COALESCE(`sub`.retake_limit, 0) AS retake_limit, COUNT(`ins`.id) as total_reprobadas
+        $subjects_failed = $wpdb->get_results( $wpdb->prepare(
+            "SELECT `sub`.id, `sub`.name, `sub`.code_subject, `sub`.price, `sub`.currency, 
+                COALESCE(`sub`.retake_limit, 0) AS retake_limit, 
+                COUNT(CASE WHEN `ins`.status_id IN (3, 4) THEN 1 END) as total_reprobadas
             FROM {$table_inscriptions} `ins`
             INNER JOIN {$table_subjects} `sub` ON `sub`.id = `ins`.subject_id
-            WHERE `ins`.student_id = %d AND (`ins`.status_id = 3 OR `ins`.status_id = 4)
+            WHERE `ins`.student_id = %d AND `sub`.type != 'elective'
             GROUP BY `sub`.id
-            HAVING total_reprobadas >= retake_limit AND SUM(`ins`.status_id = 3) = 0;", 
+            HAVING 
+                SUM(`ins`.status_id IN (0, 1)) = 0
+                AND total_reprobadas >= retake_limit 
+                AND SUM(`ins`.status_id = 3) = 0;", 
             $student_id
         ));
 
-        if ( !$subjects_failed )  return; 
-
-        $load = load_current_cut_enrollment();
-        $code = $load['code'];
-        $cut = $load['cut'];
+        if ( !$subjects_failed )  continue; 
 
         $subjects_remedial = [];
         foreach ( $subjects_failed as $subject ) {
@@ -200,7 +206,7 @@ add_shortcode('buy_failed_subjects', function () {
             array_push($subjects_remedial, $subject);
         }
         
-        if ( !$subjects_remedial )  return; 
+        if ( !$subjects_remedial )  continue; 
 
         ob_start(); 
         ?>
@@ -220,7 +226,8 @@ add_shortcode('buy_failed_subjects', function () {
                                     $add_to_cart_url = add_query_arg( 
                                         array( 
                                             'add-to-cart' => get_master_subject_product_id(), 
-                                            'subject_id' => $subject->id 
+                                            'subject_id' => $subject->id,
+                                            'student_id' => $student_id
                                         ), 
                                         wc_get_checkout_url()
                                     );
@@ -234,8 +241,10 @@ add_shortcode('buy_failed_subjects', function () {
                 </div>
             </div>
         <?php
-        return ob_get_clean();
+        $html .= ob_get_clean();
     }
+
+    return $html;
     
 });
 
