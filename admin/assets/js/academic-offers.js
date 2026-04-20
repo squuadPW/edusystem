@@ -10,14 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if( code_period ) {
         code_period.addEventListener("change", function (event) {
 
-            cut_period = document.getElementById('cut_period');
-            cut_period.innerHTML = "";
-
-            let opt_default = document.createElement('option');
-            opt_default.value = ''; 
-            opt_default.text = cut_period.dataset.text_default; 
-            cut_period.add(opt_default);
-
             period = code_period.value;
 
             const formData = new FormData();
@@ -33,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then( res => {
                 
                 if( cut_period ){
+                    
                     if( res.success ) {
                         
                         res.data.cut.forEach(value => {
@@ -41,6 +34,10 @@ document.addEventListener("DOMContentLoaded", function () {
                             opt.value = value; 
                             opt.text = value; 
                             cut_period.add(opt);
+
+                            if ( value == cut_period.dataset.value ) 
+                                opt.selected = true;
+                
                         });
 
                     } 
@@ -48,7 +45,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     
             })
             .catch( err => {} ); 
-        })
+        });
+
+        code_period.dispatchEvent(new Event('change'));
     }
 });
 

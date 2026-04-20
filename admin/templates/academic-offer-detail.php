@@ -57,10 +57,10 @@
                                             <?php } ?>
                                         </select>
                                     </div>
-
+                                    
                                     <div style="font-weight:400;" class="space-offer">
                                         <label for="hc"><b><?= __('Cut', 'edusystem'); ?></b></label><br>
-                                        <select id="cut_period" name="cut_period" required data-text_default="<?= __('Assigns a cut to the offer', 'edusystem'); ?>"   >
+                                        <select id="cut_period" name="cut_period" required data-text_default="<?= __('Assigns a cut to the offer', 'edusystem'); ?>"  data-value="<?= $offer->cut_period ?>" >
                                             <option value=""><?= __('Assigns a cut to the offer', 'edusystem') ?></option>
                                         </select>
                                     </div>
