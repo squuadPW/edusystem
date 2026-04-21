@@ -21,39 +21,51 @@ add_action('woocommerce_account_dashboard', function () {
         $table_inscriptions = "{$wpdb->prefix}student_period_inscriptions";
         $table_subjects = "{$wpdb->prefix}school_subjects";
 
-        $subjects_failed = $wpdb->get_results( $wpdb->prepare(
-            "SELECT `sub`.id, `sub`.name, `sub`.code_subject,
-                COUNT(CASE WHEN `ins`.status_id = 4 THEN 1 END) as total_reprobadas
-            FROM {$table_inscriptions} `ins`
-            INNER JOIN {$table_subjects} `sub` ON `sub`.id = `ins`.subject_id
-            WHERE `ins`.student_id = %d AND `sub`.type = 'elective'
-            GROUP BY `sub`.id
-            /* HAVING 
-                AND total_reprobadas >= 4
-                AND SUM(`ins`.status_id = 3) < 0; */", 
+        $inscriptions = $wpdb->get_row( $wpdb->prepare(
+            "SELECT 
+                COUNT(DISTINCT CASE WHEN `a`.status_id = 3 THEN `a`.code_subject END) as approved,
+                COUNT(CASE WHEN `a`.status_id = 4 THEN 1 END) as failed,
+                MAX(CASE WHEN `a`.status_id = 3 AND EXISTS ( 
+                    SELECT 1 FROM {$table_inscriptions} AS `b`
+                    WHERE `b`.student_id = `a`.student_id AND `b`.status_id = 4 AND `b`.code_subject = `a`.code_subject
+                ) THEN 1 ELSE 0 END) as has_repeat
+            FROM {$table_inscriptions} AS `a`
+            WHERE `a`.student_id = %d AND `a`.type = 'elective'",
             $student_id
         ));
 
-        echo "<pre>";
-        var_dump($subjects_failed);
-        echo "</pre>";
+        $approved = (int) $inscriptions->approved;
+        $failed = (int) $inscriptions->failed;
+        $has_repeat = (int) $inscriptions->has_repeat;
+        if ( $has_repeat ) $failed -= 1;
 
-        /* if ( !$subjects_failed )  continue; 
+        if ( $approved >= 2 || ( $approved == 1 && $failed >= 2 ) || $failed >= 4 ) continue;
 
-        $subjects_remedial = [];
-        foreach ( $subjects_failed as $subject ) {
+
+        $subjects = get_subject_by_type('elective');
+        foreach ( $subjects as $subject ) {
+
+            $inscriptions_subjects = $wpdb->get_var( $wpdb->prepare(
+                "SELECT id
+                FROM {$table_inscriptions}
+                WHERE student_id = %d AND code_subject = %s AND status_id IN (0,1,3)",
+                $student_id,
+                $subject->code_subject
+            ));
             
             // verifica que la materia tiene ofertas actuales
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
-            if (!$offer_available_to_enroll) continue;
-            
-            array_push($subjects_remedial, $subject);
+            if ( !$offer_available_to_enroll ) continue;
+
+            echo '<pre>';
+            var_dump($offer_available_to_enroll);
+            echo '</pre>';
         }
         
-        if ( !$subjects_remedial )  continue;  */
+        if ( !$subjects )  continue;  
 
         ob_start(); 
-        ?>
+        /* ?>
             <div id="buy-failed-subjects-container" class="seccion-dashboard">
 
                 <div class="seccion-dashboard-header">
@@ -61,7 +73,7 @@ add_action('woocommerce_account_dashboard', function () {
                 </div>
                 
                 <div class="list-failed-subjects">
-                    <?php foreach ( get_subject_by_type('elective') as $subject): ?>
+                    <?php foreach ( $subjects AS $subject ): ?>
                         <div class="item-failed-subject" >
                                 
                             <?php 
@@ -75,12 +87,12 @@ add_action('woocommerce_account_dashboard', function () {
                                 );
                             ?>
 
-                            <a href="<?= esc_url($add_to_cart_url); ?>" class="button button-primary button-small"><span><?= esc_html($subject->name); ?></span></a>
+                            <a href="<?= esc_url($add_to_cart_url); ?>" ><span><?= esc_html($subject->name); ?></span></a>
                         </div>
                     <?php endforeach; ?>
                 </div>
             </div>
-        <?php
+        <?php */
         $html .= ob_get_clean();
     }
 
