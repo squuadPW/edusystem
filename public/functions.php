@@ -1111,6 +1111,10 @@ function status_changed_payment($order_id, $old_status, $current_status, $order)
 {
     $order_id = $order->get_id();
 
+    // Sila orden esw de un subject, no hacer nada
+    $subject_id = $order->get_meta('subject_id');
+    if ( $subject_id ) return;
+
     $customer_id = $order->get_customer_id();
     $status_register = get_user_meta($customer_id, 'status_register', true);
 
