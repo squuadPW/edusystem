@@ -1536,8 +1536,10 @@ body.logged-in .custom-logo-link {
         li {
             margin-bottom: 10px; 
             display: flex; 
+            flex-wrap: wrap;
             justify-content: space-between; 
             align-items: center;
+            gap: 10px;
 
             .button-primary {
                 width: auto;
@@ -1559,3 +1561,77 @@ body.logged-in .custom-logo-link {
         }
     }
 } */
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); /* Crea columnas de mínimo 280px. Si no caben, saltan a la siguiente fila */
+    gap: 25px; 
+
+    .course-card {
+        width: 100%;
+        max-width: 300px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid #f3f4f6;
+
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+
+        &:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-image img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .course-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+
+            .course-header {
+                display: flex;
+                justify-content: space-between;
+                gap: 10px;
+
+                .course-title {
+                    margin: 0 0 10px 0;
+                    font-size: 17px;
+                    color: #1f2937;;
+                    font-weight: 600;
+                }
+
+                .course-price {
+                    color: #1f2937;;
+                    margin-bottom: 12px;
+                    text-align: end;
+                }
+            }
+
+            .course-description {
+                margin-bottom: 15px;
+                font-size: 14px;
+                color: #6b7280;
+                line-height: 1.5;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .course-button {
+                margin-top: auto;
+            }
+        }
+    }
+}
