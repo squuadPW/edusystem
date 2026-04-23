@@ -191,10 +191,6 @@ add_shortcode('buy_failed_subjects', function () {
                 SUM(`ins`.status_id IN (0, 1)) = 0
                 AND total_reprobadas >= retake_limit 
                 AND SUM(`ins`.status_id = 3) = 0;", 
-            HAVING 
-                SUM(`ins`.status_id IN (0, 1)) = 0
-                AND total_reprobadas >= retake_limit 
-                AND SUM(`ins`.status_id = 3) = 0;", 
             $student_id
         ));
 
