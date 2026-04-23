@@ -82,7 +82,7 @@ add_filter('woocommerce_add_cart_item_data', function($cart_item_data, $product_
         $subject_id = intval($_REQUEST['subject_id']);
         $subject = get_subject_details($subject_id);
 
-        $price = floatval($subject->price);
+        $price = $subject->price;
         if( $price == NULL ) {
 
             if( $subject->type == 'elective' ) {
@@ -92,6 +92,8 @@ add_filter('woocommerce_add_cart_item_data', function($cart_item_data, $product_
                 $default_price_regular_courses = get_option('default_price_regular_courses', 0);
                 $price = floatval($default_price_regular_courses);
             }
+        } else {
+            $price = floatval($price);
         }
         
         $cart_item_data['subject_id'] = $subject->id;
@@ -144,151 +146,7 @@ add_action('woocommerce_checkout_create_order_line_item', function($item, $cart_
 // llama el shortcode de comprar materias reprobadas
 add_action('woocommerce_account_dashboard', function () {
     echo do_shortcode('[buy_failed_subjects]');
-}, 1, 1);
+}, 10, 1); 
 
-// crea el registro de la cuota de la materia al crear la orden
-add_action( 'woocommerce_new_order', function ( $order_id, $order ) {
 
-    $subject_id = $order->get_meta('subject_id');
-    $student_id = $order->get_meta('student_id');
-    if ( !$subject_id && !$student_id ) return;
 
-    create_subject_data_order_payment( $order_id );
-    
-}, 10, 2 );
-
-// Acciones de las materias respecto el stuatus de la orden
-add_action( 'woocommerce_order_status_changed', function ( $order_id, $old_status, $new_status, $order ) {
-
-    // si el estatus no cambia, no hace nada
-    if( $new_status === $old_status ) return;
-
-    $subject_id = (int) $order->get_meta('subject_id');
-    $student_id = (int) $order->get_meta('student_id');
-    if ( !$subject_id && !$student_id ) return;
-
-    // en caso de que la orden haya fallado o se haya cancelado y vuelva a cambiar a otro estatus,
-    // crea el registro de la cuota de la materia
-    if ( $old_status == 'failed' || $old_status == 'cancelled' ) {
-        create_subject_data_order_payment( $order_id );
-        $order = wc_get_order( $order_id ); // recarga la orden para obtener los nuevos metadatos
-    }
-
-    // si la orden cambia a completada o a procesando, inscribir la materi
-    if ( $new_status == 'completed' || $new_status == 'processing' ){
-        
-        $payment_id = $order->get_meta('cuote_payment');
-        if ( !$payment_id ) return;
-
-        $inscripcion = subject_enrollment( $student_id, $subject_id );
-        if ( !$inscripcion ) return;
-
-        $order->update_meta_data('subject_enrollment_id', (int) $inscripcion);
-        $order->save();
-
-        return;
-    }
-
-    // si la orden cambia de completado a otro estatus distinto elimina la inscripción
-    if ( $new_status != 'completed' && $old_status == 'completed' ) {
-
-        // eliminar la inscripción
-        $subject_enrollment_id = (int) $order->get_meta('subject_enrollment_id');
-        $payment_id = (int) $order->get_meta('cuote_payment');
-        if ( $payment_id && $subject_enrollment_id ) {
-
-            global $wpdb;
-            $wpdb->update("{$wpdb->prefix}student_payments", [
-                'status_id' => 1
-            ], [
-                'id' => $payment_id
-            ]);
-
-            $wpdb->delete("{$wpdb->prefix}student_period_inscriptions", [
-                'id' => $subject_enrollment_id,
-            ]);
-
-            $order->delete_meta_data('subject_enrollment_id');
-            $order->save();
-        }
-    }
-
-    // si la orden cambia a cancelada o fallida, eliminar la cuota asociada y limpia la orden
-    if( $new_status == 'cancelled' || $new_status == 'failed' ) {
-
-        // eliminar la cuota
-        $payment_id = (int) $order->get_meta('cuote_payment');
-        if ( $payment_id ) {
-
-            global $wpdb;
-            $wpdb->delete("{$wpdb->prefix}student_payments", [
-                'id' => $payment_id
-            ]);
-
-            $order->delete_meta_data('cuote_payment');
-            $order->save();
-        }
-    } 
-
-} , 10, 4 );
-
-// crea el registro de la cuota de la materia 
-function create_subject_data_order_payment( $order_id ) {
-
-    $order = wc_get_order( $order_id );
-    if ( !$order ) return;
-    
-    $subject_id = $order->get_meta('subject_id');
-    $student_id = $order->get_meta('student_id');
-    if ( !$subject_id && !$student_id ) return;
-
-    $product_id = get_master_subject_product_id();
-    if ( !$product_id ) return;
-
-    // Obtiene el monto de la materia desde los items de la orden
-    $product_exists = false;
-    $amount = 0;
-    foreach ( $order->get_items() as $item_id => $item ) {
-        if ( $item->get_product_id() == $product_id ) {
-            $amount = $item->get_total(); 
-            $product_exists = true;
-            break; 
-        }
-    }
-    if ( !$product_exists ) return;
-
-    $date = new DateTime();
-    $currency = $order->get_currency();
-
-    $data = [
-        'status_id' => 0,
-        'student_id' => $student_id,
-        'order_id' => $order_id,
-        'product_id' => $product_id,
-        'variation_id' => 0,
-        'manager_id' => null,
-        'institute_id' => null,
-        'institute_fee' => 0,
-        'alliances' => null,
-        'currency' => $currency,
-        'amount' => $amount,
-        'original_amount_product' => $amount, 
-        'total_amount' => $amount,
-        'original_amount' => $amount,
-        'discount_amount' => 0, 
-        'type_payment' => 4,
-        'cuote' => 1,
-        'num_cuotes' => 1,
-        'date_payment' => $date->format('Y-m-d'),
-        'date_next_payment' => $date->format('Y-m-d'),
-    ];
-
-    global $wpdb;
-    $result = $wpdb->insert("{$wpdb->prefix}student_payments", $data);
-    if( !$result ) return;
-
-    $payment_id = $wpdb->insert_id;
-    $order->update_meta_data('cuote_payment', $payment_id );
-    $order->save();
-
-}
