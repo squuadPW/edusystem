@@ -233,7 +233,7 @@ add_shortcode('buy_failed_subjects', function () {
                                     );
 
                                 ?>
-                                <a href="<?= esc_url($add_to_cart_url); ?>" class="button button-primary button-small"><?= __('Pay Remedial', 'edusystem'); ?></a>
+                                <a href="<?= esc_url($add_to_cart_url); ?>" class="button button-primary button-small"><?= __('Pay retake fee', 'edusystem'); ?></a>
                             </li>
                         <?php endforeach; ?>
                     </ul>
