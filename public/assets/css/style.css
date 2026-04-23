@@ -1454,8 +1454,10 @@ body.logged-in .custom-logo-link {
 .seccion-dashboard .list-failed-subjects li {
   margin-bottom: 10px;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 .seccion-dashboard .list-failed-subjects li .button-primary {
   width: auto;
@@ -1472,4 +1474,68 @@ body.logged-in .custom-logo-link {
             flex-wrap: wrap;
         }
     }
-} *//*# sourceMappingURL=style.css.map */
+} */
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); /* Crea columnas de mínimo 280px. Si no caben, saltan a la siguiente fila */
+  gap: 25px;
+}
+.courses-grid .course-card {
+  width: 100%;
+  max-width: 300px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.courses-grid .course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+.courses-grid .course-card .course-image img {
+  width: 100%;
+  height: 160px;
+  -o-object-fit: cover;
+     object-fit: cover;
+  display: block;
+}
+.courses-grid .course-card .course-content {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.courses-grid .course-card .course-content .course-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.courses-grid .course-card .course-content .course-header .course-title {
+  margin: 0 0 10px 0;
+  font-size: 17px;
+  color: #1f2937;
+  font-weight: 600;
+}
+.courses-grid .course-card .course-content .course-header .course-price {
+  color: #1f2937;
+  margin-bottom: 12px;
+  text-align: end;
+}
+.courses-grid .course-card .course-content .course-description {
+  margin-bottom: 15px;
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.courses-grid .course-card .course-content .course-button {
+  margin-top: auto;
+}/*# sourceMappingURL=style.css.map */
