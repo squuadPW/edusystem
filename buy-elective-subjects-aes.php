@@ -125,6 +125,118 @@ add_action('woocommerce_account_dashboard', function () {
                     <?php endforeach; ?>
 
                 </div>
+
+<style>
+
+    :root {
+    --primary-color: #4f46e5;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --bg-card: #ffffff;
+    --radius: 12px;
+}
+
+.course-card {
+    width: 100%;
+    max-width: 300px;
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #f3f4f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.course-image img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+}
+
+.course-content {
+    padding: 1.25rem;
+}
+
+.course-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.course-description {
+    margin-bottom: 1.25rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    /* Limita a 2 líneas si es muy larga */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.course-button {
+    width: 100%;
+    padding: 0.6rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.course-button:hover {
+    background-color: #4338ca;
+}
+
+    .courses-grid {
+    display: grid;
+    /* Crea columnas de mínimo 280px. Si no caben, saltan a la siguiente fila */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem; /* Espaciado entre tarjetas */
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto; /* Centra el contenedor en la página */
+}
+
+/* Ajuste extra para que todas las tarjetas tengan la misma altura 
+   incluso si unas tienen descripción y otras no */
+.course-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.course-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Empuja el botón hacia abajo para que queden alineados */
+}
+
+.course-button {
+    margin-top: auto; /* Alinea los botones al final de la tarjeta */
+}
+</style>
+
+<script>
+    document.querySelectorAll('.course-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const title = card.querySelector('.course-title').innerText;
+            console.log("Navegando al curso: " + title);
+            // Aquí podrías redirigir: window.location.href = '/curso-detalle';
+        });
+    });
+</script>
             </div>
         <?php
         $html .= ob_get_clean();
