@@ -86,6 +86,14 @@ add_action('woocommerce_account_dashboard', function () {
                                 ), 
                                 wc_get_checkout_url()
                             );
+
+                            $price = $subject->price;
+                            if( $price == NULL ) {
+                                $default_price_electives = get_option('default_price_electives', 0);
+                                $price = floatval($default_price_electives);
+                            } else {
+                                $price = floatval($price);
+                            }
                         ?>
 
                         <div class="course-card">
@@ -101,7 +109,7 @@ add_action('woocommerce_account_dashboard', function () {
                                 <div class="course-header">
                                     <h3 class="course-title"><?= esc_html($subject->name); ?></h3>
 
-                                    <p class="course-price" ><?= wc_price( $subject->price, [ 'currency' => $subject->currency ] ); ?></p>
+                                    <p class="course-price" ><?= wc_price( $price, [ 'currency' => $subject->currency ] ); ?></p>
 
                                 </div>
 
