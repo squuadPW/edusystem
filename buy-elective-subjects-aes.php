@@ -66,7 +66,7 @@ add_action('woocommerce_account_dashboard', function () {
         if ( !$subjects )  continue;  
 
         ob_start(); 
-        /* ?>
+        ?>
             <div id="buy-failed-subjects-container" class="seccion-dashboard">
 
                 <div class="seccion-dashboard-header">
@@ -86,14 +86,6 @@ add_action('woocommerce_account_dashboard', function () {
                                 ), 
                                 wc_get_checkout_url()
                             );
-
-                            $price = $subject->price;
-                            if( $price == NULL ) {
-                                $default_price_electives = get_option('default_price_electives', 0);
-                                $price = floatval($default_price_electives);
-                            } else {
-                                $price = floatval($price);
-                            }
                         ?>
 
                         <div class="course-card">
@@ -106,12 +98,9 @@ add_action('woocommerce_account_dashboard', function () {
 
                             <div class="course-content">
 
-                                <div class="course-header">
-                                    <h3 class="course-title"><?= esc_html($subject->name); ?></h3>
+                                <h3 class="course-title"><?= esc_html($subject->name); ?></h3>
 
-                                    <p class="course-price" ><?= wc_price( $price, [ 'currency' => $subject->currency ] ); ?></p>
-
-                                </div>
+                                <p><?= wc_price( $subject->price, [ 'currency' => $subject->currency ] ); ?></p>
 
                                 <?php if ( $subject->description ): ?>
                                     <p class="course-description"><?= esc_html($subject->description); ?></p>
@@ -125,8 +114,20 @@ add_action('woocommerce_account_dashboard', function () {
                     <?php endforeach; ?>
 
                 </div>
+
+</style>
+
+<script>
+    document.querySelectorAll('.course-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const title = card.querySelector('.course-title').innerText;
+            console.log("Navegando al curso: " + title);
+            // Aquí podrías redirigir: window.location.href = '/curso-detalle';
+        });
+    });
+</script>
             </div>
-        <?php */
+        <?php
         $html .= ob_get_clean();
     }
 
