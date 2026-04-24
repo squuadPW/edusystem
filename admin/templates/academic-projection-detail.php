@@ -125,7 +125,7 @@ $roles = $current_user->roles;
                                             <?php if ($projection_for->type != 'equivalence') { ?>
                                                 <div style="flex: 1; padding: 5px;">
                                                     <label for="input_id"><b><?= __('Period', 'edusystem'); ?></b></label><br>
-                                                    <select id="academic_period_<?= $key ?>" onchange=" if( this.event.isTrusted ) academic_period_changed(<?= $key ?>); get_cut_period_changed(<?= $key ?>)" name="academic_period[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
+                                                    <select id="academic_period_<?= $key ?>" name="academic_period[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>>
                                                         <option value="" selected><?= __('Select academic period to filter', 'edusystem') ?></option>
                                                         <?php foreach ($periods as $period) { ?>
                                                             <option <?= ($period->code == $current_period) ? 'class="current-period"' : ''; ?> value="<?php echo $period->code; ?>" <?= ($projection_for->code_period == $period->code) ? 'selected' : ''; ?>>
@@ -137,7 +137,7 @@ $roles = $current_user->roles;
 
                                                 <div style="flex: 1; padding: 5px;">
                                                     <label for="input_id"><b><?= __('Cut', 'edusystem'); ?></b></label><br>
-                                                    <select id="academic_period_cut_<?= $key ?>" onchange=" if( this.event.isTrusted ) academic_period_changed(<?= $key ?>);" data-text_default="<?= __('Select academic period cut', 'edusystem') ?>"
+                                                    <select id="academic_period_cut_<?= $key ?>" data-text_default="<?= __('Select academic period cut', 'edusystem') ?>"
                                                         name="academic_period_cut[<?= $key ?>]" <?php echo $projection_for->is_completed ? 'style="pointer-events: none !important; background-color: #80808038;"' : '' ?>
                                                         data-value="<?= $projection_for->cut ?? '' ?>">
                                                         <option value=""><?= __('Select academic period cut', 'edusystem') ?></option>

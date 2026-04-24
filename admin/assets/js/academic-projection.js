@@ -208,8 +208,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const period_selects = document.querySelectorAll('select[id^="academic_period_"]:not([id*="_cut_"])');
     period_selects.forEach(select => {
 
+        select.addEventListener('change', function( event ) {
+            
+            key = parseInt(this.id.replace('academic_period_', ''));
+
+            if( event.isTrusted ) academic_period_changed(key); 
+
+            get_cut_period_changed(key)
+        
+        }); 
+        
         select.dispatchEvent(new Event('change'));
+
     });
+
+    const cut_selects = document.querySelectorAll('select[id^="academic_period_cut_"]');
+    cut_selects.forEach(select => {
+
+        select.addEventListener('change', function( event ) {
+            
+            key = parseInt(this.id.replace('academic_period_cut_', ''));
+
+            if( event.isTrusted ) academic_period_changed(key); 
+        
+        }); 
+        
+        select.dispatchEvent(new Event('change'));
+
+    });
+
 });
 
 function get_cut_period_changed( key ) {
@@ -218,6 +245,7 @@ function get_cut_period_changed( key ) {
     if( code_period ) {
 
         period = code_period.value;
+        if ( period === '' ) return;
 
         const formData = new FormData();
         formData.append('action', 'get_cut_period');
@@ -253,6 +281,8 @@ function get_cut_period_changed( key ) {
                     
                         cut_period.add(opt);
                     });
+
+                    academic_period_changed(key);
 
                 } 
             }
