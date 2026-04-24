@@ -228,6 +228,24 @@
                         <label for="hide-fee-checkbox-checkout"><?= __('Hide checkbox to remove the checkout registration fee', 'edusystem'); ?></label>
                     </div>
 
+            <div >
+                <div class="form-group" style="padding: 0px 10px 10px 10px;" >
+                    <label for="default_price_electives">
+                        <input type="checkbox" name="default_stripe_account" value="1" <?= checked(1, get_option('default_stripe_account'), false); ?>>
+                        <?= __('Use default Stripe account', 'edusystem'); ?>
+                    </label>
+                </div>
+            </div>
+
+            <div >
+                <div class="form-group" style="padding: 0px 10px 10px 10px;" >
+                    <label for="modal_scholarships_checkout">
+                        <input type="checkbox" name="modal_scholarships_checkout" value="1" <?= checked(1, get_option('modal_scholarships_checkout'), false); ?>>
+                        <?= __('Use modal is scholarships in page checkout', 'edusystem'); ?>
+                    </label>
+                </div>
+            </div>
+
                     <div class="form-group" style="padding: 0px 10px 10px 10px;" >
                         <label for="virtual_classroom_button_header">
                             <input type="checkbox" name="virtual_classroom_button_header" value="1" <?= checked(1, get_option('virtual_classroom_button_header'), false); ?>>
@@ -421,16 +439,7 @@
                         </div>
                     </div>
 
-                    <div >
-                        <div class="form-group" style="padding: 0px 10px 10px 10px;" >
-                            <label for="default_price_electives">
-                                <input type="checkbox" name="default_stripe_account" value="1" <?= checked(1, get_option('default_stripe_account'), false); ?>>
-                                <?= __('Use default Stripe account', 'edusystem'); ?>
-                            </label>
-                        </div>
-                    </div>
-
-                </div>
+        </div>
 
                 <div id="by_design" style="display: none">
                     <div class="logo-upload-section">
