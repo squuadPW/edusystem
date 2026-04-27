@@ -38,8 +38,23 @@ function add_admin_form_school_subjects_content()
             if( $price == '' ) $price = null;
             $currency = $_POST['currency'] ?? get_woocommerce_currency();
             $retake_limit = $_POST['retake_limit'] ?? null;
+            $deactivate_buy_subject = $_POST['deactivate_buy_subject'] ?? null;
+            $url_image = $_POST['url_image'] ?? null;
 
-            
+            // obtiene la imgen subida para el curso
+            if (!empty($_FILES['custom_image_file']['name'])) {
+                require_once(ABSPATH . 'wp-admin/includes/image.php');
+                require_once(ABSPATH . 'wp-admin/includes/file.php');
+                require_once(ABSPATH . 'wp-admin/includes/media.php');
+
+                $attachment_id = media_handle_upload('custom_image_file', $post_id);
+
+                if (!is_wp_error($attachment_id)) {
+                    $url_image = wp_get_attachment_url($attachment_id);
+                    
+                }
+
+            }
 
             //update
             if (isset($subject_id) && !empty($subject_id)) {
@@ -58,6 +73,8 @@ function add_admin_form_school_subjects_content()
                     'type' => $type,
                     'is_active' => $is_active == 'on' ? 1 : 0,
                     'is_open' => $is_open == 'on' ? 1 : 0,
+                    'deactivate_buy_subject' => $deactivate_buy_subject,
+                    'url_image' => $url_image,
                     'retake_limit' => $retake_limit 
                 ], ['id' => $subject_id]);
             } else {
@@ -76,6 +93,8 @@ function add_admin_form_school_subjects_content()
                     'type' => $type,
                     'is_active' => $is_active == 'on' ? 1 : 0,
                     'is_open' => $is_open == 'on' ? 1 : 0,
+                    'deactivate_buy_subject' => $deactivate_buy_subject,
+                    'url_image' => $url_image,
                     'retake_limit' => $retake_limit
                 ]);
             }

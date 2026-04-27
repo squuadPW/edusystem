@@ -40,6 +40,11 @@
                                                 <label for="is_active"><b><?= __('Active', 'edusystem'); ?></b></label>
                                             </div>
                                         <?php endif; ?>
+
+                                        <div>
+                                            <input type="checkbox" name="deactivate_buy_subject" id="deactivate_buy_subject" <?= ($subject->deactivate_buy_subject == 1) ? 'checked' : ''; ?> <?= current_user_can('manager_edit_school_subjects') ? '' : 'style="pointer-events: none; opacity: 0.6 ;" ' ?> value="1" >
+                                            <label for="deactivate_buy_subject"><b><?= __('Deactivate Buy Subject', 'edusystem'); ?></b></label>
+                                        </div>
                                     </div>
                                     <div style="font-weight:400; text-align: center">
                                         <input type="hidden" name="subject_id" id="subject_id"
@@ -225,6 +230,63 @@
                                                 </select>
                                         <?php endif; ?>
                                     </div> -->
+                                </div>
+
+                                <div style="display: flex; justify-content: space-evenly; margin: 18px; flex-wrap: wrap;">
+
+                                    <div style="font-weight:400; text-align: center">
+
+                                        <label for="description">
+                                            <b><?= __('Image of the subject', 'edusystem'); ?></b>
+                                        </label>
+                                        
+                                        <br/>
+
+                                        <div id="image-preview-wrapper">
+                                            <img id="image-preview" src="<?= esc_url( $subject->url_image ); ?>" style="max-width: 300px;" />
+                                        </div>
+
+                                        <input type="file" id="file-input" name="custom_image_file" accept="image/*" style="display: none;">
+
+                                        <input type="hidden" id="url_image" name="url_image" value="<?= esc_attr( $subject->url_image ); ?>">
+
+                                        <button type="button" id="upload-button" class="button" ><?= __('Upload Image', 'edusystem') ?></button>
+
+                                        <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                                const fileInput = document.getElementById('file-input');
+                                                const uploadButton = document.getElementById('upload-button');
+                                                const removeButton = document.getElementById('remove-button');
+                                                const imagePreview = document.getElementById('image-preview');
+                                                const selectedImageUrl = document.getElementById('url_image');
+
+                                                uploadButton.addEventListener('click', () => fileInput.click());
+                                                removeButton.addEventListener('click', () => fileInput.click());
+
+                                                fileInput.addEventListener('change', function() {
+                                                    const file = this.files[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onload = function(e) {
+                                                            imagePreview.src = e.target.result;
+                                                            imagePreview.style.display = 'block';
+                                                                
+                                                            uploadButton.style.display = 'none';
+                                                            removeButton.style.display = 'inline-block';
+                                                                
+                                                            // Actualizamos el valor del input oculto con la base64 temporal (solo para preview)
+                                                            // El PHP se encargará de la URL real al procesar el $_FILES
+                                                            selectedImageUrl.value = e.target.result;
+                                                        }
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                });
+                                            });
+                                        </script>
+
+                                        
+                                    </div>
+
                                 </div>
                                 
                             </div>

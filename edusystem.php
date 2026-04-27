@@ -680,6 +680,7 @@ function create_tables()
         `teacher_id` int(11) DEFAULT NULL,
         `type` text DEFAULT NULL,
         `prerelation` TEXT NULL DEFAULT NULL,
+        `deactivate_buy_subject` boolean NOT NULL DEFAULT false,
         `url_image` TEXT NULL DEFAULT NULL,
         `is_elective` tinyint(1) NOT NULL DEFAULT 0,
         `retake_limit` int(11) DEFAULT NULL,
