@@ -146,7 +146,80 @@ add_action('woocommerce_checkout_create_order_line_item', function($item, $cart_
 // llama el shortcode de comprar materias reprobadas
 add_action('woocommerce_account_dashboard', function () {
     echo do_shortcode('[buy_failed_subjects]');
-}, 10, 1); 
+}, 1, 1);
 
+// crea el registro de la cuota de la materia al crear la orden
+add_action( 'woocommerce_new_order', function ( $order_id, $order ) {
 
+    $subject_id = $order->get_meta('subject_id');
+    $student_id = $order->get_meta('student_id');
+    if ( !$subject_id && !$student_id ) return;
 
+    $product_id = get_master_subject_product_id();
+    if ( !$product_id ) return;
+
+    // Obtiene el monto de la materia desde los items de la orden
+    $product_exists = false;
+    $amount = 0;
+    foreach ( $order->get_items() as $item_id => $item ) {
+        if ( $item->get_product_id() == $product_id ) {
+            $amount = $item->get_total(); 
+            $product_exists = true;
+            break; 
+        }
+    }
+    if ( !$product_exists ) return;
+
+    $date = new DateTime();
+    $currency = $order->get_currency();
+
+    $data = [
+        'status_id' => 0,
+        'student_id' => $student_id,
+        'order_id' => $order_id,
+        'product_id' => $product_id,
+        'variation_id' => 0,
+        'manager_id' => null,
+        'institute_id' => null,
+        'institute_fee' => 0,
+        'alliances' => null,
+        'currency' => $currency,
+        'amount' => $amount,
+        'original_amount_product' => $amount, 
+        'total_amount' => $amount,
+        'original_amount' => $amount,
+        'discount_amount' => 0, 
+        'type_payment' => 4,
+        'cuote' => 1,
+        'num_cuotes' => 1,
+        'date_payment' => $date->format('Y-m-d'),
+        'date_next_payment' => $date->format('Y-m-d'),
+    ];
+
+    global $wpdb;
+    $result = $wpdb->insert("{$wpdb->prefix}student_payments", $data);
+    if( !$result ) return;
+
+    $payment_id = $wpdb->insert_id;
+    $order->update_meta_data('cuote_payment', $payment_id );
+    $order->save();
+    
+}, 10, 2 );
+
+// Inscribe la materia si se completa la orden y es una orden de materia
+/* add_action( 'woocommerce_order_status_completed', 'mi_funcion_orden_completada', 10, 2 );
+function mi_funcion_orden_completada( $order_id, $order ) {
+    
+    $subject_id = $order->get_meta('subject_id');
+    $student_id = $order->get_meta('student_id');
+
+    if ( !$subject_id && !$student_id ) return;
+}
+
+add_action( 'woocommerce_order_status_changed', 'mi_cambio_de_status_personalizado', 10, 4 );
+function mi_cambio_de_status_personalizado( $order_id, $old_status, $new_status, $order ) {
+
+    if ( $old_status === 'completed' && $new_status !== 'completed' ) {
+        
+    }
+} */
