@@ -19,7 +19,7 @@
                 <div id="metabox" class="postbox" style="width:100%;min-width:0px;">
                     <div class="inside">
 
-                        <form method="post"
+                        <form method="post" enctype="multipart/form-data"
                             action="<?= admin_url('admin.php?page=add_admin_form_school_subjects_content&action=save_subject_details'); ?>">
                             <div>
                                 <h3
@@ -246,37 +246,39 @@
                                             <img id="image-preview" src="<?= esc_url( $subject->url_image ); ?>" style="max-width: 300px;" />
                                         </div>
 
-                                        <input type="file" id="file-input" name="custom_image_file" accept="image/*" style="display: none;">
+                                        <input type="file" id="file-input" name="file_image" accept="image/*" style="display: none;">
 
-                                        <input type="hidden" id="url_image" name="url_image" value="<?= esc_attr( $subject->url_image ); ?>">
+                                        <input type="hidden" id="url_image" name="url_image" value="<?= esc_attr( $subject->url_image ) ?? null; ?>">
 
-                                        <button type="button" id="upload-button" class="button" ><?= __('Upload Image', 'edusystem') ?></button>
+                                        <a type="button" id="upload-button" class="button" ><?= __('Upload Image', 'edusystem') ?></a>
+                                        <a type="button" id="clear-button" class="button" ><?= __('Clear Image', 'edusystem') ?></a>
 
                                         <script>
                                             document.addEventListener('DOMContentLoaded', function() {
                                                 const fileInput = document.getElementById('file-input');
+                                                
                                                 const uploadButton = document.getElementById('upload-button');
-                                                const removeButton = document.getElementById('remove-button');
-                                                const imagePreview = document.getElementById('image-preview');
-                                                const selectedImageUrl = document.getElementById('url_image');
+                                                if (uploadButton) {
+                                                    uploadButton.addEventListener('click', () => fileInput.click());
+                                                }
 
-                                                uploadButton.addEventListener('click', () => fileInput.click());
-                                                removeButton.addEventListener('click', () => fileInput.click());
+                                                const clear_button = document.getElementById('clear-button');
+                                                if (clear_button) {
+                                                    clear_button.addEventListener('click', () => {
+                                                        const imagePreview = document.getElementById('image-preview');
+                                                        imagePreview.src = '';
+                                                        document.getElementById('url_image').value = '';
+                                                    });
+                                                }
 
                                                 fileInput.addEventListener('change', function() {
                                                     const file = this.files[0];
                                                     if (file) {
                                                         const reader = new FileReader();
                                                         reader.onload = function(e) {
+
+                                                            const imagePreview = document.getElementById('image-preview');
                                                             imagePreview.src = e.target.result;
-                                                            imagePreview.style.display = 'block';
-                                                                
-                                                            uploadButton.style.display = 'none';
-                                                            removeButton.style.display = 'inline-block';
-                                                                
-                                                            // Actualizamos el valor del input oculto con la base64 temporal (solo para preview)
-                                                            // El PHP se encargará de la URL real al procesar el $_FILES
-                                                            selectedImageUrl.value = e.target.result;
                                                         }
                                                         reader.readAsDataURL(file);
                                                     }

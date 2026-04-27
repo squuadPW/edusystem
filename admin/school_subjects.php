@@ -42,20 +42,19 @@ function add_admin_form_school_subjects_content()
             $url_image = $_POST['url_image'] ?? null;
 
             // obtiene la imgen subida para el curso
-            if (!empty($_FILES['custom_image_file']['name'])) {
+            if ( !empty($_FILES['file_image']['name']) ) {
                 require_once(ABSPATH . 'wp-admin/includes/image.php');
                 require_once(ABSPATH . 'wp-admin/includes/file.php');
                 require_once(ABSPATH . 'wp-admin/includes/media.php');
-
-                $attachment_id = media_handle_upload('custom_image_file', $post_id);
+    
+                $attachment_id = media_handle_upload('file_image', $post_id);
 
                 if (!is_wp_error($attachment_id)) {
                     $url_image = wp_get_attachment_url($attachment_id);
-                    
                 }
 
             }
-
+            
             //update
             if (isset($subject_id) && !empty($subject_id)) {
                 $wpdb->update($table, [
