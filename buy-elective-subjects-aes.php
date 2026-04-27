@@ -45,6 +45,12 @@ add_action('woocommerce_account_dashboard', function () {
 
         $subjects = get_subject_by_type('elective');
         foreach ( $subjects as $key => $subject ) {
+
+            if( $subject->deactivate_buy_subject ) {
+                unset($subjects[$key]);
+                continue;
+            }
+            
             // veifica si tiene una inscripcion activa en espera op ya paso la electiva
             $inscriptions_subjects = $wpdb->get_var( $wpdb->prepare(
                 "SELECT id
@@ -54,13 +60,15 @@ add_action('woocommerce_account_dashboard', function () {
                 $subject->code_subject
             ));
 
-            if( $inscriptions_subjects ) continue;
+            if( $inscriptions_subjects ) {
+                unset($subjects[$key]);
+                continue;
+            }
 
             // verifica que la materia tiene ofertas actuales
             $offer_available_to_enroll = offer_available_to_enroll($subject->id, $code, $cut);
-            if ( $offer_available_to_enroll ) continue;
+            if ( !$offer_available_to_enroll ) unset($subjects[$key]);
 
-            unset($subjects[$key]);
         }
         
         if ( !$subjects )  continue;  
