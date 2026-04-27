@@ -66,7 +66,7 @@ add_action('woocommerce_account_dashboard', function () {
         if ( !$subjects )  continue;  
 
         ob_start(); 
-        ?>
+        /* ?>
             <div id="buy-failed-subjects-container" class="seccion-dashboard">
 
                 <div class="seccion-dashboard-header">
@@ -126,7 +126,7 @@ add_action('woocommerce_account_dashboard', function () {
 
                 </div>
             </div>
-        <?php
+        <?php */
         $html .= ob_get_clean();
     }
 
