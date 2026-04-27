@@ -264,11 +264,33 @@
 
                                                 const clear_button = document.getElementById('clear-button');
                                                 if (clear_button) {
+
+                                                    const url_image = document.getElementById('url_image');
+
                                                     clear_button.addEventListener('click', () => {
                                                         const imagePreview = document.getElementById('image-preview');
                                                         imagePreview.src = '';
-                                                        document.getElementById('url_image').value = '';
+
+                                                        if( url_image ) url_image.value = '';
                                                     });
+
+                                                    if ( url_image ) {
+
+                                                        const clear_button = document.getElementById('clear-button');
+
+                                                        const observer = new MutationObserver((mutations) => {
+
+                                                            const content = url_image.value || "";
+                                                            clear_button.style.display = content ? 'block' : 'none';
+                                                        });
+
+                                                        observer.observe(url_image, { 
+                                                            attributes: true, 
+                                                            childList: true, 
+                                                            characterData: true, 
+                                                            subtree: true 
+                                                        });
+                                                    }
                                                 }
 
                                                 fileInput.addEventListener('change', function() {
@@ -283,6 +305,7 @@
                                                         reader.readAsDataURL(file);
                                                     }
                                                 });
+
                                             });
                                         </script>
 
