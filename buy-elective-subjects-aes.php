@@ -98,9 +98,12 @@ add_action('woocommerce_account_dashboard', function () {
 
                             <div class="course-content">
 
-                                <h3 class="course-title"><?= esc_html($subject->name); ?></h3>
+                                <div class="course-header">
+                                    <h3 class="course-title"><?= esc_html($subject->name); ?></h3>
 
-                                <p><?= wc_price( $subject->price, [ 'currency' => $subject->currency ] ); ?></p>
+                                    <p class="course-price" ><?= wc_price( $subject->price, [ 'currency' => $subject->currency ] ); ?></p>
+
+                                </div>
 
                                 <?php if ( $subject->description ): ?>
                                     <p class="course-description"><?= esc_html($subject->description); ?></p>
@@ -113,19 +116,7 @@ add_action('woocommerce_account_dashboard', function () {
                         
                     <?php endforeach; ?>
 
-                </div>
-
-</style>
-
-<script>
-    document.querySelectorAll('.course-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const title = card.querySelector('.course-title').innerText;
-            console.log("Navegando al curso: " + title);
-            // Aquí podrías redirigir: window.location.href = '/curso-detalle';
-        });
-    });
-</script>
+         
             </div>
         <?php
         $html .= ob_get_clean();
