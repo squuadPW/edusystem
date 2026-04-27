@@ -1,0 +1,2479 @@
+@charset "UTF-8";
+.table-customize tbody tr th {
+  padding-top: 10px;
+  width: 300px;
+}
+@media screen and (max-width: 782px) {
+  .table-customize tbody tr th {
+    width: auto;
+  }
+}
+.table-customize tbody tr td {
+  padding-top: 5px;
+}
+
+.button-success {
+  border: 1px solid #198754 !important;
+  background-color: #198754 !important;
+  color: white !important;
+}
+.button-success:hover {
+  background-color: #17774a !important;
+}
+
+.button-warning {
+  border: 1px solid #dba617 !important;
+  background-color: #dba617 !important;
+  color: white !important;
+}
+.button-warning:hover {
+  border: 1px solid #c49411 !important;
+  background-color: #c49411 !important;
+  box-shadow: 0 0 0 1px #c49411;
+}
+
+.button-danger {
+  border: 1px solid #dc3545 !important;
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+.button-danger:hover {
+  border: 1px solid #ac2835 !important;
+  background-color: #ac2835 !important;
+  box-shadow: 0 0 0 1px #ac2835;
+}
+
+.notice-custom {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-left-width: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  padding: 1px 12px;
+  border-left-color: #72aee6 !important;
+}
+
+select[reaonly] {
+  background-color: #f0f0f1;
+  pointer-events: none;
+}
+
+#footer-thankyou {
+  display: none;
+}
+
+#footer-upgrade {
+  display: none;
+}
+
+div#application-passwords-section {
+  display: none;
+}
+
+#contextual-help-link {
+  display: none;
+}
+
+#collapse-button {
+  display: none;
+}
+
+#email-description {
+  display: none;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.iti.iti--allow-dropdown.iti--separate-dial-code.iti--show-flags {
+  width: 100%;
+}
+
+.dashicons:not(.no-vertical, .dashicons-support)::before {
+  vertical-align: middle;
+}
+@media screen and (max-width: 782px) {
+  .dashicons:not(.no-vertical, .dashicons-support)::before {
+    vertical-align: -webkit-baseline-middle !important;
+  }
+}
+
+#inputStartDate {
+  background-color: #fff !important;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 11000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  box-sizing: border-box;
+  backdrop-filter: blur(5px); /* Desenfoque */
+  -webkit-backdrop-filter: blur(5px); /* Para Safari */
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 50px auto 150px auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  width: 50%;
+}
+@media screen and (max-width: 767px) {
+  .modal-content {
+    width: 100% !important;
+    border-radius: 15px !important;
+    margin: 0;
+  }
+}
+.modal-content #canvas {
+  border-bottom: 1px solid black;
+  margin: auto;
+}
+
+.modal-header {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.modal-close {
+  cursor: pointer !important;
+  font-size: 18px;
+  margin-left: 10px;
+}
+
+.modal-close.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-body p {
+  margin-bottom: 10px;
+}
+
+.modal-footer {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  border-radius: 0px 0px 15px 15px;
+}
+
+@media screen and (max-width: 782px) {
+  .button-create-enrollment {
+    margin-bottom: 150px !important;
+  }
+}
+
+.button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.button-outline-primary {
+  background-color: #fff;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.button:hover {
+  opacity: 0.8;
+}
+
+.modal-content {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+}
+
+.modal-header {
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #ccc;
+  border-radius: 15px 15px 0px 0px;
+}
+
+.modal-body {
+  padding: 30px;
+}
+
+.modal-footer {
+  background-color: #f7f7f7;
+  border-top: 1px solid #ccc;
+}
+
+.button-primary {
+  background-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.button-outline-primary {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.card-report-sales {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 4px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+/* CSS Styles */
+.grid-container-report {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 10px;
+  margin: 18px;
+}
+
+.grid-container-report-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 18px;
+}
+
+.grid-container-report-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin: 18px;
+}
+
+.grid-container-report-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 18px;
+}
+
+.woocommerce-site-status-badge-live {
+  display: none !important;
+}
+
+#wp-admin-bar-wp-mail-smtp-menu {
+  display: none !important;
+}
+
+/* Style the segment buttons */
+.segment-button {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  border: none;
+  border-radius: 0px;
+  background-color: #ffffff;
+  color: #000;
+}
+
+.segment-button:first-child {
+  border-radius: 10px 0 0 10px;
+}
+
+.segment-button:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+.segment-button:hover {
+  background-color: #ccc;
+}
+
+.segment-button.active {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Add animation to the segment buttons */
+.segment-button {
+  transform: scale(1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.segment-button:hover {
+  transform: scale(1.05);
+}
+
+.segment-button.active {
+  transform: scale(1.1);
+  z-index: 100;
+}
+
+.segment-button-history {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  border: none;
+  border-radius: 0px;
+  background-color: #ffffff;
+  color: #000;
+}
+
+.segment-button-history:first-child {
+  border-radius: 10px 0 0 10px;
+}
+
+.segment-button-history:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+.segment-button-history:hover {
+  background-color: #ccc;
+}
+
+.segment-button-history.active {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+/* Add animation to the segment buttons */
+.segment-button-history {
+  transform: scale(1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.segment-button-history:hover {
+  transform: scale(1.05);
+}
+
+.segment-button-history.active {
+  transform: scale(1.1);
+  z-index: 1000;
+}
+
+.card {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 0;
+  margin: auto;
+}
+
+.card-header {
+  background-color: #f7f7f7;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+  border-radius: 10px 10px 0px 0px;
+}
+
+.card-body {
+  padding: 20px;
+}
+.card-body label {
+  display: block;
+  margin-bottom: 10px;
+}
+.card-body input:not([type=checkbox]),
+.card-body textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.card-body .content-notification-staff {
+  margin: 20px 10px;
+  text-align: center;
+  font-style: italic;
+}
+
+.card-body-configuration {
+  padding: 20px;
+}
+.card-body-configuration input:not([type=checkbox]),
+.card-body-configuration textarea {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.card-body-configuration .full-input {
+  width: 100%;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: #fff;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #23527c;
+}
+
+.projection-report-template {
+  cursor: pointer !important;
+  transition: 100ms;
+}
+
+.projection-report-template:hover {
+  transform: scale(1.02) !important;
+  transition: 100ms;
+}
+
+.text-uppercase {
+  text-transform: uppercase !important;
+}
+
+.admin-add-offer {
+  width: 460px;
+  margin: auto;
+}
+@media screen and (max-width: 782px) {
+  .admin-add-offer {
+    width: 100% !important;
+  }
+}
+.admin-add-offer input,
+.admin-add-offer select {
+  width: 100%;
+}
+.admin-add-offer .space-offer {
+  margin: 10px 0px 10px 0px;
+}
+
+.current-period {
+  background-color: rgba(23, 119, 74, 0.2) !important;
+}
+
+.row-projection {
+  display: flex;
+  border: 1px solid #b2b2b2;
+  padding: 5px;
+  margin: 10px;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+@media screen and (max-width: 900px) {
+  .row-projection {
+    display: block !important;
+    text-align: center;
+  }
+  .row-projection select,
+  .row-projection input:not([type=checkbox]) {
+    width: 100%;
+  }
+}
+
+#wp-admin-bar-wp-logo {
+  display: none;
+}
+
+#wp-admin-bar-comments {
+  display: none;
+}
+
+#wp-admin-bar-new-content {
+  display: none;
+}
+
+.select2-container--default {
+  width: 100% !important;
+}
+
+.modal-enrollment {
+  border-radius: 0px !important;
+  width: 210mm !important;
+  overflow: auto;
+}
+@media screen and (max-width: 767px) {
+  .modal-enrollment {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+.modal-document-export {
+  border-radius: 0px;
+  width: 210mm;
+  overflow: auto;
+}
+@media screen and (max-width: 767px) {
+  .modal-document-export {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+}
+
+#qt_content_toolbar input {
+  width: auto !important;
+}
+
+#qt_header_toolbar input {
+  width: auto !important;
+}
+
+#qt_footer_toolbar input {
+  width: auto !important;
+}
+
+#qt_message_toolbar input {
+  width: auto !important;
+}
+
+.documents-footer {
+  background: rgb(231, 31, 59);
+  background: linear-gradient(90deg, rgb(231, 31, 59) 0%, rgb(116, 39, 124) 50%, rgb(0, 47, 189) 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#e71f3b",endColorstr="#002fbd",GradientType=1);
+}
+.documents-footer a {
+  color: white !important;
+  -webkit-text-decoration: auto;
+          text-decoration: auto;
+}
+.documents-footer .contact-info-aes {
+  display: flex;
+  justify-content: space-evenly;
+  color: #ffffff;
+  padding: 10px;
+  font-size: 12px !important;
+}
+.documents-footer .contact-info-aes .icon-footer::before {
+  vertical-align: unset !important;
+}
+
+.wp-list-table:not(#tablenotcustom) {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.wp-list-table:not(#tablenotcustom) thead th {
+  background: #f1f5f9 !important;
+  color: #1f2937 !important;
+  padding: 12px 15px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  font-weight: 600;
+}
+
+.wp-list-table:not(#tablenotcustom) tfoot th {
+  background: #f1f5f9 !important;
+  color: #1f2937 !important;
+  padding: 12px 15px !important;
+  border-bottom: 1px solid #e5e7eb !important;
+  font-weight: 600;
+}
+
+.wp-list-table:not(#tablenotcustom) tbody td {
+  padding: 12px 15px !important;
+  border-color: #e5e7eb !important;
+  color: #4b5563;
+}
+
+.wp-list-table:not(#tablenotcustom) tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.wp-list-table:not(#tablenotcustom) tbody tr:hover {
+  background: #f1f5f9 !important;
+}
+
+.deadline {
+  color: red;
+}
+
+.postbox {
+  border-radius: 8px;
+}
+
+#by_group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+@media screen and (max-width: 782px) {
+  .wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary)::before {
+    width: auto;
+    text-align: left;
+  }
+  .wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.column-primary) {
+    width: auto;
+    text-align: right;
+  }
+}
+/* Contenedor principal que envuelve las filas (header y data) */
+.status-grid-wrapper {
+  margin-top: 20px;
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  color: #333;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden; /* Asegura que la sombra y bordes redondeados se apliquen bien */
+}
+
+/* Estilos para cada "fila" (tanto la de encabezados como la de datos) */
+.status-grid {
+  display: flex;
+  flex-wrap: nowrap; /* ¡Mantiene los ítems en una sola fila en escritorio! */
+  justify-content: space-between; /* Distribuye el espacio uniformemente */
+  align-items: center; /* Centra los elementos verticalmente */
+  padding: 0 15px; /* Padding horizontal para el contenido de la fila */
+}
+
+/* Estilos específicos para la fila de encabezados */
+.header-row {
+  background-color: #f8f8f8;
+  border-bottom: 2px solid #ddd;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* Estilos específicos para la fila de datos */
+.data-row {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+/* Estilos para cada "celda" o "ítem" */
+.status-item {
+  flex-grow: 1; /* Permite que los ítems crezcan para ocupar el espacio */
+  flex-shrink: 0; /* Evita que los ítems se encojan más allá de su contenido */
+  flex-basis: 0; /* Punto de partida para el crecimiento */
+  padding: 8px 10px; /* Padding más compacto para el contenido */
+  text-align: center;
+  box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+}
+
+/* Estilos específicos para los encabezados */
+.status-item.header {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8em; /* Fuente un poco más pequeña para los títulos */
+  color: #555;
+  letter-spacing: 0.5px;
+}
+
+/* Estilos para los iconos (sin cambios, ya son compactos y se ven bien) */
+.status-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  position: relative;
+  vertical-align: middle;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.status-icon.status-approved {
+  background-color: #4caf50;
+} /* Verde */
+.status-icon.status-pending {
+  background-color: #f44336;
+} /* Rojo */
+.status-icon.status-partial {
+  background-color: #ffc107;
+} /* Amarillo/Naranja */
+.status-icon.status-approved::after {
+  content: "✓";
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.status-icon.status-pending::after {
+  content: "✖";
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.status-icon.status-partial::after {
+  content: "$";
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ... (Mantener todos los estilos de escritorio anteriores, son correctos) ... */
+@media (max-width: 768px) {
+  .status-grid-wrapper {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    background-color: transparent;
+  }
+  .status-grid {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+  .header-row {
+    border-bottom: none;
+    padding: 10px 15px;
+    background-color: #f8f8f8;
+    display: none;
+  }
+  .data-row {
+    padding: 0;
+  }
+  .status-item {
+    flex-basis: auto;
+    width: 100%;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px dashed #eee;
+  }
+  .status-item:last-child {
+    border-bottom: none;
+  }
+  .status-item.header {
+    display: none;
+  }
+  /* ¡Esta es la sección clave para el label en móvil! */
+  .status-item.data::before {
+    content: attr(data-colname); /* Verificamos la sintaxis */
+    font-weight: 600;
+    color: #666;
+    margin-right: 8px;
+    font-size: 0.95em;
+    flex-shrink: 0;
+    /* Asegúrate de que el atributo data-colname siempre tenga un valor.
+           Si por alguna razón no lo tiene, el contenido sería vacío o " " */
+  }
+  .status-item.data .status-icon {
+    margin-left: auto;
+  }
+}
+@media (max-width: 768px) and (max-width: 480px) {
+  .status-item {
+    padding: 10px;
+    font-size: 0.9em;
+  }
+  .status-item.data::before {
+    font-size: 0.85em;
+  }
+}
+.action-student-admission {
+  display: flex;
+  width: 100%;
+  justify-content: end;
+}
+
+@media (max-width: 768px) {
+  .action-student-admission {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-end;
+    align-content: flex-end;
+  }
+}
+.buttons-academic-projection {
+  display: flex;
+  width: 100%;
+  justify-content: end;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .buttons-academic-projection {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: baseline;
+    margin: 20px 0;
+  }
+}
+@media screen and (max-width: 782px) {
+  /* Resetea los anchos fijos para permitir que las columnas se adapten */
+  .wp-list-table.fixed td,
+  .wp-list-table.fixed th {
+    width: auto !important;
+  }
+  /* Oculta los encabezados de la tabla en pantallas pequeñas */
+  /* Estilos para las celdas del cuerpo de la tabla */
+  .wp-list-table tbody td {
+    display: block; /* Cada celda se comporta como un bloque */
+    text-align: start; /* Alinea el contenido (y el botón de dropdown si está ahí) a la derecha */
+    position: relative;
+    /* Asegúrate de que haya suficiente espacio en la parte inferior si el botón de dropdown está en la misma línea */
+    padding-bottom: 10px; /* Agrega un poco de padding inferior para que el botón no se pegue al borde */
+  }
+  /* Estilos para la etiqueta generada por data-colname */
+  /* Estilos específicos para el botón de toggle de WordPress */
+  .wp-list-table .toggle-row {
+    float: right; /* Asegura que el botón flote a la derecha */
+    margin-left: 5px; /* Espacio entre el botón y el contenido */
+    /* Puede que necesites ajustar la posición con un poco de margin-top/bottom si no se ve bien */
+    margin-top: -5px; /* Ejemplo de ajuste, puede variar */
+    position: relative; /* Asegura que no se superponga si hay un z-index en ::before */
+    z-index: 10; /* Asegura que el botón esté siempre por encima de la etiqueta ::before */
+  }
+  /* Ajustes para los botones dentro de las celdas de acción */
+  .wp-list-table .column-actions-cell .document-actions-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end; /* Alinea los botones a la derecha */
+    gap: 5px; /* Espacio entre los botones */
+    margin-top: 5px; /* Puede ser necesario un pequeño margen superior si el ::before es muy alto */
+  }
+}
+.table-actions-container {
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 0px 0px 10px 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+/* Si quieres que la descripción y el botón estén uno al lado del otro */
+.payment-actions {
+  display: flex;
+  gap: 15px; /* Espacio entre el textarea y el botón */
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  align-items: center; /* Alinea verticalmente los elementos */
+}
+
+.payment-description {
+  flex-grow: 1; /* Permite que el textarea ocupe el espacio disponible */
+}
+
+#description_payment_log {
+  width: 100%;
+  min-height: 80px; /* Altura mínima para la descripción */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  resize: vertical; /* Permite redimensionar solo verticalmente */
+}
+
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease; /* Transición suave al pasar el ratón */
+}
+
+.button-success {
+  background-color: #28a745; /* Un verde vibrante */
+  color: white;
+}
+
+.button-success:hover {
+  background-color: #218838; /* Verde más oscuro al pasar el ratón */
+}
+
+.table-controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* margin-bottom: 20px; */
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px 10px 0px 0px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.section-title {
+  margin: 0; /* Elimina el margen por defecto del h2 */
+  font-size: 1.8em;
+  color: #343a40;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones */
+  flex-wrap: wrap; /* Asegura que los botones se envuelvan si no hay suficiente espacio */
+  justify-content: flex-end; /* Alinea los botones a la derecha */
+}
+
+/* Estilos para los botones (reutilizando los que ya tenías o mejorándolos) */
+.button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px; /* Ligeramente más redondeado */
+  cursor: pointer;
+  font-weight: 600; /* Un poco más de peso */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Añade transición de escala */
+  font-size: 0.95rem;
+  white-space: nowrap; /* Evita que el texto del botón se rompa */
+}
+
+.button-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.button-success:hover {
+  background-color: #218838;
+}
+
+.button-secondary {
+  background-color: #6c757d; /* Un gris más oscuro */
+  color: white;
+}
+
+.button-secondary:hover {
+  background-color: #5a6268;
+}
+
+h2 {
+  margin-bottom: 25px !important;
+  color: #333;
+}
+
+.notice {
+  margin-bottom: 20px;
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.notice-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.notice-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.notice p {
+  margin: 0;
+}
+
+/* Back Button */
+.back-button-container {
+  display: flex;
+  justify-content: flex-start; /* Align to start for back button */
+  margin-bottom: 20px;
+}
+
+.button {
+  display: inline-block;
+  padding: 8px 15px;
+  border: 1px solid #0073aa;
+  background-color: #0073aa;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.button-outline-primary {
+  border-color: #0073aa;
+  background-color: transparent;
+  color: #0073aa;
+}
+
+.button-outline-primary:hover {
+  background-color: #0073aa;
+  color: #fff;
+}
+
+/* Form Layout */
+.form-section-title {
+  margin-top: 30px;
+  margin-bottom: 15px;
+  text-align: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+  padding-bottom: 10px;
+  color: #555;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive columns */
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.form-field-custom {
+  text-align: center;
+  font-weight: 400;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-field-custom label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+.form-field-custom input[type=text],
+.form-field-custom input[type=number],
+.form-field-custom input[type=date] {
+  width: 100%; /* Occupy full width of its grid cell */
+  max-width: 250px; /* Limit max width for better aesthetics */
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.form-field-custom input[type=checkbox] {
+  margin-top: 5px;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+/* Submit Button */
+.form-submit-container {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.button-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.button-primary:hover {
+  background-color: #006799;
+  border-color: #006799;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust columns for tablets */
+  }
+}
+@media (max-width: 480px) {
+  .form-grid {
+    grid-template-columns: 1fr; /* Single column for mobile */
+  }
+  .form-field-custom input[type=text],
+  .form-field-custom input[type=number],
+  .form-field-custom input[type=date] {
+    max-width: 100%; /* Full width inputs on small screens */
+  }
+}
+@media (max-width: 768px) {
+  .form-table td {
+    width: 100% !important;
+  }
+}
+@media screen and (max-width: 782px) {
+  .wp-admin .form-table select,
+  .wp-core-ui select {
+    width: 100%;
+  }
+  .wp-admin .form-table input:is([type=text],
+  [type=number],
+  [type=date],
+  [type=email],
+  [type=password]),
+  .wp-core-ui input:is([type=text],
+  [type=number],
+  [type=date],
+  [type=email],
+  [type=password]) {
+    width: 100%;
+  }
+}
+/* Media query para pantallas pequeñas (ej. móviles) */
+@media (max-width: 768px) {
+  /* Puedes ajustar este breakpoint */
+  .segment {
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan */
+    justify-content: center; /* Centra los botones cuando se envuelven */
+    margin: 0px 10px 20px 10px; /* Ajusta los márgenes para pantallas pequeñas */
+  }
+  .segment-button {
+    flex: 1 1 45%; /* Permite que los botones ocupen un 45% del ancho y se envuelvan */
+    margin-bottom: 5px; /* Espacio entre botones cuando se apilan */
+    border-radius: 5px !important; /* Ajusta los bordes cuando se apilan */
+  }
+  /* Eliminar border-radius específico para el primer y último hijo cuando se apilan */
+  .segment-button:first-child,
+  .segment-button:last-child {
+    border-radius: 5px !important;
+  }
+}
+/* Responsive adjustments for tablets and smaller desktops */
+@media (max-width: 1024px) {
+  /* Adjust this breakpoint if needed */
+  .grid-container-report-4 {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+    margin: 15px; /* Slightly reduced margin */
+  }
+}
+/* Responsive adjustments for mobile phones */
+@media (max-width: 768px) {
+  /* Adjust this breakpoint if needed */
+  .grid-container-report-4 {
+    grid-template-columns: 1fr; /* 1 column for mobile phones */
+    margin: 10px; /* Further reduced margin */
+  }
+}
+/* Responsive adjustments for tablets and smaller desktops */
+@media (max-width: 1024px) {
+  /* Adjust this breakpoint if needed */
+  .grid-container-report-2 {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for tablets */
+    margin: 15px; /* Slightly reduced margin */
+  }
+}
+/* Responsive adjustments for mobile phones */
+@media (max-width: 768px) {
+  /* Adjust this breakpoint if needed */
+  .grid-container-report-2 {
+    grid-template-columns: 1fr; /* 1 column for mobile phones */
+    margin: 10px; /* Further reduced margin */
+  }
+}
+/* In your CSS file (e.g., style.css) */
+.form-section {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.capability-group {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 5px;
+  background-color: #fff;
+}
+.capability-group h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  font-size: 1.2em;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+.capability-group ul ul {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+.capability-group .capability-item {
+  margin-bottom: 5px;
+  padding: 3px 0;
+}
+.capability-group .capability-item [capability-disabled] {
+  font-style: italic;
+  color: rgba(128, 128, 128, 0.5411764706);
+  pointer-events: none;
+}
+.capability-group .capability-item label {
+  cursor: pointer;
+  line-height: 1.5;
+}
+.capability-group .capability-item label input[type=checkbox] {
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.group-inputs,
+.group-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.modal-body {
+  padding: 10px 20px !important;
+}
+
+.seccion-input .seccion-title {
+  color: #000;
+}
+.seccion-input .group-input {
+  margin: 0px 5px;
+}
+.seccion-input .space-offer {
+  margin-top: 0px;
+}
+
+#template-advanced-quota {
+  display: none;
+}
+
+.advanced-quotas-container .acction-buton {
+  display: flex;
+  justify-content: end;
+  margin-bottom: 10px;
+}
+.advanced-quotas-container .group-advanced-quota {
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+  margin-bottom: 15px;
+}
+
+.space-offer {
+  flex: 1;
+  font-weight: 400;
+}
+@media (max-width: 520px) {
+  .space-offer {
+    min-width: 100% !important;
+  }
+  .space-offer.active {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0px;
+  }
+}
+
+.container-programs .container-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.container-programs #subprograms-container .title {
+  margin-top: 20px;
+  margin-bottom: 0px;
+  text-align: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+}
+.container-programs #subprograms-container #subprograms {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding: 10px 0px;
+}
+.container-programs #subprograms-container #subprograms .subprogram {
+  margin: 7px 0px;
+  border: 1px solid rgba(128, 128, 128, 0.3607843137);
+  border-radius: 5px;
+  padding: 5px 15px;
+  position: relative;
+}
+.container-programs #subprograms-container #subprograms .subprogram .id {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding: 0px 15px;
+  background-color: #ccc;
+  border-radius: 0px 0px 0px 5px;
+  font-size: 12px;
+}
+.container-programs #subprograms-container #subprograms .subprogram#template-subprogram {
+  display: none;
+}
+.container-programs #subprograms-container #subprograms .subprogram .group-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 520px) {
+  .container-programs #subprograms-container #subprograms .subprogram .group-input {
+    gap: 0px;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+  .container-programs #subprograms-container #subprograms .subprogram .group-input .active {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0px;
+  }
+}
+@media (max-width: 520px) {
+  .container-programs #subprograms-container #subprograms .subprogram .group-input {
+    gap: 0px;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+  .container-programs #subprograms-container #subprograms .subprogram .group-input .active {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 0px;
+  }
+}
+.container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer {
+  flex: 1;
+  font-weight: 400;
+}
+.container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer.name {
+  flex: 3;
+}
+.container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer:has(input[type=checkbox]) {
+  max-width: -moz-max-content;
+  max-width: max-content;
+}
+.container-programs #subprograms-container #subprograms .subprogram .group-input .space-offer:has(input[type=checkbox]) input[type=checkbox] {
+  width: 10px;
+}
+.container-programs #subprograms-container > div {
+  margin: 0px 10px;
+}
+
+#quota-rules-programs .container-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+#quota-rules-programs .quotas_rules .title {
+  margin-top: 20px;
+  margin-bottom: 0px;
+  text-align: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+}
+#quota-rules-programs .quotas_rules #rules {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding: 10px 0px;
+}
+#quota-rules-programs .quotas_rules #rules .rule {
+  margin: 7px 0px;
+  border: 1px solid rgba(128, 128, 128, 0.3607843137);
+  border-radius: 5px;
+  padding: 5px 15px;
+  position: relative;
+}
+#quota-rules-programs .quotas_rules #rules .rule .id {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding: 2px 15px;
+  background-color: #ccc;
+  border-radius: 0px 0px 0px 5px;
+  font-size: 12px;
+}
+#quota-rules-programs .quotas_rules #rules .rule#template-quota-rule {
+  display: none;
+}
+#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) {
+  max-width: -moz-max-content;
+  max-width: max-content;
+}
+#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer:has(input[type=checkbox]) input[type=checkbox] {
+  width: 10px;
+}
+#quota-rules-programs .quotas_rules #rules .rule .group-input .space-offer .input-frequency {
+  display: flex;
+  gap: 10px;
+}
+
+#select2-programas_select-results li:has(+ [role=group]) {
+  margin-bottom: 0px;
+}
+#select2-programas_select-results [role=group] {
+  position: relative;
+}
+#select2-programas_select-results [role=group] li:first-of-type {
+  position: absolute;
+  top: 0px;
+  color: transparent;
+  background: rgba(202, 202, 202, 0.2392156863);
+  width: 80%;
+  border-radius: 0px 15px 15px 0px;
+}
+#select2-programas_select-results [role=group] {
+  /* li{
+          margin-bottom: 0px;
+      } */
+  /* .select2-results__group {
+          display: none;
+      } */
+}
+
+#admission_fees .fees_body {
+  margin-bottom: 20px;
+}
+#admission_fees .fees_body .title {
+  margin-top: 20px;
+  margin-bottom: 0px;
+  text-align: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+}
+#admission_fees .fees_body .space-offer {
+  display: flex;
+  flex-direction: column;
+}
+#admission_fees .fees_body .space-offer.active {
+  max-width: 100%;
+  flex-direction: row-reverse;
+  gap: 1px;
+  justify-content: center;
+  align-items: center;
+}
+#admission_fees .fees_body .space-offer.active input[type=checkbox] {
+  width: 10px;
+}
+#admission_fees .fees_body .space-offer select {
+  max-width: 100%;
+}
+
+#period-cuts-container #cuts {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  padding: 10px 0px;
+}
+#period-cuts-container #cuts .container-button {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+#period-cuts-container #cuts .cut {
+  margin: 7px 0px;
+  border: 1px solid rgba(128, 128, 128, 0.3607843137);
+  border-radius: 5px;
+  padding: 5px 15px;
+  position: relative;
+}
+#period-cuts-container #cuts .cut .id {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding: 0px 15px;
+  background-color: #ccc;
+  border-radius: 0px 0px 0px 5px;
+  font-size: 12px;
+}
+#period-cuts-container #cuts .cut#template-cut {
+  display: none;
+}
+#period-cuts-container #cuts .cut .group-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 520px) {
+  #period-cuts-container #cuts .cut .group-input {
+    gap: 0px;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+}
+
+#pre-scholarship-modal .form-group {
+  flex: auto;
+}
+#pre-scholarship-modal .form-group input,
+#pre-scholarship-modal .form-group select,
+#pre-scholarship-modal .form-group textarea {
+  width: 100%;
+  min-width: 100%;
+}
+
+#toplevel_page_logo_based_menu {
+  /* ESTILOS BASE PARA MÓVILES (O PANTALLAS PEQUEÑAS) */
+  background-image: var(--admin-logo-url);
+  background-repeat: no-repeat;
+  background-color: #ffffff;
+  background-position: center;
+  background-size: contain;
+  border-radius: 10px; /* Radio por defecto para móviles */
+  margin: 10px !important; /* Margen para móviles */
+  width: 90% !important; /* Ancho para móviles */
+  padding: 0px !important; /* Podría ser un valor base para móviles */
+  min-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+@media screen and (min-width: 783px) {
+  /* Tablet y Escritorio */
+  #toplevel_page_logo_based_menu {
+    margin: 5px !important; /* Ajusta para tablet */
+    padding: 0px !important; /* Ajusta para tablet */
+    border-radius: 6px; /* Ajusta para tablet */
+    width: 70% !important; /* Ajusta para tablet */
+  }
+}
+@media screen and (min-width: 992px) {
+  /* Escritorio grande */
+  #toplevel_page_logo_based_menu {
+    margin: 10px !important; /* Ajusta para escritorio */
+    padding: 10px !important; /* Ajusta para escritorio */
+    border-radius: 10px; /* Ajusta para escritorio */
+    width: auto !important; /* O un ancho fijo si lo necesitas en desktop */
+  }
+}
+/* Hide unnecessary menu items */
+a.wp-first-item.wp-not-current-submenu.menu-top.menu-icon-generic.toplevel_page_logo_based_menu.menu-top-last,
+a.toplevel_page_logo_based_menu {
+  visibility: hidden !important;
+}
+
+#toplevel_page_logo_based_menu > a {
+  padding: 10px !important;
+}
+
+.view_details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.input-error {
+  color: red;
+  margin: 5px;
+}
+
+/* Estilos generales para las secciones de carga de logos */
+.logo-upload-section {
+  border: 1px solid #e0e0e0; /* Un borde sutil para agrupar */
+  padding: 15px;
+  margin-bottom: 20px; /* Espacio entre secciones */
+  border-radius: 5px; /* Bordes redondeados */
+  background-color: #f9f9f9; /* Un color de fondo suave */
+  display: flex; /* Para alinear el formulario y la previsualización */
+  flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas pequeñas */
+  gap: 20px; /* Espacio entre los elementos flexibles */
+  align-items: center; /* Alinea verticalmente los elementos */
+}
+
+.logo-upload-section .form-group {
+  flex: 1; /* Permite que el grupo de formulario ocupe el espacio disponible */
+  min-width: 250px; /* Asegura un ancho mínimo para el formulario */
+}
+
+.logo-upload-section label {
+  display: block; /* Asegura que la etiqueta esté en su propia línea */
+  margin-bottom: 8px; /* Espacio debajo de la etiqueta */
+  font-weight: 600; /* Hace la etiqueta un poco más destacada */
+  color: #333; /* Color de texto más oscuro */
+}
+
+.logo-upload-section input[type=file] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%; /* El campo de archivo ocupa todo el ancho disponible */
+  box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+}
+
+.logo-preview {
+  flex-shrink: 0; /* Evita que la previsualización se encoja */
+  text-align: center; /* Centra la imagen */
+  padding: 10px;
+  background-color: #fff;
+  border: 1px dashed #ddd; /* Borde punteado para el área de previsualización */
+  border-radius: 4px;
+  min-width: 150px; /* Ancho mínimo para la previsualización */
+  display: flex; /* Para centrar la imagen dentro */
+  justify-content: center;
+  align-items: center;
+  min-height: 100px; /* Altura mínima para la previsualización */
+}
+
+.logo-preview img {
+  max-width: 100%; /* Asegura que la imagen no se desborde */
+  height: auto; /* Mantiene la proporción de la imagen */
+  display: block; /* Elimina espacio extra debajo de la imagen */
+}
+
+.career-item {
+  list-style: none;
+  margin-bottom: 15px; /* Espacio entre cada carrera */
+  padding-left: 0; /* Elimina la sangría de la lista */
+  text-align: left; /* Centra el contenido */
+}
+
+.career-name {
+  font-size: 1.2em; /* Hace el nombre más grande */
+  font-weight: bold;
+  margin: 0; /* Elimina márgenes por defecto */
+}
+
+.career-id {
+  display: block; /* Pone el identificador en una nueva línea */
+  font-size: 0.9em; /* Hace el identificador más pequeño */
+  color: #6c757d; /* Color gris suave */
+  margin-top: 5px; /* Espacio entre el nombre y el identificador */
+}
+
+/* Este código CSS se debe añadir en tu plugin o tema */
+.wp-scroll-container {
+  /* Define el ancho máximo del contenedor para que la tabla se desborde */
+  max-width: 100%;
+  /* Esta es la propiedad clave: crea el scroll horizontal automático */
+  overflow-x: auto;
+}
+
+.career-item {
+  list-style: none;
+  margin-bottom: 15px; /* Espacio entre cada carrera */
+  padding-left: 0; /* Elimina la sangría de la lista */
+  text-align: left; /* Centra el contenido */
+}
+
+.career-name {
+  font-size: 1.2em; /* Hace el nombre más grande */
+  font-weight: bold;
+  margin: 0; /* Elimina márgenes por defecto */
+}
+
+.career-id {
+  display: block; /* Pone el identificador en una nueva línea */
+  font-size: 0.9em; /* Hace el identificador más pequeño */
+  color: #6c757d; /* Color gris suave */
+  margin-top: 5px; /* Espacio entre el nombre y el identificador */
+}
+
+/* Este código CSS se debe añadir en tu plugin o tema */
+.wp-scroll-container {
+  /* Define el ancho máximo del contenedor para que la tabla se desborde */
+  max-width: 100%;
+  /* Esta es la propiedad clave: crea el scroll horizontal automático */
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.table-header-blue .wp-list-table thead th {
+  background-color: #002060 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff !important; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+.table-header-blue .wp-list-table tfoot th {
+  background-color: #002060 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff !important; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+
+@media screen and (max-width: 782px) {
+  #tfoot-report-comissions {
+    display: none;
+  }
+}
+
+.color-header-table-orange .wp-list-table thead th {
+  background-color: #f1b388 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+.color-header-table-orange .wp-list-table tfoot th {
+  background-color: #f1b388 !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+
+.color-header-table-yellow .wp-list-table thead th {
+  background-color: #ffebae !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+.color-header-table-yellow .wp-list-table tfoot th {
+  background-color: #ffebae !important; /* Un color oscuro para las cabeceras de las columnas */
+  color: #fff; /* Texto blanco para mayor contraste */
+  font-weight: bold;
+}
+
+/* Estilos para las columnas de la tabla de comisiones de aliados */
+/*
+ * Sección 1: Ancho de las columnas con texto largo.
+ * Usamos 'max-width' para evitar que la tabla se expanda demasiado
+ * y 'word-wrap' para que el texto se ajuste.
+ */
+#table_comissions_allies #student_name,
+#table_comissions_allies .column-primary {
+  min-width: 180px;
+  word-wrap: break-word;
+}
+
+#table_comissions_allies #institution,
+#table_comissions_allies .column-institution {
+  min-width: 200px;
+  word-wrap: break-word;
+}
+
+#table_comissions_allies #name_partnership,
+#table_comissions_allies .column-name_partnership {
+  min-width: 180px;
+  word-wrap: break-word;
+}
+
+#table_comissions_allies #observations,
+#table_comissions_allies .column-observations {
+  min-width: 350px;
+  word-wrap: break-word;
+}
+
+#table_comissions_allies #program,
+#table_comissions_allies .column-program {
+  min-width: 120px;
+}
+
+#table_comissions_allies #student_grade,
+#table_comissions_allies .column-student_grade {
+  min-width: 80px;
+}
+
+#table_comissions_allies #territory,
+#table_comissions_allies .column-territory {
+  min-width: 100px;
+}
+
+#table_comissions_allies #payment_type,
+#table_comissions_allies .column-payment_type {
+  min-width: 120px;
+}
+
+#table_comissions_allies #income_account,
+#table_comissions_allies .column-income_account {
+  min-width: 120px;
+}
+
+#table_comissions_allies #payment_date,
+#table_comissions_allies .column-payment_date {
+  min-width: 110px;
+}
+
+#table_comissions_allies #initial_fee,
+#table_comissions_allies .column-initial_fee,
+#table_comissions_allies #tuition_amount,
+#table_comissions_allies .column-tuition_amount,
+#table_comissions_allies #total_amount,
+#table_comissions_allies .column-total_amount,
+#table_comissions_allies #institute_fee,
+#table_comissions_allies .column-institute_fee {
+  min-width: 100px;
+  text-align: right;
+}
+
+/* Selector corregido para las columnas de alianza */
+#table_comissions_allies thead [id^=alliance_],
+#table_comissions_allies tbody td:nth-child(n+14) {
+  min-width: 100px;
+  text-align: right;
+}
+
+.filter-controls {
+  display: flex; /* Habilita el diseño flexible */
+  flex-wrap: wrap; /* **Permite que los elementos salten a la siguiente línea si no caben** */
+  gap: 10px; /* Espacio entre los elementos (selects, input, botones) */
+  align-items: center; /* Centra verticalmente los elementos */
+  justify-content: flex-end; /* Alinea el grupo de filtros a la derecha */
+  padding-top: 10px;
+  margin-bottom: 15px; /* Espacio debajo de los filtros */
+}
+
+/* 2. Estilos para los Selects y el Input de Búsqueda */
+.filter-controls select,
+.filter-controls input[type=search] {
+  flex-grow: 1; /* Permite que crezcan para llenar el espacio, pero con límite */
+  max-width: 200px; /* Limita el ancho máximo para evitar que se vean demasiado grandes */
+  min-width: 150px; /* Asegura un ancho mínimo legible */
+  /* El ancho de los selects y inputs se ajustará automáticamente */
+}
+
+/* 3. Estilos para el contenedor de los botones */
+.filter-actions {
+  display: flex;
+  gap: 10px; /* Espacio entre los botones */
+  flex-shrink: 0; /* Evita que los botones se encojan */
+}
+
+/* 4. Adaptación para dispositivos móviles (Responsividad) */
+@media (max-width: 782px) {
+  /* Punto de interrupción típico de WordPress */
+  .filter-controls {
+    flex-direction: column; /* Apila los elementos verticalmente en pantallas pequeñas */
+    align-items: stretch; /* Estira los elementos para que ocupen todo el ancho */
+    justify-content: flex-start;
+  }
+  .filter-controls select,
+  .filter-controls input[type=search],
+  .filter-actions {
+    max-width: 100%; /* Ocupan todo el ancho del contenedor padre */
+  }
+  .filter-actions {
+    flex-direction: column; /* Apila los botones (si no lo hiciste en el HTML con wp_is_mobile) */
+  }
+}
+.edusof-page-admin .container-card-admin {
+  padding: 10px;
+}
+.edusof-page-admin .container-card-admin .card-content {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+}
+.edusof-page-admin .container-card-admin .card-content .title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 25px;
+  font-weight: bold;
+}
+.edusof-page-admin .container-card-admin .card-content .card-content-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  flex-wrap: wrap;
+}
+.edusof-page-admin .container-card-admin .card-content .card-content-header .container-button {
+  position: absolute;
+  right: 0px;
+  padding-bottom: 15px;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-vertical {
+  display: flex;
+  flex-wrap: wrap;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-vertical > div {
+  flex: 1;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  min-width: 170px;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-card .seccion-icon {
+  color: #0073aa;
+  font-size: 24px;
+  margin-right: 15px;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-card p {
+  margin: 0;
+  font-size: 16px;
+  color: #555;
+}
+.edusof-page-admin .container-card-admin .card-content .seccion-card p strong {
+  color: #333;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right {
+  margin-right: 2px;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card {
+  justify-content: flex-end;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  justify-content: space-between;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p strong,
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p span {
+  flex: 1.5;
+  text-align: end;
+}
+.edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p span {
+  flex: 2;
+}
+@media (max-width: 375px) {
+  .edusof-page-admin .container-card-admin .card-content .container-right .seccion-card p span {
+    flex: 1;
+  }
+}
+
+.payment-details .hidden {
+  display: none !important;
+}
+.payment-details .title {
+  flex: 1;
+  width: 100%;
+}
+.payment-details #table-products-payment tfoot:has(.actions.hidden) {
+  display: none;
+}
+.payment-details #table-products-payment tfoot .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.payment-details #table-products-payment .item-product-payment .total-price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.payment-details #table-products-payment .item-product-payment .total-price.hidden {
+  display: none;
+}
+.payment-details #table-products-payment .item-product-payment .total-price .dashicons {
+  display: none;
+  cursor: pointer;
+}
+.payment-details #table-products-payment .item-product-payment .inputs-price.hidden {
+  display: none;
+}
+.payment-details #table-products-payment .item-product-payment:hover .total-price .dashicons {
+  display: block;
+}
+@media (max-width: 782px) {
+  .payment-details .title {
+    margin-top: 10px !important;
+  }
+  .payment-details .container-button {
+    position: relative !important;
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+  }
+  .payment-details #table-products-payment .item-product-payment .total-price {
+    justify-content: flex-end !important;
+    gap: 10px;
+  }
+  .payment-details #table-products-payment .item-product-payment .dashicons {
+    display: block;
+  }
+  .payment-details #table-products-payment .inputs-price {
+    margin-top: 22px;
+  }
+  .payment-details #table-products-payment tfoot td {
+    display: block;
+  }
+}
+
+#modalStatusPayment .amount_container {
+  display: flex;
+  flex-wrap: wrap;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
+}
+#modalStatusPayment strong {
+  color: #000;
+}
+
+.student-details-flex-container {
+  display: flex;
+  flex-wrap: nowrap; /* Ensures all sections stay on one line */
+  gap: 20px; /* Space between the columns */
+  overflow-x: auto; /* Optional: adds scroll if content is too wide */
+  padding: 10px 0;
+}
+
+/* 2. FLEX ITEM: Styles for each individual section block */
+.detail-section-wrapper {
+  flex: 0 0 250px; /* Do not grow, do not shrink, fixed width of 250px */
+  width: 250px; /* Fallback for older browsers */
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-size: 12px;
+}
+
+.detail-heading {
+  font-size: 1.2em;
+  margin-top: 0;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #0056b3;
+  padding-bottom: 5px;
+  color: #0056b3;
+  white-space: nowrap; /* Prevents heading wrap */
+  overflow: hidden; /* Hides heading overflow */
+  text-overflow: ellipsis; /* Adds dots if heading is too long */
+}
+
+.item-name {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.item-description {
+  font-size: 0.85em;
+  color: #666;
+  margin-bottom: 15px;
+  padding-left: 0; /* Removed padding-left from previous version */
+}
+
+.no-data {
+  color: #999;
+  font-style: italic;
+}
+
+/* Usamos el selector combinado para máxima especificidad */
+.nav-tab-wrapper.nav-scroll-h {
+  /* CLAVE 1: Usa Flexbox para controlar la distribución de los hijos */
+  display: flex !important;
+  /* CLAVE 2: Evita que los elementos Flexbox salten a la siguiente línea */
+  flex-wrap: nowrap !important;
+  /* CLAVE 3: Habilita el desplazamiento horizontal cuando el contenido se desborda */
+  overflow-x: auto !important;
+  /* Asegura que no haya scroll vertical no deseado */
+  overflow-y: hidden !important;
+  /* Opcional: Esto ayuda a que el scroll funcione correctamente en algunos navegadores */
+  width: 100%;
+}
+
+/* Esencial: Asegura que cada pestaña pueda ser tan ancha como necesite (no se encoge) */
+.nav-tab-wrapper.nav-scroll-h a {
+  flex-shrink: 0 !important;
+  display: inline-block !important; /* Mantiene la clase original del elemento */
+}
+
+/* Define el ancho de la barra de desplazamiento vertical y el alto de la horizontal */
+.nav-scroll-h::-webkit-scrollbar {
+  width: 10px; /* Ancho para scroll vertical */
+  height: 10px; /* Altura para scroll horizontal */
+}
+
+/* Estiliza el "fondo" o la pista donde se desliza el scroll */
+.nav-scroll-h::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Color de fondo claro */
+  border-radius: 5px;
+}
+
+/* Estiliza el "pulgar" o la barra que mueves */
+.nav-scroll-h::-webkit-scrollbar-thumb {
+  background: #888; /* Color de la barra, gris oscuro */
+  border-radius: 5px;
+}
+
+/* Estiliza la barra al pasar el ratón por encima */
+.nav-scroll-h::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color más oscuro al hacer hover */
+}
+
+/* Firefox solo permite cambiar el color y el ancho/tamaño, no la forma. */
+.nav-scroll-h {
+  scrollbar-width: thin; /* 'auto' o 'thin' */
+  scrollbar-color: #888 #f1f1f1; /* Color del thumb / Color del track */
+}
+
+/* CSS/SCSS */
+/* Aplica el scroll al contenedor envoltorio */
+.table-scroll-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  width: 100%; /* Asegura que tome el ancho disponible */
+}
+
+/* Aplica el ancho mínimo a la tabla real */
+.table-scroll-container .wp-list-table {
+  min-width: 1800px; /* Ajusta este valor (ej. 1800px) basado en la cantidad de columnas dinámicas */
+  width: auto !important;
+}
+
+.wp-list-table .column-governmentissued_photo_id_identity_document_or_passport_or_drivers_license_or_cedula_or_dni_or_din {
+  width: 350px !important;
+  min-width: 350px !important;
+}
+
+.wp-list-table .column-photoid_or_passport {
+  width: 150px !important;
+  min-width: 150px !important;
+}
+
+.wp-list-table .column-last_degree_diploma_obtained_national_or_foreign {
+  width: 350px !important;
+  min-width: 350px !important;
+}
+
+.wp-list-table .column-report_of_grades_or_official_transcripts_of_courses_passed_at_a_higher_education_institution_tsu_or_bachelors_degree {
+  width: 400px !important;
+  min-width: 400px !important;
+}
+
+.wp-list-table .column-official_ged_high_school_original_transcripts {
+  width: 300px !important;
+  min-width: 300px !important;
+}
+
+.wp-list-table .column-translation_or_equivalent_high_school_or_ged_by_recognized_institution {
+  width: 400px !important;
+  min-width: 400px !important;
+}
+
+.wp-list-table .column-curriculum_vitae_ph_d_only {
+  width: 200px !important;
+  min-width: 200px !important;
+}
+
+.wp-list-table .column-thesis_idea_to_develop_phd_only {
+  width: 200px !important;
+  min-width: 200px !important;
+}
+
+/* tabla de worpress con ordenes de split */
+tr.parent-order-row {
+  background: #fff; /* fondo blanco normal */
+  font-weight: normal;
+  border-bottom: none; /* sin línea divisoria fuerte */
+}
+tr.parent-order-row td {
+  font-size: 14px;
+  border-top: 2px solid #d8d8ff !important;
+}
+tr.parent-order-row .view_details {
+  display: table-cell;
+}
+
+/* Hijas */
+tr.child-order-row {
+  display: revert-layer;
+  background: #f9f9f9;
+  font-size: 13px;
+}
+tr.child-order-row td {
+  border-top: 1px dashed #dee1e7 !important; /* borde punteado arriba */
+}
+tr.child-order-row td.payment_id {
+  padding-left: 35px !important; /* indentación para marcar jerarquía */
+  font-style: italic;
+}
+tr.child-order-row.last-child td {
+  border-bottom: 2px solid #d8d8ff !important;
+}
+tr.child-order-row .view_details {
+  display: table-cell;
+}
+
+#document_view #dashboard-widgets {
+  width: 70%;
+  margin: auto;
+}
+@media (max-width: 768px) {
+  #document_view #dashboard-widgets {
+    width: 100%;
+  }
+}
+#document_view #form_document {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+#document_view #form_document .title {
+  margin-top: 20px;
+  margin-bottom: 0px;
+  text-align: center;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+}
+#document_view #form_document > .group-input {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+#document_view #form_document > .group-input .group-input {
+  flex: 1;
+}
+#document_view #form_document > .group-input .group-input label {
+  width: 100%;
+}
+#document_view #form_document input[type=text],
+#document_view #form_document input[type=number],
+#document_view #form_document select,
+#document_view #form_document textarea {
+  width: 100%;
+}
+#document_view #form_document input[type=checkbox] {
+  margin-right: 8px;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+#document_view #form_document button.button-primary {
+  align-self: flex-end;
+}
+#document_view #form_document {
+  /* Oculta las etiquetas visuales de los seleccionados en la barra */
+}
+#document_view #form_document #select2-select_scope-container .select2-selection__choice {
+  display: none !important;
+}
+#document_view #form_document #header_selected_list {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3607843137);
+  margin-top: 10px;
+}
+#document_view #form_document #header_selected_list span {
+  font-weight: 600;
+  font-size: 15px;
+  width: 30%;
+  margin-bottom: 5px;
+}
+#document_view #form_document #selected_list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+#document_view #form_document #selected_list .selected-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 5px 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#document_view #form_document #selected_list .selected-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+#document_view #form_document #selected_list .selected-item:hover .remove-btn {
+  opacity: 1;
+}
+#document_view #form_document #selected_list .selected-item .item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+#document_view #form_document #selected_list .selected-item .item-name {
+  font-size: 1.1em;
+  color: #333;
+  margin-bottom: 2px;
+  font-weight: 600;
+  flex: 0.7;
+}
+#document_view #form_document #selected_list .selected-item .remove-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%) scale(0.8);
+  background: transparent;
+  border: none;
+  color: #e60000;
+  font-size: 20px;
+  padding: 0px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+#select2-select_scope-results li:has(+ [role=group]) {
+  margin-bottom: 0px;
+}
+#select2-select_scope-results [role=group] {
+  position: relative;
+}
+#select2-select_scope-results [role=group] .select2-results__group {
+  display: none !important;
+}
+#select2-select_scope-results [role=group] li:has(.program) {
+  font-weight: 600;
+}
+#select2-select_scope-results [role=group] li:has(.career) {
+  padding-left: 2em;
+}
+#select2-select_scope-results [role=group] li:has(.mention) {
+  padding-left: 3em;
+}
+
+#accions-docummets {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+#accions-docummets .group h3 {
+  margin: 0.5em 0;
+}
+#accions-docummets .group div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+#accions-docummets .group div label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+#accions-docummets .group div label select {
+  max-width: 185px;
+}
+@media (max-width: 426px) {
+  #accions-docummets .group div label {
+    width: 100%;
+  }
+  #accions-docummets .group div label select {
+    max-width: 100%;
+  }
+}
+#accions-docummets .group-accion {
+  display: flex;
+  align-items: flex-end;
+}
+
+.status-student-datails {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 25px 0px 10px 0px;
+}
+.status-student-datails label {
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 8px;
+  background: #dfdedd;
+  color: #000000;
+}
+
+#table-products .program-list-document {
+  margin: 0;
+  padding: 0;
+}
+#table-products .program-list-document .program-item-document {
+  margin-bottom: 10px;
+}
+#table-products .program-list-document .program-item-document .career-list-document {
+  margin-left: 20px;
+}
+#table-products .program-list-document .program-item-document .career-list-document .career-item-document {
+  margin-bottom: 6px;
+}
+#table-products .program-list-document .program-item-document .career-list-document .career-item-document .mention-list-document {
+  margin-left: 20px;
+}
+#table-products .program-list-document .program-item-document .career-list-document .career-item-document .mention-list-document .mention-item-document {
+  margin-bottom: 4px;
+}
+
+.filters-document form {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.filters-document form .group-input {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+@media (max-width: 500px) {
+  .filters-document form .group-input {
+    width: 100%;
+  }
+}
+
+#modalNewQuota .modal-body {
+  margin: 10px;
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#modalNewQuota .modal-body .seccion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+#modalNewQuota .modal-body .seccion .group-input {
+  flex: 1;
+}
+#modalNewQuota .modal-body .group-input {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+}
+#modalNewQuota .modal-body .group-input select {
+  width: 100%;
+}/*# sourceMappingURL=style.css.map */
