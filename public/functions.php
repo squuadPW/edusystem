@@ -4892,9 +4892,6 @@ add_action( 'woocommerce_after_checkout_form', function () {
 
     ?>
         <div id="modalScholarship" class="modal" style="display:block" >
-            <?php
-                var_dump( !get_option('modal_scholarships_checkout'));
-            ?>
 
             <div class="modal-content" >
                 
