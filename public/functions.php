@@ -4877,10 +4877,12 @@ add_filter( 'spm_payment_modal_settings', function( $data ) {
 
 // modal informativo que se lo otorgo una beca al estudiante
 add_action( 'woocommerce_after_checkout_form', function () {
+
+    if( !get_option('modal_scholarships_checkout') ) return;
     
     $plan_identificator = $_COOKIE['plan_id'] ?? false;
     $program_identificator = $_COOKIE['program_id'] ?? false;
-    if( !get_option('modal_scholarships_checkout') && !$plan_identificator && !$program_identificator ) return;
+    if( !$plan_identificator && !$program_identificator ) return;
 
     $plan = get_program_details_by_identificator($plan_identificator);
     $program = get_student_program_details_by_identificator($program_identificator);
@@ -4890,6 +4892,9 @@ add_action( 'woocommerce_after_checkout_form', function () {
 
     ?>
         <div id="modalScholarship" class="modal" style="display:block" >
+            <?php
+                var_dump( !get_option('modal_scholarships_checkout'));
+            ?>
 
             <div class="modal-content" >
                 
