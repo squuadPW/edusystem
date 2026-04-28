@@ -2,7 +2,7 @@
 /*
 Plugin Name: EduSystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 4.2.5
+Version: 4.2.6
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
@@ -1961,6 +1961,63 @@ function create_tables()
     }
 }
 
+
+
+
+if (!defined('ABSPATH')) exit;
+
+class EdusystemPluginUpdater {
+
+    private $slug = 'edusystem/edusystem.php'; // Cambiar por tu carpeta/archivo
+    private $server_url = 'https://edusof.com/wp-json/p-server/v1';
+    private $api_key = 'edusof_EARRDSBGGDHDJWUUYSYTHHJJU_VER5ION'; // Debe coincidir con el servidor
+
+    public function __construct() {
+        add_filter('site_transient_update_plugins', [$this, 'verificar_actualizacion']);
+        add_filter('plugins_api', [$this, 'info_del_plugin'], 20, 3);
+    }
+
+    public function verificar_actualizacion($transient) {
+        if (empty($transient->checked)) return $transient;
+
+        $response = wp_remote_get("{$this->server_url}/check-version");
+        if (is_wp_error($response)) return $transient;
+
+        $info = json_decode(wp_remote_retrieve_body($response));
+        $current_version = EDUSYSTEM_VERSION; // Define aquí la versión actual del plugin
+
+        if ($info && version_compare($current_version, $info->version, '<')) {
+            $obj = new stdClass();
+            $obj->slug = 'mi-plugin';
+            $obj->plugin = $this->slug;
+            $obj->new_version = $info->version;
+            $obj->package = "{$info->package}?key={$this->api_key}";
+
+            $transient->response[$this->slug] = $obj;
+        }
+
+        return $transient;
+    }
+
+    // Opcional: Información que aparece en el "Ver detalles"
+    public function info_del_plugin($res, $action, $args) {
+        if ($action !== 'plugin_information' || $args->slug !== 'mi-plugin') return $res;
+
+        $response = wp_remote_get("{$this->server_url}/check-version");
+        $info = json_decode(wp_remote_retrieve_body($response));
+
+        $res = new stdClass();
+        $res->name = 'Mi Plugin Pro';
+        $res->slug = 'mi-plugin';
+        $res->version = $info->version;
+        $res->download_link = "{$info->package}?key={$this->api_key}";
+        $res->sections = ['description' => 'Actualizaciones privadas seguras.'];
+
+        return $res;
+    }
+}
+
+new EdusystemPluginUpdater();
 
 
 /* add_action( 'woocommerce_account_dashboard', function () {

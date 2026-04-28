@@ -65,10 +65,14 @@ Sí, ofrecemos soporte técnico. Contacta a través de nuestro sitio web o foro 
 
 ## Registro de Cambios
 
-### 4.2.5 
+### 4.2.6
 - Implementación de sistema de recuperación de materias reprobadas ("raspadas") directamente desde el escritorio del estudiante.
 - Integración con WooCommerce para la compra de materias, permitiendo la inscripción automática para el siguiente periodo académico una vez procesado el pago.
 - Oferta los cursos y electivas en caso de hagotar los cupos disponibles.
+
+### 4.2.5 sistema de actualizaciones
+- Sistema de actualizacion.
+- Bug resueltos.
 
 ### 4.2.4
 - Se resolvio bug de compatibilidad con los metodos de pago y los pagos divididos
