@@ -86,7 +86,7 @@
                                         <div class="space-offer" style="flex: 2;">
 
                                             <label for="products">
-                                                <b><?= __('Programs', 'edusystem'); ?></b>
+                                                <b><?= __('Payment plans', 'edusystem'); ?></b>
                                                 <span class="text-danger">*</span>
                                             </label>
 
@@ -108,22 +108,21 @@
                                                     )
                                                 );
                                             ?>
-                                            
                                             <select name="programs[]" multiple id="programas_select" >
                                                 <?php if( $payment_plans ): ?>
                                                     <?php foreach ($payment_plans as $payment_plan): ?>
 
-                                                        <optgroup label="<?= esc_attr($payment_plan->name) ?> (<?= esc_html($payment_plan->description)?>)">
+                                                        <optgroup label="<?= esc_attr($payment_plan->name) ?> (<?= esc_html($payment_plan->identificator)?>)">
 
                                                             <option value="<?= esc_attr($payment_plan->identificator)?>" <?= selected( in_array( $payment_plan->identificator, json_decode($fee['programs'], true) ?? [] ) ); ?>>
-                                                                <?= esc_html($payment_plan->name) ?> (<?= esc_html($payment_plan->description)?>)
+                                                                <?= esc_html($payment_plan->name) ?> (<?= esc_html($payment_plan->identificator)?>)
                                                             </option>
 
                                                             <?php $payment_subplans = json_decode($payment_plan->subprogram, true); ?>
                                                             <?php if($payment_subplans): ?>
                                                                 <?php foreach ($payment_subplans as $payment_subplan_id => $payment_subplan): ?>
                                                                     <option value="<?= esc_attr($payment_plan->identificator . '_' . $payment_subplan_id) ?>" <?= selected(in_array($payment_plan->identificator . '_' . $payment_subplan_id, json_decode($fee['programs'], true) ?? [])); ?>>
-                                                                        <?= esc_html($payment_subplan['name']) ?> <?= $payment_subplan['description'] ? "(". esc_html($payment_subplan['description']) . ")" : '' ?>
+                                                                        <?= esc_html($payment_subplan['name']) ?> <?= "(". esc_html($payment_plan->identificator).'-'.esc_html($payment_subplan['product_id']) . ")"  ?>
                                                                     </option>
                                                                 <?php endforeach; ?>
                                                             <?php endif; ?>

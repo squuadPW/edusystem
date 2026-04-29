@@ -69,6 +69,7 @@ Sí, ofrecemos soporte técnico. Contacta a través de nuestro sitio web o foro 
 - Implementación de sistema de recuperación de materias reprobadas ("raspadas") directamente desde el escritorio del estudiante.
 - Integración con WooCommerce para la compra de materias, permitiendo la inscripción automática para el siguiente periodo académico una vez procesado el pago.
 - Oferta los cursos y electivas en caso de hagotar los cupos disponibles.
+- Se implemento en la seccion de fees en el selector del plan de pago, el identidicador de los planes de pago de manera visual.
 
 ### 4.2.5 sistema de actualizaciones
 - Sistema de actualizacion.
