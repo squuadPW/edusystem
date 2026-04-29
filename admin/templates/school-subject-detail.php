@@ -312,6 +312,39 @@
                                         
                                     </div>
 
+                                    <div style="font-weight:400; text-align: center">
+
+                                        <label for="subjects_prerelation[]">
+                                            <b><?= __('Select subjects prerelation', 'edusystem'); ?></b>
+                                        </label>
+
+                                        <br/>
+
+                                        <?php
+                                            $subjects_prerelation = [];
+                                            if ( isset($subject->subjects_prerelation) && !empty($subject->subjects_prerelation) ) {
+                                                
+                                                $subjects_prerelation = explode(',', $subject->subjects_prerelation);
+                                                $subjects_prerelation = array_map('trim', $subjects_prerelation);
+                                            }
+                                        ?>
+
+                                        <select name="subjects_prerelation[]" multiple >
+
+                                            <option value="" <?= selected( $subject->id, '' ) ?> ><?= __('Select subjects prerelation', 'edusystem');?></option>
+
+                                            <?php foreach ( get_subjects() as $subject ): ?> 
+                                                
+                                                <?php if( $subject_id == $subject->id ) continue; ?> 
+
+                                                <option value="<?= $subject->id; ?>" <?= ( in_array( $subject->id, $subjects_prerelation ) ) ? 'selected' : ''; ?> >
+                                                    <?= $subject->name; ?>
+                                                </option>
+
+                                            <?php endforeach ?>
+                                        </select>
+                                    </div>
+
                                 </div>
                                 
                             </div>

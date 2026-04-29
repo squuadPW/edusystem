@@ -40,6 +40,7 @@ function add_admin_form_school_subjects_content()
             $retake_limit = $_POST['retake_limit'] ?? null;
             $deactivate_buy_subject = $_POST['deactivate_buy_subject'] ?? null;
             $url_image = $_POST['url_image'] ?? null;
+            $subjects_prerelation = $_POST['subjects_prerelation'] ?? null;
 
             // obtiene la imgen subida para el curso
             if ( !empty($_FILES['file_image']['name']) ) {
@@ -52,6 +53,14 @@ function add_admin_form_school_subjects_content()
                 if (!is_wp_error($attachment_id)) {
                     $url_image = wp_get_attachment_url($attachment_id);
                 }
+
+            }
+
+            // acomodar un text de los id de las materias separado por comas a un array de id's
+            if( $subjects_prerelation ) {
+
+                $subjects_prerelation = array_map('intval', $subjects_prerelation);  
+                $subjects_prerelation = implode(',', $subjects_prerelation);  
 
             }
             
@@ -73,6 +82,7 @@ function add_admin_form_school_subjects_content()
                     'is_active' => $is_active == 'on' ? 1 : 0,
                     'is_open' => $is_open == 'on' ? 1 : 0,
                     'deactivate_buy_subject' => $deactivate_buy_subject,
+                    'subjects_prerelation' => $subjects_prerelation,
                     'url_image' => $url_image,
                     'retake_limit' => $retake_limit 
                 ], ['id' => $subject_id]);
@@ -93,6 +103,7 @@ function add_admin_form_school_subjects_content()
                     'is_active' => $is_active == 'on' ? 1 : 0,
                     'is_open' => $is_open == 'on' ? 1 : 0,
                     'deactivate_buy_subject' => $deactivate_buy_subject,
+                    'subjects_prerelation' => $subjects_prerelation,
                     'url_image' => $url_image,
                     'retake_limit' => $retake_limit
                 ]);
@@ -317,5 +328,12 @@ function get_subject_by_type($type) {
     $table_school_subjects = $wpdb->prefix . 'school_subjects';
 
     $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects} WHERE type='{$type}'");
+    return $subjects;
+}
+
+function get_subjects() {
+    global $wpdb;
+    $table_school_subjects = $wpdb->prefix . 'school_subjects';
+    $subjects = $wpdb->get_results("SELECT * FROM {$table_school_subjects}");
     return $subjects;
 }

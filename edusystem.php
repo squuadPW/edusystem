@@ -682,9 +682,11 @@ function create_tables()
         `prerelation` TEXT NULL DEFAULT NULL,
         `deactivate_buy_subject` boolean NOT NULL DEFAULT false,
         `url_image` TEXT NULL DEFAULT NULL,
+        `subjects_prerelation` TEXT NULL DEFAULT '',
         `is_elective` tinyint(1) NOT NULL DEFAULT 0,
         `retake_limit` int(11) DEFAULT NULL,
         `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+        `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
         PRIMARY KEY (id))$charset_collate;"
     );
 
@@ -1960,8 +1962,6 @@ function create_tables()
         }
     }
 }
-
-
 
 
 if (!defined('ABSPATH')) exit;
