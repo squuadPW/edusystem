@@ -86,7 +86,7 @@
                                         <div class="space-offer" style="flex: 2;">
 
                                             <label for="products">
-                                                <b><?= __('Programs', 'edusystem'); ?></b>
+                                                <b><?= __('Payment plans', 'edusystem'); ?></b>
                                                 <span class="text-danger">*</span>
                                             </label>
 
