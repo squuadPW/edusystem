@@ -627,6 +627,7 @@ function generate_projection_student( $student_id ) {
             'welcome_email' => $is_completed || $is_this_cut, // True si está Approved/Active
             'assigned_slots' => (int) $subject->retake_limit ?? 0,
             'attempts_count' => (int) $attempts_count[$subject->id] ?? 0,
+            'subjects_prerelation' => $subjects->subjects_prerelation ?? '',
         ];
     }
 
@@ -652,6 +653,7 @@ function generate_projection_student( $student_id ) {
                 'type' => 'elective',
                 'assigned_slots' => $subject->retake_limit ?? 0,
                 'attempts_count' => $attempts_count[$subject->id] ?? 0,
+                'subjects_prerelation' => $subject->subjects_prerelation ?? '',
             ];
         }
     }
@@ -1177,7 +1179,8 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
                     'code_period' => $period_data->code,
                     'cut' => $period_data->cut,
                     'type' => 'R',
-                    'status' => $status
+                    'status' => $status,
+                    'subjects_prerelation' => $subject['subjects_prerelation'] ?? '',
                 ];
                     
                 $subject_hc = (int) $subject['hc'];
@@ -1201,6 +1204,9 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
                     $accumulated_hc <= $matrix_config_data->term_HC && 
                     $registered_hc < $matrix_config_data->max_HC
                 ) { 
+
+                    
+                    //verificar aqui si la materia actual tiene alguna prelacion si es asi la bloquea 
 
                     $subject_projection = $projection_data[$subject->subject_id] ?? null;
                     if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] >= $subject_projection['assigned_slots']) {
