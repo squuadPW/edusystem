@@ -1,13 +1,13 @@
 <?php
 /*
 Plugin Name: EduSystem
+Version: 4.2.5
+Text Domain:  edusystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
-Version: 4.2.6
 Author: EduSof
 Author URI: https://edusof.com/
 License:      GPL2
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
-Text Domain:  edusystem
 */
 
 
@@ -25,6 +25,13 @@ define('EDUSYSTEM_PATH', plugin_dir_path(__FILE__) ); // Ruta del directorio del
 define('EDUSYSTEM_URL', plugin_dir_url(__FILE__)); // URL del plugin
 define('EDUSYSTEM_REMOTE_INFO_URL', 'https://versions.squuad.com/plugins/edusystem/info.json');
 
+// forza el boton de actualizacion automatica para el plugin.
+add_filter('auto_update_plugin', function($update, $item) {
+    if (isset($item->slug) && $item->slug === 'edusystem') {
+        return true; 
+    }
+    return $update;
+}, 10, 2);
 
 // ------  Sistema de actualizaciones ---------
 
