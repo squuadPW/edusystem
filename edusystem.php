@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: EduSystem
-Version: 4.2.5
+Version: 4.2.6
 Text Domain:  edusystem
 Description: Transform your WordPress into a complete, professional and scalable educational ecosystem.
 Author: EduSof
