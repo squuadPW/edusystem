@@ -1180,7 +1180,6 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
                     'cut' => $period_data->cut,
                     'type' => 'R',
                     'status' => $status,
-                    'subjects_prerelation' => $subject['subjects_prerelation'] ?? '',
                 ];
                     
                 $subject_hc = (int) $subject['hc'];
@@ -1207,9 +1206,18 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
 
                     
                     //verificar aqui si la materia actual tiene alguna prelacion si es asi la bloquea 
+                    $subjects_prerelation = $subject->subjects_prerelation ? implode(',', $subject->subjects_prerelation) : [];
+                    foreach ( $pro as $prerelation_subject_id) {
+                        if (isset($projection_data[$prerelation_subject_id]) && !$projection_data[$prerelation_subject_id]['is_completed']) {
+                            $has_prerelation = true;
+                            break;
+                        }
+                    }
+                    $has_prerelation = in_array($subject->id, $subjects_prerelation);
 
                     $subject_projection = $projection_data[$subject->subject_id] ?? null;
-                    if ( !isset( $subject->status ) && $subject_projection && $subject_projection['attempts_count'] >= $subject_projection['assigned_slots']) {
+                    $attempts_used = $subject_projection['attempts_count'] >= $subject_projection['assigned_slots'];
+                    if ( !isset( $subject->status ) && $subject_projection && $attempts_used && !$has_prerelation) {
                         
                         $subject_move = $subjects[$i];
                         unset($subjects[$i]);
@@ -1229,7 +1237,7 @@ function generate_expectation_matrix( $student, $projection, $pensum ) {
                         'code_period' => $period_data ? $period_data->code : '', 
                         'cut' => $period_data ? $period_data->cut : '', 
                         'type' => 'R',
-                        'status' => $status
+                        'status' => $status,
                     ];
 
                     $subject_hc = $subject->hc;
